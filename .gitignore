@@ -1,0 +1,47 @@
+# ============================================================
+# HomeGarden API V2 - Git Ignore
+# ============================================================
+
+# Dependencies
+node_modules/
+
+# Build output
+dist/
+build/
+*.js.map
+
+# Environment
+.env
+.env.local
+.env.*.local
+
+# IDE & Editor
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+
+# Prisma
+prisma/migrations/
+
+# Test coverage
+coverage/
+.nyc_output/
+
+# Legacy code archive (DO NOT COMMIT)
+_legacy_archive_v1/
+
+# Temporary files
+tmp/
+temp/
+*.tmp

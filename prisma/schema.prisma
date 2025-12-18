@@ -1,0 +1,326 @@
+// ============================================================
+// HOMEGARDEN API - PRISMA SCHEMA
+// Target: PostgreSQL with PostGIS extension
+// ============================================================
+
+generator client {
+  provider        = "prisma-client-js"
+  previewFeatures = ["postgresqlExtensions"]
+}
+
+datasource db {
+  provider   = "postgresql"
+  url        = env("DATABASE_URL")
+  extensions = [postgis]
+}
+
+// ============================================================
+// CORE ENTITIES
+// ============================================================
+
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  password  String
+  firstName String   @map("first_name")
+  lastName  String   @map("last_name")
+  birthDate DateTime? @map("birth_date") @db.Date
+  role      UserRole @default(USER)
+  
+  avatarUrl   String?  @map("avatar_url")
+  preferences Json?
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  gardens       Garden[]
+  diagnoses     Diagnosis[]
+  careSchedules CareSchedule[]
+
+  @@map("users")
+}
+
+enum UserRole {
+  USER
+  ADMIN
+}
+
+model Garden {
+  id          String  @id @default(cuid())
+  name        String
+  latitude    Float
+  longitude   Float
+  description String?
+  size        Float?
+  climate     String?
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  userId String @map("user_id")
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  plants        Plant[]
+  careSchedules CareSchedule[]
+
+  @@index([userId])
+  @@index([latitude, longitude])
+  @@map("gardens")
+}
+
+model Plant {
+  id             String  @id @default(cuid())
+  nickname       String?
+  speciesId      String? @map("species_id")
+  species        Species? @relation(fields: [speciesId], references: [id])
+  commonName     String?  @map("common_name")
+  scientificName String?  @map("scientific_name")
+  family         String?
+  exposure       PlantExposure?
+  watering       String?
+  soilType       String?  @map("soil_type")
+  flowerColor    String?  @map("flower_color")
+  height         Float?
+  plantedDate    DateTime? @map("planted_date") @db.Date
+  acquiredDate   DateTime? @map("acquired_date") @db.Date
+  bloomingSeason String?   @map("blooming_season")
+  plantingSeason String?   @map("planting_season")
+  careNotes      String?   @map("care_notes") @db.Text
+  imageUrl       String?   @map("image_url")
+  thumbnailUrl   String?   @map("thumbnail_url")
+  use            PlantUse?
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  gardenId String @map("garden_id")
+  garden   Garden @relation(fields: [gardenId], references: [id], onDelete: Cascade)
+
+  diagnoses     Diagnosis[]
+  careSchedules CareSchedule[]
+
+  @@index([gardenId])
+  @@index([speciesId])
+  @@map("plants")
+}
+
+enum PlantExposure {
+  FULL_SUN      @map("Full Sun")
+  PARTIAL_SHADE @map("Partial Shade")
+  SHADE         @map("Shade")
+}
+
+enum PlantUse {
+  ORNAMENTAL
+  GROUNDCOVER
+  FOOD
+  MEDICINAL
+  FRAGRANCE
+}
+
+// ============================================================
+// AI FEATURE: PLANTID - Species Catalog
+// ============================================================
+
+model Species {
+  id                  String   @id @default(cuid())
+  commonName          String   @map("common_name")
+  scientificName      String   @unique @map("scientific_name")
+  family              String
+  genus               String?
+  description         String?  @db.Text
+  origin              String?
+  nativeRegions       String[] @map("native_regions")
+  minTempCelsius      Float?   @map("min_temp_celsius")
+  maxTempCelsius      Float?   @map("max_temp_celsius")
+  waterRequirement    WaterRequirement? @map("water_requirement")
+  lightRequirement    LightRequirement? @map("light_requirement")
+  soilType            String[]          @map("soil_types")
+  averageHeight       Float?            @map("average_height")
+  growthRate          GrowthRate?       @map("growth_rate")
+  lifespan            String?
+  bloomingSeason      String[]          @map("blooming_season")
+  harvestSeason       String[]          @map("harvest_season")
+  defaultWateringDays Int?              @map("default_watering_days")
+  defaultFertilizeDays Int?             @map("default_fertilize_days")
+  gbifId              String?           @map("gbif_id")
+  plantNetId          String?           @map("plant_net_id")
+  imageUrl            String?           @map("image_url")
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  plants Plant[]
+
+  @@index([commonName])
+  @@index([family])
+  @@map("species")
+}
+
+enum WaterRequirement {
+  LOW
+  MODERATE
+  HIGH
+  AQUATIC
+}
+
+enum LightRequirement {
+  FULL_SUN
+  PARTIAL_SUN
+  PARTIAL_SHADE
+  FULL_SHADE
+}
+
+enum GrowthRate {
+  SLOW
+  MODERATE
+  FAST
+}
+
+// ============================================================
+// AI FEATURE: DR.PLANT - Disease Diagnosis
+// ============================================================
+
+model Diagnosis {
+  id                String          @id @default(cuid())
+  imageUrl          String          @map("image_url")
+  description       String?         @db.Text
+  status            DiagnosisStatus @default(PENDING)
+  confidence        Float?
+  conditionName     String?         @map("condition_name")
+  conditionType     ConditionType?  @map("condition_type")
+  severity          Severity?
+  affectedParts     String[]        @map("affected_parts")
+  causes            String[]
+  symptoms          String[]
+  treatmentSteps    String[]        @map("treatment_steps")
+  preventionTips    String[]        @map("prevention_tips")
+  organicTreatment  String?         @map("organic_treatment") @db.Text
+  chemicalTreatment String?         @map("chemical_treatment") @db.Text
+  recoveryTimeWeeks Int?            @map("recovery_time_weeks")
+  criticalActions   String[]        @map("critical_actions")
+  aiModel           String?         @map("ai_model")
+  rawResponse       Json?           @map("raw_response")
+  processingMs      Int?            @map("processing_ms")
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  plantId String? @map("plant_id")
+  plant   Plant?  @relation(fields: [plantId], references: [id], onDelete: SetNull)
+  userId  String  @map("user_id")
+  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([plantId])
+  @@index([userId])
+  @@index([status])
+  @@map("diagnoses")
+}
+
+enum DiagnosisStatus {
+  PENDING
+  PROCESSING
+  COMPLETED
+  FAILED
+}
+
+enum ConditionType {
+  DISEASE
+  PEST
+  DEFICIENCY
+  ENVIRONMENTAL
+  HEALTHY
+}
+
+enum Severity {
+  LOW
+  MODERATE
+  HIGH
+  CRITICAL
+}
+
+// ============================================================
+// FEATURE: CARE TRACKER - Schedules
+// ============================================================
+
+model CareSchedule {
+  id            String        @id @default(cuid())
+  taskType      CareTaskType  @map("task_type")
+  frequency     CareFrequency
+  intervalDays  Int?          @map("interval_days")
+  nextDueDate   DateTime      @map("next_due_date")
+  lastDoneAt    DateTime?     @map("last_done_at")
+  notes         String?
+  isEnabled     Boolean       @default(true) @map("is_enabled")
+  weatherAdjust Boolean       @default(false) @map("weather_adjust")
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  gardenId String? @map("garden_id")
+  garden   Garden? @relation(fields: [gardenId], references: [id], onDelete: Cascade)
+  plantId  String? @map("plant_id")
+  plant    Plant?  @relation(fields: [plantId], references: [id], onDelete: Cascade)
+  userId   String  @map("user_id")
+  user     User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  completions CareCompletion[]
+
+  @@index([userId])
+  @@index([nextDueDate])
+  @@map("care_schedules")
+}
+
+model CareCompletion {
+  id          String   @id @default(cuid())
+  completedAt DateTime @default(now()) @map("completed_at")
+  notes       String?
+  skipped     Boolean  @default(false)
+  skipReason  String?  @map("skip_reason")
+  photoUrl    String?  @map("photo_url")
+
+  scheduleId String       @map("schedule_id")
+  schedule   CareSchedule @relation(fields: [scheduleId], references: [id], onDelete: Cascade)
+
+  @@index([scheduleId])
+  @@map("care_completions")
+}
+
+enum CareTaskType {
+  WATER
+  FERTILIZE
+  PRUNE
+  REPOT
+  HARVEST
+  PEST_CHECK
+  DISEASE_CHECK
+  MULCH
+  WEED
+  CUSTOM
+}
+
+enum CareFrequency {
+  DAILY
+  EVERY_OTHER_DAY
+  TWICE_WEEKLY
+  WEEKLY
+  BIWEEKLY
+  MONTHLY
+  CUSTOM
+}
+
+// ============================================================
+// SUPPORTING TABLES
+// ============================================================
+
+model RefreshToken {
+  id        String   @id @default(cuid())
+  token     String   @unique
+  expiresAt DateTime @map("expires_at")
+  userId    String   @map("user_id")
+
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@index([userId])
+  @@map("refresh_tokens")
+}
