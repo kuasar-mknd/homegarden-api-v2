@@ -31,11 +31,11 @@ import type {
 } from '../../application/ports/ai-diagnosis.port.js'
 
 // ============================================================
-// CONFIGURATION
+// CONFIGURATION - Models are read from env
 // ============================================================
 
-const IDENTIFICATION_MODEL = 'gemini-2.0-flash'
-const DIAGNOSIS_MODEL = 'gemini-2.5-pro-preview-06-05'
+const getIdentificationModel = () => env.GEMINI_IDENTIFICATION_MODEL
+const getDiagnosisModel = () => env.GEMINI_DIAGNOSIS_MODEL
 
 // ============================================================
 // PROMPTS
@@ -148,7 +148,7 @@ export class GeminiPlantAdapter implements AIIdentificationPort, AIDiagnosisPort
     this.genAI = new GoogleGenerativeAI(this.apiKey)
     
     this.identificationModel = this.genAI.getGenerativeModel({
-      model: IDENTIFICATION_MODEL,
+      model: getIdentificationModel(),
       generationConfig: {
         temperature: 0.2, // Low temperature for consistent identification
         topP: 0.8,
@@ -157,7 +157,7 @@ export class GeminiPlantAdapter implements AIIdentificationPort, AIDiagnosisPort
     })
 
     this.diagnosisModel = this.genAI.getGenerativeModel({
-      model: DIAGNOSIS_MODEL,
+      model: getDiagnosisModel(),
       generationConfig: {
         temperature: 0.4, // Slightly higher for nuanced diagnosis
         topP: 0.9,
@@ -181,7 +181,7 @@ export class GeminiPlantAdapter implements AIIdentificationPort, AIDiagnosisPort
         success: false,
         suggestions: [],
         processingTimeMs: Date.now() - startTime,
-        modelUsed: IDENTIFICATION_MODEL,
+        modelUsed: getIdentificationModel(),
         error: 'AI service not configured - missing API key',
       }
     }
@@ -229,7 +229,7 @@ export class GeminiPlantAdapter implements AIIdentificationPort, AIDiagnosisPort
           success: false,
           suggestions: [],
           processingTimeMs: Date.now() - startTime,
-          modelUsed: IDENTIFICATION_MODEL,
+          modelUsed: getIdentificationModel(),
           error: parsed.error ?? 'Could not identify plant',
         }
       }
@@ -253,7 +253,7 @@ export class GeminiPlantAdapter implements AIIdentificationPort, AIDiagnosisPort
         success: true,
         suggestions,
         processingTimeMs: Date.now() - startTime,
-        modelUsed: IDENTIFICATION_MODEL,
+        modelUsed: getIdentificationModel(),
       }
 
     } catch (error) {
@@ -262,7 +262,7 @@ export class GeminiPlantAdapter implements AIIdentificationPort, AIDiagnosisPort
         success: false,
         suggestions: [],
         processingTimeMs: Date.now() - startTime,
-        modelUsed: IDENTIFICATION_MODEL,
+        modelUsed: getIdentificationModel(),
         error: error instanceof Error ? error.message : 'Unknown error during identification',
       }
     }
@@ -291,7 +291,7 @@ export class GeminiPlantAdapter implements AIIdentificationPort, AIDiagnosisPort
         preventionTips: [],
         urgentActions: [],
         processingTimeMs: Date.now() - startTime,
-        modelUsed: DIAGNOSIS_MODEL,
+        modelUsed: getDiagnosisModel(),
         error: 'AI service not configured - missing API key',
       }
     }
@@ -387,7 +387,7 @@ export class GeminiPlantAdapter implements AIIdentificationPort, AIDiagnosisPort
           preventionTips: [],
           urgentActions: [],
           processingTimeMs: Date.now() - startTime,
-          modelUsed: DIAGNOSIS_MODEL,
+          modelUsed: getDiagnosisModel(),
           error: parsed.error ?? 'Could not diagnose plant',
         }
       }
@@ -430,7 +430,7 @@ export class GeminiPlantAdapter implements AIIdentificationPort, AIDiagnosisPort
         preventionTips: parsed.preventionTips ?? [],
         urgentActions: parsed.urgentActions ?? [],
         processingTimeMs: Date.now() - startTime,
-        modelUsed: DIAGNOSIS_MODEL,
+        modelUsed: getDiagnosisModel(),
       }
 
       // Add optional properties
@@ -455,7 +455,7 @@ export class GeminiPlantAdapter implements AIIdentificationPort, AIDiagnosisPort
         preventionTips: [],
         urgentActions: [],
         processingTimeMs: Date.now() - startTime,
-        modelUsed: DIAGNOSIS_MODEL,
+        modelUsed: getDiagnosisModel(),
         error: error instanceof Error ? error.message : 'Unknown error during diagnosis',
       }
     }
@@ -473,7 +473,7 @@ export class GeminiPlantAdapter implements AIIdentificationPort, AIDiagnosisPort
     
     try {
       // Simple API test
-      const model = this.genAI.getGenerativeModel({ model: IDENTIFICATION_MODEL })
+      const model = this.genAI.getGenerativeModel({ model: getIdentificationModel() })
       const result = await model.generateContent('Say "ok" if you can read this.')
       return result.response.text().toLowerCase().includes('ok')
     } catch {
@@ -485,14 +485,14 @@ export class GeminiPlantAdapter implements AIIdentificationPort, AIDiagnosisPort
    * Get the identification model name
    */
   getModelName(): string {
-    return IDENTIFICATION_MODEL
+    return getIdentificationModel()
   }
 
   /**
    * Get the diagnosis model name
    */
   getDiagnosisModelName(): string {
-    return DIAGNOSIS_MODEL
+    return getDiagnosisModel()
   }
 
   /**

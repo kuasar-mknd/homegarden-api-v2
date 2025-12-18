@@ -5,6 +5,7 @@
  * All environment variables are validated at startup.
  */
 
+import 'dotenv/config'
 import { z } from 'zod'
 
 const envSchema = z.object({

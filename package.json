@@ -42,6 +42,7 @@
     "@supabase/supabase-js": "^2.89.0",
     "@types/pg": "^8.16.0",
     "bcrypt": "^6.0.0",
+    "dotenv": "^17.2.3",
     "hono": "^4.11.1",
     "jsonwebtoken": "^9.0.3",
     "pg": "^8.16.3",
