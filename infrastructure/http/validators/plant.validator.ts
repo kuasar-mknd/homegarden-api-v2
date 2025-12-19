@@ -1,5 +1,5 @@
-import { z } from 'zod';
-import { paginationSchema, uuidSchema } from './common.validator.js';
+import { z } from 'zod'
+import { paginationSchema, uuidSchema } from './common.validator.js'
 
 export const createPlantSchema = z.object({
   gardenId: uuidSchema,
@@ -21,11 +21,11 @@ export const createPlantSchema = z.object({
   imageUrl: z.string().url().optional(),
   thumbnailUrl: z.string().url().optional(),
   use: z.enum(['ORNAMENTAL', 'GROUNDCOVER', 'FOOD', 'MEDICINAL', 'FRAGRANCE']).optional(),
-});
+})
 
-export const updatePlantSchema = createPlantSchema.partial().omit({ gardenId: true });
+export const updatePlantSchema = createPlantSchema.partial().omit({ gardenId: true })
 
 export const searchPlantSchema = paginationSchema.extend({
   gardenId: uuidSchema.optional(),
   commonName: z.string().optional(),
-});
+})

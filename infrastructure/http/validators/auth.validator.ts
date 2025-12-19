@@ -1,9 +1,9 @@
-import { z } from 'zod';
+import { z } from 'zod'
 
 export const loginSchema = z.object({
   email: z.string().email(),
   password: z.string().min(1, 'Password is required'),
-});
+})
 
 export const registerSchema = z.object({
   email: z.string().email(),
@@ -12,8 +12,8 @@ export const registerSchema = z.object({
   lastName: z.string().min(1, 'Last name is required'),
   birthDate: z.string().datetime({ offset: true }).optional().or(z.string().date().optional()),
   avatarUrl: z.string().url().optional(),
-});
+})
 
 export const refreshTokenSchema = z.object({
   token: z.string().min(1, 'Token is required'),
-});
+})
