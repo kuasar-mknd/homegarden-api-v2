@@ -1,12 +1,3 @@
-/**
- * WebSocket Server
- *
- * Placeholder - Implement WebSocket server for real-time features
- */
-
-// TODO: Implement WebSocket:
-// - ws-server.ts (main WS server)
-// - handlers/weather.handler.ts
-// - handlers/care-reminder.handler.ts
-
-export {}
+export { initializeWebSocketServer } from './ws-server.js'
+export { handleWeatherMessage } from './handlers/weather.handler.js'
+export { handleCareReminderMessage } from './handlers/care-reminder.handler.js'
