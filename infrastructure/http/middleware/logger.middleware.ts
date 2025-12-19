@@ -7,7 +7,7 @@ import { logger } from '../../config/logger.js'
  * Logs incoming requests and outgoing responses using Pino.
  * Adds a unique Request ID to correlation.
  */
-export const requestLogger = createMiddleware(async (c, next) => {
+export const loggerMiddleware = createMiddleware(async (c, next) => {
   const start = Date.now()
   const requestId = crypto.randomUUID()
 

@@ -22,8 +22,8 @@ describe('Auth Middleware Integration', () => {
   it('should allow access to public routes without token', async () => {
     const res = await app.request('/')
     expect(res.status).toBe(200)
-    const json = await res.json()
-    expect(json).toHaveProperty('status', 'healthy')
+    const text = await res.text()
+    expect(text).toContain('HomeGarden API')
   })
 
   it('should block access to protected routes without token', async () => {

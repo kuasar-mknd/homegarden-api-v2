@@ -1,13 +1,10 @@
 /**
  * HTTP Validators (Zod Schemas)
  *
- * Placeholder - Implement Zod validation schemas
+ * Exports all Zod validation schemas
  */
 
-// TODO: Implement validators:
-// - auth.validator.ts
-// - garden.validator.ts
-// - plant.validator.ts
-// - common.validator.ts
-
-export {}
+export * from './auth.validator.js'
+export * from './common.validator.js'
+export * from './garden.validator.js'
+export * from './plant.validator.js'

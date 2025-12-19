@@ -1,14 +1,11 @@
 /**
  * HTTP Middleware
  *
- * Placeholder - Implement Hono middleware
+ * Exports all middleware components.
  */
 
-// TODO: Implement middleware:
-// - auth.middleware.ts (Supabase JWT verification)
-// - rate-limit.middleware.ts
-// - error-handler.middleware.ts
-// - logger.middleware.ts
-// - validation.middleware.ts
-
-export {}
+export * from './auth.middleware.js'
+export * from './error-handler.middleware.js'
+export * from './logger.middleware.js'
+export * from './rate-limit.middleware.js'
+export * from './validation.middleware.js'

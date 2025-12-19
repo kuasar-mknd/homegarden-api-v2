@@ -81,3 +81,75 @@ export const NearbyGardensResponseSchema = z.object({
   success: z.boolean(),
   data: z.array(GardenSummarySchema),
 })
+
+// =============================================================================
+// Add Plant Schemas
+// =============================================================================
+
+export const AddPlantInputSchema = z.object({
+  gardenId: z.string().openapi({
+    description: 'Garden ID to add the plant to',
+    example: 'cjld2cjxh0000qzrmn831i7rn',
+  }),
+  nickname: z.string().openapi({
+    description: 'Plant nickname/custom name',
+    example: 'My Tomato Plant',
+  }),
+  commonName: z.string().optional().openapi({
+    description: 'Common plant name',
+    example: 'Tomato',
+  }),
+  scientificName: z.string().optional().openapi({
+    description: 'Scientific botanical name',
+    example: 'Solanum lycopersicum',
+  }),
+  plantedDate: z.string().optional().openapi({
+    description: 'Date when the plant was planted (ISO 8601)',
+    example: '2024-01-15',
+  }),
+})
+
+export const PlantSchema = z.object({
+  id: z.string(),
+  nickname: z.string(),
+  commonName: z.string().nullable(),
+  scientificName: z.string().nullable(),
+  gardenId: z.string(),
+  plantedDate: z.string().nullable(),
+  createdAt: z.string(),
+  updatedAt: z.string(),
+})
+
+export const AddPlantResponseSchema = z.object({
+  success: z.boolean().openapi({ example: true }),
+  data: z.object({
+    plant: PlantSchema,
+  }),
+})
+
+// =============================================================================
+// Get User Plants Schemas
+// =============================================================================
+
+export const GetUserPlantsResponseSchema = z.object({
+  success: z.boolean().openapi({ example: true }),
+  data: z.object({
+    plants: z.array(PlantSchema),
+  }).or(z.array(PlantSchema)), // Support both formats for backward compatibility
+})
+
+// =============================================================================
+// Error Schema
+// =============================================================================
+
+export const ErrorSchema = z.object({
+  success: z.boolean().openapi({ example: false }),
+  error: z.string().openapi({
+    example: 'NOT_FOUND',
+    description: 'Error code',
+  }),
+  message: z.string().openapi({
+    example: 'Garden not found',
+    description: 'Human-readable error message',
+  }),
+})

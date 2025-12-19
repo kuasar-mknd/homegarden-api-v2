@@ -37,6 +37,36 @@ describe('OpenMeteoAdapter', () => {
       }
     })
 
+    it('should cache successful responses', async () => {
+      const mockData = {
+        current: {
+          temperature_2m: 25.0,
+          relative_humidity_2m: 60,
+          precipitation: 0.0,
+          weather_code: 0,
+          wind_speed_10m: 5,
+        },
+      }
+      // Mock fetch to return success
+      vi.mocked(fetch).mockResolvedValue({
+        ok: true,
+        json: async () => mockData,
+      } as any)
+
+      // First call - should trigger fetch
+      await adapter.getCurrentWeather(48.8, 2.3)
+      expect(fetch).toHaveBeenCalledTimes(1)
+
+      // Second call - should use cache
+      const result2 = await adapter.getCurrentWeather(48.8, 2.3)
+      expect(result2.success).toBe(true)
+      expect(fetch).toHaveBeenCalledTimes(1) // Still 1
+
+      // Different location - should trigger new fetch
+      await adapter.getCurrentWeather(40.0, -74.0)
+      expect(fetch).toHaveBeenCalledTimes(2)
+    })
+
     it('should handle API error response (not ok)', async () => {
       vi.mocked(fetch).mockResolvedValue({
         ok: false,
@@ -90,6 +120,30 @@ describe('OpenMeteoAdapter', () => {
       }
     })
 
+    it('should cache successful forecast responses', async () => {
+      const mockData = {
+        daily: {
+          time: ['2023-01-01'],
+          temperature_2m_max: [10],
+          temperature_2m_min: [5],
+          precipitation_sum: [0],
+          weather_code: [1],
+        },
+      }
+      vi.mocked(fetch).mockResolvedValue({
+        ok: true,
+        json: async () => mockData,
+      } as any)
+
+      // First call
+      await adapter.getForecast(48.8, 2.3)
+      expect(fetch).toHaveBeenCalledTimes(1)
+
+      // Second call - cached
+      await adapter.getForecast(48.8, 2.3)
+      expect(fetch).toHaveBeenCalledTimes(1)
+    })
+
     it('should handle missing indices in forecast data safely', async () => {
       const mockData = {
         daily: {
@@ -122,12 +176,15 @@ describe('OpenMeteoAdapter', () => {
 
   describe('weather code mapping', () => {
     // We can test the exhaustive cases by calling getCurrentWeather and checking mapped values
+    // We use different coordinates to avoid cache hits between sub-tests
+    let lat = 0
     const testMapping = async (code: number, expectedCondition: string, expectedIcon: string) => {
+      lat += 1 // Increment lat to ensure unique cache key
       vi.mocked(fetch).mockResolvedValue({
         ok: true,
         json: async () => ({ current: { weather_code: code } }),
       } as any)
-      const result = await adapter.getCurrentWeather(0, 0)
+      const result = await adapter.getCurrentWeather(lat, 0)
       if (result.success) {
         expect(result.data.conditions).toBe(expectedCondition)
         expect(result.data.icon).toBe(expectedIcon)
