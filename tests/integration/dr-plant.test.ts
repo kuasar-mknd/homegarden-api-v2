@@ -48,7 +48,7 @@ describe('Dr. Plant Integration', () => {
       confidence: 0.95,
       rawAnalysis: 'Detailed analysis...',
     }
-    mockDiagnoseHealth.mockResolvedValue({ success: true, data: mockDiagnosis })
+    mockDiagnoseHealth.mockResolvedValue({ success: true, ...mockDiagnosis })
 
     // Create a dummy image buffer
     const imageBuffer = Buffer.from('fake-image-data')
@@ -65,7 +65,8 @@ describe('Dr. Plant Integration', () => {
 
     expect(res.status).toBe(200)
     const json = await res.json()
-    expect(json.data).toEqual(mockDiagnosis)
+    expect(json.data).toEqual(expect.objectContaining(mockDiagnosis))
+    expect(json.data.success).toBe(true)
     expect(mockDiagnoseHealth).toHaveBeenCalled()
   })
 

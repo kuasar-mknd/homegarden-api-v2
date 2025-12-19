@@ -99,4 +99,12 @@ describe('FindNearbyGardensUseCase', () => {
       expect(result.error.code).toBe('INTERNAL_ERROR')
     }
   })
+
+  it('should return error if latitude or longitude is missing', async () => {
+    const result = await useCase.execute({} as any)
+    expect(result.success).toBe(false)
+    if (!result.success) {
+        expect(result.error.message).toContain('required')
+    }
+  })
 })

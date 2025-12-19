@@ -99,4 +99,21 @@ describe('AddPlantUseCase', () => {
       expect.objectContaining({ gardenId: 'garden-existing' }),
     )
   })
+
+  it('should validate missing location', async () => {
+    const result = await useCase.execute({ userId: 'u1' } as any)
+    expect(result.success).toBe(false)
+    if (!result.success) {
+      expect(result.error.message).toContain('Location')
+    }
+  })
+
+  it('should handle repository errors gracefully', async () => {
+    vi.mocked(gardenRepo.findByUserAndName).mockRejectedValueOnce(new Error('DB Fail'))
+    const result = await useCase.execute({ userId: 'u1', location: 'Living Room' })
+    expect(result.success).toBe(false)
+    if (!result.success) {
+      expect(result.error.statusCode).toBe(500)
+    }
+  })
 })

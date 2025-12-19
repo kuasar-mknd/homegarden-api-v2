@@ -21,7 +21,20 @@ import {
  * @returns Hono router with plant-id routes
  */
 export const createPlantIdRoutes = (controller: PlantIdController) => {
-  const router = new OpenAPIHono()
+  const router = new OpenAPIHono({
+    defaultHook: (result, c) => {
+      if (!result.success) {
+        return c.json(
+          {
+            success: false,
+            error: 'VALIDATION_ERROR',
+            message: result.error.message,
+          },
+          400,
+        )
+      }
+    },
+  })
 
   // ============================================================
   // MIDDLEWARE

@@ -19,6 +19,9 @@ export class FindNearbyGardensUseCase {
 
   async execute(input: FindNearbyGardensInput): Promise<Result<FindNearbyGardensOutput, AppError>> {
     // Validate input
+    if (input.latitude === undefined || input.longitude === undefined) {
+      return fail(new AppError('Latitude and longitude are required', 400, 'BAD_REQUEST'))
+    }
     if (input.latitude < -90 || input.latitude > 90) {
       return fail(new AppError('Invalid latitude', 400, 'BAD_REQUEST'))
     }

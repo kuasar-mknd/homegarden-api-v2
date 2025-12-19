@@ -65,7 +65,13 @@ export class DrPlantController {
         )
       }
 
-      return c.json(result.data, 200)
+      return c.json(
+        {
+          success: true,
+          data: result.data,
+        },
+        200,
+      )
     } catch (error) {
       console.error('DrPlant Controller Error:', error)
       return c.json(

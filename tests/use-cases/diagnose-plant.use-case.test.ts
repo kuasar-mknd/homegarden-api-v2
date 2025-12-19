@@ -1,12 +1,14 @@
 import { describe, expect, it, vi } from 'vitest'
 import { DiagnosePlantUseCase } from '../../application/use-cases/dr-plant/diagnose-plant.use-case.js'
-import type { AIDiagnosisPort } from '../../infrastructure/external-services/ports/ai-diagnosis.port.js'
+import type { AIDiagnosisPort, DiagnoseHealthResult } from '../../application/ports/ai-diagnosis.port.js'
+import { ok, fail } from '../../shared/types/result.type.js'
 
 describe('DiagnosePlantUseCase', () => {
   // Mock the AI Port
   const mockAiPort = {
     diagnoseHealth: vi.fn(),
-    identifySpecies: vi.fn(), // Not used here but part of interface
+    isAvailable: vi.fn(),
+    getModelName: vi.fn(),
   } as unknown as AIDiagnosisPort
 
   const useCase = new DiagnosePlantUseCase(mockAiPort)
@@ -21,25 +23,32 @@ describe('DiagnosePlantUseCase', () => {
 
   it('should call AI service and return success', async () => {
     // Setup mock return
-    const mockDiagnosis = {
+    const mockDiagnosis: DiagnoseHealthResult = {
       success: true,
-      diagnosis: {
-        isHealthy: false,
-        diseaseName: 'Test Disease',
-        confidence: 0.95,
-        treatment: 'water it',
-        prevention: "don't underwater",
-        symptoms: ['yellow leaves'],
+      isHealthy: false,
+      confidence: 0.95,
+      condition: {
+        name: 'Test Disease',
+        type: 'DISEASE',
+        severity: 'MODERATE'
       },
+      affectedParts: ['leaves'],
+      symptoms: ['yellow leaves'],
+      causes: ['too much water'],
+      treatments: [{ priority: 1, action: 'water less', instructions: '...' }],
+      preventionTips: ["don't overwater"],
+      urgentActions: [],
+      processingTimeMs: 100,
+      modelUsed: 'gemini-test'
     }
-    vi.mocked(mockAiPort.diagnoseHealth).mockResolvedValueOnce(mockDiagnosis as any)
+    vi.mocked(mockAiPort.diagnoseHealth).mockResolvedValueOnce(mockDiagnosis)
 
     const buffer = Buffer.from('fake-image-data')
     const result = await useCase.execute(buffer, 'image/jpeg', 'yellow leaves')
 
     expect(result.success).toBe(true)
     if (result.success) {
-      expect(result.data.diagnosis.diseaseName).toBe('Test Disease')
+      expect(result.data.condition?.name).toBe('Test Disease')
     }
 
     // Verify mock call
@@ -51,17 +60,28 @@ describe('DiagnosePlantUseCase', () => {
     )
   })
 
-  it('should handle AI service failure', async () => {
+  it('should handle AI service failure returning success=false', async () => {
     vi.mocked(mockAiPort.diagnoseHealth).mockResolvedValueOnce({
       success: false,
       error: 'AI Error',
-    })
+    } as any)
 
     const result = await useCase.execute(Buffer.from('data'), 'image/png')
 
     expect(result.success).toBe(false)
     if (!result.success) {
       expect(result.error.message).toBe('AI Error')
+    }
+  })
+
+  it('should handle AI service throw', async () => {
+    vi.mocked(mockAiPort.diagnoseHealth).mockRejectedValueOnce(new Error('Service Unreachable'))
+
+    const result = await useCase.execute(Buffer.from('data'), 'image/png')
+
+    expect(result.success).toBe(false)
+    if (!result.success) {
+      expect(result.error.statusCode).toBe(500)
     }
   })
 })
