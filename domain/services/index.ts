@@ -4,8 +4,5 @@
  * Placeholder - Implement domain services
  */
 
-// TODO: Implement domain services
-// - PasswordService (hashing, verification)
-// - AuthorizationService (ownership checks)
-
-export {}
+export * from './password.service.js'
+export * from './authorization.service.js'
