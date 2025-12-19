@@ -1,6 +1,6 @@
 /**
  * Plant Domain Entity
- * 
+ *
  * Represents a plant in a user's garden.
  */
 
@@ -109,12 +109,12 @@ export class Plant {
 
   get age(): { days: number; months: number; years: number } | null {
     if (!this.props.plantedDate) return null
-    
+
     const now = new Date()
     const planted = new Date(this.props.plantedDate)
     const diffTime = Math.abs(now.getTime() - planted.getTime())
     const days = Math.ceil(diffTime / (1000 * 60 * 60 * 24))
-    
+
     return {
       days,
       months: Math.floor(days / 30),

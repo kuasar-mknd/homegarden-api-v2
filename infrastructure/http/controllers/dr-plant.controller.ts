@@ -1,6 +1,5 @@
-
-import { Context } from 'hono'
-import { DiagnosePlantUseCase } from '../../../application/use-cases/dr-plant/diagnose-plant.use-case.js'
+import type { Context } from 'hono'
+import type { DiagnosePlantUseCase } from '../../../application/use-cases/dr-plant/diagnose-plant.use-case.js'
 
 export class DrPlantController {
   constructor(private diagnosePlantUseCase: DiagnosePlantUseCase) {}
@@ -8,8 +7,8 @@ export class DrPlantController {
   diagnose = async (c: Context) => {
     try {
       const body = await c.req.parseBody()
-      const imageFile = body['image']
-      const symptoms = body['symptoms'] as string | undefined
+      const imageFile = body.image
+      const symptoms = body.symptoms as string | undefined
 
       if (!imageFile || !(imageFile instanceof File)) {
         return c.json(
@@ -18,7 +17,7 @@ export class DrPlantController {
             error: 'VALIDATION_ERROR',
             message: 'Image file is required',
           },
-          400
+          400,
         )
       }
 
@@ -30,7 +29,7 @@ export class DrPlantController {
             error: 'VALIDATION_ERROR',
             message: 'Image size exceeds 10MB limit',
           },
-          400
+          400,
         )
       }
 
@@ -42,7 +41,7 @@ export class DrPlantController {
             error: 'VALIDATION_ERROR',
             message: 'Invalid image type. Supported: JPEG, PNG, WebP, HEIC',
           },
-          400
+          400,
         )
       }
 
@@ -50,27 +49,23 @@ export class DrPlantController {
       const arrayBuffer = await imageFile.arrayBuffer()
       const buffer = Buffer.from(arrayBuffer)
 
-      const result = await this.diagnosePlantUseCase.execute(
-        buffer,
-        imageFile.type,
-        symptoms
-      )
+      const result = await this.diagnosePlantUseCase.execute(buffer, imageFile.type, symptoms)
 
       if (!result.success) {
         const error = result.error
-        const status = error.statusCode >= 400 && error.statusCode < 600 ? error.statusCode as any : 500
+        const status =
+          error.statusCode >= 400 && error.statusCode < 600 ? (error.statusCode as any) : 500
         return c.json(
           {
             success: false,
             error: error.code || 'DIAGNOSIS_FAILED',
             message: error.message,
           },
-          status
+          status,
         )
       }
 
       return c.json(result.data, 200)
-
     } catch (error) {
       console.error('DrPlant Controller Error:', error)
       return c.json(
@@ -78,9 +73,9 @@ export class DrPlantController {
           success: false,
           error: 'INTERNAL_ERROR',
           message: error instanceof Error ? error.message : 'An unexpected error occurred',
-          stack: error instanceof Error ? error.stack : undefined
+          stack: error instanceof Error ? error.stack : undefined,
         },
-        500
+        500,
       )
     }
   }

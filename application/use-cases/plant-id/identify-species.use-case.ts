@@ -1,18 +1,18 @@
 /**
  * Identify Species Use Case
- * 
+ *
  * Application layer use case for plant species identification.
  * Accepts an image and returns identification suggestions.
  */
 
-import type { 
-  AIIdentificationPort, 
+import { AppError } from '../../../shared/errors/app-error.js'
+import { fail, ok, type Result } from '../../../shared/types/result.type.js'
+import type {
+  AIIdentificationPort,
   IdentifySpeciesRequest,
   IdentifySpeciesResult,
-  PlantOrgan 
+  PlantOrgan,
 } from '../../ports/ai-identification.port.js'
-import { ok, fail, type Result } from '../../../shared/types/result.type.js'
-import { AppError } from '../../../shared/errors/app-error.js'
 
 // ============================================================
 // INPUT/OUTPUT TYPES
@@ -24,19 +24,19 @@ import { AppError } from '../../../shared/errors/app-error.js'
 export interface IdentifySpeciesInput {
   /** Base64 encoded image data */
   imageBase64?: string
-  
+
   /** Image URL (alternative to base64) */
   imageUrl?: string
-  
+
   /** MIME type of the image */
   mimeType?: string
-  
+
   /** Plant organs visible in the image */
   organs?: PlantOrgan[]
-  
+
   /** Maximum suggestions to return */
   maxSuggestions?: number
-  
+
   /** Optional location context */
   location?: {
     latitude: number
@@ -51,7 +51,7 @@ export interface IdentifySpeciesInput {
 export interface IdentifySpeciesOutput {
   /** Whether identification succeeded */
   success: boolean
-  
+
   /** Top species suggestions */
   suggestions: Array<{
     confidence: number
@@ -63,10 +63,10 @@ export interface IdentifySpeciesOutput {
     origin?: string
     imageUrl?: string
   }>
-  
+
   /** Processing time in ms */
   processingTimeMs: number
-  
+
   /** AI model used */
   modelUsed: string
 }
@@ -77,7 +77,7 @@ export interface IdentifySpeciesOutput {
 
 /**
  * Identify Species Use Case
- * 
+ *
  * Uses AI to identify plant species from an image.
  */
 export class IdentifySpeciesUseCase {
@@ -85,7 +85,7 @@ export class IdentifySpeciesUseCase {
 
   /**
    * Execute the use case
-   * 
+   *
    * @param input - Image data and optional parameters
    * @returns Result with identification suggestions or error
    */
@@ -110,11 +110,9 @@ export class IdentifySpeciesUseCase {
       const result: IdentifySpeciesResult = await this.aiIdentification.identifySpecies(request)
 
       if (!result.success) {
-        return fail(new AppError(
-          result.error ?? 'Plant identification failed',
-          500,
-          'IDENTIFICATION_FAILED'
-        ))
+        return fail(
+          new AppError(result.error ?? 'Plant identification failed', 500, 'IDENTIFICATION_FAILED'),
+        )
       }
 
       // Map to output format
@@ -138,14 +136,15 @@ export class IdentifySpeciesUseCase {
       }
 
       return ok(output)
-
     } catch (error) {
       console.error('Identify species use case error:', error)
-      return fail(new AppError(
-        error instanceof Error ? error.message : 'Unknown identification error',
-        500,
-        'IDENTIFICATION_ERROR'
-      ))
+      return fail(
+        new AppError(
+          error instanceof Error ? error.message : 'Unknown identification error',
+          500,
+          'IDENTIFICATION_ERROR',
+        ),
+      )
     }
   }
 }
@@ -154,7 +153,7 @@ export class IdentifySpeciesUseCase {
  * Factory function to create the use case with dependencies
  */
 export const createIdentifySpeciesUseCase = (
-  aiIdentification: AIIdentificationPort
+  aiIdentification: AIIdentificationPort,
 ): IdentifySpeciesUseCase => {
   return new IdentifySpeciesUseCase(aiIdentification)
 }

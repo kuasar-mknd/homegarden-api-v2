@@ -1,8 +1,7 @@
-
-import { ok, fail, type Result } from '../../../shared/types/result.type.js'
-import { AppError } from '../../../shared/errors/app-error.js'
-import type { AIDiagnosisPort, DiagnoseHealthResult } from '../../ports/ai-diagnosis.port.js'
 import { getGeminiPlantAdapter } from '../../../infrastructure/external-services/gemini-plant.adapter.js'
+import { AppError } from '../../../shared/errors/app-error.js'
+import { fail, ok, type Result } from '../../../shared/types/result.type.js'
+import type { AIDiagnosisPort, DiagnoseHealthResult } from '../../ports/ai-diagnosis.port.js'
 
 export class DiagnosePlantUseCase {
   private aiPort: AIDiagnosisPort
@@ -14,7 +13,7 @@ export class DiagnosePlantUseCase {
   async execute(
     imageBuffer: Buffer,
     mimeType: string,
-    symptomDescription?: string
+    symptomDescription?: string,
   ): Promise<Result<DiagnoseHealthResult, AppError>> {
     try {
       if (!imageBuffer || imageBuffer.length === 0) {
@@ -29,7 +28,7 @@ export class DiagnosePlantUseCase {
         isUrl: false,
         mimeType,
       }
-      
+
       if (symptomDescription) {
         request.symptomDescription = symptomDescription
       }

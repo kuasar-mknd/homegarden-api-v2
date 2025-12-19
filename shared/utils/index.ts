@@ -1,6 +1,6 @@
 /**
  * Shared Utilities
- * 
+ *
  * Placeholder - Implement utility functions
  */
 

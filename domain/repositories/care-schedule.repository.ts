@@ -2,7 +2,7 @@
  * CareSchedule Repository Interface (Port)
  */
 
-import type { CareSchedule, CareTaskType, CareFrequency } from '../entities/care-schedule.entity.js'
+import type { CareFrequency, CareSchedule, CareTaskType } from '../entities/care-schedule.entity.js'
 
 export interface CreateCareScheduleData {
   taskType: CareTaskType
@@ -36,7 +36,7 @@ export interface CareScheduleRepository {
   findByGardenId(gardenId: string): Promise<CareSchedule[]>
   update(id: string, data: UpdateCareScheduleData): Promise<CareSchedule>
   delete(id: string): Promise<void>
-  
+
   findUpcoming(userId: string, days: number): Promise<CareSchedule[]>
   findOverdue(userId: string): Promise<CareSchedule[]>
   markComplete(id: string, notes?: string, photoUrl?: string): Promise<CareSchedule>

@@ -1,8 +1,7 @@
-
-import { ok, fail, type Result } from '../../../shared/types/result.type.js'
-import { AppError } from '../../../shared/errors/app-error.js'
+import type { Garden, Plant } from '@prisma/client'
 import { prisma } from '../../../infrastructure/database/prisma.client.js'
-import type { Plant, Garden } from '@prisma/client'
+import { AppError } from '../../../shared/errors/app-error.js'
+import { fail, ok, type Result } from '../../../shared/types/result.type.js'
 
 type PlantWithGarden = Plant & { garden: Garden }
 
@@ -16,19 +15,18 @@ export class GetUserPlantsUseCase {
       const plants = await prisma.plant.findMany({
         where: {
           garden: {
-            userId: userId
-          }
+            userId: userId,
+          },
         },
         include: {
-          garden: true
+          garden: true,
         },
         orderBy: {
-          createdAt: 'desc'
-        }
+          createdAt: 'desc',
+        },
       })
 
       return ok(plants)
-
     } catch (error) {
       console.error('GetUserPlantsUseCase Error:', error)
       return fail(new AppError('Failed to fetch user plants', 500))

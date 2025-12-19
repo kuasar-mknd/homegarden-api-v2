@@ -2,8 +2,8 @@ import { serve } from '@hono/node-server'
 import { Hono } from 'hono'
 import { cors } from 'hono/cors'
 import { logger } from 'hono/logger'
-import { secureHeaders } from 'hono/secure-headers'
 import { prettyJSON } from 'hono/pretty-json'
+import { secureHeaders } from 'hono/secure-headers'
 
 import { env } from './infrastructure/config/env.js'
 
@@ -11,32 +11,26 @@ import { env } from './infrastructure/config/env.js'
 // DEPENDENCY INJECTION SETUP
 // ============================================================
 
-// External Service Adapters
-import { getGeminiPlantAdapter } from './infrastructure/external-services/gemini-plant.adapter.js'
-
-// Use Cases
-import { createIdentifySpeciesUseCase } from './application/use-cases/plant-id/identify-species.use-case.js'
-
-// Controllers
-import { createPlantIdController } from './infrastructure/http/controllers/plant-id.controller.js'
-
-// Routes
-import { createPlantIdRoutes } from './infrastructure/http/routes/plant-id.routes.js'
-import { createDrPlantRoutes } from './infrastructure/http/routes/dr-plant.routes.js'
-import { authMiddleware } from './infrastructure/http/middleware/auth.middleware.js'
-
 // Use Cases
 import { DiagnosePlantUseCase } from './application/use-cases/dr-plant/diagnose-plant.use-case.js'
-// Controllers
-import { DrPlantController } from './infrastructure/http/controllers/dr-plant.controller.js'
-import { GardenController } from './infrastructure/http/controllers/garden.controller.js'
-
-// Routes,
-import { createGardenRoutes } from './infrastructure/http/routes/garden.routes.js'
-
 // Use Cases - Garden
 import { AddPlantUseCase } from './application/use-cases/garden/add-plant.use-case.js'
 import { GetUserPlantsUseCase } from './application/use-cases/garden/get-user-plants.use-case.js'
+// Use Cases
+import { createIdentifySpeciesUseCase } from './application/use-cases/plant-id/identify-species.use-case.js'
+// External Service Adapters
+import { getGeminiPlantAdapter } from './infrastructure/external-services/gemini-plant.adapter.js'
+// Controllers
+import { DrPlantController } from './infrastructure/http/controllers/dr-plant.controller.js'
+import { GardenController } from './infrastructure/http/controllers/garden.controller.js'
+// Controllers
+import { createPlantIdController } from './infrastructure/http/controllers/plant-id.controller.js'
+import { authMiddleware } from './infrastructure/http/middleware/auth.middleware.js'
+import { createDrPlantRoutes } from './infrastructure/http/routes/dr-plant.routes.js'
+// Routes,
+import { createGardenRoutes } from './infrastructure/http/routes/garden.routes.js'
+// Routes
+import { createPlantIdRoutes } from './infrastructure/http/routes/plant-id.routes.js'
 
 // Initialize dependencies
 const geminiAdapter = getGeminiPlantAdapter()
@@ -69,10 +63,13 @@ const app = new Hono()
 app.use('*', secureHeaders())
 
 // CORS
-app.use('*', cors({
-  origin: env.CORS_ORIGINS,
-  credentials: true,
-}))
+app.use(
+  '*',
+  cors({
+    origin: env.CORS_ORIGINS,
+    credentials: true,
+  }),
+)
 
 // Request logging
 app.use('*', logger())
@@ -81,6 +78,19 @@ app.use('*', logger())
 if (env.NODE_ENV === 'development') {
   app.use('*', prettyJSON())
 }
+
+// Rate Limiting
+import { rateLimiter } from 'hono-rate-limiter'
+
+app.use(
+  '*',
+  rateLimiter({
+    windowMs: env.RATE_LIMIT_WINDOW_MS,
+    limit: env.RATE_LIMIT_MAX,
+    standardHeaders: 'draft-6',
+    keyGenerator: (c) => c.req.header('x-forwarded-for') ?? 'unknown',
+  }),
+)
 
 // ============================================================
 // ROUTES
@@ -148,27 +158,31 @@ app.route('/api/v2/gardens', gardenRoutes) // Auth is applied inside createGarde
 
 // 404 handler
 app.notFound((c) => {
-  return c.json({
-    success: false,
-    error: 'Not Found',
-    message: `Cannot find ${c.req.method} ${c.req.path}`,
-  }, 404)
+  return c.json(
+    {
+      success: false,
+      error: 'Not Found',
+      message: `Cannot find ${c.req.method} ${c.req.path}`,
+    },
+    404,
+  )
 })
 
 // Global error handler
 app.onError((err, c) => {
   console.error('Unhandled error:', err)
-  
+
   const statusCode = 'statusCode' in err ? (err.statusCode as number) : 500
-  
-  return c.json({
-    success: false,
-    error: err.name || 'InternalServerError',
-    message: env.NODE_ENV === 'production' 
-      ? 'Something went wrong' 
-      : err.message,
-    ...(env.NODE_ENV === 'development' && { stack: err.stack }),
-  }, statusCode as 400 | 401 | 403 | 404 | 500)
+
+  return c.json(
+    {
+      success: false,
+      error: err.name || 'InternalServerError',
+      message: env.NODE_ENV === 'production' ? 'Something went wrong' : err.message,
+      ...(env.NODE_ENV === 'development' && { stack: err.stack }),
+    },
+    statusCode as 400 | 401 | 403 | 404 | 500,
+  )
 })
 
 // ============================================================

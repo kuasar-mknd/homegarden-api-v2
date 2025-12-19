@@ -1,4 +1,3 @@
-
 import { prisma } from '../../infrastructure/database/prisma.client.js'
 
 export const resetDb = async () => {
@@ -9,9 +8,9 @@ export const resetDb = async () => {
     'diagnoses',
     'plants',
     'gardens',
-    'refresh_tokens', 
+    'refresh_tokens',
     'users',
-    'species'
+    'species',
   ]
 
   try {

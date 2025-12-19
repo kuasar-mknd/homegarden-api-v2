@@ -1,6 +1,6 @@
 /**
  * Diagnosis Domain Entity
- * 
+ *
  * Represents a plant disease diagnosis from the DrPlant AI feature.
  */
 
@@ -46,12 +46,24 @@ export class Diagnosis {
     return new Diagnosis(data)
   }
 
-  get id(): string { return this.props.id }
-  get status(): DiagnosisStatus { return this.props.status }
-  get conditionName(): string | null | undefined { return this.props.conditionName }
-  get severity(): Severity | null | undefined { return this.props.severity }
-  get treatmentSteps(): string[] { return this.props.treatmentSteps }
-  get userId(): string { return this.props.userId }
+  get id(): string {
+    return this.props.id
+  }
+  get status(): DiagnosisStatus {
+    return this.props.status
+  }
+  get conditionName(): string | null | undefined {
+    return this.props.conditionName
+  }
+  get severity(): Severity | null | undefined {
+    return this.props.severity
+  }
+  get treatmentSteps(): string[] {
+    return this.props.treatmentSteps
+  }
+  get userId(): string {
+    return this.props.userId
+  }
 
   get isComplete(): boolean {
     return this.props.status === 'COMPLETED'

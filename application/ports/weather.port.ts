@@ -1,6 +1,6 @@
 /**
  * Weather Port
- * 
+ *
  * Interface for weather data services
  */
 
@@ -28,16 +28,19 @@ export interface WeatherPort {
    * Get current weather for a location
    */
   getCurrentWeather(latitude: number, longitude: number): Promise<CurrentWeather>
-  
+
   /**
    * Get weather forecast for a location
    */
   getForecast(latitude: number, longitude: number, hours?: number): Promise<WeatherForecast>
-  
+
   /**
    * Check if watering is recommended based on weather
    */
-  shouldWater(latitude: number, longitude: number): Promise<{
+  shouldWater(
+    latitude: number,
+    longitude: number,
+  ): Promise<{
     recommend: boolean
     reason: string
   }>

@@ -1,6 +1,6 @@
 /**
  * Prisma Repository Implementations
- * 
+ *
  * Placeholder - Implement repository interfaces using Prisma
  */
 

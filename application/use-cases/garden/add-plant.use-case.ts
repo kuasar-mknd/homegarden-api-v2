@@ -1,7 +1,7 @@
-import { ok, fail, type Result } from '../../../shared/types/result.type.js'
-import { AppError } from '../../../shared/errors/app-error.js'
-import { prisma } from '../../../infrastructure/database/prisma.client.js'
 import type { Plant } from '@prisma/client'
+import { prisma } from '../../../infrastructure/database/prisma.client.js'
+import { AppError } from '../../../shared/errors/app-error.js'
+import { fail, ok, type Result } from '../../../shared/types/result.type.js'
 
 interface AddPlantInput {
   userId: string
@@ -31,8 +31,8 @@ export class AddPlantUseCase {
       let garden = await prisma.garden.findFirst({
         where: {
           userId: input.userId,
-          name: input.location
-        }
+          name: input.location,
+        },
       })
 
       if (!garden) {
@@ -43,8 +43,8 @@ export class AddPlantUseCase {
             latitude: 0,
             longitude: 0,
             description: 'Auto-created location',
-            climate: 'Indoor' // Default assumption
-          }
+            climate: 'Indoor', // Default assumption
+          },
         })
       }
 
@@ -58,11 +58,10 @@ export class AddPlantUseCase {
           family: input.speciesInfo?.family ?? null,
           imageUrl: input.speciesInfo?.imageUrl ?? null,
           acquiredDate: new Date(),
-        }
+        },
       })
 
       return ok(plant)
-
     } catch (error) {
       console.error('AddPlantUseCase Error:', error)
       return fail(new AppError('Failed to add plant to garden', 500))

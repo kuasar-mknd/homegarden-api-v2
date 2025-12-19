@@ -1,6 +1,6 @@
 /**
  * WebSocket Server
- * 
+ *
  * Placeholder - Implement WebSocket server for real-time features
  */
 

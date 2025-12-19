@@ -23,10 +23,10 @@ export const createPaginatedResult = <T>(
   data: T[],
   total: number,
   page: number = 1,
-  limit: number = 10
+  limit: number = 10,
 ): PaginatedResult<T> => {
   const totalPages = Math.ceil(total / limit)
-  
+
   return {
     data,
     pagination: {

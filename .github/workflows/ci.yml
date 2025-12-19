@@ -12,7 +12,7 @@ jobs:
 
     services:
       postgres:
-        image: postgres:14-alpine
+        image: postgis/postgis:15-3.3-alpine
         env:
           POSTGRES_USER: user
           POSTGRES_PASSWORD: password
@@ -37,11 +37,8 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Lint
-        # Linting is currently disabled in CI because it requires 'typescript-eslint' which is not in deps.
-        # The script 'lint' in package.json exists but is not fully functional without additional deps.
-        # run: npm run lint
-        run: echo "Linting skipped (missing dependencies)"
+      - name: Lint & Format Check
+        run: npm run ci:check
 
       - name: Generate Prisma Client
         env:

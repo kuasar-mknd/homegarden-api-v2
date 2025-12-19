@@ -1,6 +1,6 @@
 /**
  * Plant ID Routes
- * 
+ *
  * HTTP routes for plant identification endpoints.
  */
 
@@ -10,7 +10,7 @@ import type { PlantIdController } from '../controllers/plant-id.controller.js'
 
 /**
  * Create Plant ID routes
- * 
+ *
  * @param controller - PlantIdController instance
  * @returns Hono router with plant-id routes
  */
@@ -22,16 +22,22 @@ export const createPlantIdRoutes = (controller: PlantIdController): Hono => {
   // ============================================================
 
   // Body size limit for image uploads (10MB)
-  router.use('/identify', bodyLimit({
-    maxSize: 10 * 1024 * 1024, // 10MB
-    onError: (c) => {
-      return c.json({
-        success: false,
-        error: 'PAYLOAD_TOO_LARGE',
-        message: 'Image size exceeds 10MB limit',
-      }, 413)
-    },
-  }))
+  router.use(
+    '/identify',
+    bodyLimit({
+      maxSize: 10 * 1024 * 1024, // 10MB
+      onError: (c) => {
+        return c.json(
+          {
+            success: false,
+            error: 'PAYLOAD_TOO_LARGE',
+            message: 'Image size exceeds 10MB limit',
+          },
+          413,
+        )
+      },
+    }),
+  )
 
   // ============================================================
   // ROUTES
@@ -46,7 +52,7 @@ export const createPlantIdRoutes = (controller: PlantIdController): Hono => {
   /**
    * POST /identify
    * Identify plant species from an image
-   * 
+   *
    * Request body:
    * {
    *   "imageBase64": "base64-encoded-image",  // OR

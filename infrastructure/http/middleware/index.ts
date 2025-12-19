@@ -1,6 +1,6 @@
 /**
  * HTTP Middleware
- * 
+ *
  * Placeholder - Implement Hono middleware
  */
 

@@ -55,14 +55,14 @@ export interface PlantRepository {
   update(id: string, data: UpdatePlantData): Promise<Plant>
   delete(id: string): Promise<void>
   deleteByGardenId(gardenId: string): Promise<void>
-  
+
   findAll(options?: {
     page?: number
     limit?: number
     gardenId?: string
     speciesId?: string
   }): Promise<{ plants: Plant[]; total: number }>
-  
+
   countByGardenId(gardenId: string): Promise<number>
   aggregateByCommonName(gardenId: string): Promise<{ name: string; count: number }[]>
 }

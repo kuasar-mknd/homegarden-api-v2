@@ -1,6 +1,6 @@
 /**
  * Result Type
- * 
+ *
  * A functional error handling pattern for explicit success/failure cases.
  */
 

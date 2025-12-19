@@ -2,7 +2,12 @@
  * Species Repository Interface (Port)
  */
 
-import type { Species, WaterRequirement, LightRequirement, GrowthRate } from '../entities/species.entity.js'
+import type {
+  GrowthRate,
+  LightRequirement,
+  Species,
+  WaterRequirement,
+} from '../entities/species.entity.js'
 
 export interface CreateSpeciesData {
   commonName: string
@@ -34,11 +39,14 @@ export interface SpeciesRepository {
   findById(id: string): Promise<Species | null>
   findByScientificName(name: string): Promise<Species | null>
   findByPlantNetId(plantNetId: string): Promise<Species | null>
-  
-  search(query: string, options?: {
-    page?: number
-    limit?: number
-  }): Promise<{ species: Species[]; total: number }>
-  
+
+  search(
+    query: string,
+    options?: {
+      page?: number
+      limit?: number
+    },
+  ): Promise<{ species: Species[]; total: number }>
+
   findByFamily(family: string): Promise<Species[]>
 }

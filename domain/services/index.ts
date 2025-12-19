@@ -1,6 +1,6 @@
 /**
  * Domain Services
- * 
+ *
  * Placeholder - Implement domain services
  */
 

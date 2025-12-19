@@ -1,6 +1,6 @@
 /**
  * User Domain Entity
- * 
+ *
  * Core business entity representing a user in the system.
  * Contains business logic and validation rules.
  */

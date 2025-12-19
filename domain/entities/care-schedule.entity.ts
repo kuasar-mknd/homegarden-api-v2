@@ -1,28 +1,28 @@
 /**
  * CareSchedule Domain Entity
- * 
+ *
  * Represents a care task schedule for the CareTracker feature.
  */
 
-export type CareTaskType = 
-  | 'WATER' 
-  | 'FERTILIZE' 
-  | 'PRUNE' 
-  | 'REPOT' 
-  | 'HARVEST' 
-  | 'PEST_CHECK' 
-  | 'DISEASE_CHECK' 
-  | 'MULCH' 
-  | 'WEED' 
+export type CareTaskType =
+  | 'WATER'
+  | 'FERTILIZE'
+  | 'PRUNE'
+  | 'REPOT'
+  | 'HARVEST'
+  | 'PEST_CHECK'
+  | 'DISEASE_CHECK'
+  | 'MULCH'
+  | 'WEED'
   | 'CUSTOM'
 
-export type CareFrequency = 
-  | 'DAILY' 
-  | 'EVERY_OTHER_DAY' 
-  | 'TWICE_WEEKLY' 
-  | 'WEEKLY' 
-  | 'BIWEEKLY' 
-  | 'MONTHLY' 
+export type CareFrequency =
+  | 'DAILY'
+  | 'EVERY_OTHER_DAY'
+  | 'TWICE_WEEKLY'
+  | 'WEEKLY'
+  | 'BIWEEKLY'
+  | 'MONTHLY'
   | 'CUSTOM'
 
 export interface CareScheduleProps {
@@ -53,12 +53,24 @@ export class CareSchedule {
     return new CareSchedule(data)
   }
 
-  get id(): string { return this.props.id }
-  get taskType(): CareTaskType { return this.props.taskType }
-  get frequency(): CareFrequency { return this.props.frequency }
-  get nextDueDate(): Date { return this.props.nextDueDate }
-  get isEnabled(): boolean { return this.props.isEnabled }
-  get userId(): string { return this.props.userId }
+  get id(): string {
+    return this.props.id
+  }
+  get taskType(): CareTaskType {
+    return this.props.taskType
+  }
+  get frequency(): CareFrequency {
+    return this.props.frequency
+  }
+  get nextDueDate(): Date {
+    return this.props.nextDueDate
+  }
+  get isEnabled(): boolean {
+    return this.props.isEnabled
+  }
+  get userId(): string {
+    return this.props.userId
+  }
 
   get isOverdue(): boolean {
     return this.props.nextDueDate < new Date()

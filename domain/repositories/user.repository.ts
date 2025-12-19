@@ -1,6 +1,6 @@
 /**
  * User Repository Interface (Port)
- * 
+ *
  * Defines the contract for user data access.
  * Implementations are in the infrastructure layer.
  */
@@ -32,17 +32,14 @@ export interface UserRepository {
   findByEmail(email: string): Promise<User | null>
   update(id: string, data: UpdateUserData): Promise<User>
   delete(id: string): Promise<void>
-  
+
   // Queries
-  findAll(options?: {
-    page?: number
-    limit?: number
-  }): Promise<{ users: User[]; total: number }>
-  
+  findAll(options?: { page?: number; limit?: number }): Promise<{ users: User[]; total: number }>
+
   // Auth-related
   findByIdWithPassword(id: string): Promise<(UserProps & { password: string }) | null>
   findByEmailWithPassword(email: string): Promise<(UserProps & { password: string }) | null>
-  
+
   // Existence checks
   existsByEmail(email: string): Promise<boolean>
 }

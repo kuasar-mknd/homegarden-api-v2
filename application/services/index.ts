@@ -1,6 +1,6 @@
 /**
  * Application Services
- * 
+ *
  * Placeholder - Implement application-level services
  */
 

@@ -1,34 +1,32 @@
 /**
  * Google Gemini Plant AI Adapter
- * 
+ *
  * Implements both AIIdentificationPort and AIDiagnosisPort
  * using Google's Gemini Vision models.
- * 
+ *
  * Models used:
  * - gemini-2.0-flash: Fast identification (PlantID)
  * - gemini-2.5-pro-preview-06-05: Advanced diagnosis (DrPlant)
  */
 
-import { GoogleGenerativeAI, GenerativeModel, Part } from '@google/generative-ai'
-import { env } from '../config/env.js'
-import { AppError } from '../../shared/errors/app-error.js'
-
+import { type GenerativeModel, GoogleGenerativeAI, type Part } from '@google/generative-ai'
+import type {
+  AffectedPart,
+  AIDiagnosisPort,
+  ConditionType,
+  DiagnoseHealthRequest,
+  DiagnoseHealthResult,
+  Severity,
+  TreatmentRecommendation,
+} from '../../application/ports/ai-diagnosis.port.js'
 import type {
   AIIdentificationPort,
   IdentifySpeciesRequest,
   IdentifySpeciesResult,
   SpeciesSuggestion,
 } from '../../application/ports/ai-identification.port.js'
-
-import type {
-  AIDiagnosisPort,
-  DiagnoseHealthRequest,
-  DiagnoseHealthResult,
-  ConditionType,
-  Severity,
-  AffectedPart,
-  TreatmentRecommendation,
-} from '../../application/ports/ai-diagnosis.port.js'
+import { AppError } from '../../shared/errors/app-error.js'
+import { env } from '../config/env.js'
 
 // ============================================================
 // CONFIGURATION - Models are read from env
@@ -128,7 +126,7 @@ Rules:
 
 /**
  * Gemini Plant AI Adapter
- * 
+ *
  * Implements plant identification and health diagnosis
  * using Google's Gemini Vision models.
  */
@@ -140,13 +138,13 @@ export class GeminiPlantAdapter implements AIIdentificationPort, AIDiagnosisPort
 
   constructor(apiKey?: string) {
     this.apiKey = apiKey ?? env.GOOGLE_AI_API_KEY ?? ''
-    
+
     if (!this.apiKey) {
       console.warn('⚠️ GOOGLE_AI_API_KEY not configured - AI features will be unavailable')
     }
 
     this.genAI = new GoogleGenerativeAI(this.apiKey)
-    
+
     this.identificationModel = this.genAI.getGenerativeModel({
       model: getIdentificationModel(),
       generationConfig: {
@@ -192,15 +190,15 @@ export class GeminiPlantAdapter implements AIIdentificationPort, AIDiagnosisPort
 
       // Build the prompt
       let prompt = IDENTIFICATION_SYSTEM_PROMPT
-      
+
       if (request.organs?.length) {
         prompt += `\n\nVisible plant parts: ${request.organs.join(', ')}`
       }
-      
+
       if (request.location) {
         prompt += `\n\nLocation context: ${request.location.country ?? `${request.location.latitude}, ${request.location.longitude}`}`
       }
-      
+
       prompt += `\n\nPlease identify this plant and return ${request.maxSuggestions ?? 5} suggestions.`
 
       // Call Gemini
@@ -255,7 +253,6 @@ export class GeminiPlantAdapter implements AIIdentificationPort, AIDiagnosisPort
         processingTimeMs: Date.now() - startTime,
         modelUsed: getIdentificationModel(),
       }
-
     } catch (error) {
       console.error('Gemini identification error:', error)
       return {
@@ -302,23 +299,23 @@ export class GeminiPlantAdapter implements AIIdentificationPort, AIDiagnosisPort
 
       // Build contextual prompt
       let prompt = DIAGNOSIS_SYSTEM_PROMPT
-      
+
       if (request.plantName) {
         prompt += `\n\nPlant name: ${request.plantName}`
       }
-      
+
       if (request.plantSpecies) {
         prompt += `\nScientific name: ${request.plantSpecies}`
       }
-      
+
       if (request.symptomDescription) {
         prompt += `\n\nUser's symptom description: "${request.symptomDescription}"`
       }
-      
+
       if (request.symptomDuration) {
         prompt += `\nSymptoms present for: ${request.symptomDuration}`
       }
-      
+
       if (request.recentCare) {
         const care = request.recentCare
         const careDetails: string[] = []
@@ -330,11 +327,12 @@ export class GeminiPlantAdapter implements AIIdentificationPort, AIDiagnosisPort
           prompt += `\n\nRecent care:\n${careDetails.join('\n')}`
         }
       }
-      
+
       if (request.environment) {
         prompt += `\n\nEnvironment: ${request.environment.indoor ? 'Indoor' : 'Outdoor'}`
         if (request.environment.climate) prompt += `, ${request.environment.climate} climate`
-        if (request.environment.recentWeather) prompt += `, Recent weather: ${request.environment.recentWeather}`
+        if (request.environment.recentWeather)
+          prompt += `, Recent weather: ${request.environment.recentWeather}`
       }
 
       prompt += '\n\nPlease analyze this plant and provide a diagnosis.'
@@ -440,7 +438,6 @@ export class GeminiPlantAdapter implements AIIdentificationPort, AIDiagnosisPort
       if (parsed.notes) diagnosisResult.notes = parsed.notes
 
       return diagnosisResult
-
     } catch (error) {
       console.error('Gemini diagnosis error:', error)
       return {
@@ -470,7 +467,7 @@ export class GeminiPlantAdapter implements AIIdentificationPort, AIDiagnosisPort
    */
   async isAvailable(): Promise<boolean> {
     if (!this.apiKey) return false
-    
+
     try {
       // Simple API test
       const model = this.genAI.getGenerativeModel({ model: getIdentificationModel() })
@@ -498,22 +495,18 @@ export class GeminiPlantAdapter implements AIIdentificationPort, AIDiagnosisPort
   /**
    * Build image part for Gemini API
    */
-  private async buildImagePart(
-    image: string,
-    isUrl?: boolean,
-    mimeType?: string
-  ): Promise<Part> {
+  private async buildImagePart(image: string, isUrl?: boolean, mimeType?: string): Promise<Part> {
     if (isUrl) {
       // Fetch image from URL and convert to base64
       const response = await fetch(image)
       if (!response.ok) {
         throw new AppError(`Failed to fetch image from URL: ${response.statusText}`, 400)
       }
-      
+
       const buffer = await response.arrayBuffer()
       const base64 = Buffer.from(buffer).toString('base64')
       const contentType = response.headers.get('content-type') ?? 'image/jpeg'
-      
+
       return {
         inlineData: {
           data: base64,
@@ -537,22 +530,22 @@ export class GeminiPlantAdapter implements AIIdentificationPort, AIDiagnosisPort
   private parseJsonResponse<T>(text: string): T {
     // Remove markdown code blocks if present
     let cleaned = text.trim()
-    
+
     if (cleaned.startsWith('```json')) {
       cleaned = cleaned.slice(7)
     } else if (cleaned.startsWith('```')) {
       cleaned = cleaned.slice(3)
     }
-    
+
     if (cleaned.endsWith('```')) {
       cleaned = cleaned.slice(0, -3)
     }
-    
+
     cleaned = cleaned.trim()
 
     try {
       return JSON.parse(cleaned) as T
-    } catch (error) {
+    } catch (_error) {
       console.error('Failed to parse AI response:', cleaned)
       throw new AppError('Invalid AI response format', 500)
     }
@@ -562,7 +555,13 @@ export class GeminiPlantAdapter implements AIIdentificationPort, AIDiagnosisPort
    * Validate and coerce condition type
    */
   private validateConditionType(type: string): ConditionType {
-    const validTypes: ConditionType[] = ['DISEASE', 'PEST', 'DEFICIENCY', 'ENVIRONMENTAL', 'HEALTHY']
+    const validTypes: ConditionType[] = [
+      'DISEASE',
+      'PEST',
+      'DEFICIENCY',
+      'ENVIRONMENTAL',
+      'HEALTHY',
+    ]
     const upperType = type.toUpperCase() as ConditionType
     return validTypes.includes(upperType) ? upperType : 'DISEASE'
   }
@@ -580,10 +579,16 @@ export class GeminiPlantAdapter implements AIIdentificationPort, AIDiagnosisPort
    * Validate and coerce affected parts
    */
   private validateAffectedParts(parts: string[]): AffectedPart[] {
-    const validParts: AffectedPart[] = ['leaves', 'stems', 'roots', 'flowers', 'fruits', 'bark', 'whole_plant']
-    return parts
-      .map((p) => p.toLowerCase() as AffectedPart)
-      .filter((p) => validParts.includes(p))
+    const validParts: AffectedPart[] = [
+      'leaves',
+      'stems',
+      'roots',
+      'flowers',
+      'fruits',
+      'bark',
+      'whole_plant',
+    ]
+    return parts.map((p) => p.toLowerCase() as AffectedPart).filter((p) => validParts.includes(p))
   }
 }
 

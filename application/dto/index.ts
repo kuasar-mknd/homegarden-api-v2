@@ -1,6 +1,6 @@
 /**
  * Application DTOs
- * 
+ *
  * Placeholder - Implement Data Transfer Objects with Zod schemas
  */
 

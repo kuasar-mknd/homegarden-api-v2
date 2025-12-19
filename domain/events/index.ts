@@ -1,6 +1,6 @@
 /**
  * Domain Events
- * 
+ *
  * Placeholder - Implement domain events for event-driven patterns
  */
 

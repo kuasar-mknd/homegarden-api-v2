@@ -1,6 +1,5 @@
-
 import { Hono } from 'hono'
-import { GardenController } from '../controllers/garden.controller.js'
+import type { GardenController } from '../controllers/garden.controller.js'
 import { authMiddleware } from '../middleware/auth.middleware.js'
 
 export const createGardenRoutes = (controller: GardenController) => {
