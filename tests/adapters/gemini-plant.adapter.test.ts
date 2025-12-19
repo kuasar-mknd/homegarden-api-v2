@@ -1,7 +1,9 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest'
-import { GeminiPlantAdapter, getGeminiPlantAdapter } from '../../infrastructure/external-services/gemini-plant.adapter.js'
 import { GoogleGenerativeAI } from '@google/generative-ai'
-import { AppError } from '../../shared/errors/app-error.js'
+import { beforeEach, describe, expect, it, vi } from 'vitest'
+import {
+  GeminiPlantAdapter,
+  getGeminiPlantAdapter,
+} from '../../infrastructure/external-services/gemini-plant.adapter.js'
 
 // Mock the whole @google/generative-ai module
 const { mockGenerateContent, mockGetGenerativeModel } = vi.hoisted(() => ({
@@ -32,20 +34,21 @@ describe('GeminiPlantAdapter', () => {
     it('should identify a species successfully', async () => {
       const mockAiResponse = {
         response: {
-          text: () => JSON.stringify({
-            success: true,
-            suggestions: [
-              {
-                confidence: 0.95,
-                commonName: 'Rose',
-                scientificName: 'Rosa',
-                family: 'Rosaceae',
-              }
-            ]
-          })
-        }
+          text: () =>
+            JSON.stringify({
+              success: true,
+              suggestions: [
+                {
+                  confidence: 0.95,
+                  commonName: 'Rose',
+                  scientificName: 'Rosa',
+                  family: 'Rosaceae',
+                },
+              ],
+            }),
+        },
       }
-      
+
       const genAIInstance = new GoogleGenerativeAI(mockApiKey)
       const model = genAIInstance.getGenerativeModel({ model: 'any' })
       vi.mocked(model.generateContent).mockResolvedValue(mockAiResponse as any)
@@ -55,7 +58,7 @@ describe('GeminiPlantAdapter', () => {
         isUrl: false,
         mimeType: 'image/jpeg',
         maxSuggestions: 3,
-        organs: ['leaf']
+        organs: ['leaf'],
       })
 
       expect(result.success).toBe(true)
@@ -64,31 +67,32 @@ describe('GeminiPlantAdapter', () => {
     })
 
     it('should handle identification failure response', async () => {
-        const mockAiResponse = {
-            response: {
-                text: () => JSON.stringify({
-                    success: false,
-                    error: 'Not a plant'
-                })
-            }
-        }
-        const genAIInstance = new GoogleGenerativeAI(mockApiKey)
-        const model = genAIInstance.getGenerativeModel({ model: 'any' })
-        vi.mocked(model.generateContent).mockResolvedValue(mockAiResponse as any)
+      const mockAiResponse = {
+        response: {
+          text: () =>
+            JSON.stringify({
+              success: false,
+              error: 'Not a plant',
+            }),
+        },
+      }
+      const genAIInstance = new GoogleGenerativeAI(mockApiKey)
+      const model = genAIInstance.getGenerativeModel({ model: 'any' })
+      vi.mocked(model.generateContent).mockResolvedValue(mockAiResponse as any)
 
-        const result = await adapter.identifySpecies({ image: 'data', isUrl: false })
-        expect(result.success).toBe(false)
-        expect(result.error).toBe('Not a plant')
+      const result = await adapter.identifySpecies({ image: 'data', isUrl: false })
+      expect(result.success).toBe(false)
+      expect(result.error).toBe('Not a plant')
     })
 
     it('should handle API errors', async () => {
-        const genAIInstance = new GoogleGenerativeAI(mockApiKey)
-        const model = genAIInstance.getGenerativeModel({ model: 'any' })
-        vi.mocked(model.generateContent).mockRejectedValue(new Error('Quota exceeded'))
+      const genAIInstance = new GoogleGenerativeAI(mockApiKey)
+      const model = genAIInstance.getGenerativeModel({ model: 'any' })
+      vi.mocked(model.generateContent).mockRejectedValue(new Error('Quota exceeded'))
 
-        const result = await adapter.identifySpecies({ image: 'data', isUrl: false })
-        expect(result.success).toBe(false)
-        expect(result.error).toBe('Quota exceeded')
+      const result = await adapter.identifySpecies({ image: 'data', isUrl: false })
+      expect(result.success).toBe(false)
+      expect(result.error).toBe('Quota exceeded')
     })
 
     it('should return error if no API key is set', async () => {
@@ -182,25 +186,21 @@ describe('GeminiPlantAdapter', () => {
       await adapter.identifySpecies({
         image: 'data',
         isUrl: false,
-        location: { latitude: 45, longitude: 6, country: 'France' }
+        location: { latitude: 45, longitude: 6, country: 'France' },
       })
 
       expect(model.generateContent).toHaveBeenCalledWith(
-        expect.arrayContaining([
-            expect.stringContaining('Location context: France')
-        ])
+        expect.arrayContaining([expect.stringContaining('Location context: France')]),
       )
 
       await adapter.identifySpecies({
         image: 'data',
         isUrl: false,
-        location: { latitude: 45, longitude: 6 }
+        location: { latitude: 45, longitude: 6 },
       })
 
       expect(model.generateContent).toHaveBeenCalledWith(
-        expect.arrayContaining([
-            expect.stringContaining('Location context: 45, 6')
-        ])
+        expect.arrayContaining([expect.stringContaining('Location context: 45, 6')]),
       )
     })
 
@@ -223,21 +223,22 @@ describe('GeminiPlantAdapter', () => {
     it('should diagnose health successfully', async () => {
       const mockAiResponse = {
         response: {
-          text: () => JSON.stringify({
-            success: true,
-            isHealthy: false,
-            confidence: 0.8,
-            condition: {
+          text: () =>
+            JSON.stringify({
+              success: true,
+              isHealthy: false,
+              confidence: 0.8,
+              condition: {
                 name: 'Leaf Spot',
                 type: 'DISEASE',
                 severity: 'LOW',
-            },
-            affectedParts: ['leaves'],
-            symptoms: ['spots'],
-            causes: ['fungus'],
-            treatments: [{ priority: 1, action: 'Spray', instructions: 'Weekly' }]
-          })
-        }
+              },
+              affectedParts: ['leaves'],
+              symptoms: ['spots'],
+              causes: ['fungus'],
+              treatments: [{ priority: 1, action: 'Spray', instructions: 'Weekly' }],
+            }),
+        },
       }
 
       const genAIInstance = new GoogleGenerativeAI(mockApiKey)
@@ -248,7 +249,7 @@ describe('GeminiPlantAdapter', () => {
         image: 'data',
         isUrl: false,
         plantName: 'My Tomato',
-        symptomDescription: 'Spots on leaves'
+        symptomDescription: 'Spots on leaves',
       })
 
       expect(result.success).toBe(true)
@@ -259,26 +260,27 @@ describe('GeminiPlantAdapter', () => {
     it('should diagnose health with all optional fields', async () => {
       const mockAiResponse = {
         response: {
-          text: () => JSON.stringify({
-            success: true,
-            isHealthy: false,
-            confidence: 0.8,
-            condition: {
+          text: () =>
+            JSON.stringify({
+              success: true,
+              isHealthy: false,
+              confidence: 0.8,
+              condition: {
                 name: 'Leaf Spot',
                 type: 'DISEASE',
                 severity: 'LOW',
-                scientificName: 'Septoria lycopersici'
-            },
-            affectedParts: ['leaves'],
-            symptoms: ['spots'],
-            causes: ['fungus'],
-            treatments: [{ priority: 1, action: 'Spray', instructions: 'Weekly' }],
-            organicTreatment: 'Neem oil',
-            chemicalTreatment: 'Copper fungicide',
-            recoveryTimeWeeks: 2,
-            notes: 'Keep leaves dry'
-          })
-        }
+                scientificName: 'Septoria lycopersici',
+              },
+              affectedParts: ['leaves'],
+              symptoms: ['spots'],
+              causes: ['fungus'],
+              treatments: [{ priority: 1, action: 'Spray', instructions: 'Weekly' }],
+              organicTreatment: 'Neem oil',
+              chemicalTreatment: 'Copper fungicide',
+              recoveryTimeWeeks: 2,
+              notes: 'Keep leaves dry',
+            }),
+        },
       }
 
       const genAIInstance = new GoogleGenerativeAI(mockApiKey)
@@ -296,31 +298,32 @@ describe('GeminiPlantAdapter', () => {
     })
 
     it('should handle diagnosis failure response', async () => {
-        const mockAiResponse = {
-            response: {
-                text: () => JSON.stringify({
-                    success: false,
-                    error: 'Poor image quality'
-                })
-            }
-        }
-        const genAIInstance = new GoogleGenerativeAI(mockApiKey)
-        const model = genAIInstance.getGenerativeModel({ model: 'any' })
-        vi.mocked(model.generateContent).mockResolvedValue(mockAiResponse as any)
+      const mockAiResponse = {
+        response: {
+          text: () =>
+            JSON.stringify({
+              success: false,
+              error: 'Poor image quality',
+            }),
+        },
+      }
+      const genAIInstance = new GoogleGenerativeAI(mockApiKey)
+      const model = genAIInstance.getGenerativeModel({ model: 'any' })
+      vi.mocked(model.generateContent).mockResolvedValue(mockAiResponse as any)
 
-        const result = await adapter.diagnoseHealth({ image: 'data', isUrl: false })
-        expect(result.success).toBe(false)
-        expect(result.error).toBe('Poor image quality')
+      const result = await adapter.diagnoseHealth({ image: 'data', isUrl: false })
+      expect(result.success).toBe(false)
+      expect(result.error).toBe('Poor image quality')
     })
 
     it('should handle diagnosis error exception', async () => {
-        const genAIInstance = new GoogleGenerativeAI(mockApiKey)
-        const model = genAIInstance.getGenerativeModel({ model: 'any' })
-        vi.mocked(model.generateContent).mockRejectedValue(new Error('AI Crashed'))
+      const genAIInstance = new GoogleGenerativeAI(mockApiKey)
+      const model = genAIInstance.getGenerativeModel({ model: 'any' })
+      vi.mocked(model.generateContent).mockRejectedValue(new Error('AI Crashed'))
 
-        const result = await adapter.diagnoseHealth({ image: 'data', isUrl: false })
-        expect(result.success).toBe(false)
-        expect(result.error).toBe('AI Crashed')
+      const result = await adapter.diagnoseHealth({ image: 'data', isUrl: false })
+      expect(result.success).toBe(false)
+      expect(result.error).toBe('AI Crashed')
     })
 
     it('should return error if no API key is set for diagnosis', async () => {
@@ -333,17 +336,18 @@ describe('GeminiPlantAdapter', () => {
     it('should construct prompt with full care and environment details', async () => {
       const mockAiResponse = {
         response: {
-          text: () => JSON.stringify({
-            success: true,
-            isHealthy: true,
-            confidence: 0.9,
-            condition: null,
-            affectedParts: [],
-            symptoms: [],
-            causes: [],
-            treatments: []
-          })
-        }
+          text: () =>
+            JSON.stringify({
+              success: true,
+              isHealthy: true,
+              confidence: 0.9,
+              condition: null,
+              affectedParts: [],
+              symptoms: [],
+              causes: [],
+              treatments: [],
+            }),
+        },
       }
 
       const genAIInstance = new GoogleGenerativeAI(mockApiKey)
@@ -361,13 +365,13 @@ describe('GeminiPlantAdapter', () => {
           watering: 'Every 3 days',
           fertilizing: 'Monthly',
           repotting: 'Last year',
-          pestTreatment: 'None'
+          pestTreatment: 'None',
         },
         environment: {
           indoor: true,
           climate: 'Humid',
-          recentWeather: 'Rainy'
-        }
+          recentWeather: 'Rainy',
+        },
       })
 
       expect(model.generateContent).toHaveBeenCalledWith(
@@ -380,42 +384,42 @@ describe('GeminiPlantAdapter', () => {
           expect.stringContaining('Fertilizing: Monthly'),
           expect.stringContaining('Recent weather: Rainy'),
           expect.stringContaining('Indoor'),
-        ])
+        ]),
       )
     })
   })
 
   describe('isAvailable', () => {
     it('should return true if API responds', async () => {
-        const mockAiResponse = { response: { text: () => 'OK' } }
-        const genAIInstance = new GoogleGenerativeAI(mockApiKey)
-        const model = genAIInstance.getGenerativeModel({ model: 'any' })
-        vi.mocked(model.generateContent).mockResolvedValue(mockAiResponse as any)
+      const mockAiResponse = { response: { text: () => 'OK' } }
+      const genAIInstance = new GoogleGenerativeAI(mockApiKey)
+      const model = genAIInstance.getGenerativeModel({ model: 'any' })
+      vi.mocked(model.generateContent).mockResolvedValue(mockAiResponse as any)
 
-        const available = await adapter.isAvailable()
-        expect(available).toBe(true)
+      const available = await adapter.isAvailable()
+      expect(available).toBe(true)
     })
 
     it('should return false if API fails', async () => {
-        const genAIInstance = new GoogleGenerativeAI(mockApiKey)
-        const model = genAIInstance.getGenerativeModel({ model: 'any' })
-        vi.mocked(model.generateContent).mockRejectedValue(new Error('Down'))
+      const genAIInstance = new GoogleGenerativeAI(mockApiKey)
+      const model = genAIInstance.getGenerativeModel({ model: 'any' })
+      vi.mocked(model.generateContent).mockRejectedValue(new Error('Down'))
 
-        const available = await adapter.isAvailable()
-        expect(available).toBe(false)
+      const available = await adapter.isAvailable()
+      expect(available).toBe(false)
     })
   })
 
   describe('Utilities', () => {
     it('should return model names', () => {
-        expect(adapter.getModelName()).toBeDefined()
-        expect(adapter.getDiagnosisModelName()).toBeDefined()
+      expect(adapter.getModelName()).toBeDefined()
+      expect(adapter.getDiagnosisModelName()).toBeDefined()
     })
 
     it('getGeminiPlantAdapter stays a singleton', () => {
-        const inst1 = getGeminiPlantAdapter()
-        const inst2 = getGeminiPlantAdapter()
-        expect(inst1).toBe(inst2)
+      const inst1 = getGeminiPlantAdapter()
+      const inst2 = getGeminiPlantAdapter()
+      expect(inst1).toBe(inst2)
     })
   })
 })

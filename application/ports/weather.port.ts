@@ -1,5 +1,5 @@
-import { Result } from '../../shared/types/result.type.js'
-import { AppError } from '../../shared/errors/app-error.js'
+import type { AppError } from '../../shared/errors/app-error.js'
+import type { Result } from '../../shared/types/result.type.js'
 
 export interface WeatherData {
   temperature: number

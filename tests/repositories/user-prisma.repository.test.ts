@@ -1,8 +1,7 @@
-import { describe, it, expect, beforeAll, afterAll, beforeEach } from 'vitest'
-import { prisma } from '../../infrastructure/database/prisma.client.js'
-import { UserPrismaRepository } from '../../infrastructure/database/repositories/user.prisma-repository.js'
-import { resetDb, disconnectDb } from '../helpers/reset-db.js'
 import crypto from 'node:crypto'
+import { afterAll, describe, expect, it } from 'vitest'
+import { UserPrismaRepository } from '../../infrastructure/database/repositories/user.prisma-repository.js'
+import { disconnectDb } from '../helpers/reset-db.js'
 
 describe('UserPrismaRepository', () => {
   const repository = new UserPrismaRepository()
@@ -80,7 +79,12 @@ describe('UserPrismaRepository', () => {
 
   it('should update a user', async () => {
     const seed = crypto.randomUUID()
-    const created = await repository.create({ email: `upd-${seed}@test.com`, password: 'pwd', firstName: 'Old', lastName: 'Name' })
+    const created = await repository.create({
+      email: `upd-${seed}@test.com`,
+      password: 'pwd',
+      firstName: 'Old',
+      lastName: 'Name',
+    })
     const updated = await repository.update(created.id, { firstName: 'New' })
     expect(updated.firstName).toBe('New')
 
@@ -90,7 +94,12 @@ describe('UserPrismaRepository', () => {
 
   it('should delete a user', async () => {
     const seed = crypto.randomUUID()
-    const created = await repository.create({ email: `del-${seed}@test.com`, password: 'pwd', firstName: 'F', lastName: 'L' })
+    const created = await repository.create({
+      email: `del-${seed}@test.com`,
+      password: 'pwd',
+      firstName: 'F',
+      lastName: 'L',
+    })
     await repository.delete(created.id)
     const found = await repository.findById(created.id)
     expect(found).toBeNull()
@@ -108,7 +117,12 @@ describe('UserPrismaRepository', () => {
   it('should find all with pagination', async () => {
     const seed = crypto.randomUUID()
     for (let i = 0; i < 5; i++) {
-        await repository.create({ email: `list-${seed}-${i}@test.com`, password: 'pwd', firstName: 'F', lastName: 'L' })
+      await repository.create({
+        email: `list-${seed}-${i}@test.com`,
+        password: 'pwd',
+        firstName: 'F',
+        lastName: 'L',
+      })
     }
 
     const result = await repository.findAll({ search: seed, limit: 3 })

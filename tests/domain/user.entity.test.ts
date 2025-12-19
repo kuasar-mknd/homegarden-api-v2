@@ -1,4 +1,4 @@
-import { describe, it, expect } from 'vitest'
+import { describe, expect, it } from 'vitest'
 import { User, type UserProps } from '../../domain/entities/user.entity.js'
 
 describe('User entity', () => {

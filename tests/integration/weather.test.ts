@@ -1,7 +1,7 @@
-import { describe, it, expect, vi, beforeAll, afterAll } from 'vitest'
+import { afterAll, beforeAll, describe, expect, it, vi } from 'vitest'
 import app from '../../index.js'
 import { prisma } from '../../infrastructure/database/prisma.client.js'
-import { resetDb, disconnectDb } from '../helpers/reset-db.js'
+import { disconnectDb, resetDb } from '../helpers/reset-db.js'
 
 // Mock Supabase
 const mockGetUser = vi.fn()
@@ -45,7 +45,7 @@ describe('Weather Integration', () => {
   afterAll(async () => {
     await disconnectDb()
   })
-  
+
   it('should return 401 if not authenticated', async () => {
     // No mock needed as it returns early due to missing headers
     const res = await app.request(`/api/v2/gardens/${garden.id}/weather`)
@@ -53,24 +53,24 @@ describe('Weather Integration', () => {
   })
 
   it('should return weather data for valid garden', async () => {
-     // Mock Supabase Auth Success
-     mockGetUser.mockResolvedValueOnce({ 
-       data: { 
-         user: { 
-           email: user.email,
-           user_metadata: { full_name: 'Weather Tester' }
-         } 
-       }, 
-       error: null 
-     })
+    // Mock Supabase Auth Success
+    mockGetUser.mockResolvedValueOnce({
+      data: {
+        user: {
+          email: user.email,
+          user_metadata: { full_name: 'Weather Tester' },
+        },
+      },
+      error: null,
+    })
 
     const res = await app.request(`/api/v2/gardens/${garden.id}/weather`, {
-        headers: { Authorization: 'Bearer valid-token' }
+      headers: { Authorization: 'Bearer valid-token' },
     })
-    
+
     expect(res.status).toBe(200)
     const json = await res.json()
-    
+
     expect(json.success).toBe(true)
     expect(json.data.gardenName).toBe('My Weather Garden')
     expect(json.data.current).toBeDefined()
@@ -81,18 +81,18 @@ describe('Weather Integration', () => {
 
   it('should return 400 for invalid garden ID format', async () => {
     // Mock Supabase Auth Success
-    mockGetUser.mockResolvedValueOnce({ 
-      data: { 
-        user: { email: user.email } 
-      }, 
-      error: null 
+    mockGetUser.mockResolvedValueOnce({
+      data: {
+        user: { email: user.email },
+      },
+      error: null,
     })
 
-   const res = await app.request(`/api/v2/gardens/invalid-id/weather`, {
-       headers: { Authorization: 'Bearer valid-token' }
-   })
-   
-   // Should fail Zod validation (CUID required) OR return 404 if validation matches string but not found
-   expect(res.status).toBe(404)
- })
+    const res = await app.request(`/api/v2/gardens/invalid-id/weather`, {
+      headers: { Authorization: 'Bearer valid-token' },
+    })
+
+    // Should fail Zod validation (CUID required) OR return 404 if validation matches string but not found
+    expect(res.status).toBe(404)
+  })
 })

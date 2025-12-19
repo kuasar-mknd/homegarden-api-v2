@@ -1,7 +1,7 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { GetUserPlantsUseCase } from '../../application/use-cases/garden/get-user-plants.use-case.js'
-import type { PlantRepository } from '../../domain/repositories/plant.repository.js'
 import { Plant } from '../../domain/entities/plant.entity.js'
+import type { PlantRepository } from '../../domain/repositories/plant.repository.js'
 
 describe('GetUserPlantsUseCase', () => {
   let useCase: GetUserPlantsUseCase

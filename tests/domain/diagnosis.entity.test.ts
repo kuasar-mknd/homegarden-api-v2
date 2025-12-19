@@ -1,4 +1,4 @@
-import { describe, it, expect } from 'vitest'
+import { describe, expect, it } from 'vitest'
 import { Diagnosis, type DiagnosisProps } from '../../domain/entities/diagnosis.entity.js'
 
 describe('Diagnosis entity', () => {
@@ -40,11 +40,11 @@ describe('Diagnosis entity', () => {
       expect(diag.userId).toBe('user-123')
       expect(diag.treatmentSteps).toEqual(['Spray'])
     })
-    
+
     it('should return conditionName and severity if present', () => {
-        const diag = Diagnosis.create({ ...mockProps, conditionName: 'Leaf Spot', severity: 'HIGH' })
-        expect(diag.conditionName).toBe('Leaf Spot')
-        expect(diag.severity).toBe('HIGH')
+      const diag = Diagnosis.create({ ...mockProps, conditionName: 'Leaf Spot', severity: 'HIGH' })
+      expect(diag.conditionName).toBe('Leaf Spot')
+      expect(diag.severity).toBe('HIGH')
     })
   })
 
@@ -71,13 +71,17 @@ describe('Diagnosis entity', () => {
     })
 
     it('requiresUrgentAction: true if criticalActions exist', () => {
-      const action = Diagnosis.create({ ...mockProps, severity: 'LOW', criticalActions: ['Burn it'] })
+      const action = Diagnosis.create({
+        ...mockProps,
+        severity: 'LOW',
+        criticalActions: ['Burn it'],
+      })
       expect(action.requiresUrgentAction).toBe(true)
     })
 
     it('requiresUrgentAction: false otherwise', () => {
-        const normal = Diagnosis.create(mockProps)
-        expect(normal.requiresUrgentAction).toBe(false)
+      const normal = Diagnosis.create(mockProps)
+      expect(normal.requiresUrgentAction).toBe(false)
     })
   })
 

@@ -2,9 +2,7 @@ import type { Context } from 'hono'
 import type { GetUserPublicProfileUseCase } from '../../../application/use-cases/user/get-user-public-profile.use-case.js'
 
 export class UserController {
-  constructor(
-    private readonly getUserPublicProfileUseCase: GetUserPublicProfileUseCase
-  ) {}
+  constructor(private readonly getUserPublicProfileUseCase: GetUserPublicProfileUseCase) {}
 
   /**
    * GET /:id
@@ -24,7 +22,7 @@ export class UserController {
       }
 
       const result = await this.getUserPublicProfileUseCase.execute({
-        userId: requestedUserId
+        userId: requestedUserId,
       })
 
       if (!result.success) {

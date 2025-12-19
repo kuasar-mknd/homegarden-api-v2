@@ -1,7 +1,7 @@
-import { describe, it, expect, beforeAll, afterAll, vi } from 'vitest'
+import { afterAll, beforeAll, describe, expect, it, vi } from 'vitest'
 import app from '../../index.js'
 import { prisma } from '../../infrastructure/database/prisma.client.js'
-import { resetDb, disconnectDb } from '../helpers/reset-db.js'
+import { disconnectDb, resetDb } from '../helpers/reset-db.js'
 
 // Mock Supabase
 const mockGetUser = vi.fn()
@@ -15,7 +15,7 @@ vi.mock('@supabase/supabase-js', () => ({
 
 describe('User Public Profile Integration', () => {
   let targetUser: any
-  let viewerUser: any
+  let _viewerUser: any
 
   beforeAll(async () => {
     await resetDb()
@@ -27,12 +27,12 @@ describe('User Public Profile Integration', () => {
         firstName: 'Target',
         lastName: 'Person',
         password: 'securepass',
-        avatarUrl: 'https://example.com/avatar.jpg'
+        avatarUrl: 'https://example.com/avatar.jpg',
       },
     })
 
     // 2. Create Viewer User (the one making the request)
-    viewerUser = await prisma.user.create({
+    _viewerUser = await prisma.user.create({
       data: {
         email: 'viewer@example.com',
         firstName: 'Viewer',
@@ -51,19 +51,19 @@ describe('User Public Profile Integration', () => {
     mockGetUser.mockResolvedValue({ data: { user: { email: 'viewer@example.com' } }, error: null })
 
     const res = await app.request(`/api/v2/users/${targetUser.id}`, {
-        headers: { Authorization: 'Bearer valid-token' }
+      headers: { Authorization: 'Bearer valid-token' },
     })
-    
+
     expect(res.status).toBe(200)
     const json = await res.json()
     expect(json.success).toBe(true)
-    
+
     const data = json.data
     expect(data.id).toBe(targetUser.id)
     expect(data.firstName).toBe('Target')
     expect(data.lastName).toBe('Person')
     expect(data.avatarUrl).toBe('https://example.com/avatar.jpg')
-    
+
     // Ensure sensitive data is NOT returned
     expect(data.email).toBeUndefined()
     expect(data.password).toBeUndefined()
@@ -71,27 +71,27 @@ describe('User Public Profile Integration', () => {
   })
 
   it('should return 404 for non-existent user', async () => {
-     // Mock Auth as Viewer
-     mockGetUser.mockResolvedValue({ data: { user: { email: 'viewer@example.com' } }, error: null })
- 
-     const res = await app.request('/api/v2/users/non-existent-id', {
-         headers: { Authorization: 'Bearer valid-token' }
-     })
-     
-     expect(res.status).toBe(404)
-     const json = await res.json()
-     expect(json.success).toBe(false)
-     expect(json.error).toBe('NOT_FOUND')
-   })
+    // Mock Auth as Viewer
+    mockGetUser.mockResolvedValue({ data: { user: { email: 'viewer@example.com' } }, error: null })
 
-   it('should return 401 if not authenticated', async () => {
+    const res = await app.request('/api/v2/users/non-existent-id', {
+      headers: { Authorization: 'Bearer valid-token' },
+    })
+
+    expect(res.status).toBe(404)
+    const json = await res.json()
+    expect(json.success).toBe(false)
+    expect(json.error).toBe('NOT_FOUND')
+  })
+
+  it('should return 401 if not authenticated', async () => {
     // Mock Auth failure
     mockGetUser.mockResolvedValue({ data: { user: null }, error: { message: 'Auth failed' } })
 
     const res = await app.request(`/api/v2/users/${targetUser.id}`, {
-        headers: { Authorization: 'Bearer invalid-token' }
+      headers: { Authorization: 'Bearer invalid-token' },
     })
-    
+
     expect(res.status).toBe(401)
   })
 })

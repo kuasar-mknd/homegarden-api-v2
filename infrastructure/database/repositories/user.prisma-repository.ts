@@ -1,6 +1,10 @@
-import { prisma } from '../prisma.client.js'
-import type { UserRepository, CreateUserData, UpdateUserData } from '../../../domain/repositories/user.repository.js'
 import { User, type UserProps } from '../../../domain/entities/user.entity.js'
+import type {
+  CreateUserData,
+  UpdateUserData,
+  UserRepository,
+} from '../../../domain/repositories/user.repository.js'
+import { prisma } from '../prisma.client.js'
 
 export class UserPrismaRepository implements UserRepository {
   async create(data: CreateUserData): Promise<User> {
@@ -44,7 +48,11 @@ export class UserPrismaRepository implements UserRepository {
     await prisma.user.delete({ where: { id } })
   }
 
-  async findAll(options?: { page?: number; limit?: number; search?: string }): Promise<{ users: User[]; total: number }> {
+  async findAll(options?: {
+    page?: number
+    limit?: number
+    search?: string
+  }): Promise<{ users: User[]; total: number }> {
     const { page = 1, limit = 10, search } = options || {}
     const skip = (page - 1) * limit
     const where = search ? { email: { contains: search } } : {}
@@ -64,7 +72,7 @@ export class UserPrismaRepository implements UserRepository {
     if (!user) return null
     return {
       ...this.mapToUserProps(user),
-      password: user.password
+      password: user.password,
     }
   }
 
@@ -73,7 +81,7 @@ export class UserPrismaRepository implements UserRepository {
     if (!user) return null
     return {
       ...this.mapToUserProps(user),
-      password: user.password
+      password: user.password,
     }
   }
 

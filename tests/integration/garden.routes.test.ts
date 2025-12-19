@@ -23,11 +23,11 @@ describe('Garden Routes Integration', () => {
   beforeAll(async () => {
     await resetDb()
   })
-  
+
   // Clean up after each test to ensure isolation, or rely on resetDb at start
   // Given serial execution, resetDb at start of suite is good, but let's be safe.
   beforeEach(async () => {
-      // Optional: reset per test? Might be too slow.
+    // Optional: reset per test? Might be too slow.
   })
 
   afterAll(async () => {

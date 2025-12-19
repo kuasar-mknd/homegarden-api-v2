@@ -1,7 +1,7 @@
+import type { GardenRepository } from '../../../domain/repositories/garden.repository.js'
 import { AppError } from '../../../shared/errors/app-error.js'
 import { fail, ok, type Result } from '../../../shared/types/result.type.js'
-import type { GardenRepository } from '../../../domain/repositories/garden.repository.js'
-import type { WeatherPort, WeatherData, WeatherForecast } from '../../ports/weather.port.js'
+import type { WeatherData, WeatherForecast, WeatherPort } from '../../ports/weather.port.js'
 
 export interface GetGardenWeatherOutput {
   gardenName: string
@@ -12,10 +12,13 @@ export interface GetGardenWeatherOutput {
 export class GetGardenWeatherUseCase {
   constructor(
     private readonly gardenRepository: GardenRepository,
-    private readonly weatherPort: WeatherPort
+    private readonly weatherPort: WeatherPort,
   ) {}
 
-  async execute(gardenId: string, userId: string): Promise<Result<GetGardenWeatherOutput, AppError>> {
+  async execute(
+    gardenId: string,
+    userId: string,
+  ): Promise<Result<GetGardenWeatherOutput, AppError>> {
     // 1. Get Garden
     const gardenResult = await this.gardenRepository.findById(gardenId)
     if (!gardenResult) {
@@ -30,7 +33,7 @@ export class GetGardenWeatherUseCase {
     // 3. Get Weather Data in Parallel
     const [currentResult, forecastResult] = await Promise.all([
       this.weatherPort.getCurrentWeather(gardenResult.latitude, gardenResult.longitude),
-      this.weatherPort.getForecast(gardenResult.latitude, gardenResult.longitude)
+      this.weatherPort.getForecast(gardenResult.latitude, gardenResult.longitude),
     ])
 
     if (!currentResult.success) return fail(currentResult.error)
@@ -39,7 +42,7 @@ export class GetGardenWeatherUseCase {
     return ok({
       gardenName: gardenResult.name,
       current: currentResult.data,
-      forecast: forecastResult.data
+      forecast: forecastResult.data,
     })
   }
 }

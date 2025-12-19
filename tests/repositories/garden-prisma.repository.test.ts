@@ -1,8 +1,8 @@
-import { describe, it, expect, beforeAll, afterAll, beforeEach } from 'vitest'
+import crypto from 'node:crypto'
+import { afterAll, describe, expect, it } from 'vitest'
 import { prisma } from '../../infrastructure/database/prisma.client.js'
 import { GardenPrismaRepository } from '../../infrastructure/database/repositories/garden.prisma-repository.js'
-import { resetDb, disconnectDb } from '../helpers/reset-db.js'
-import crypto from 'node:crypto'
+import { disconnectDb } from '../helpers/reset-db.js'
 
 describe('GardenPrismaRepository', () => {
   const repository = new GardenPrismaRepository()
@@ -25,7 +25,8 @@ describe('GardenPrismaRepository', () => {
   it('should create and find a garden', async () => {
     const user = await setupUser(crypto.randomUUID())
     // Assuming CreateGardenProps is an interface/type for the create method's payload
-    const gardenData = { // Changed from CreateGardenProps to object literal
+    const gardenData = {
+      // Changed from CreateGardenProps to object literal
       userId: user.id,
       name: 'My Garden',
       latitude: 48.8566,
@@ -55,14 +56,24 @@ describe('GardenPrismaRepository', () => {
 
   it('should update a garden', async () => {
     const user = await setupUser(crypto.randomUUID()) // Kept setupUser as setupBaseData is not defined
-    const garden = await repository.create({ name: 'Old', latitude: 0, longitude: 0, userId: user.id }) // Kept original creation
+    const garden = await repository.create({
+      name: 'Old',
+      latitude: 0,
+      longitude: 0,
+      userId: user.id,
+    }) // Kept original creation
     const updated = await repository.update(garden.id, { name: 'Updated Garden' })
     expect(updated.name).toBe('Updated Garden')
   })
 
   it('should delete a garden', async () => {
     const user = await setupUser(crypto.randomUUID()) // Kept setupUser as setupBaseData is not defined
-    const garden = await repository.create({ name: 'Delete', latitude: 0, longitude: 0, userId: user.id }) // Kept original creation
+    const garden = await repository.create({
+      name: 'Delete',
+      latitude: 0,
+      longitude: 0,
+      userId: user.id,
+    }) // Kept original creation
     await repository.delete(garden.id)
     const found = await repository.findById(garden.id)
     expect(found).toBeNull()
@@ -70,7 +81,12 @@ describe('GardenPrismaRepository', () => {
 
   it('should find by user and name', async () => {
     const user = await setupUser(crypto.randomUUID()) // Kept setupUser as setupBaseData is not defined
-    const garden = await repository.create({ name: 'Unique Name', latitude: 0, longitude: 0, userId: user.id }) // Kept original creation
+    const garden = await repository.create({
+      name: 'Unique Name',
+      latitude: 0,
+      longitude: 0,
+      userId: user.id,
+    }) // Kept original creation
     const found = await repository.findByUserAndName(user.id, garden.name)
     expect(found).not.toBeNull()
     expect(found?.id).toBe(garden.id) // Changed from found?.name to found?.id for better assertion
@@ -80,9 +96,14 @@ describe('GardenPrismaRepository', () => {
     const user = await setupUser(crypto.randomUUID())
     // Use unique search term to only get our gardens
     const searchTerm = `list-${crypto.randomUUID()}`
-    
+
     for (let i = 0; i < 5; i++) {
-        await repository.create({ name: `${searchTerm}-${i}`, latitude: i, longitude: i, userId: user.id })
+      await repository.create({
+        name: `${searchTerm}-${i}`,
+        latitude: i,
+        longitude: i,
+        userId: user.id,
+      })
     }
 
     const result = await repository.findAll({ userId: user.id, search: searchTerm, limit: 3 })
@@ -93,20 +114,38 @@ describe('GardenPrismaRepository', () => {
   it('should find nearby gardens', async () => {
     const user = await setupUser(crypto.randomUUID())
     // 48.8566, 2.3522 is Paris
-    await repository.create({ userId: user.id, name: 'Paris Garden', latitude: 48.8566, longitude: 2.3522 })
+    await repository.create({
+      userId: user.id,
+      name: 'Paris Garden',
+      latitude: 48.8566,
+      longitude: 2.3522,
+    })
     // Nearby (approx 1km away)
-    await repository.create({ userId: user.id, name: 'Nearby Garden', latitude: 48.8666, longitude: 2.3622 })
+    await repository.create({
+      userId: user.id,
+      name: 'Nearby Garden',
+      latitude: 48.8666,
+      longitude: 2.3622,
+    })
     // Far away (London)
-    await repository.create({ userId: user.id, name: 'Far Garden', latitude: 51.5074, longitude: -0.1278 })
+    await repository.create({
+      userId: user.id,
+      name: 'Far Garden',
+      latitude: 51.5074,
+      longitude: -0.1278,
+    })
 
-    const nearby = await repository.findNearby({ latitude: 48.8566, longitude: 2.3522, radiusKm: 5 })
+    const nearby = await repository.findNearby({
+      latitude: 48.8566,
+      longitude: 2.3522,
+      radiusKm: 5,
+    })
     expect(nearby.length).toBeGreaterThanOrEqual(2)
-    expect(nearby.some(g => g.name === 'Paris Garden')).toBe(true)
-    expect(nearby.some(g => g.name === 'Nearby Garden')).toBe(true)
-    expect(nearby.some(g => g.name === 'Far Garden')).toBe(false)
+    expect(nearby.some((g) => g.name === 'Paris Garden')).toBe(true)
+    expect(nearby.some((g) => g.name === 'Nearby Garden')).toBe(true)
+    expect(nearby.some((g) => g.name === 'Far Garden')).toBe(false)
   })
 
-  
   it('should return empty array for nearby search when error occurs', async () => {
     // This is hard to trigger with real DB unless we break the query logic
     // But we can check it by passing invalid types if we skip TypeScript checks

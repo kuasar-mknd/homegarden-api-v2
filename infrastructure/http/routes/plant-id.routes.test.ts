@@ -1,9 +1,9 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { OpenAPIHono } from '@hono/zod-openapi'
-import { createPlantIdRoutes } from './plant-id.routes.js'
-import { createPlantIdController } from '../controllers/plant-id.controller.js'
-import { ok, fail } from '../../../shared/types/result.type.js'
+import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { AppError } from '../../../shared/errors/app-error.js'
+import { fail, ok } from '../../../shared/types/result.type.js'
+import { createPlantIdController } from '../controllers/plant-id.controller.js'
+import { createPlantIdRoutes } from './plant-id.routes.js'
 
 describe('PlantIdRoutes', () => {
   let app: OpenAPIHono
@@ -31,9 +31,13 @@ describe('PlantIdRoutes', () => {
 
   describe('POST /identify', () => {
     it('should return 200 on success', async () => {
-      vi.mocked(mockUseCase.execute).mockResolvedValue(ok({
-        suggestions: [{ commonName: 'Rose', confidence: 0.9, scientificName: 'Rosa', family: 'Rosaceae' }]
-      }))
+      vi.mocked(mockUseCase.execute).mockResolvedValue(
+        ok({
+          suggestions: [
+            { commonName: 'Rose', confidence: 0.9, scientificName: 'Rosa', family: 'Rosaceae' },
+          ],
+        }),
+      )
 
       const res = await app.request('/plant-id/identify', {
         method: 'POST',
@@ -66,7 +70,9 @@ describe('PlantIdRoutes', () => {
     })
 
     it('should return 500 when use case fails with internal error', async () => {
-      vi.mocked(mockUseCase.execute).mockResolvedValue(fail(new AppError('AI Error', 500, 'IDENTIFICATION_FAILED')))
+      vi.mocked(mockUseCase.execute).mockResolvedValue(
+        fail(new AppError('AI Error', 500, 'IDENTIFICATION_FAILED')),
+      )
 
       const res = await app.request('/plant-id/identify', {
         method: 'POST',
@@ -84,7 +90,7 @@ describe('PlantIdRoutes', () => {
     it('should enforce body limit (10MB)', async () => {
       // Create a large body (> 10MB)
       const largeData = 'a'.repeat(11 * 1024 * 1024)
-      
+
       const res = await app.request('/plant-id/identify', {
         method: 'POST',
         headers: {

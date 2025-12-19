@@ -1,7 +1,7 @@
-import { describe, it, expect, beforeAll, afterAll, vi } from 'vitest'
+import { afterAll, beforeAll, describe, expect, it, vi } from 'vitest'
 import app from '../../index.js'
 import { prisma } from '../../infrastructure/database/prisma.client.js'
-import { resetDb, disconnectDb } from '../helpers/reset-db.js'
+import { disconnectDb, resetDb } from '../helpers/reset-db.js'
 
 // Mock Supabase
 const mockGetUser = vi.fn()
@@ -22,7 +22,7 @@ describe('Nearby Gardens Integration', () => {
     // 1. Create User
     const uniqueId = Date.now()
     const email = `geo-${uniqueId}@test.com`
-    
+
     user = await prisma.user.create({
       data: {
         email,
@@ -30,10 +30,10 @@ describe('Nearby Gardens Integration', () => {
         lastName: 'Tester',
         password: 'password',
       },
-    });
-    
+    })
+
     // Store email for mocks
-    (global as any).testEmail = email
+    ;(global as any).testEmail = email
 
     // 2. Create Gardens at specific locations
     // Paris: 48.8566, 2.3522
@@ -81,14 +81,14 @@ describe('Nearby Gardens Integration', () => {
 
     // Query mostly focused on Paris center
     const res = await app.request('/api/v2/gardens/nearby?lat=48.8566&lng=2.3522', {
-        headers: { Authorization: 'Bearer valid-token' }
+      headers: { Authorization: 'Bearer valid-token' },
     })
-    
+
     expect(res.status).toBe(200)
     const json = await res.json()
     expect(json.success).toBe(true)
-    
-    // Should find Paris Garden (0km) 
+
+    // Should find Paris Garden (0km)
     // Should NOT find Versailles (17km > 10km)
     // Should NOT find London
     const names = json.data.gardens.map((g: any) => g.name)
@@ -98,33 +98,33 @@ describe('Nearby Gardens Integration', () => {
   })
 
   it('should return gardens within expanded radius (30km)', async () => {
-     // Mock Auth
-     const email = (global as any).testEmail
-     mockGetUser.mockResolvedValue({ data: { user: { email } }, error: null })
- 
-     const res = await app.request('/api/v2/gardens/nearby?lat=48.8566&lng=2.3522&radius=30', {
-         headers: { Authorization: 'Bearer valid-token' }
-     })
-     
-     expect(res.status).toBe(200)
-     const json = await res.json()
-     
-     // Should find Paris and Versailles
-     const names = json.data.gardens.map((g: any) => g.name)
-     expect(names).toContain('Paris Garden')
-     expect(names).toContain('Versailles Garden')
-     expect(names).not.toContain('London Garden')
-   })
+    // Mock Auth
+    const email = (global as any).testEmail
+    mockGetUser.mockResolvedValue({ data: { user: { email } }, error: null })
 
-   it('should validate input parameters', async () => {
+    const res = await app.request('/api/v2/gardens/nearby?lat=48.8566&lng=2.3522&radius=30', {
+      headers: { Authorization: 'Bearer valid-token' },
+    })
+
+    expect(res.status).toBe(200)
+    const json = await res.json()
+
+    // Should find Paris and Versailles
+    const names = json.data.gardens.map((g: any) => g.name)
+    expect(names).toContain('Paris Garden')
+    expect(names).toContain('Versailles Garden')
+    expect(names).not.toContain('London Garden')
+  })
+
+  it('should validate input parameters', async () => {
     // Mock Auth
     const email = (global as any).testEmail
     mockGetUser.mockResolvedValue({ data: { user: { email } }, error: null })
 
     const res = await app.request('/api/v2/gardens/nearby?lat=invalid&lng=2.3522', {
-        headers: { Authorization: 'Bearer valid-token' }
+      headers: { Authorization: 'Bearer valid-token' },
     })
-    
+
     expect(res.status).toBe(400)
   })
 })

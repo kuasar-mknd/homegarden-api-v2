@@ -1,8 +1,8 @@
 import type { Context } from 'hono'
 import type { AddPlantUseCase } from '../../../application/use-cases/garden/add-plant.use-case.js'
-import type { GetUserPlantsUseCase } from '../../../application/use-cases/garden/get-user-plants.use-case.js'
-import type { GetGardenWeatherUseCase } from '../../../application/use-cases/garden/get-garden-weather.use-case.js'
 import type { FindNearbyGardensUseCase } from '../../../application/use-cases/garden/find-nearby-gardens.use-case.js'
+import type { GetGardenWeatherUseCase } from '../../../application/use-cases/garden/get-garden-weather.use-case.js'
+import type { GetUserPlantsUseCase } from '../../../application/use-cases/garden/get-user-plants.use-case.js'
 
 export class GardenController {
   constructor(
@@ -176,8 +176,15 @@ export class GardenController {
       const radius = parseFloat(c.req.query('radius') || '10')
       const limit = parseInt(c.req.query('limit') || '50', 10)
 
-      if (isNaN(lat) || isNaN(lng)) {
-        return c.json({ success: false, error: 'BAD_REQUEST', message: 'Valid latitude and longitude required' }, 400)
+      if (Number.isNaN(lat) || Number.isNaN(lng)) {
+        return c.json(
+          {
+            success: false,
+            error: 'BAD_REQUEST',
+            message: 'Valid latitude and longitude required',
+          },
+          400,
+        )
       }
 
       const result = await this.findNearbyGardensUseCase.execute({

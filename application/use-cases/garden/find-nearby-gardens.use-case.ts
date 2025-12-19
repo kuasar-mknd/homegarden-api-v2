@@ -1,7 +1,7 @@
-import { AppError } from '../../../shared/errors/app-error.js'
-import { fail, ok, type Result } from '../../../shared/types/result.type.js'
 import type { Garden } from '../../../domain/entities/garden.entity.js'
 import type { GardenRepository } from '../../../domain/repositories/garden.repository.js'
+import { AppError } from '../../../shared/errors/app-error.js'
+import { fail, ok, type Result } from '../../../shared/types/result.type.js'
 
 export interface FindNearbyGardensInput {
   latitude: number
@@ -34,7 +34,7 @@ export class FindNearbyGardensUseCase {
         latitude: input.latitude,
         longitude: input.longitude,
         radiusKm: input.radiusKm ?? 10,
-        limit: input.limit ?? 50
+        limit: input.limit ?? 50,
       })
 
       return ok({ gardens })

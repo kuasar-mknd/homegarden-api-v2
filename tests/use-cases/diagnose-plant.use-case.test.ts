@@ -1,7 +1,9 @@
 import { describe, expect, it, vi } from 'vitest'
+import type {
+  AIDiagnosisPort,
+  DiagnoseHealthResult,
+} from '../../application/ports/ai-diagnosis.port.js'
 import { DiagnosePlantUseCase } from '../../application/use-cases/dr-plant/diagnose-plant.use-case.js'
-import type { AIDiagnosisPort, DiagnoseHealthResult } from '../../application/ports/ai-diagnosis.port.js'
-import { ok, fail } from '../../shared/types/result.type.js'
 
 describe('DiagnosePlantUseCase', () => {
   // Mock the AI Port
@@ -30,7 +32,7 @@ describe('DiagnosePlantUseCase', () => {
       condition: {
         name: 'Test Disease',
         type: 'DISEASE',
-        severity: 'MODERATE'
+        severity: 'MODERATE',
       },
       affectedParts: ['leaves'],
       symptoms: ['yellow leaves'],
@@ -39,7 +41,7 @@ describe('DiagnosePlantUseCase', () => {
       preventionTips: ["don't overwater"],
       urgentActions: [],
       processingTimeMs: 100,
-      modelUsed: 'gemini-test'
+      modelUsed: 'gemini-test',
     }
     vi.mocked(mockAiPort.diagnoseHealth).mockResolvedValueOnce(mockDiagnosis)
 

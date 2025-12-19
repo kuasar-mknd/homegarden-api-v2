@@ -1,9 +1,8 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest'
+import { beforeEach, describe, expect, it, vi } from 'vitest'
+import type { WeatherPort } from '../../application/ports/weather.port'
 import { GetGardenWeatherUseCase } from '../../application/use-cases/garden/get-garden-weather.use-case'
-import { GardenRepository } from '../../domain/repositories/garden.repository'
-import { WeatherPort } from '../../application/ports/weather.port'
+import type { GardenRepository } from '../../domain/repositories/garden.repository'
 import { AppError } from '../../shared/errors/app-error'
-import { Result } from '../../shared/types/result.type'
 
 describe('GetGardenWeatherUseCase', () => {
   let useCase: GetGardenWeatherUseCase
@@ -63,7 +62,10 @@ describe('GetGardenWeatherUseCase', () => {
 
   it('should return weather data for garden owner', async () => {
     ;(mockGardenRepo.findById as any).mockResolvedValue(mockGarden)
-    ;(mockWeatherPort.getCurrentWeather as any).mockResolvedValue({ success: true, data: mockWeather })
+    ;(mockWeatherPort.getCurrentWeather as any).mockResolvedValue({
+      success: true,
+      data: mockWeather,
+    })
     ;(mockWeatherPort.getForecast as any).mockResolvedValue({ success: true, data: mockForecast })
 
     const result = await useCase.execute('garden1', 'user1')
@@ -112,7 +114,7 @@ describe('GetGardenWeatherUseCase', () => {
 
     expect(result.success).toBe(false)
     if (!result.success) {
-        expect(result.error.message).toBe('Service Down')
+      expect(result.error.message).toBe('Service Down')
     }
   })
 })

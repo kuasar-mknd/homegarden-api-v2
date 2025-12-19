@@ -1,6 +1,6 @@
-import { AppError } from '../../../shared/errors/app-error.js'
-import { ok, type Result, fail } from '../../../shared/types/result.type.js'
 import type { UserRepository } from '../../../domain/repositories/user.repository.js'
+import { AppError } from '../../../shared/errors/app-error.js'
+import { fail, ok, type Result } from '../../../shared/types/result.type.js'
 
 export interface GetUserPublicProfileInput {
   userId: string
@@ -17,7 +17,9 @@ export interface GetUserPublicProfileOutput {
 export class GetUserPublicProfileUseCase {
   constructor(private readonly userRepository: UserRepository) {}
 
-  async execute(input: GetUserPublicProfileInput): Promise<Result<GetUserPublicProfileOutput, AppError>> {
+  async execute(
+    input: GetUserPublicProfileInput,
+  ): Promise<Result<GetUserPublicProfileOutput, AppError>> {
     const user = await this.userRepository.findById(input.userId)
 
     if (!user) {
@@ -29,7 +31,7 @@ export class GetUserPublicProfileUseCase {
       firstName: user.firstName,
       lastName: user.lastName,
       avatarUrl: user.avatarUrl ?? null,
-      createdAt: user.createdAt
+      createdAt: user.createdAt,
     })
   }
 }

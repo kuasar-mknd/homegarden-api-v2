@@ -34,7 +34,11 @@ export interface UserRepository {
   delete(id: string): Promise<void>
 
   // Queries
-  findAll(options?: { page?: number; limit?: number; search?: string }): Promise<{ users: User[]; total: number }>
+  findAll(options?: {
+    page?: number
+    limit?: number
+    search?: string
+  }): Promise<{ users: User[]; total: number }>
 
   // Auth-related
   findByIdWithPassword(id: string): Promise<(UserProps & { password: string }) | null>

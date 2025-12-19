@@ -1,4 +1,4 @@
-import { describe, it, expect } from 'vitest'
+import { describe, expect, it } from 'vitest'
 import { Species, type SpeciesProps } from '../../domain/entities/species.entity.js'
 
 describe('Species entity', () => {
@@ -38,20 +38,20 @@ describe('Species entity', () => {
     })
 
     it('should return optional properties if present', () => {
-        const props: SpeciesProps = {
-            ...mockProps,
-            description: 'Delicious fruit',
-            waterRequirement: 'MODERATE',
-            lightRequirement: 'FULL_SUN',
-            defaultWateringDays: 3,
-            defaultFertilizeDays: 14
-        }
-        const species = Species.create(props)
-        expect(species.description).toBe('Delicious fruit')
-        expect(species.waterRequirement).toBe('MODERATE')
-        expect(species.lightRequirement).toBe('FULL_SUN')
-        expect(species.defaultWateringDays).toBe(3)
-        expect(species.defaultFertilizeDays).toBe(14)
+      const props: SpeciesProps = {
+        ...mockProps,
+        description: 'Delicious fruit',
+        waterRequirement: 'MODERATE',
+        lightRequirement: 'FULL_SUN',
+        defaultWateringDays: 3,
+        defaultFertilizeDays: 14,
+      }
+      const species = Species.create(props)
+      expect(species.description).toBe('Delicious fruit')
+      expect(species.waterRequirement).toBe('MODERATE')
+      expect(species.lightRequirement).toBe('FULL_SUN')
+      expect(species.defaultWateringDays).toBe(3)
+      expect(species.defaultFertilizeDays).toBe(14)
     })
   })
 

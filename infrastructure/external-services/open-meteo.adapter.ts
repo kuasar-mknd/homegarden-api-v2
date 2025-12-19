@@ -1,6 +1,10 @@
-import { WeatherPort, WeatherData, WeatherForecast } from '../../application/ports/weather.port.js'
-import { Result, ok, fail } from '../../shared/types/result.type.js'
+import type {
+  WeatherData,
+  WeatherForecast,
+  WeatherPort,
+} from '../../application/ports/weather.port.js'
 import { AppError } from '../../shared/errors/app-error.js'
+import { fail, ok, type Result } from '../../shared/types/result.type.js'
 import { logger } from '../config/logger.js'
 
 interface OpenMeteoCurrentResponse {
@@ -26,16 +30,19 @@ interface OpenMeteoDailyResponse {
 export class OpenMeteoAdapter implements WeatherPort {
   private readonly baseUrl = 'https://api.open-meteo.com/v1/forecast'
 
-  async getCurrentWeather(latitude: number, longitude: number): Promise<Result<WeatherData, AppError>> {
+  async getCurrentWeather(
+    latitude: number,
+    longitude: number,
+  ): Promise<Result<WeatherData, AppError>> {
     try {
       const url = `${this.baseUrl}?latitude=${latitude}&longitude=${longitude}&current=temperature_2m,relative_humidity_2m,precipitation,weather_code,wind_speed_10m`
-      
+
       const response = await fetch(url)
       if (!response.ok) {
         throw new Error(`OpenMeteo API error: ${response.statusText}`)
       }
 
-      const data = await response.json() as OpenMeteoCurrentResponse
+      const data = (await response.json()) as OpenMeteoCurrentResponse
       const current = data.current
 
       return ok({
@@ -44,7 +51,7 @@ export class OpenMeteoAdapter implements WeatherPort {
         precipitation: current.precipitation,
         windSpeed: current.wind_speed_10m,
         conditions: this.mapWeatherCodeToCondition(current.weather_code),
-        icon: this.mapWeatherCodeToIcon(current.weather_code)
+        icon: this.mapWeatherCodeToIcon(current.weather_code),
       })
     } catch (error) {
       logger.error({ error, latitude, longitude }, 'Failed to fetch current weather')
@@ -52,29 +59,31 @@ export class OpenMeteoAdapter implements WeatherPort {
     }
   }
 
-  async getForecast(latitude: number, longitude: number): Promise<Result<WeatherForecast, AppError>> {
+  async getForecast(
+    latitude: number,
+    longitude: number,
+  ): Promise<Result<WeatherForecast, AppError>> {
     try {
-       const url = `${this.baseUrl}?latitude=${latitude}&longitude=${longitude}&daily=temperature_2m_max,temperature_2m_min,precipitation_sum,weather_code&timezone=auto`
-      
-       const response = await fetch(url)
-       if (!response.ok) {
-         throw new Error(`OpenMeteo API error: ${response.statusText}`)
-       }
- 
-       const data = await response.json() as OpenMeteoDailyResponse
-       const daily = data.daily
- 
-       const forecast = daily.time.map((date: string, index: number) => ({
-         date,
-         maxTemp: daily.temperature_2m_max[index] ?? 0,
-         minTemp: daily.temperature_2m_min[index] ?? 0,
-         precipitation: daily.precipitation_sum[index] ?? 0,
-         conditions: this.mapWeatherCodeToCondition(daily.weather_code[index] ?? 0),
-         icon: this.mapWeatherCodeToIcon(daily.weather_code[index] ?? 0)
-       }))
- 
-       return ok({ daily: forecast })
+      const url = `${this.baseUrl}?latitude=${latitude}&longitude=${longitude}&daily=temperature_2m_max,temperature_2m_min,precipitation_sum,weather_code&timezone=auto`
 
+      const response = await fetch(url)
+      if (!response.ok) {
+        throw new Error(`OpenMeteo API error: ${response.statusText}`)
+      }
+
+      const data = (await response.json()) as OpenMeteoDailyResponse
+      const daily = data.daily
+
+      const forecast = daily.time.map((date: string, index: number) => ({
+        date,
+        maxTemp: daily.temperature_2m_max[index] ?? 0,
+        minTemp: daily.temperature_2m_min[index] ?? 0,
+        precipitation: daily.precipitation_sum[index] ?? 0,
+        conditions: this.mapWeatherCodeToCondition(daily.weather_code[index] ?? 0),
+        icon: this.mapWeatherCodeToIcon(daily.weather_code[index] ?? 0),
+      }))
+
+      return ok({ daily: forecast })
     } catch (error) {
       logger.error({ error, latitude, longitude }, 'Failed to fetch forecast')
       return fail(new AppError('Failed to fetch weather forecast', 503, 'WEATHER_SERVICE_ERROR'))
@@ -99,7 +108,7 @@ export class OpenMeteoAdapter implements WeatherPort {
     if (code === 1 || code === 2) return 'partly_cloudy'
     if (code === 3) return 'cloudy'
     if (code >= 45 && code <= 48) return 'fog'
-    if (code >= 51 && code <= 67) return 'rainy' 
+    if (code >= 51 && code <= 67) return 'rainy'
     if (code >= 71 && code <= 77) return 'snowy'
     if (code >= 80 && code <= 86) return 'rainy'
     if (code >= 95) return 'thunderstorm'

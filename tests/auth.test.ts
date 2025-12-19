@@ -1,7 +1,7 @@
-import { afterAll, beforeAll, describe, expect, it, vi } from 'vitest'
+import { afterAll, describe, expect, it, vi } from 'vitest'
 import app from '../index.js'
 import { prisma } from '../infrastructure/database/prisma.client.js'
-import { disconnectDb, resetDb } from './helpers/reset-db.js'
+import { disconnectDb } from './helpers/reset-db.js'
 
 // Mock Supabase to avoid hitting real Auth API
 const mockGetUser = vi.fn()

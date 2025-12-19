@@ -1,9 +1,13 @@
-import { prisma } from '../prisma.client.js'
-import type { GardenRepository, CreateGardenData, UpdateGardenData, NearbyQuery } from '../../../domain/repositories/garden.repository.js'
 import type { Garden } from '../../../domain/entities/garden.entity.js'
+import type {
+  CreateGardenData,
+  GardenRepository,
+  NearbyQuery,
+  UpdateGardenData,
+} from '../../../domain/repositories/garden.repository.js'
+import { prisma } from '../prisma.client.js'
 
 export class GardenPrismaRepository implements GardenRepository {
-
   async create(data: CreateGardenData): Promise<Garden> {
     const garden = await prisma.garden.create({
       data: {
@@ -14,14 +18,14 @@ export class GardenPrismaRepository implements GardenRepository {
         description: data.description ?? null,
         size: data.size ?? null,
         climate: data.climate ?? null,
-      }
+      },
     })
     return this.mapToEntity(garden)
   }
 
   async findById(id: string): Promise<Garden | null> {
     const garden = await prisma.garden.findUnique({
-      where: { id }
+      where: { id },
     })
     return garden ? this.mapToEntity(garden) : null
   }
@@ -32,7 +36,7 @@ export class GardenPrismaRepository implements GardenRepository {
 
   async findByUserId(userId: string): Promise<Garden[]> {
     const gardens = await prisma.garden.findMany({
-      where: { userId }
+      where: { userId },
     })
     return gardens.map((g: any) => this.mapToEntity(g))
   }
@@ -45,7 +49,7 @@ export class GardenPrismaRepository implements GardenRepository {
         description: data.description === undefined ? undefined : data.description,
         size: data.size === undefined ? undefined : data.size,
         climate: data.climate === undefined ? undefined : data.climate,
-      } as any // Bypass strict optional type check for now if persisted, or refine logic
+      } as any, // Bypass strict optional type check for now if persisted, or refine logic
     })
     return this.mapToEntity(garden)
   }
@@ -81,7 +85,7 @@ export class GardenPrismaRepository implements GardenRepository {
         )
         LIMIT ${limit};
       `
-      
+
       return gardens.map(this.mapToEntity)
     } catch (error) {
       console.error('Geospatial Query Error:', error)
@@ -90,7 +94,12 @@ export class GardenPrismaRepository implements GardenRepository {
     }
   }
 
-  async findAll(options?: { page?: number; limit?: number; userId?: string; search?: string }): Promise<{ gardens: Garden[]; total: number }> {
+  async findAll(options?: {
+    page?: number
+    limit?: number
+    userId?: string
+    search?: string
+  }): Promise<{ gardens: Garden[]; total: number }> {
     const { page = 1, limit = 10, userId, search } = options || {}
     const skip = (page - 1) * limit
     const where: any = {}
@@ -117,7 +126,7 @@ export class GardenPrismaRepository implements GardenRepository {
       longitude: prismaGarden.longitude,
       userId: prismaGarden.userId,
       createdAt: prismaGarden.createdAt,
-      updatedAt: prismaGarden.updatedAt
+      updatedAt: prismaGarden.updatedAt,
     } as Garden
   }
 }

@@ -1,7 +1,7 @@
-import { describe, it, expect, beforeAll, afterAll, vi } from 'vitest'
+import { afterAll, beforeAll, describe, expect, it, vi } from 'vitest'
 import app from '../../index.js'
 import { prisma } from '../../infrastructure/database/prisma.client.js'
-import { resetDb, disconnectDb } from '../helpers/reset-db.js'
+import { disconnectDb, resetDb } from '../helpers/reset-db.js'
 
 // Mock Supabase locally for this file
 const mockGetUser = vi.fn()
@@ -15,7 +15,7 @@ vi.mock('@supabase/supabase-js', () => ({
 
 describe('Plant Integration Routes', () => {
   let user: any
-  let garden: any
+  let _garden: any
 
   beforeAll(async () => {
     await resetDb()
@@ -33,7 +33,7 @@ describe('Plant Integration Routes', () => {
     })
 
     // Create Garden
-    garden = await prisma.garden.create({
+    _garden = await prisma.garden.create({
       data: {
         name: 'Route Garden',
         userId: user.id,
@@ -127,4 +127,3 @@ describe('Plant Integration Routes', () => {
     expect(res.status).toBe(401)
   })
 })
-

@@ -4,14 +4,14 @@
  * HTTP routes for plant identification endpoints.
  */
 
-import { OpenAPIHono, createRoute } from '@hono/zod-openapi'
+import { createRoute, OpenAPIHono } from '@hono/zod-openapi'
 import { bodyLimit } from 'hono/body-limit'
 import type { PlantIdController } from '../controllers/plant-id.controller.js'
-import { 
-  IdentifySpeciesInputSchema, 
-  IdentifySpeciesResponseSchema, 
-  StatusResponseSchema, 
-  ErrorSchema 
+import {
+  ErrorSchema,
+  IdentifySpeciesInputSchema,
+  IdentifySpeciesResponseSchema,
+  StatusResponseSchema,
 } from '../schemas/plant-id.schema.js'
 
 /**

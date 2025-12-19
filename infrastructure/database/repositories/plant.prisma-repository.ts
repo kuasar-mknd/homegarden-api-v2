@@ -1,6 +1,10 @@
+import { Plant } from '../../../domain/entities/plant.entity.js'
+import type {
+  CreatePlantData,
+  PlantRepository,
+  UpdatePlantData,
+} from '../../../domain/repositories/plant.repository.js'
 import { prisma } from '../prisma.client.js'
-import type { PlantRepository, CreatePlantData, UpdatePlantData } from '../../../domain/repositories/plant.repository.js'
-import { Plant, type PlantProps } from '../../../domain/entities/plant.entity.js'
 
 export class PlantPrismaRepository implements PlantRepository {
   async create(data: CreatePlantData): Promise<Plant> {
@@ -126,15 +130,17 @@ export class PlantPrismaRepository implements PlantRepository {
   }
 
   private mapToEntity(prismaPlant: any): Plant {
-    const garden = prismaPlant.garden ? {
-      id: prismaPlant.garden.id,
-      name: prismaPlant.garden.name,
-      userId: prismaPlant.garden.userId,
-      latitude: prismaPlant.garden.latitude,
-      longitude: prismaPlant.garden.longitude,
-      createdAt: prismaPlant.garden.createdAt,
-      updatedAt: prismaPlant.garden.updatedAt
-    } : undefined
+    const garden = prismaPlant.garden
+      ? {
+          id: prismaPlant.garden.id,
+          name: prismaPlant.garden.name,
+          userId: prismaPlant.garden.userId,
+          latitude: prismaPlant.garden.latitude,
+          longitude: prismaPlant.garden.longitude,
+          createdAt: prismaPlant.garden.createdAt,
+          updatedAt: prismaPlant.garden.updatedAt,
+        }
+      : undefined
 
     return Plant.fromPersistence({
       id: prismaPlant.id,

@@ -1,4 +1,4 @@
-import { describe, it, expect } from 'vitest'
+import { describe, expect, it } from 'vitest'
 import { CareSchedule, type CareScheduleProps } from '../../domain/entities/care-schedule.entity.js'
 
 describe('CareSchedule entity', () => {
@@ -55,23 +55,23 @@ describe('CareSchedule entity', () => {
     })
 
     it('daysUntilDue: should calculate days correctly', () => {
-        const futureDate = new Date()
-        futureDate.setDate(futureDate.getDate() + 5)
-        const schedule = CareSchedule.create({ ...mockProps, nextDueDate: futureDate })
-        expect(schedule.daysUntilDue).toBe(5)
+      const futureDate = new Date()
+      futureDate.setDate(futureDate.getDate() + 5)
+      const schedule = CareSchedule.create({ ...mockProps, nextDueDate: futureDate })
+      expect(schedule.daysUntilDue).toBe(5)
     })
 
     it('isDueToday: should return true if dates match', () => {
-        const today = new Date()
-        const schedule = CareSchedule.create({ ...mockProps, nextDueDate: today })
-        expect(schedule.isDueToday).toBe(true)
+      const today = new Date()
+      const schedule = CareSchedule.create({ ...mockProps, nextDueDate: today })
+      expect(schedule.isDueToday).toBe(true)
     })
 
     it('isDueToday: should return false if dates differ', () => {
-        const tomorrow = new Date()
-        tomorrow.setDate(tomorrow.getDate() + 1)
-        const schedule = CareSchedule.create({ ...mockProps, nextDueDate: tomorrow })
-        expect(schedule.isDueToday).toBe(false)
+      const tomorrow = new Date()
+      tomorrow.setDate(tomorrow.getDate() + 1)
+      const schedule = CareSchedule.create({ ...mockProps, nextDueDate: tomorrow })
+      expect(schedule.isDueToday).toBe(false)
     })
   })
 

@@ -1,8 +1,8 @@
-import { describe, it, expect, beforeAll, afterAll, beforeEach } from 'vitest'
+import crypto from 'node:crypto'
+import { afterAll, describe, expect, it } from 'vitest'
 import { prisma } from '../../infrastructure/database/prisma.client.js'
 import { PlantPrismaRepository } from '../../infrastructure/database/repositories/plant.prisma-repository.js'
-import { resetDb, disconnectDb } from '../helpers/reset-db.js'
-import crypto from 'node:crypto'
+import { disconnectDb } from '../helpers/reset-db.js'
 
 describe('PlantPrismaRepository', () => {
   const repository = new PlantPrismaRepository()
@@ -66,7 +66,7 @@ describe('PlantPrismaRepository', () => {
 
     const plants = await repository.findByUserId(user.id)
     expect(plants.length).toBeGreaterThanOrEqual(1)
-    expect(plants.some(p => p.gardenId === garden.id)).toBe(true)
+    expect(plants.some((p) => p.gardenId === garden.id)).toBe(true)
   })
 
   it('should update a plant', async () => {
@@ -99,11 +99,11 @@ describe('PlantPrismaRepository', () => {
   it('should find all with pagination and filters', async () => {
     const { garden } = await setupBaseData(crypto.randomUUID())
     const species = await prisma.species.create({
-        data: {
-            commonName: 'Test Species',
-            scientificName: `Testus scientificus ${crypto.randomUUID()}`,
-            family: 'Testaceae',
-        }
+      data: {
+        commonName: 'Test Species',
+        scientificName: `Testus scientificus ${crypto.randomUUID()}`,
+        family: 'Testaceae',
+      },
     })
 
     await repository.create({ gardenId: garden.id, nickname: 'P1', speciesId: species.id })
@@ -135,8 +135,8 @@ describe('PlantPrismaRepository', () => {
     await repository.create({ gardenId: garden.id, commonName: null })
 
     const stats = await repository.aggregateByCommonName(garden.id)
-    expect(stats.find(s => s.name === 'Rose')?.count).toBe(2)
-    expect(stats.find(s => s.name === 'Tulip')?.count).toBe(1)
-    expect(stats.find(s => s.name === 'Unknown')?.count).toBe(1)
+    expect(stats.find((s) => s.name === 'Rose')?.count).toBe(2)
+    expect(stats.find((s) => s.name === 'Tulip')?.count).toBe(1)
+    expect(stats.find((s) => s.name === 'Unknown')?.count).toBe(1)
   })
 })

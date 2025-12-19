@@ -1,4 +1,4 @@
-import { ConditionType, Severity, DiagnosisStatus } from '@prisma/client'
+import { ConditionType, DiagnosisStatus, Severity } from '@prisma/client'
 import { prisma } from '../infrastructure/database/prisma.client.js'
 
 // Real-ish plant data to make the app look good
@@ -12,7 +12,8 @@ const COMMON_SPECIES = [
     waterRequirement: 'MODERATE',
     lightRequirement: 'PARTIAL_SHADE',
     growthRate: 'FAST',
-    imageUrl: 'https://images.unsplash.com/photo-1614594975525-e45190c55d0b?auto=format&fit=crop&q=80',
+    imageUrl:
+      'https://images.unsplash.com/photo-1614594975525-e45190c55d0b?auto=format&fit=crop&q=80',
   },
   {
     commonName: 'Fiddle Leaf Fig',
@@ -23,7 +24,8 @@ const COMMON_SPECIES = [
     waterRequirement: 'MODERATE',
     lightRequirement: 'FULL_SUN', // or bright indirect
     growthRate: 'MODERATE',
-    imageUrl: 'https://images.unsplash.com/photo-1610832958506-aa56368176cf?auto=format&fit=crop&q=80',
+    imageUrl:
+      'https://images.unsplash.com/photo-1610832958506-aa56368176cf?auto=format&fit=crop&q=80',
   },
   {
     commonName: 'Snake Plant',
@@ -34,7 +36,8 @@ const COMMON_SPECIES = [
     waterRequirement: 'LOW',
     lightRequirement: 'FULL_SHADE', // Tolerate
     growthRate: 'SLOW',
-    imageUrl: 'https://images.unsplash.com/photo-1599598425947-630e60882772?auto=format&fit=crop&q=80',
+    imageUrl:
+      'https://images.unsplash.com/photo-1599598425947-630e60882772?auto=format&fit=crop&q=80',
   },
   {
     commonName: 'Basil',
@@ -45,7 +48,8 @@ const COMMON_SPECIES = [
     waterRequirement: 'HIGH',
     lightRequirement: 'FULL_SUN',
     growthRate: 'FAST',
-    imageUrl: 'https://images.unsplash.com/photo-1618164436241-4473940d1f5c?auto=format&fit=crop&q=80',
+    imageUrl:
+      'https://images.unsplash.com/photo-1618164436241-4473940d1f5c?auto=format&fit=crop&q=80',
   },
   {
     commonName: 'Tomato',
@@ -56,8 +60,9 @@ const COMMON_SPECIES = [
     waterRequirement: 'HIGH',
     lightRequirement: 'FULL_SUN',
     growthRate: 'FAST',
-    imageUrl: 'https://images.unsplash.com/photo-1592841200221-a6898f307baa?auto=format&fit=crop&q=80',
-  }
+    imageUrl:
+      'https://images.unsplash.com/photo-1592841200221-a6898f307baa?auto=format&fit=crop&q=80',
+  },
 ]
 
 async function main() {
@@ -72,7 +77,7 @@ async function main() {
   await prisma.garden.deleteMany()
   await prisma.species.deleteMany()
   await prisma.user.deleteMany()
-  
+
   console.log('🧹 Cleaned existing data')
 
   // 2. Create Species Catalog
@@ -84,8 +89,8 @@ async function main() {
         nativeRegions: [s.origin],
         waterRequirement: s.waterRequirement as any,
         lightRequirement: s.lightRequirement as any,
-        growthRate: s.growthRate as any
-      }
+        growthRate: s.growthRate as any,
+      },
     })
     speciesMap.set(s.commonName, species)
   }
@@ -100,8 +105,8 @@ async function main() {
       firstName: 'Admin',
       lastName: 'User',
       role: 'ADMIN',
-      preferences: { theme: 'dark', notifications: true }
-    }
+      preferences: { theme: 'dark', notifications: true },
+    },
   })
 
   // Test User (Standard)
@@ -112,8 +117,8 @@ async function main() {
       firstName: 'Test',
       lastName: 'Gardener',
       role: 'USER',
-      preferences: { theme: 'system', notifications: true }
-    }
+      preferences: { theme: 'system', notifications: true },
+    },
   })
 
   console.log('👤 Seeded users (admin@homegarden.com, test@homegarden.com)')
@@ -127,7 +132,7 @@ async function main() {
       longitude: 2.3522,
       climate: 'Indoor',
       description: 'My cozy indoor plant collection',
-    }
+    },
   })
 
   const balconyGarden = await prisma.garden.create({
@@ -138,7 +143,7 @@ async function main() {
       longitude: 2.3522,
       climate: 'Outdoor',
       description: 'Fresh herbs for cooking',
-    }
+    },
   })
 
   // 5. Add Plants
@@ -152,7 +157,7 @@ async function main() {
       acquiredDate: new Date('2024-01-15'),
       imageUrl: speciesMap.get('Monstera Deliciosa')?.imageUrl,
       watering: 'Every 7 days',
-    }
+    },
   })
 
   // Fiddle Leaf
@@ -164,8 +169,8 @@ async function main() {
       commonName: 'Fiddle Leaf Fig',
       acquiredDate: new Date('2024-03-10'),
       imageUrl: speciesMap.get('Fiddle Leaf Fig')?.imageUrl,
-      careNotes: 'Don\'t move him, he gets dramatic.',
-    }
+      careNotes: "Don't move him, he gets dramatic.",
+    },
   })
 
   // Basil on Balcony
@@ -177,7 +182,7 @@ async function main() {
       commonName: 'Basil',
       acquiredDate: new Date(),
       imageUrl: speciesMap.get('Basil')?.imageUrl,
-    }
+    },
   })
 
   // 6. Create Diagnosis (Dr. Plant History)
@@ -185,17 +190,22 @@ async function main() {
     data: {
       userId: user.id,
       plantId: basil.id,
-      imageUrl: 'https://images.unsplash.com/photo-1611566026373-c6c8ddb6c9b8?auto=format&fit=crop&q=80',
+      imageUrl:
+        'https://images.unsplash.com/photo-1611566026373-c6c8ddb6c9b8?auto=format&fit=crop&q=80',
       status: DiagnosisStatus.COMPLETED,
       conditionName: 'Downy Mildew',
       conditionType: ConditionType.DISEASE,
       confidence: 0.95,
       severity: Severity.MODERATE,
       description: 'Yellowing leaves with gray fuzz on undersides.',
-      treatmentSteps: ['Remove infected leaves', 'Improve air circulation', 'Apply fungicide if spreading'],
+      treatmentSteps: [
+        'Remove infected leaves',
+        'Improve air circulation',
+        'Apply fungicide if spreading',
+      ],
       aiModel: 'gemini-1.5-flash',
       processingMs: 1200,
-    }
+    },
   })
 
   console.log('✅ Seeding completed!')

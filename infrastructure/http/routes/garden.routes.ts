@@ -1,8 +1,12 @@
-import { OpenAPIHono, createRoute } from '@hono/zod-openapi'
+import { createRoute, OpenAPIHono } from '@hono/zod-openapi'
 import type { GardenController } from '../controllers/garden.controller.js'
 import { authMiddleware } from '../middleware/auth.middleware.js'
-import { GardenWeatherResponseSchema, NearbyGardensQuerySchema, NearbyGardensResponseSchema, GardenIdParamSchema } from '../schemas/garden.schema.js'
-import { z } from '@hono/zod-openapi'
+import {
+  GardenIdParamSchema,
+  GardenWeatherResponseSchema,
+  NearbyGardensQuerySchema,
+  NearbyGardensResponseSchema,
+} from '../schemas/garden.schema.js'
 
 export const createGardenRoutes = (controller: GardenController) => {
   const app = new OpenAPIHono()
@@ -19,29 +23,29 @@ export const createGardenRoutes = (controller: GardenController) => {
       summary: 'Find nearby gardens',
       description: 'Search for gardens within a specific radius of a geolocation.',
       request: {
-        query: NearbyGardensQuerySchema
+        query: NearbyGardensQuerySchema,
       },
       responses: {
         200: {
           content: {
             'application/json': {
-              schema: NearbyGardensResponseSchema
-            }
+              schema: NearbyGardensResponseSchema,
+            },
           },
-          description: 'List of nearby gardens found'
+          description: 'List of nearby gardens found',
         },
         400: {
-          description: 'Bad Request'
+          description: 'Bad Request',
         },
         401: {
-          description: 'Unauthorized'
+          description: 'Unauthorized',
         },
         500: {
-          description: 'Internal Server Error'
-        }
-      }
+          description: 'Internal Server Error',
+        },
+      },
     }),
-    controller.getNearby
+    controller.getNearby,
   )
 
   // GET /:gardenId/weather
@@ -53,29 +57,29 @@ export const createGardenRoutes = (controller: GardenController) => {
       summary: 'Get garden weather',
       description: 'Retrieve current weather and forecast for a specific garden.',
       request: {
-        params: GardenIdParamSchema
+        params: GardenIdParamSchema,
       },
       responses: {
         200: {
           content: {
             'application/json': {
-              schema: GardenWeatherResponseSchema
-            }
+              schema: GardenWeatherResponseSchema,
+            },
           },
-          description: 'Weather data retrieved successfully'
+          description: 'Weather data retrieved successfully',
         },
         401: {
-          description: 'Unauthorized'
+          description: 'Unauthorized',
         },
         404: {
-          description: 'Garden not found'
+          description: 'Garden not found',
         },
         500: {
-          description: 'Internal Server Error'
-        }
-      }
+          description: 'Internal Server Error',
+        },
+      },
     }),
-    controller.getWeather
+    controller.getWeather,
   )
 
   // Standard routes (not documented yet or already present)

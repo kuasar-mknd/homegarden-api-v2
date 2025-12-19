@@ -17,7 +17,7 @@ export const logger = pino({
             ignore: 'pid,hostname',
           },
         }
-      : undefined as any,
+      : (undefined as any),
   redact: {
     paths: [
       'password',

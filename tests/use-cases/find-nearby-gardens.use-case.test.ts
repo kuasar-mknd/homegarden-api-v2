@@ -1,6 +1,6 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest'
+import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { FindNearbyGardensUseCase } from '../../application/use-cases/garden/find-nearby-gardens.use-case'
-import { GardenRepository } from '../../domain/repositories/garden.repository'
+import type { GardenRepository } from '../../domain/repositories/garden.repository'
 import { AppError } from '../../shared/errors/app-error'
 
 describe('FindNearbyGardensUseCase', () => {
@@ -104,7 +104,7 @@ describe('FindNearbyGardensUseCase', () => {
     const result = await useCase.execute({} as any)
     expect(result.success).toBe(false)
     if (!result.success) {
-        expect(result.error.message).toContain('required')
+      expect(result.error.message).toContain('required')
     }
   })
 })

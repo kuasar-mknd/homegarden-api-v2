@@ -1,9 +1,11 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest'
-import type { Context } from 'hono'
-import { PlantIdController, createPlantIdController } from '../../infrastructure/http/controllers/plant-id.controller.js'
-import { IdentifySpeciesUseCase, createIdentifySpeciesUseCase } from '../../application/use-cases/plant-id/identify-species.use-case.js'
-import { ok, fail } from '../../shared/types/result.type.js'
+import { beforeEach, describe, expect, it, vi } from 'vitest'
+import type { IdentifySpeciesUseCase } from '../../application/use-cases/plant-id/identify-species.use-case.js'
+import {
+  createPlantIdController,
+  PlantIdController,
+} from '../../infrastructure/http/controllers/plant-id.controller.js'
 import { AppError } from '../../shared/errors/app-error.js'
+import { fail, ok } from '../../shared/types/result.type.js'
 
 describe('PlantIdController', () => {
   let controller: PlantIdController
@@ -15,15 +17,18 @@ describe('PlantIdController', () => {
       execute: vi.fn(),
     } as any
     controller = new PlantIdController(mockUseCase)
-    
+
     mockContext = {
       req: {
         json: vi.fn(),
       },
-      json: vi.fn().mockImplementation((val, status) => ({
-        status,
-        json: async () => val,
-      } as any)),
+      json: vi.fn().mockImplementation(
+        (val, status) =>
+          ({
+            status,
+            json: async () => val,
+          }) as any,
+      ),
     }
   })
 
@@ -31,7 +36,7 @@ describe('PlantIdController', () => {
     it('should return 200 on success', async () => {
       const body = { imageBase64: 'data', organs: ['leaf'] }
       mockContext.req.json.mockResolvedValue(body)
-      
+
       const mockResult = { suggestions: [] }
       vi.mocked(mockUseCase.execute).mockResolvedValue(ok(mockResult as any))
 
@@ -49,22 +54,24 @@ describe('PlantIdController', () => {
       vi.mocked(mockUseCase.execute).mockResolvedValue(ok({} as any))
 
       await controller.identify(mockContext)
-      expect(mockUseCase.execute).toHaveBeenCalledWith(expect.objectContaining({ imageUrl: 'http://link.com' }))
+      expect(mockUseCase.execute).toHaveBeenCalledWith(
+        expect.objectContaining({ imageUrl: 'http://link.com' }),
+      )
     })
 
     it('should identify plant with all optional fields successfully', async () => {
-        const body = {
-            imageUrl: 'http://img.com',
-            mimeType: 'image/jpeg',
-            organs: ['leaf'],
-            maxSuggestions: 3,
-            location: { latitude: 10, longitude: 20 }
-        }
-        mockContext.req.json.mockResolvedValue(body)
-        vi.mocked(mockUseCase.execute).mockResolvedValue(ok({ suggestions: [] } as any))
-        
-        await controller.identify(mockContext)
-        expect(mockUseCase.execute).toHaveBeenCalledWith(expect.objectContaining(body))
+      const body = {
+        imageUrl: 'http://img.com',
+        mimeType: 'image/jpeg',
+        organs: ['leaf'],
+        maxSuggestions: 3,
+        location: { latitude: 10, longitude: 20 },
+      }
+      mockContext.req.json.mockResolvedValue(body)
+      vi.mocked(mockUseCase.execute).mockResolvedValue(ok({ suggestions: [] } as any))
+
+      await controller.identify(mockContext)
+      expect(mockUseCase.execute).toHaveBeenCalledWith(expect.objectContaining(body))
     })
 
     it('should return 400 if image source is missing', async () => {
@@ -79,7 +86,9 @@ describe('PlantIdController', () => {
 
     it('should return use case error with correct status', async () => {
       mockContext.req.json.mockResolvedValue({ imageBase64: 'data' })
-      vi.mocked(mockUseCase.execute).mockResolvedValue(fail(new AppError('Service Error', 503, 'SERVICE_UNAVAILABLE')))
+      vi.mocked(mockUseCase.execute).mockResolvedValue(
+        fail(new AppError('Service Error', 503, 'SERVICE_UNAVAILABLE')),
+      )
 
       const res = await controller.identify(mockContext)
 

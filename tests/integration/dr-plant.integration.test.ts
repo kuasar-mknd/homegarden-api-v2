@@ -1,18 +1,17 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { Hono } from 'hono'
+import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { DrPlantController } from '../../infrastructure/http/controllers/dr-plant.controller.js'
-import { DiagnosePlantUseCase } from '../../application/use-cases/dr-plant/diagnose-plant.use-case.js'
 import { ok } from '../../shared/types/result.type.js'
 
 describe('DrPlant Integration', () => {
   let app: Hono
   let mockUseCase: any
-  
+
   beforeEach(() => {
     app = new Hono()
     mockUseCase = { execute: vi.fn() }
     const controller = new DrPlantController(mockUseCase)
-    
+
     // Setup route
     app.post('/dr-plant/diagnose', controller.diagnose)
   })
@@ -23,7 +22,7 @@ describe('DrPlant Integration', () => {
       isHealthy: false,
       condition: { name: 'Leaf Spot' },
       symptoms: ['spots'],
-      treatments: []
+      treatments: [],
     }
     mockUseCase.execute.mockResolvedValue(ok(mockDiagnosis))
 
@@ -35,18 +34,18 @@ describe('DrPlant Integration', () => {
 
     const res = await app.request('/dr-plant/diagnose', {
       method: 'POST',
-      body: formData
+      body: formData,
     })
 
     expect(res.status).toBe(200)
     const body = await res.json()
     expect(body.success).toBe(true)
     expect(body.data.condition.name).toBe('Leaf Spot')
-    
+
     expect(mockUseCase.execute).toHaveBeenCalledWith(
-        expect.any(Buffer),
-        'image/jpeg',
-        'yellow spots'
+      expect.any(Buffer),
+      'image/jpeg',
+      'yellow spots',
     )
   })
 
@@ -56,7 +55,7 @@ describe('DrPlant Integration', () => {
 
     const res = await app.request('/dr-plant/diagnose', {
       method: 'POST',
-      body: formData
+      body: formData,
     })
 
     expect(res.status).toBe(400)

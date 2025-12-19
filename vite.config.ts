@@ -1,5 +1,5 @@
-import { defineConfig } from 'vitest/config'
 import devServer from '@hono/vite-dev-server'
+import { defineConfig } from 'vitest/config'
 
 export default defineConfig({
   plugins: [
@@ -18,7 +18,12 @@ export default defineConfig({
       provider: 'istanbul',
       reporter: ['text', 'json', 'html'],
       include: ['application/**/*.ts', 'infrastructure/**/*.ts', 'domain/**/*.ts'],
-      exclude: ['infrastructure/database/migrations/**', 'dist/**', '**/node_modules/**', 'tests/**'],
+      exclude: [
+        'infrastructure/database/migrations/**',
+        'dist/**',
+        '**/node_modules/**',
+        'tests/**',
+      ],
     },
   },
 })

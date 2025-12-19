@@ -1,4 +1,4 @@
-import { describe, it, expect } from 'vitest'
+import { describe, expect, it } from 'vitest'
 import { Garden, type GardenProps } from '../../domain/entities/garden.entity.js'
 
 describe('Garden entity', () => {
@@ -73,7 +73,7 @@ describe('Garden entity', () => {
       // Distance is roughly 344 km
       const garden = Garden.create(mockProps)
       const distance = garden.distanceTo(51.5074, -0.1278)
-      
+
       expect(distance).toBeGreaterThan(340)
       expect(distance).toBeLessThan(350)
     })

@@ -3,7 +3,7 @@ import { logger } from '../../config/logger.js'
 
 /**
  * Structured Request Logger Middleware
- * 
+ *
  * Logs incoming requests and outgoing responses using Pino.
  * Adds a unique Request ID to correlation.
  */
@@ -16,7 +16,7 @@ export const requestLogger = createMiddleware(async (c, next) => {
   c.header('X-Request-ID', requestId)
 
   const { method, path } = c.req
-  
+
   // Log Request (Optional: keeping it minimal to avoid noise, focusing on response)
   // logger.info({ msg: 'Incoming Request', method, path, requestId })
 

@@ -19,7 +19,7 @@ interface AddPlantInput {
 export class AddPlantUseCase {
   constructor(
     private readonly gardenRepository: GardenRepository,
-    private readonly plantRepository: PlantRepository
+    private readonly plantRepository: PlantRepository,
   ) {}
 
   async execute(input: AddPlantInput): Promise<Result<Plant, AppError>> {
