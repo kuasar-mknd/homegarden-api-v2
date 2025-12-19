@@ -42,6 +42,7 @@ import { createGardenRoutes } from './infrastructure/http/routes/garden.routes.j
 // Routes
 import { createPlantIdRoutes } from './infrastructure/http/routes/plant-id.routes.js'
 import { createUserRoutes } from './infrastructure/http/routes/user.routes.js'
+import { initializeWebSocketServer } from './infrastructure/websocket/index.js'
 
 // Initialize dependencies
 const geminiAdapter = getGeminiPlantAdapter()
@@ -395,10 +396,12 @@ if (env.NODE_ENV !== 'test' && process.env.npm_lifecycle_event !== 'test') {
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 `)
 
-    serve({
+    const server = serve({
       fetch: app.fetch,
       port,
     })
+
+    initializeWebSocketServer(server as any)
   }
 }
 
