@@ -4,9 +4,15 @@
  * HTTP routes for plant identification endpoints.
  */
 
-import { Hono } from 'hono'
+import { OpenAPIHono, createRoute } from '@hono/zod-openapi'
 import { bodyLimit } from 'hono/body-limit'
 import type { PlantIdController } from '../controllers/plant-id.controller.js'
+import { 
+  IdentifySpeciesInputSchema, 
+  IdentifySpeciesResponseSchema, 
+  StatusResponseSchema, 
+  ErrorSchema 
+} from '../schemas/plant-id.schema.js'
 
 /**
  * Create Plant ID routes
@@ -14,8 +20,8 @@ import type { PlantIdController } from '../controllers/plant-id.controller.js'
  * @param controller - PlantIdController instance
  * @returns Hono router with plant-id routes
  */
-export const createPlantIdRoutes = (controller: PlantIdController): Hono => {
-  const router = new Hono()
+export const createPlantIdRoutes = (controller: PlantIdController) => {
+  const router = new OpenAPIHono()
 
   // ============================================================
   // MIDDLEWARE
@@ -40,34 +46,67 @@ export const createPlantIdRoutes = (controller: PlantIdController): Hono => {
   )
 
   // ============================================================
-  // ROUTES
+  // ROUTES definition (OpenAPI)
   // ============================================================
 
-  /**
-   * GET /status
-   * Check service availability
-   */
-  router.get('/status', controller.status)
+  const statusRoute = createRoute({
+    method: 'get',
+    path: '/status',
+    description: 'Check Plant ID service availability',
+    tags: ['PlantID'],
+    responses: {
+      200: {
+        description: 'Service status',
+        content: {
+          'application/json': {
+            schema: StatusResponseSchema,
+          },
+        },
+      },
+    },
+  })
 
-  /**
-   * POST /identify
-   * Identify plant species from an image
-   *
-   * Request body:
-   * {
-   *   "imageBase64": "base64-encoded-image",  // OR
-   *   "imageUrl": "https://example.com/plant.jpg",
-   *   "mimeType": "image/jpeg",  // optional
-   *   "organs": ["leaf", "flower"],  // optional
-   *   "maxSuggestions": 5,  // optional
-   *   "location": {  // optional
-   *     "latitude": 46.2044,
-   *     "longitude": 6.1432,
-   *     "country": "Switzerland"
-   *   }
-   * }
-   */
-  router.post('/identify', controller.identify)
+  const identifyRoute = createRoute({
+    method: 'post',
+    path: '/identify',
+    description: 'Identify plant species from an image',
+    tags: ['PlantID'],
+    request: {
+      body: {
+        content: {
+          'application/json': {
+            schema: IdentifySpeciesInputSchema,
+          },
+        },
+        required: true,
+      },
+    },
+    responses: {
+      200: {
+        description: 'Identification successful',
+        content: {
+          'application/json': {
+            schema: IdentifySpeciesResponseSchema,
+          },
+        },
+      },
+      400: {
+        description: 'Bad Request (Missing image or invalid data)',
+        content: { 'application/json': { schema: ErrorSchema } },
+      },
+      500: {
+        description: 'Internal Server Error (AI Service failed)',
+        content: { 'application/json': { schema: ErrorSchema } },
+      },
+    },
+  })
+
+  // ============================================================
+  // HANDLERS
+  // ============================================================
+
+  router.openapi(statusRoute, controller.status)
+  router.openapi(identifyRoute, controller.identify)
 
   return router
 }

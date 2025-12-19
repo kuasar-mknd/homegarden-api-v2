@@ -1,7 +1,9 @@
 import { serve } from '@hono/node-server'
-import { Hono } from 'hono'
+import { OpenAPIHono } from '@hono/zod-openapi'
+import { swaggerUI } from '@hono/swagger-ui'
 import { cors } from 'hono/cors'
-import { logger } from 'hono/logger'
+import { requestLogger } from './infrastructure/http/middleware/request-logger.middleware.js'
+import { logger } from './infrastructure/config/logger.js'
 import { prettyJSON } from 'hono/pretty-json'
 import { secureHeaders } from 'hono/secure-headers'
 
@@ -53,7 +55,23 @@ const gardenRoutes = createGardenRoutes(gardenController)
 // CREATE HONO APP
 // ============================================================
 
-const app = new Hono()
+const app = new OpenAPIHono()
+
+// OpenAPI Documentation
+app.doc('/doc', {
+  openapi: '3.0.0',
+  info: {
+    version: '2.0.0',
+    title: 'HomeGarden API',
+    description: 'Smart Plant Management API with AI capabilities'
+  },
+  servers: [
+    { url: 'http://localhost:3000', description: 'Local Server' }
+  ]
+})
+
+// Swagger UI
+app.get('/ui', swaggerUI({ url: '/doc' }))
 
 // ============================================================
 // GLOBAL MIDDLEWARE
@@ -72,7 +90,7 @@ app.use(
 )
 
 // Request logging
-app.use('*', logger())
+app.use('*', requestLogger)
 
 // Pretty JSON responses in development
 if (env.NODE_ENV === 'development') {
@@ -170,7 +188,7 @@ app.notFound((c) => {
 
 // Global error handler
 app.onError((err, c) => {
-  console.error('Unhandled error:', err)
+  logger.error({ err }, 'Unhandled error')
 
   const statusCode = 'statusCode' in err ? (err.statusCode as number) : 500
 
@@ -192,7 +210,7 @@ app.onError((err, c) => {
 const port = env.PORT
 
 if (env.NODE_ENV !== 'test') {
-  console.log(`
+  logger.info(`
 🌱 HomeGarden API v2.0
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 📍 Server:     http://localhost:${port}
