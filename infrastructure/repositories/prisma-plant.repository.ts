@@ -1,11 +1,10 @@
-
-import { prisma } from '../database/prisma.client.js'
 import { Plant } from '../../domain/entities/plant.entity.js'
 import type {
-  PlantRepository,
   CreatePlantData,
-  UpdatePlantData
+  PlantRepository,
+  UpdatePlantData,
 } from '../../domain/repositories/plant.repository.js'
+import { prisma } from '../database/prisma.client.js'
 
 export class PrismaPlantRepository implements PlantRepository {
   async create(data: CreatePlantData): Promise<Plant> {
@@ -35,8 +34,8 @@ export class PrismaPlantRepository implements PlantRepository {
     const plants = await prisma.plant.findMany({
       where: {
         garden: {
-          userId
-        }
+          userId,
+        },
       },
       orderBy: { createdAt: 'desc' },
     })
@@ -115,8 +114,8 @@ export class PrismaPlantRepository implements PlantRepository {
     })
 
     return result
-      .filter(item => item.commonName !== null)
-      .map(item => ({
+      .filter((item) => item.commonName !== null)
+      .map((item) => ({
         name: item.commonName as string,
         count: item._count.commonName,
       }))

@@ -1,11 +1,10 @@
-
-import { prisma } from '../database/prisma.client.js'
 import { CareSchedule } from '../../domain/entities/care-schedule.entity.js'
 import type {
   CareScheduleRepository,
   CreateCareScheduleData,
-  UpdateCareScheduleData
+  UpdateCareScheduleData,
 } from '../../domain/repositories/care-schedule.repository.js'
+import { prisma } from '../database/prisma.client.js'
 
 export class PrismaCareScheduleRepository implements CareScheduleRepository {
   async create(data: CreateCareScheduleData): Promise<CareSchedule> {
@@ -71,9 +70,9 @@ export class PrismaCareScheduleRepository implements CareScheduleRepository {
         userId,
         nextDueDate: {
           gte: today,
-          lte: futureDate
+          lte: futureDate,
         },
-        isEnabled: true
+        isEnabled: true,
       },
       orderBy: { nextDueDate: 'asc' },
     })
@@ -87,9 +86,9 @@ export class PrismaCareScheduleRepository implements CareScheduleRepository {
       where: {
         userId,
         nextDueDate: {
-          lt: today
+          lt: today,
         },
-        isEnabled: true
+        isEnabled: true,
       },
       orderBy: { nextDueDate: 'asc' },
     })
@@ -109,7 +108,7 @@ export class PrismaCareScheduleRepository implements CareScheduleRepository {
 
     // Calculate next due date
     const lastDoneAt = new Date()
-    let nextDueDate = new Date(lastDoneAt)
+    const nextDueDate = new Date(lastDoneAt)
 
     // Simple calculation based on frequency
     // In a real app this should be more robust (handling months, etc.)
@@ -121,7 +120,7 @@ export class PrismaCareScheduleRepository implements CareScheduleRepository {
         nextDueDate.setDate(nextDueDate.getDate() + 2)
         break
       case 'TWICE_WEEKLY':
-        nextDueDate.setTime(nextDueDate.getTime() + (3.5 * 24 * 60 * 60 * 1000))
+        nextDueDate.setTime(nextDueDate.getTime() + 3.5 * 24 * 60 * 60 * 1000)
         break
       case 'WEEKLY':
         nextDueDate.setDate(nextDueDate.getDate() + 7)
@@ -145,16 +144,16 @@ export class PrismaCareScheduleRepository implements CareScheduleRepository {
         data: {
           lastDoneAt,
           nextDueDate,
-        }
+        },
       }),
       prisma.careCompletion.create({
         data: {
           scheduleId: id,
           completedAt: lastDoneAt,
           notes,
-          photoUrl
-        }
-      })
+          photoUrl,
+        },
+      }),
     ])
 
     return CareSchedule.fromPersistence(updatedSchedule)

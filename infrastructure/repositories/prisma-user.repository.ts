@@ -1,11 +1,10 @@
-
-import { prisma } from '../database/prisma.client.js'
 import { User, type UserProps } from '../../domain/entities/user.entity.js'
 import type {
-  UserRepository,
   CreateUserData,
-  UpdateUserData
+  UpdateUserData,
+  UserRepository,
 } from '../../domain/repositories/user.repository.js'
+import { prisma } from '../database/prisma.client.js'
 
 export class PrismaUserRepository implements UserRepository {
   async create(data: CreateUserData): Promise<User> {

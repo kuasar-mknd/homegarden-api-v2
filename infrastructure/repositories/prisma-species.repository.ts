@@ -1,10 +1,9 @@
-
-import { prisma } from '../database/prisma.client.js'
 import { Species } from '../../domain/entities/species.entity.js'
 import type {
+  CreateSpeciesData,
   SpeciesRepository,
-  CreateSpeciesData
 } from '../../domain/repositories/species.repository.js'
+import { prisma } from '../database/prisma.client.js'
 
 export class PrismaSpeciesRepository implements SpeciesRepository {
   async create(data: CreateSpeciesData): Promise<Species> {

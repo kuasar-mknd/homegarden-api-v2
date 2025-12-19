@@ -1,13 +1,12 @@
-
-import { prisma } from '../database/prisma.client.js'
 import { Garden } from '../../domain/entities/garden.entity.js'
 import { Plant } from '../../domain/entities/plant.entity.js'
 import type {
-  GardenRepository,
   CreateGardenData,
+  GardenRepository,
+  NearbyQuery,
   UpdateGardenData,
-  NearbyQuery
 } from '../../domain/repositories/garden.repository.js'
+import { prisma } from '../database/prisma.client.js'
 
 export class PrismaGardenRepository implements GardenRepository {
   async create(data: CreateGardenData): Promise<Garden> {
@@ -130,7 +129,7 @@ export class PrismaGardenRepository implements GardenRepository {
     // Haversine formula
     // 6371 * 2 * ASIN(SQRT(POWER(SIN((lat - ?hostLat) * pi()/180 / 2), 2) + COS(lat * pi()/180) * COS(?hostLat * pi()/180) * POWER(SIN((lng - ?hostLng) * pi()/180 / 2), 2)))
 
-    const gardens = await prisma.$queryRaw`
+    const gardens = (await prisma.$queryRaw`
       SELECT *, (
         6371 * acos(
           cos(radians(${latitude})) * cos(radians(latitude)) *
@@ -148,7 +147,7 @@ export class PrismaGardenRepository implements GardenRepository {
       ) < ${radiusKm}
       ORDER BY distance
       LIMIT ${limit}
-    ` as any[]
+    `) as any[]
 
     // We need to map the raw results back to Garden entities.
     // The raw result fields are snake_case (from DB) but Prisma usually returns camelCase if using findMany.
@@ -158,7 +157,7 @@ export class PrismaGardenRepository implements GardenRepository {
     // Garden.fromPersistence expects camelCase props matching the entity props.
     // We need to map keys from snake_case to camelCase.
 
-    return gardens.map(row => {
+    return gardens.map((row) => {
       // Manual mapping based on schema
       return Garden.fromPersistence({
         id: row.id,
@@ -170,7 +169,7 @@ export class PrismaGardenRepository implements GardenRepository {
         climate: row.climate,
         userId: row.user_id, // mapped from user_id
         createdAt: row.created_at,
-        updatedAt: row.updated_at
+        updatedAt: row.updated_at,
       })
     })
   }

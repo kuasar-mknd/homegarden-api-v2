@@ -1,11 +1,10 @@
-
-import { prisma } from '../database/prisma.client.js'
 import { Diagnosis, type DiagnosisStatus } from '../../domain/entities/diagnosis.entity.js'
 import type {
-  DiagnosisRepository,
   CreateDiagnosisData,
-  UpdateDiagnosisData
+  DiagnosisRepository,
+  UpdateDiagnosisData,
 } from '../../domain/repositories/diagnosis.repository.js'
+import { prisma } from '../database/prisma.client.js'
 
 export class PrismaDiagnosisRepository implements DiagnosisRepository {
   async create(data: CreateDiagnosisData): Promise<Diagnosis> {
