@@ -1,7 +1,5 @@
 
-import { PrismaClient } from '@prisma/client'
-
-const prisma = new PrismaClient()
+import { prisma } from '../../infrastructure/database/prisma.client.js'
 
 export const resetDb = async () => {
   // Order matters due to foreign key constraints
