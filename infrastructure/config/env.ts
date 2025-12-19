@@ -20,12 +20,12 @@ const envSchema = z.object({
   DATABASE_URL: z.string().default('postgresql://localhost:5432/homegarden'),
   
   // Supabase Auth
-  SUPABASE_URL: z.string().optional(),
-  SUPABASE_ANON_KEY: z.string().optional(),
-  SUPABASE_SERVICE_ROLE_KEY: z.string().optional(),
+  SUPABASE_URL: z.string().url(),
+  SUPABASE_PUBLISHABLE_KEY: z.string().min(1),
+  SUPABASE_SECRET_KEY: z.string().min(1).optional(),
   
-  // JWT (fallback if not using Supabase)
-  JWT_SECRET: z.string().min(32).default('development-secret-change-in-production!'),
+  // JWT (fallback)
+  JWT_SECRET: z.string().min(32).optional(),
   JWT_EXPIRES_IN: z.string().default('1h'),
   JWT_REFRESH_EXPIRES_IN: z.string().default('7d'),
   

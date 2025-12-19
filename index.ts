@@ -23,11 +23,20 @@ import { createPlantIdController } from './infrastructure/http/controllers/plant
 // Routes
 import { createPlantIdRoutes } from './infrastructure/http/routes/plant-id.routes.js'
 import { createDrPlantRoutes } from './infrastructure/http/routes/dr-plant.routes.js'
+import { authMiddleware } from './infrastructure/http/middleware/auth.middleware.js'
 
 // Use Cases
 import { DiagnosePlantUseCase } from './application/use-cases/dr-plant/diagnose-plant.use-case.js'
 // Controllers
 import { DrPlantController } from './infrastructure/http/controllers/dr-plant.controller.js'
+import { GardenController } from './infrastructure/http/controllers/garden.controller.js'
+
+// Routes,
+import { createGardenRoutes } from './infrastructure/http/routes/garden.routes.js'
+
+// Use Cases - Garden
+import { AddPlantUseCase } from './application/use-cases/garden/add-plant.use-case.js'
+import { GetUserPlantsUseCase } from './application/use-cases/garden/get-user-plants.use-case.js'
 
 // Initialize dependencies
 const geminiAdapter = getGeminiPlantAdapter()
@@ -39,6 +48,12 @@ const plantIdRoutes = createPlantIdRoutes(plantIdController)
 const diagnosePlantUseCase = new DiagnosePlantUseCase(geminiAdapter)
 const drPlantController = new DrPlantController(diagnosePlantUseCase)
 const drPlantRoutes = createDrPlantRoutes(drPlantController)
+
+// Garden (My Plants)
+const addPlantUseCase = new AddPlantUseCase()
+const getUserPlantsUseCase = new GetUserPlantsUseCase()
+const gardenController = new GardenController(addPlantUseCase, getUserPlantsUseCase)
+const gardenRoutes = createGardenRoutes(gardenController)
 
 // ============================================================
 // CREATE HONO APP
@@ -96,6 +111,7 @@ app.get('/api/v2', (c) => {
       users: '/api/v2/users',
       gardens: '/api/v2/gardens',
       plants: '/api/v2/plants',
+
       plantId: '/api/v2/plant-id',
       drPlant: '/api/v2/dr-plant',
       careTracker: '/api/v2/care-tracker',
@@ -108,10 +124,15 @@ app.get('/api/v2', (c) => {
 // ============================================================
 
 // Plant Identification
+app.use('/api/v2/plant-id/*', authMiddleware)
 app.route('/api/v2/plant-id', plantIdRoutes)
 
 // Dr. Plant (Diagnosis)
+app.use('/api/v2/dr-plant/*', authMiddleware)
 app.route('/api/v2/dr-plant', drPlantRoutes)
+
+// My Garden
+app.route('/api/v2/gardens', gardenRoutes) // Auth is applied inside createGardenRoutes
 
 // TODO: Mount remaining routes when implemented
 // app.route('/api/v2/auth', authRoutes)
