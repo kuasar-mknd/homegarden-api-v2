@@ -2,9 +2,9 @@ name: CI
 
 on:
   push:
-    branches: [ main, master ]
+    branches: [main, master]
   pull_request:
-    branches: [ main, master ]
+    branches: [main, master]
 
 jobs:
   build:
@@ -26,42 +26,42 @@ jobs:
           --health-retries 5
 
     steps:
-    - uses: actions/checkout@v6
+      - uses: actions/checkout@v6
 
-    - name: Use Node.js
-      uses: actions/setup-node@v6
-      with:
-        node-version: '20'
-        cache: 'npm'
+      - name: Use Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: "20"
+          cache: "npm"
 
-    - name: Install dependencies
-      run: npm ci
+      - name: Install dependencies
+        run: npm ci
 
-    - name: Lint
-      # Linting is currently disabled in CI because it requires 'typescript-eslint' which is not in deps.
-      # The script 'lint' in package.json exists but is not fully functional without additional deps.
-      # run: npm run lint
-      run: echo "Linting skipped (missing dependencies)"
+      - name: Lint
+        # Linting is currently disabled in CI because it requires 'typescript-eslint' which is not in deps.
+        # The script 'lint' in package.json exists but is not fully functional without additional deps.
+        # run: npm run lint
+        run: echo "Linting skipped (missing dependencies)"
 
-    - name: Generate Prisma Client
-      env:
-        DATABASE_URL: postgres://user:password@localhost:5432/homegarden_test
-      run: npm run db:generate
+      - name: Generate Prisma Client
+        env:
+          DATABASE_URL: postgres://user:password@localhost:5432/homegarden_test
+        run: npm run db:generate
 
-    - name: Run Migrations
-      env:
-        DATABASE_URL: postgres://user:password@localhost:5432/homegarden_test
-      run: npm run db:migrate:prod
+      - name: Push Schema to DB
+        env:
+          DATABASE_URL: postgres://user:password@localhost:5432/homegarden_test
+        run: npm run db:push
 
-    - name: Build
-      run: npm run build
+      - name: Build
+        run: npm run build
 
-    - name: Run Tests
-      env:
-        DATABASE_URL: postgres://user:password@localhost:5432/homegarden_test
-        JWT_SECRET: test_secret_at_least_32_chars_long
-        GOOGLE_AI_API_KEY: dummy_key
-        SUPABASE_URL: https://example.supabase.co
-        SUPABASE_PUBLISHABLE_KEY: dummy_key
-        NODE_ENV: test
-      run: npm test
+      - name: Run Tests
+        env:
+          DATABASE_URL: postgres://user:password@localhost:5432/homegarden_test
+          JWT_SECRET: test_secret_at_least_32_chars_long
+          GOOGLE_AI_API_KEY: dummy_key
+          SUPABASE_URL: https://example.supabase.co
+          SUPABASE_PUBLISHABLE_KEY: dummy_key
+          NODE_ENV: test
+        run: npm test
