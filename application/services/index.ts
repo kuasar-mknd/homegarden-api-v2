@@ -7,4 +7,4 @@
 // TODO: Implement application services:
 // - TokenService (JWT management)
 
-export {}
+export * from './TokenService';
