@@ -1,7 +1,7 @@
 
 import { Hono } from 'hono'
 import { bodyLimit } from 'hono/body-limit'
-import { DrPlantController } from '../controllers/dr-plant.controller'
+import { DrPlantController } from '../controllers/dr-plant.controller.js'
 
 export const createDrPlantRoutes = (controller: DrPlantController) => {
   const app = new Hono()

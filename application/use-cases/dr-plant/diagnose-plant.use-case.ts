@@ -15,7 +15,7 @@ export class DiagnosePlantUseCase {
     imageBuffer: Buffer,
     mimeType: string,
     symptomDescription?: string
-  ): Promise<Result<DiagnoseHealthResult>> {
+  ): Promise<Result<DiagnoseHealthResult, AppError>> {
     try {
       if (!imageBuffer || imageBuffer.length === 0) {
         return fail(new AppError('Image is required for diagnosis', 400))

@@ -1,6 +1,6 @@
 
 import { Context } from 'hono'
-import { DiagnosePlantUseCase } from '../../../application/use-cases/dr-plant/diagnose-plant.use-case'
+import { DiagnosePlantUseCase } from '../../../application/use-cases/dr-plant/diagnose-plant.use-case.js'
 
 export class DrPlantController {
   constructor(private diagnosePlantUseCase: DiagnosePlantUseCase) {}

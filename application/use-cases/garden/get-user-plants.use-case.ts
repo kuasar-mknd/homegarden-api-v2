@@ -7,7 +7,7 @@ import type { Plant, Garden } from '@prisma/client'
 type PlantWithGarden = Plant & { garden: Garden }
 
 export class GetUserPlantsUseCase {
-  async execute(userId: string): Promise<Result<PlantWithGarden[]>> {
+  async execute(userId: string): Promise<Result<PlantWithGarden[], AppError>> {
     try {
       if (!userId) {
         return fail(new AppError('User ID is required', 400))

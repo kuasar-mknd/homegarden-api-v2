@@ -1,7 +1,7 @@
 
 import { Context } from 'hono'
-import { AddPlantUseCase } from '../../../application/use-cases/garden/add-plant.use-case'
-import { GetUserPlantsUseCase } from '../../../application/use-cases/garden/get-user-plants.use-case'
+import { AddPlantUseCase } from '../../../application/use-cases/garden/add-plant.use-case.js'
+import { GetUserPlantsUseCase } from '../../../application/use-cases/garden/get-user-plants.use-case.js'
 
 export class GardenController {
   constructor(

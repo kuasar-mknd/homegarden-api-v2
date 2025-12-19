@@ -16,7 +16,7 @@ interface AddPlantInput {
 }
 
 export class AddPlantUseCase {
-  async execute(input: AddPlantInput): Promise<Result<Plant>> {
+  async execute(input: AddPlantInput): Promise<Result<Plant, AppError>> {
     try {
       if (!input.userId) {
         return fail(new AppError('User ID is required', 400))

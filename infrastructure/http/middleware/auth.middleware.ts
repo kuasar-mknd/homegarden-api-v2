@@ -2,6 +2,7 @@
 import { createMiddleware } from 'hono/factory'
 import { createClient } from '@supabase/supabase-js'
 import { env } from '../../config/env.js'
+import { prisma } from '../../database/prisma.client.js'
 
 
 // Initialize Supabase client
@@ -46,6 +47,10 @@ export const authMiddleware = createMiddleware(async (c, next) => {
       }, 401)
     }
 
+    if (!prisma) {
+        throw new Error('Database connection not initialized')
+    }
+
     // 2. Sync user to local database
     // Check if user exists first to avoid unnecessary write operations
     const existingUser = await prisma.user.findUnique({
@@ -80,7 +85,7 @@ export const authMiddleware = createMiddleware(async (c, next) => {
     c.set('user', localUser)
     c.set('userId', localUser.id)
 
-    await next()
+    return await next()
 
   } catch (error) {
     console.error('[AuthMiddleware] Error:', error)
