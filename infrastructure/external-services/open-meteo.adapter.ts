@@ -34,6 +34,7 @@ interface CacheEntry<T> {
 
 export class OpenMeteoAdapter implements WeatherPort {
   private readonly baseUrl = 'https://api.open-meteo.com/v1/forecast'
+  // biome-ignore lint/suspicious/noExplicitAny: generic cache
   private readonly cache = new Map<string, CacheEntry<any>>()
   private readonly CACHE_TTL_MS = 30 * 60 * 1000 // 30 minutes
 

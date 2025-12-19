@@ -1,4 +1,4 @@
-import { createRoute, OpenAPIHono, z } from '@hono/zod-openapi'
+import { createRoute, OpenAPIHono } from '@hono/zod-openapi'
 import type { CareTrackerController } from '../controllers/care-tracker.controller.js'
 import { authMiddleware } from '../middleware/auth.middleware.js'
 

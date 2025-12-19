@@ -85,7 +85,7 @@ export async function isSafeUrl(urlString: string): Promise<boolean> {
 
     return true
 
-  } catch (error) {
+  } catch (_error) {
     // URL parse error or DNS resolution error
     return false
   }

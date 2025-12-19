@@ -8,7 +8,6 @@ import { secureHeaders } from 'hono/secure-headers'
 import { env } from './infrastructure/config/env.js'
 import { logger } from './infrastructure/config/logger.js'
 import {
-  authMiddleware,
   errorHandler,
   loggerMiddleware,
   rateLimitMiddleware,
@@ -191,7 +190,12 @@ app.get('/', (c) => {
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Smart Plant Management API with AI capabilities. Identify plants, diagnose diseases, and track your garden.">
+  <meta property="og:title" content="HomeGarden API v2">
+  <meta property="og:description" content="Smart Plant Management API with AI capabilities.">
+  <meta property="og:type" content="website">
   <title>HomeGarden API v2</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🌱</text></svg>">
   <style>
     :root {
       --primary: #2e7d32;
@@ -199,6 +203,21 @@ app.get('/', (c) => {
       --bg: #f5f9f5;
       --text: #1b1b1b;
       --card-bg: #ffffff;
+      --card-border: #eee;
+      --card-text: #666;
+      --status-text: #888;
+    }
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --primary: #81c784;
+        --secondary: #66bb6a;
+        --bg: #121212;
+        --text: #e0e0e0;
+        --card-bg: #1e1e1e;
+        --card-border: #333;
+        --card-text: #b0b0b0;
+        --status-text: #aaa;
+      }
     }
     body {
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
@@ -221,16 +240,22 @@ app.get('/', (c) => {
       width: 90%;
       text-align: center;
     }
-    h1 { color: var(--primary); margin-bottom: 0.5rem; }
+    header h1 { color: var(--primary); margin-bottom: 0.5rem; }
     .badge {
       display: inline-block;
       background: #e8f5e9;
-      color: var(--primary);
+      color: #2e7d32; /* Keep contrast high on light badge */
       padding: 4px 12px;
       border-radius: 12px;
       font-size: 0.85rem;
       font-weight: 600;
       margin-bottom: 2rem;
+    }
+    @media (prefers-color-scheme: dark) {
+      .badge {
+        background: #1b5e20;
+        color: #e8f5e9;
+      }
     }
     .grid {
       display: grid;
@@ -238,27 +263,39 @@ app.get('/', (c) => {
       gap: 1.5rem;
       margin: 2rem 0;
     }
+    @media (max-width: 600px) {
+      .grid {
+        grid-template-columns: 1fr;
+      }
+    }
     .card {
-      border: 1px solid #eee;
+      border: 1px solid var(--card-border);
       padding: 1.5rem;
       border-radius: 12px;
       transition: transform 0.2s, box-shadow 0.2s;
       text-decoration: none;
       color: inherit;
+      display: block;
     }
     .card:hover {
       transform: translateY(-2px);
       box-shadow: 0 4px 12px rgba(0,0,0,0.05);
       border-color: var(--secondary);
     }
+    .card:focus-visible {
+      outline: 2px solid var(--secondary);
+      outline-offset: 4px;
+      border-color: var(--secondary);
+    }
     .card h3 { margin: 0 0 0.5rem 0; color: var(--primary); }
-    .card p { margin: 0; font-size: 0.9rem; color: #666; }
-    .status {
+    .card p { margin: 0; font-size: 0.9rem; color: var(--card-text); }
+
+    footer.status {
       margin-top: 2rem;
       padding-top: 2rem;
-      border-top: 1px solid #eee;
+      border-top: 1px solid var(--card-border);
       font-size: 0.85rem;
-      color: #888;
+      color: var(--status-text);
     }
     .status-dot {
       display: inline-block;
@@ -268,37 +305,49 @@ app.get('/', (c) => {
       border-radius: 50%;
       margin-right: 6px;
     }
+    @media (prefers-reduced-motion: reduce) {
+      .card {
+        transition: none;
+      }
+      .card:hover {
+        transform: none;
+      }
+    }
   </style>
 </head>
 <body>
   <div class="container">
-    <h1>🌱 HomeGarden API</h1>
-    <div class="badge">v2.0.0 • AI-Powered</div>
+    <header>
+      <h1>🌱 HomeGarden API</h1>
+      <div class="badge">v2.0.0 • AI-Powered</div>
+    </header>
 
-    <p>Welcome to the HomeGarden API. Connect your applications to smart plant management services.</p>
+    <main>
+      <p>Welcome to the HomeGarden API. Connect your applications to smart plant management services.</p>
 
-    <div class="grid">
-      <a href="/ui" class="card">
-        <h3>📚 Documentation</h3>
-        <p>Interactive Swagger UI for API exploration.</p>
-      </a>
-      <a href="/doc" class="card">
-        <h3>🔍 OpenAPI Spec</h3>
-        <p>Raw JSON specification for integration.</p>
-      </a>
-      <a href="/api/v2/plant-id" class="card">
-        <h3>🌿 Plant ID</h3>
-        <p>Identify species using AI vision.</p>
-      </a>
-      <a href="/api/v2/dr-plant/diagnose" class="card">
-        <h3>🩺 Dr. Plant</h3>
-        <p>Diagnose diseases and pests.</p>
-      </a>
-    </div>
+      <div class="grid">
+        <a href="/ui" class="card">
+          <h3>📚 Documentation</h3>
+          <p>Interactive Swagger UI for API exploration.</p>
+        </a>
+        <a href="/doc" class="card">
+          <h3>🔍 OpenAPI Spec</h3>
+          <p>Raw JSON specification for integration.</p>
+        </a>
+        <a href="/api/v2/plant-id" class="card">
+          <h3>🌿 Plant ID</h3>
+          <p>Identify species using AI vision.</p>
+        </a>
+        <a href="/api/v2/dr-plant/diagnose" class="card">
+          <h3>🩺 Dr. Plant</h3>
+          <p>Diagnose diseases and pests.</p>
+        </a>
+      </div>
+    </main>
 
-    <div class="status">
-      <span class="status-dot"></span> System Operational • ${env.NODE_ENV}
-    </div>
+    <footer class="status">
+      <span class="status-dot" aria-label="Status: Operational"></span> System Operational • ${env.NODE_ENV}
+    </footer>
   </div>
 </body>
 </html>
@@ -395,6 +444,7 @@ if (env.NODE_ENV !== 'test' && process.env.npm_lifecycle_event !== 'test') {
       port,
     })
 
+    // biome-ignore lint/suspicious/noExplicitAny: Hono server type compatibility
     initializeWebSocketServer(server as any)
   }
 }
