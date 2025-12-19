@@ -177,7 +177,8 @@ app.onError((err, c) => {
 
 const port = env.PORT
 
-console.log(`
+if (env.NODE_ENV !== 'test') {
+  console.log(`
 🌱 HomeGarden API v2.0
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 📍 Server:     http://localhost:${port}
@@ -190,9 +191,10 @@ console.log(`
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 `)
 
-serve({
-  fetch: app.fetch,
-  port,
-})
+  serve({
+    fetch: app.fetch,
+    port,
+  })
+}
 
 export default app

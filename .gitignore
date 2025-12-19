@@ -45,3 +45,9 @@ _legacy_archive_v1/
 tmp/
 temp/
 *.tmp
+
+# Test assets
+*.HEIC
+*.jpg
+*.jpeg
+*.png
