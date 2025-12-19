@@ -26,6 +26,7 @@ import type {
   SpeciesSuggestion,
 } from '../../application/ports/ai-identification.port.js'
 import { AppError } from '../../shared/errors/app-error.js'
+import { isSafeUrl } from '../../shared/utils/ssrf.validator.js'
 import { env } from '../config/env.js'
 
 // ============================================================
@@ -497,8 +498,13 @@ export class GeminiPlantAdapter implements AIIdentificationPort, AIDiagnosisPort
    */
   private async buildImagePart(image: string, isUrl?: boolean, mimeType?: string): Promise<Part> {
     if (isUrl) {
+      // Validate URL against SSRF
+      if (!(await isSafeUrl(image))) {
+        throw new AppError('Invalid or unsafe image URL', 400)
+      }
+
       // Fetch image from URL and convert to base64
-      const response = await fetch(image)
+      const response = await fetch(image, { redirect: 'error' })
       if (!response.ok) {
         throw new AppError(`Failed to fetch image from URL: ${response.statusText}`, 400)
       }

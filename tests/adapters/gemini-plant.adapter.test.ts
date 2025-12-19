@@ -4,6 +4,7 @@ import {
   GeminiPlantAdapter,
   getGeminiPlantAdapter,
 } from '../../infrastructure/external-services/gemini-plant.adapter.js'
+import * as ssrfValidator from '../../shared/utils/ssrf.validator.js'
 
 // Mock the whole @google/generative-ai module
 const { mockGenerateContent, mockGetGenerativeModel } = vi.hoisted(() => ({
@@ -155,6 +156,9 @@ describe('GeminiPlantAdapter', () => {
       const model = genAIInstance.getGenerativeModel({ model: 'any' })
       vi.mocked(model.generateContent).mockResolvedValue(mockAiResponse as any)
 
+      // Mock ssrf validator
+      vi.spyOn(ssrfValidator, 'isSafeUrl').mockResolvedValue(true)
+
       // Mock fetch
       const mockFetch = vi.fn().mockResolvedValue({
         ok: true,
@@ -169,7 +173,11 @@ describe('GeminiPlantAdapter', () => {
       })
 
       expect(result.success).toBe(true)
-      expect(mockFetch).toHaveBeenCalledWith('http://example.com/p.png')
+      expect(mockFetch).toHaveBeenCalledTimes(1)
+      const [url, options] = mockFetch.mock.calls[0]
+      expect(url).toBe('http://example.com/p.png')
+      // options might be undefined if not passed, but we expect it to be passed
+      expect(options).toEqual({ redirect: 'error' })
       vi.unstubAllGlobals()
     })
 
