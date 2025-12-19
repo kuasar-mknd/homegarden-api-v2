@@ -1,64 +1,62 @@
 import { z } from 'zod'
 
 // Create Care Schedule DTO
-export const CreateScheduleSchema = z.object({
-  taskType: z.enum([
-    'WATER',
-    'FERTILIZE',
-    'PRUNE',
-    'REPOT',
-    'HARVEST',
-    'PEST_CHECK',
-    'DISEASE_CHECK',
-    'MULCH',
-    'WEED',
-    'CUSTOM',
-  ]),
-  frequency: z.enum([
-    'DAILY',
-    'EVERY_OTHER_DAY',
-    'TWICE_WEEKLY',
-    'WEEKLY',
-    'BIWEEKLY',
-    'MONTHLY',
-    'CUSTOM',
-  ]),
-  intervalDays: z.number().positive().optional(),
-  nextDueDate: z.string().datetime().or(z.date()), // Accept string or Date
-  notes: z.string().optional(),
-  weatherAdjust: z.boolean().optional().default(false),
-  gardenId: z.string().uuid().optional(),
-  plantId: z.string().uuid().optional(),
-}).refine((data) => data.gardenId || data.plantId, {
-  message: 'Either gardenId or plantId must be provided',
-  path: ['gardenId', 'plantId'],
-})
+export const CreateScheduleSchema = z
+  .object({
+    taskType: z.enum([
+      'WATER',
+      'FERTILIZE',
+      'PRUNE',
+      'REPOT',
+      'HARVEST',
+      'PEST_CHECK',
+      'DISEASE_CHECK',
+      'MULCH',
+      'WEED',
+      'CUSTOM',
+    ]),
+    frequency: z.enum([
+      'DAILY',
+      'EVERY_OTHER_DAY',
+      'TWICE_WEEKLY',
+      'WEEKLY',
+      'BIWEEKLY',
+      'MONTHLY',
+      'CUSTOM',
+    ]),
+    intervalDays: z.number().positive().optional(),
+    nextDueDate: z.string().datetime().or(z.date()), // Accept string or Date
+    notes: z.string().optional(),
+    weatherAdjust: z.boolean().optional().default(false),
+    gardenId: z.string().uuid().optional(),
+    plantId: z.string().uuid().optional(),
+  })
+  .refine((data) => data.gardenId || data.plantId, {
+    message: 'Either gardenId or plantId must be provided',
+    path: ['gardenId', 'plantId'],
+  })
 
 export type CreateScheduleDTO = z.infer<typeof CreateScheduleSchema>
 
 // Update Care Schedule DTO
 export const UpdateScheduleSchema = z.object({
-  taskType: z.enum([
-    'WATER',
-    'FERTILIZE',
-    'PRUNE',
-    'REPOT',
-    'HARVEST',
-    'PEST_CHECK',
-    'DISEASE_CHECK',
-    'MULCH',
-    'WEED',
-    'CUSTOM',
-  ]).optional(),
-  frequency: z.enum([
-    'DAILY',
-    'EVERY_OTHER_DAY',
-    'TWICE_WEEKLY',
-    'WEEKLY',
-    'BIWEEKLY',
-    'MONTHLY',
-    'CUSTOM',
-  ]).optional(),
+  taskType: z
+    .enum([
+      'WATER',
+      'FERTILIZE',
+      'PRUNE',
+      'REPOT',
+      'HARVEST',
+      'PEST_CHECK',
+      'DISEASE_CHECK',
+      'MULCH',
+      'WEED',
+      'CUSTOM',
+    ])
+    .optional(),
+  frequency: z
+    .enum(['DAILY', 'EVERY_OTHER_DAY', 'TWICE_WEEKLY', 'WEEKLY', 'BIWEEKLY', 'MONTHLY', 'CUSTOM'])
+    .optional(),
   intervalDays: z.number().positive().optional(),
   nextDueDate: z.string().datetime().or(z.date()).optional(),
   notes: z.string().optional(),

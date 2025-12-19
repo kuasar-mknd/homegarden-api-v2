@@ -50,7 +50,10 @@ export const PlantResponseSchema = z.object({
   careNotes: z.string().nullable().optional(),
   imageUrl: z.string().nullable().optional(),
   thumbnailUrl: z.string().nullable().optional(),
-  use: z.enum(['ORNAMENTAL', 'GROUNDCOVER', 'FOOD', 'MEDICINAL', 'FRAGRANCE']).nullable().optional(),
+  use: z
+    .enum(['ORNAMENTAL', 'GROUNDCOVER', 'FOOD', 'MEDICINAL', 'FRAGRANCE'])
+    .nullable()
+    .optional(),
   gardenId: z.string().uuid(),
   createdAt: z.date().or(z.string()),
   updatedAt: z.date().or(z.string()),

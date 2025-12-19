@@ -17,7 +17,10 @@ export const DiagnosisResponseSchema = z.object({
   status: z.enum(['PENDING', 'PROCESSING', 'COMPLETED', 'FAILED']),
   confidence: z.number().nullable().optional(),
   conditionName: z.string().nullable().optional(),
-  conditionType: z.enum(['DISEASE', 'PEST', 'DEFICIENCY', 'ENVIRONMENTAL', 'HEALTHY']).nullable().optional(),
+  conditionType: z
+    .enum(['DISEASE', 'PEST', 'DEFICIENCY', 'ENVIRONMENTAL', 'HEALTHY'])
+    .nullable()
+    .optional(),
   severity: z.enum(['LOW', 'MODERATE', 'HIGH', 'CRITICAL']).nullable().optional(),
   affectedParts: z.array(z.string()),
   causes: z.array(z.string()),
