@@ -38,11 +38,13 @@ export async function handleCareReminderMessage(ws: WebSocket, message: WSMessag
 
 async function checkReminders(ws: WebSocket, userId?: string) {
   if (!userId) {
-     ws.send(JSON.stringify({
+    ws.send(
+      JSON.stringify({
         type: 'ERROR',
         channel: 'care-reminders',
-        payload: { message: 'Missing user ID' }
-    }))
+        payload: { message: 'Missing user ID' },
+      }),
+    )
     return
   }
 

@@ -21,46 +21,54 @@ export async function handleWeatherMessage(ws: WebSocket, message: WSMessage) {
         )
         // Simulate immediate update
         if (message.payload?.latitude && message.payload?.longitude) {
-            const weather = await weatherAdapter.getCurrentWeather(
-                message.payload.latitude,
-                message.payload.longitude
-            )
+          const weather = await weatherAdapter.getCurrentWeather(
+            message.payload.latitude,
+            message.payload.longitude,
+          )
 
-            if (weather.isOk()) {
-                ws.send(JSON.stringify({
-                    type: 'WEATHER_UPDATE',
-                    channel: 'weather',
-                    payload: weather.value
-                }))
-            }
+          if (weather.isOk()) {
+            ws.send(
+              JSON.stringify({
+                type: 'WEATHER_UPDATE',
+                channel: 'weather',
+                payload: weather.value,
+              }),
+            )
+          }
         }
         break
 
       case 'GET_WEATHER':
         if (message.payload?.latitude && message.payload?.longitude) {
-           const weather = await weatherAdapter.getCurrentWeather(
-                message.payload.latitude,
-                message.payload.longitude
+          const weather = await weatherAdapter.getCurrentWeather(
+            message.payload.latitude,
+            message.payload.longitude,
+          )
+          if (weather.isOk()) {
+            ws.send(
+              JSON.stringify({
+                type: 'WEATHER_UPDATE',
+                channel: 'weather',
+                payload: weather.value,
+              }),
             )
-             if (weather.isOk()) {
-                ws.send(JSON.stringify({
-                    type: 'WEATHER_UPDATE',
-                    channel: 'weather',
-                    payload: weather.value
-                }))
-            } else {
-                 ws.send(JSON.stringify({
-                    type: 'ERROR',
-                    channel: 'weather',
-                    payload: { message: weather.error.message }
-                }))
-            }
-        } else {
-            ws.send(JSON.stringify({
+          } else {
+            ws.send(
+              JSON.stringify({
                 type: 'ERROR',
                 channel: 'weather',
-                payload: { message: 'Missing location data' }
-            }))
+                payload: { message: weather.error.message },
+              }),
+            )
+          }
+        } else {
+          ws.send(
+            JSON.stringify({
+              type: 'ERROR',
+              channel: 'weather',
+              payload: { message: 'Missing location data' },
+            }),
+          )
         }
         break
 
@@ -69,10 +77,12 @@ export async function handleWeatherMessage(ws: WebSocket, message: WSMessage) {
     }
   } catch (error) {
     logger.error({ error }, 'Error in weather handler')
-     ws.send(JSON.stringify({
+    ws.send(
+      JSON.stringify({
         type: 'ERROR',
         channel: 'weather',
-        payload: { message: 'Internal server error' }
-    }))
+        payload: { message: 'Internal server error' },
+      }),
+    )
   }
 }

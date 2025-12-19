@@ -1,5 +1,5 @@
 import type { Server } from 'node:http'
-import { WebSocket, WebSocketServer } from 'ws'
+import { type WebSocket, WebSocketServer } from 'ws'
 import { logger } from '../config/logger.js'
 import { handleCareReminderMessage } from './handlers/care-reminder.handler.js'
 import { handleWeatherMessage } from './handlers/weather.handler.js'
