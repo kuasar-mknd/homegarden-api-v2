@@ -4,6 +4,8 @@
  * Represents a care task schedule for the CareTracker feature.
  */
 
+import { differenceInDays, isSameDay } from '../../shared/utils/index.js'
+
 export type CareTaskType =
   | 'WATER'
   | 'FERTILIZE'
@@ -79,18 +81,13 @@ export class CareSchedule {
   get daysUntilDue(): number {
     const now = new Date()
     const due = new Date(this.props.nextDueDate)
-    const diffTime = due.getTime() - now.getTime()
-    return Math.ceil(diffTime / (1000 * 60 * 60 * 24))
+    return differenceInDays(due, now)
   }
 
   get isDueToday(): boolean {
     const now = new Date()
     const due = new Date(this.props.nextDueDate)
-    return (
-      now.getFullYear() === due.getFullYear() &&
-      now.getMonth() === due.getMonth() &&
-      now.getDate() === due.getDate()
-    )
+    return isSameDay(now, due)
   }
 
   toJSON(): CareScheduleProps {

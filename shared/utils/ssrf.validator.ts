@@ -1,7 +1,6 @@
 
 import { lookup } from 'node:dns/promises'
 import { URL } from 'node:url'
-import { AppError } from '../errors/app-error.js'
 
 /**
  * SSRF Validator
@@ -31,7 +30,15 @@ const PRIVATE_IPV4_RANGES = [
 function ipV4ToNumber(ip: string): number | null {
   const parts = ip.split('.').map(Number)
   if (parts.length !== 4 || parts.some(isNaN)) return null
-  return (parts[0] << 24) | (parts[1] << 16) | (parts[2] << 8) | parts[3]
+  const [p0, p1, p2, p3] = parts
+  if (
+    p0 === undefined ||
+    p1 === undefined ||
+    p2 === undefined ||
+    p3 === undefined
+  )
+    return null
+  return (p0 << 24) | (p1 << 16) | (p2 << 8) | p3
 }
 
 /**

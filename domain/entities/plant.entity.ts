@@ -4,6 +4,7 @@
  * Represents a plant in a user's garden.
  */
 
+import { differenceInDays } from '../../shared/utils/index.js'
 import type { GardenProps } from './garden.entity.js'
 
 export type PlantExposure = 'FULL_SUN' | 'PARTIAL_SHADE' | 'SHADE'
@@ -141,8 +142,9 @@ export class Plant {
 
     const now = new Date()
     const planted = new Date(this.props.plantedDate)
-    const diffTime = Math.abs(now.getTime() - planted.getTime())
-    const days = Math.ceil(diffTime / (1000 * 60 * 60 * 24))
+    // We use Math.abs here because differenceInDays preserves sign (later - earlier)
+    // but age should always be positive
+    const days = Math.abs(differenceInDays(now, planted))
 
     return {
       days,
