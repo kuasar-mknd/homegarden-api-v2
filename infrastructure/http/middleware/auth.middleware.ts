@@ -1,6 +1,7 @@
 import { createClient } from '@supabase/supabase-js'
 import { createMiddleware } from 'hono/factory'
 import { env } from '../../config/env.js'
+import { logger } from '../../config/logger.js'
 import { prisma } from '../../database/prisma.client.js'
 
 // Initialize Supabase client
@@ -43,7 +44,7 @@ export const authMiddleware = createMiddleware(async (c, next) => {
     } = await supabase.auth.getUser(token)
 
     if (error || !user || !user.email) {
-      console.warn('Auth failed:', error?.message)
+      logger.warn({ err: error }, 'Auth failed')
       return c.json(
         {
           success: false,
@@ -86,7 +87,7 @@ export const authMiddleware = createMiddleware(async (c, next) => {
           role: 'USER',
         },
       })
-      console.log(`[Auth] Synced new user: ${user.email}`)
+      logger.info({ userId: localUser.id }, 'Synced new user')
     }
 
     // 3. Attach user to context
@@ -95,7 +96,7 @@ export const authMiddleware = createMiddleware(async (c, next) => {
 
     return await next()
   } catch (error) {
-    console.error('[AuthMiddleware] Error:', error)
+    logger.error({ err: error }, 'AuthMiddleware Error')
     return c.json(
       {
         success: false,

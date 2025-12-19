@@ -1,6 +1,7 @@
 import type { Plant } from '../../../domain/entities/plant.entity.js'
 import type { GardenRepository } from '../../../domain/repositories/garden.repository.js'
 import type { PlantRepository } from '../../../domain/repositories/plant.repository.js'
+import { logger } from '../../../infrastructure/config/logger.js'
 import { AppError } from '../../../shared/errors/app-error.js'
 import { fail, ok, type Result } from '../../../shared/types/result.type.js'
 
@@ -58,7 +59,7 @@ export class AddPlantUseCase {
 
       return ok(plant as unknown as Plant) // Casting because Repository Plant entity might slightly differ from Prisma type imported
     } catch (error) {
-      console.error('AddPlantUseCase Error:', error)
+      logger.error({ err: error, input }, 'AddPlantUseCase Error')
       return fail(new AppError('Failed to add plant to garden', 500))
     }
   }
