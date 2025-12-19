@@ -1,7 +1,6 @@
 import { afterAll, beforeAll, describe, expect, it, vi } from 'vitest'
 import request from 'supertest'
 import { serve } from '@hono/node-server'
-import type { Server } from 'node:http'
 import app from '../../index.js'
 import { prisma } from '../../infrastructure/database/prisma.client.js'
 import { disconnectDb, resetDb } from '../helpers/reset-db.js'

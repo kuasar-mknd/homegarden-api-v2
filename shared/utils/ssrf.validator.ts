@@ -1,7 +1,6 @@
 
 import { lookup } from 'node:dns/promises'
 import { URL } from 'node:url'
-import { AppError } from '../errors/app-error.js'
 
 /**
  * SSRF Validator
@@ -30,7 +29,7 @@ const PRIVATE_IPV4_RANGES = [
 // Helper to convert IPv4 string to number
 function ipV4ToNumber(ip: string): number | null {
   const parts = ip.split('.').map(Number)
-  if (parts.length !== 4 || parts.some(isNaN)) return null
+  if (parts.length !== 4 || parts.some(Number.isNaN)) return null
   return (parts[0] << 24) | (parts[1] << 16) | (parts[2] << 8) | parts[3]
 }
 
@@ -78,7 +77,7 @@ export async function isSafeUrl(urlString: string): Promise<boolean> {
 
     return true
 
-  } catch (error) {
+  } catch (_error) {
     // URL parse error or DNS resolution error
     return false
   }

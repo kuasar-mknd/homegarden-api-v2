@@ -1,7 +1,6 @@
 import { afterAll, beforeAll, describe, expect, it, vi } from 'vitest'
 import request from 'supertest'
 import { serve } from '@hono/node-server'
-import type { Server } from 'node:http'
 import app from '../../index.js'
 import { prisma } from '../../infrastructure/database/prisma.client.js'
 import { disconnectDb, resetDb } from '../helpers/reset-db.js'
@@ -19,13 +18,14 @@ vi.mock('@supabase/supabase-js', () => ({
 describe('E2E: Authentication Flow', () => {
   let server: any
   let baseUrl: string
-  let testUser: any
+  // biome-ignore lint/correctness/noUnusedVariables: used for setup
+  let _testUser: any
 
   beforeAll(async () => {
     await resetDb()
 
     // Create a test user in the database
-    testUser = await prisma.user.create({
+    _testUser = await prisma.user.create({
       data: {
         email: 'e2e-auth@example.com',
         firstName: 'E2E',

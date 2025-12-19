@@ -12,7 +12,7 @@ vi.mock('../../infrastructure/config/env.js', () => ({
 vi.mock('hono-rate-limiter', () => ({
   rateLimiter: vi.fn((config) => {
     // Return a mock middleware that captures the config
-    const middleware = vi.fn((c: any, next: any) => next())
+    const middleware = vi.fn((_c: any, next: any) => next())
     // Expose config for testing
     ;(middleware as any).config = config
     return middleware

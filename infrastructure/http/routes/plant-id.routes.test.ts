@@ -7,6 +7,7 @@ import { createPlantIdRoutes } from './plant-id.routes.js'
 
 describe('PlantIdRoutes', () => {
   let app: OpenAPIHono
+  // biome-ignore lint/suspicious/noExplicitAny: mock use case
   let mockUseCase: any
 
   beforeEach(() => {
