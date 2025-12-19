@@ -1,4 +1,4 @@
-import { Result, ok, fail } from '../../shared/types/result.type.js'
+import { fail, ok, type Result } from '../../shared/types/result.type.js'
 
 export class Password {
   private constructor(private readonly value: string) {}

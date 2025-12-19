@@ -1,6 +1,6 @@
-import { describe, it, expect } from 'vitest'
+import { describe, expect, it } from 'vitest'
 import { GeoLocation } from '../../../domain/value-objects/geo-location.vo.js'
-import { isOk, isFail } from '../../../shared/types/result.type.js'
+import { isFail, isOk } from '../../../shared/types/result.type.js'
 
 describe('GeoLocation Value Object', () => {
   it('should create a valid geolocation', () => {

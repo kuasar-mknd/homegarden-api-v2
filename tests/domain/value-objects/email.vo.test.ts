@@ -1,6 +1,6 @@
-import { describe, it, expect } from 'vitest'
+import { describe, expect, it } from 'vitest'
 import { Email } from '../../../domain/value-objects/email.vo.js'
-import { isOk, isFail } from '../../../shared/types/result.type.js'
+import { isFail, isOk } from '../../../shared/types/result.type.js'
 
 describe('Email Value Object', () => {
   it('should create a valid email', () => {
@@ -21,7 +21,7 @@ describe('Email Value Object', () => {
 
   it('should fail for invalid email format', () => {
     const invalidEmails = ['invalid', 'test@', 'test.com', '@test.com']
-    invalidEmails.forEach(email => {
+    invalidEmails.forEach((email) => {
       const result = Email.create(email)
       expect(isFail(result)).toBe(true)
       if (isFail(result)) {

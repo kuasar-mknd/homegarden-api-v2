@@ -1,9 +1,9 @@
-import { Result, ok, fail } from '../../shared/types/result.type.js'
+import { fail, ok, type Result } from '../../shared/types/result.type.js'
 
 export class GeoLocation {
   private constructor(
     private readonly latitude: number,
-    private readonly longitude: number
+    private readonly longitude: number,
   ) {}
 
   public static create(latitude: number, longitude: number): Result<GeoLocation, string> {

@@ -1,4 +1,4 @@
-import { Result, ok, fail } from '../../shared/types/result.type.js'
+import { fail, ok, type Result } from '../../shared/types/result.type.js'
 
 export type PlantExposureType = 'FULL_SUN' | 'PARTIAL_SHADE' | 'SHADE'
 
