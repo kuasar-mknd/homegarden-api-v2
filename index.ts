@@ -30,17 +30,23 @@ import { UserPrismaRepository } from './infrastructure/database/repositories/use
 import { getGeminiPlantAdapter } from './infrastructure/external-services/gemini-plant.adapter.js'
 import { OpenMeteoAdapter } from './infrastructure/external-services/open-meteo.adapter.js'
 // Controllers
+import { AuthController } from './infrastructure/http/controllers/auth.controller.js'
+import { CareTrackerController } from './infrastructure/http/controllers/care-tracker.controller.js'
 import { DrPlantController } from './infrastructure/http/controllers/dr-plant.controller.js'
 import { GardenController } from './infrastructure/http/controllers/garden.controller.js'
+import { PlantController } from './infrastructure/http/controllers/plant.controller.js'
 // Controllers
 import { createPlantIdController } from './infrastructure/http/controllers/plant-id.controller.js'
 import { UserController } from './infrastructure/http/controllers/user.controller.js'
 import { authMiddleware } from './infrastructure/http/middleware/auth.middleware.js'
+import { createAuthRoutes } from './infrastructure/http/routes/auth.routes.js'
+import { createCareTrackerRoutes } from './infrastructure/http/routes/care-tracker.routes.js'
 import { createDrPlantRoutes } from './infrastructure/http/routes/dr-plant.routes.js'
 // Routes,
 import { createGardenRoutes } from './infrastructure/http/routes/garden.routes.js'
 // Routes
 import { createPlantIdRoutes } from './infrastructure/http/routes/plant-id.routes.js'
+import { createPlantRoutes } from './infrastructure/http/routes/plant.routes.js'
 import { createUserRoutes } from './infrastructure/http/routes/user.routes.js'
 
 // Initialize dependencies
@@ -79,6 +85,16 @@ const gardenController = new GardenController(
   findNearbyGardensUseCase,
 )
 const gardenRoutes = createGardenRoutes(gardenController)
+
+// Initialize remaining controllers (scaffolding)
+const authController = new AuthController()
+const authRoutes = createAuthRoutes(authController)
+
+const plantController = new PlantController()
+const plantRoutes = createPlantRoutes(plantController)
+
+const careTrackerController = new CareTrackerController()
+const careTrackerRoutes = createCareTrackerRoutes(careTrackerController)
 
 // ============================================================
 // CREATE HONO APP
@@ -191,14 +207,11 @@ app.route('/api/v2/gardens', gardenRoutes) // Auth is applied inside createGarde
 
 // Auth & User
 app.route('/api/v2/users', userRoutes)
+app.route('/api/v2/auth', authRoutes)
 
-// TODO: Mount remaining routes when implemented
-// app.route('/api/v2/auth', authRoutes)
-// app.route('/api/v2/users', userRoutes)
-// app.route('/api/v2/gardens', gardenRoutes)
-// app.route('/api/v2/plants', plantRoutes)
-// app.route('/api/v2/dr-plant', drPlantRoutes)
-// app.route('/api/v2/care-tracker', careTrackerRoutes)
+// Plants & Care
+app.route('/api/v2/plants', plantRoutes)
+app.route('/api/v2/care-tracker', careTrackerRoutes)
 
 // ============================================================
 // ERROR HANDLING
