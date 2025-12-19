@@ -28,4 +28,5 @@ export const validate = <T extends keyof ValidationTargets>(target: T, schema: Z
         400,
       )
     }
+    return
   })
