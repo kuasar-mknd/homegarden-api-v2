@@ -7,7 +7,12 @@ import { prettyJSON } from 'hono/pretty-json'
 import { secureHeaders } from 'hono/secure-headers'
 import { env } from './infrastructure/config/env.js'
 import { logger } from './infrastructure/config/logger.js'
-import { requestLogger } from './infrastructure/http/middleware/request-logger.middleware.js'
+import {
+  authMiddleware,
+  errorHandler,
+  loggerMiddleware,
+  rateLimitMiddleware,
+} from './infrastructure/http/middleware/index.js'
 
 // ============================================================
 // DEPENDENCY INJECTION SETUP
@@ -35,7 +40,6 @@ import { GardenController } from './infrastructure/http/controllers/garden.contr
 // Controllers
 import { createPlantIdController } from './infrastructure/http/controllers/plant-id.controller.js'
 import { UserController } from './infrastructure/http/controllers/user.controller.js'
-import { authMiddleware } from './infrastructure/http/middleware/auth.middleware.js'
 import { createDrPlantRoutes } from './infrastructure/http/routes/dr-plant.routes.js'
 // Routes,
 import { createGardenRoutes } from './infrastructure/http/routes/garden.routes.js'
@@ -117,7 +121,7 @@ app.use(
 )
 
 // Request logging
-app.use('*', requestLogger)
+app.use('*', loggerMiddleware)
 
 // Pretty JSON responses in development
 if (env.NODE_ENV === 'development') {
@@ -125,17 +129,7 @@ if (env.NODE_ENV === 'development') {
 }
 
 // Rate Limiting
-import { rateLimiter } from 'hono-rate-limiter'
-
-app.use(
-  '*',
-  rateLimiter({
-    windowMs: env.RATE_LIMIT_WINDOW_MS,
-    limit: env.RATE_LIMIT_MAX,
-    standardHeaders: 'draft-6',
-    keyGenerator: (c) => c.req.header('x-forwarded-for') ?? 'unknown',
-  }),
-)
+app.use('*', rateLimitMiddleware)
 
 // ============================================================
 // ROUTES
@@ -217,21 +211,7 @@ app.notFound((c) => {
 })
 
 // Global error handler
-app.onError((err, c) => {
-  logger.error({ err }, 'Unhandled error')
-
-  const statusCode = 'statusCode' in err ? (err.statusCode as number) : 500
-
-  return c.json(
-    {
-      success: false,
-      error: err.name || 'InternalServerError',
-      message: env.NODE_ENV === 'production' ? 'Something went wrong' : err.message,
-      ...(env.NODE_ENV === 'development' && { stack: err.stack }),
-    },
-    statusCode as 400 | 401 | 403 | 404 | 500,
-  )
-})
+app.onError(errorHandler)
 
 // ============================================================
 // SERVER STARTUP

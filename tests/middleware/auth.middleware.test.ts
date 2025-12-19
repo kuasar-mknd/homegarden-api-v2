@@ -71,7 +71,7 @@ describe('AuthMiddleware', () => {
     const result = (await authMiddleware(mockContext, mockNext)) as any
 
     expect(result.status).toBe(401)
-    expect(result.data.message).toBe('Invalid or expired token')
+    expect(result.data.message).toBe('Invalid or expired Supabase token')
   })
 
   it('should sync existing user and call next()', async () => {
