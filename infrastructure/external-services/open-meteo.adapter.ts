@@ -27,13 +27,26 @@ interface OpenMeteoDailyResponse {
   }
 }
 
+interface CacheEntry<T> {
+  data: T
+  expiresAt: number
+}
+
 export class OpenMeteoAdapter implements WeatherPort {
   private readonly baseUrl = 'https://api.open-meteo.com/v1/forecast'
+  private readonly cache = new Map<string, CacheEntry<any>>()
+  private readonly CACHE_TTL_MS = 30 * 60 * 1000 // 30 minutes
 
   async getCurrentWeather(
     latitude: number,
     longitude: number,
   ): Promise<Result<WeatherData, AppError>> {
+    const cacheKey = `current:${latitude}:${longitude}`
+    const cached = this.getFromCache<WeatherData>(cacheKey)
+    if (cached) {
+      return ok(cached)
+    }
+
     try {
       const url = `${this.baseUrl}?latitude=${latitude}&longitude=${longitude}&current=temperature_2m,relative_humidity_2m,precipitation,weather_code,wind_speed_10m`
 
@@ -45,14 +58,17 @@ export class OpenMeteoAdapter implements WeatherPort {
       const data = (await response.json()) as OpenMeteoCurrentResponse
       const current = data.current
 
-      return ok({
+      const weatherData: WeatherData = {
         temperature: current.temperature_2m,
         humidity: current.relative_humidity_2m,
         precipitation: current.precipitation,
         windSpeed: current.wind_speed_10m,
         conditions: this.mapWeatherCodeToCondition(current.weather_code),
         icon: this.mapWeatherCodeToIcon(current.weather_code),
-      })
+      }
+
+      this.setInCache(cacheKey, weatherData)
+      return ok(weatherData)
     } catch (error) {
       logger.error({ error, latitude, longitude }, 'Failed to fetch current weather')
       return fail(new AppError('Failed to fetch weather data', 503, 'WEATHER_SERVICE_ERROR'))
@@ -63,6 +79,12 @@ export class OpenMeteoAdapter implements WeatherPort {
     latitude: number,
     longitude: number,
   ): Promise<Result<WeatherForecast, AppError>> {
+    const cacheKey = `forecast:${latitude}:${longitude}`
+    const cached = this.getFromCache<WeatherForecast>(cacheKey)
+    if (cached) {
+      return ok(cached)
+    }
+
     try {
       const url = `${this.baseUrl}?latitude=${latitude}&longitude=${longitude}&daily=temperature_2m_max,temperature_2m_min,precipitation_sum,weather_code&timezone=auto`
 
@@ -83,11 +105,37 @@ export class OpenMeteoAdapter implements WeatherPort {
         icon: this.mapWeatherCodeToIcon(daily.weather_code[index] ?? 0),
       }))
 
-      return ok({ daily: forecast })
+      const forecastData: WeatherForecast = { daily: forecast }
+      this.setInCache(cacheKey, forecastData)
+      return ok(forecastData)
     } catch (error) {
       logger.error({ error, latitude, longitude }, 'Failed to fetch forecast')
       return fail(new AppError('Failed to fetch weather forecast', 503, 'WEATHER_SERVICE_ERROR'))
     }
+  }
+
+  private getFromCache<T>(key: string): T | null {
+    const entry = this.cache.get(key)
+    if (!entry) return null
+
+    if (Date.now() > entry.expiresAt) {
+      this.cache.delete(key)
+      return null
+    }
+
+    return entry.data
+  }
+
+  private setInCache<T>(key: string, data: T): void {
+    // Basic cache eviction if too large (prevent memory leak)
+    if (this.cache.size > 1000) {
+      this.cache.clear()
+    }
+
+    this.cache.set(key, {
+      data,
+      expiresAt: Date.now() + this.CACHE_TTL_MS,
+    })
   }
 
   private mapWeatherCodeToCondition(code: number): string {
