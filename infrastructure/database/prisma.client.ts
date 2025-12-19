@@ -6,6 +6,8 @@
  */
 
 import { PrismaClient } from '@prisma/client'
+import { Pool } from 'pg'
+import { PrismaPg } from '@prisma/adapter-pg'
 import { env } from '../config/env.js'
 
 // Declare global type for Prisma client singleton
@@ -16,7 +18,12 @@ declare global {
 
 // Create Prisma client with appropriate logging
 const createPrismaClient = () => {
+  const connectionString = env.DATABASE_URL
+  const pool = new Pool({ connectionString })
+  const adapter = new PrismaPg(pool)
+
   return new PrismaClient({
+    adapter,
     log: env.NODE_ENV === 'development' 
       ? ['query', 'info', 'warn', 'error']
       : ['error'],
