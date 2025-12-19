@@ -1,24 +1,18 @@
 import { prisma } from '../../infrastructure/database/prisma.client.js'
 
 export const resetDb = async () => {
-  // Order matters due to foreign key constraints
-  const tablenames = [
-    'care_completions',
-    'care_schedules',
-    'diagnoses',
-    'plants',
-    'gardens',
-    'refresh_tokens',
-    'users',
-    'species',
-  ]
-
   try {
-    for (const tableName of tablenames) {
-      await prisma.$executeRawUnsafe(`TRUNCATE TABLE "${tableName}" CASCADE;`)
-    }
+    await prisma.careCompletion.deleteMany()
+    await prisma.careSchedule.deleteMany()
+    await prisma.diagnosis.deleteMany()
+    await prisma.plant.deleteMany()
+    await prisma.garden.deleteMany()
+    await prisma.refreshToken.deleteMany()
+    await prisma.user.deleteMany()
+    await prisma.species.deleteMany()
   } catch (error) {
-    console.log({ error })
+    console.error('Reset DB Error:', error)
+    throw error
   }
 }
 

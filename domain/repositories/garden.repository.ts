@@ -39,9 +39,11 @@ export interface GardenRepository {
   delete(id: string): Promise<void>
 
   findNearby(query: NearbyQuery): Promise<Garden[]>
+  findByUserAndName(userId: string, name: string): Promise<Garden | null>
   findAll(options?: {
     page?: number
     limit?: number
     userId?: string
+    search?: string
   }): Promise<{ gardens: Garden[]; total: number }>
 }

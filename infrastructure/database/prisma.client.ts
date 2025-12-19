@@ -7,36 +7,39 @@
 
 import { PrismaPg } from '@prisma/adapter-pg'
 import { PrismaClient } from '@prisma/client'
-import { Pool } from 'pg'
+import pg from 'pg'
 import { env } from '../config/env.js'
 
-// Declare global type for Prisma client singleton
+const { Pool } = pg
+
 declare global {
-  // eslint-disable-next-line no-var
   var prismaGlobal: PrismaClient | undefined
+  var poolGlobal: pg.Pool | undefined
 }
 
-// Create Prisma client with appropriate logging
-const createPrismaClient = () => {
-  const connectionString = env.DATABASE_URL
-  const pool = new Pool({ connectionString })
-  const adapter = new PrismaPg(pool)
+const connectionString = env.DATABASE_URL
 
-  return new PrismaClient({
-    adapter,
-    log: env.NODE_ENV === 'development' ? ['query', 'info', 'warn', 'error'] : ['error'],
-    errorFormat: env.NODE_ENV === 'development' ? 'pretty' : 'minimal',
-  })
+const pool = globalThis.poolGlobal || new Pool({
+  connectionString,
+  max: env.NODE_ENV === 'test' ? 20 : undefined,
+})
+
+if (env.NODE_ENV !== 'production') {
+  globalThis.poolGlobal = pool
 }
 
-// Use global singleton in development to prevent hot-reload issues
-export const prisma = globalThis.prismaGlobal ?? createPrismaClient()
+const adapter = new PrismaPg(pool)
+
+export const prisma: PrismaClient = globalThis.prismaGlobal || new PrismaClient({
+  adapter,
+  log: env.NODE_ENV === 'development' ? ['query', 'info', 'warn', 'error'] : ['error'],
+  errorFormat: env.NODE_ENV === 'development' ? 'pretty' : 'minimal',
+})
 
 if (env.NODE_ENV !== 'production') {
   globalThis.prismaGlobal = prisma
 }
 
-// Graceful shutdown
-process.on('beforeExit', async () => {
-  await prisma.$disconnect()
-})
+export const disconnectDb = async () => {
+    await prisma.$disconnect()
+}

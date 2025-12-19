@@ -1,47 +1,34 @@
-/**
- * Weather Port
- *
- * Interface for weather data services
- */
+import { Result } from '../../shared/types/result.type.js'
+import { AppError } from '../../shared/errors/app-error.js'
 
-export interface CurrentWeather {
+export interface WeatherData {
   temperature: number
-  humidity?: number
-  cloudCover: number
-  skyCondition: string
-  windSpeed?: number
-  precipitation?: number
+  humidity: number
+  windSpeed: number
+  precipitation: number
+  conditions: string
+  icon: string // Common identifier for weather icons (e.g. 'cloudy', 'sunny')
 }
 
 export interface WeatherForecast {
-  hourly: {
-    time: Date
-    temperature: number
+  daily: Array<{
+    date: string
+    maxTemp: number
+    minTemp: number
     precipitation: number
-    cloudCover: number
-  }[]
-  precipitationNext48h: number
+    conditions: string
+    icon: string
+  }>
 }
 
 export interface WeatherPort {
   /**
-   * Get current weather for a location
+   * Get current weather for a specific location
    */
-  getCurrentWeather(latitude: number, longitude: number): Promise<CurrentWeather>
+  getCurrentWeather(latitude: number, longitude: number): Promise<Result<WeatherData, AppError>>
 
   /**
-   * Get weather forecast for a location
+   * Get 7-day forecast for a specific location
    */
-  getForecast(latitude: number, longitude: number, hours?: number): Promise<WeatherForecast>
-
-  /**
-   * Check if watering is recommended based on weather
-   */
-  shouldWater(
-    latitude: number,
-    longitude: number,
-  ): Promise<{
-    recommend: boolean
-    reason: string
-  }>
+  getForecast(latitude: number, longitude: number): Promise<Result<WeatherForecast, AppError>>
 }

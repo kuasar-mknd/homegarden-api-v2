@@ -15,10 +15,6 @@ vi.mock('@supabase/supabase-js', () => ({
 }))
 
 describe('Auth Middleware Integration', () => {
-  beforeAll(async () => {
-    await resetDb()
-  })
-
   afterAll(async () => {
     await disconnectDb()
   })
@@ -49,18 +45,23 @@ describe('Auth Middleware Integration', () => {
   })
 
   it('should allow access with valid token and sync user to DB', async () => {
+    const userEmail = `auth-test-${crypto.randomUUID()}@example.com`
     const mockUser = {
-      email: 'test@example.com',
+      id: crypto.randomUUID(),
+      email: userEmail,
       user_metadata: {
-        full_name: 'Test User',
+        full_name: 'Auth Test User',
       },
+      app_metadata: {},
+      aud: 'authenticated',
+      created_at: new Date().toISOString(),
     }
 
     // Mock successful Supabase Auth response
     mockGetUser.mockResolvedValueOnce({ data: { user: mockUser }, error: null })
 
     // Ensure DB is empty for this user
-    const existing = await prisma.user.findUnique({ where: { email: mockUser.email } })
+    const existing = await prisma.user.findUnique({ where: { email: userEmail } })
     expect(existing).toBeNull()
 
     // Make request
@@ -74,10 +75,10 @@ describe('Auth Middleware Integration', () => {
     expect(res.status).toBe(200)
 
     // Verify user was synced to local DB
-    const syncedUser = await prisma.user.findUnique({ where: { email: mockUser.email } })
-    expect(syncedUser).toBeDefined()
-    expect(syncedUser?.email).toBe(mockUser.email)
-    expect(syncedUser?.firstName).toBe('Test')
-    expect(syncedUser?.lastName).toBe('User')
+    const syncedUser = await prisma.user.findUnique({ where: { email: userEmail } })
+    expect(syncedUser).not.toBeNull()
+    expect(syncedUser?.email).toBe(userEmail)
+    expect(syncedUser?.firstName).toBe('Auth')
+    expect(syncedUser?.lastName).toBe('Test User')
   })
 })

@@ -1,32 +1,38 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { AddPlantUseCase } from '../../application/use-cases/garden/add-plant.use-case.js'
-
-// Mock Prisma
-// Mock Prisma
-const { mockPrisma } = vi.hoisted(() => {
-  return {
-    mockPrisma: {
-      garden: {
-        findFirst: vi.fn(),
-        create: vi.fn(),
-      },
-      plant: {
-        create: vi.fn(),
-      },
-    },
-  }
-})
-
-vi.mock('../../infrastructure/database/prisma.client.js', () => ({
-  prisma: mockPrisma,
-}))
+import type { GardenRepository } from '../../domain/repositories/garden.repository.js'
+import type { PlantRepository } from '../../domain/repositories/plant.repository.js'
 
 describe('AddPlantUseCase', () => {
   let useCase: AddPlantUseCase
+  let gardenRepo: GardenRepository
+  let plantRepo: PlantRepository
 
   beforeEach(() => {
-    vi.clearAllMocks()
-    useCase = new AddPlantUseCase()
+    gardenRepo = {
+      findByUserAndName: vi.fn(),
+      create: vi.fn(),
+      findAll: vi.fn(),
+      findById: vi.fn(),
+      update: vi.fn(),
+      delete: vi.fn(),
+      findNearby: vi.fn(),
+    } as unknown as GardenRepository
+
+    plantRepo = {
+      create: vi.fn(),
+      findById: vi.fn(),
+      findByGardenId: vi.fn(),
+      findByUserId: vi.fn(),
+      update: vi.fn(),
+      delete: vi.fn(),
+      deleteByGardenId: vi.fn(),
+      findAll: vi.fn(),
+      countByGardenId: vi.fn(),
+      aggregateByCommonName: vi.fn(),
+    } as unknown as PlantRepository
+
+    useCase = new AddPlantUseCase(gardenRepo, plantRepo)
   })
 
   it('should validate required fields', async () => {
@@ -42,18 +48,18 @@ describe('AddPlantUseCase', () => {
   it('should create new garden if not exists', async () => {
     const input = { userId: 'user-1', location: 'Living Room' }
 
-    // Mock findFirst returns null (not found)
-    vi.mocked(mockPrisma.garden.findFirst).mockResolvedValueOnce(null)
+    // Mock findByUserAndName returns null (not found)
+    vi.mocked(gardenRepo.findByUserAndName).mockResolvedValueOnce(null)
 
     // Mock create garden
-    vi.mocked(mockPrisma.garden.create).mockResolvedValueOnce({
+    vi.mocked(gardenRepo.create).mockResolvedValueOnce({
       id: 'garden-1',
       name: 'Living Room',
       userId: 'user-1',
     } as any)
 
     // Mock create plant
-    vi.mocked(mockPrisma.plant.create).mockResolvedValueOnce({
+    vi.mocked(plantRepo.create).mockResolvedValueOnce({
       id: 'plant-1',
       gardenId: 'garden-1',
       nickname: 'My Plant',
@@ -62,24 +68,23 @@ describe('AddPlantUseCase', () => {
     await useCase.execute(input)
 
     // Verifications
-    expect(mockPrisma.garden.findFirst).toHaveBeenCalledWith({
-      where: { userId: 'user-1', name: 'Living Room' },
-    })
-    expect(mockPrisma.garden.create).toHaveBeenCalled()
+    expect(gardenRepo.findByUserAndName).toHaveBeenCalledWith('user-1', 'Living Room')
+    expect(gardenRepo.create).toHaveBeenCalled()
+    expect(plantRepo.create).toHaveBeenCalled()
   })
 
   it('should use existing garden if found', async () => {
     const input = { userId: 'user-1', location: 'Balcony' }
 
-    // Mock findFirst returns existing garden
-    vi.mocked(mockPrisma.garden.findFirst).mockResolvedValueOnce({
+    // Mock findByUserAndName returns existing garden
+    vi.mocked(gardenRepo.findByUserAndName).mockResolvedValueOnce({
       id: 'garden-existing',
       name: 'Balcony',
       userId: 'user-1',
     } as any)
 
     // Mock create plant
-    vi.mocked(mockPrisma.plant.create).mockResolvedValueOnce({
+    vi.mocked(plantRepo.create).mockResolvedValueOnce({
       id: 'plant-1',
       gardenId: 'garden-existing',
     } as any)
@@ -87,13 +92,11 @@ describe('AddPlantUseCase', () => {
     await useCase.execute(input)
 
     // Should NOT create new garden
-    expect(mockPrisma.garden.create).not.toHaveBeenCalled()
+    expect(gardenRepo.create).not.toHaveBeenCalled()
 
     // Should create plant linked to existing garden
-    expect(mockPrisma.plant.create).toHaveBeenCalledWith(
-      expect.objectContaining({
-        data: expect.objectContaining({ gardenId: 'garden-existing' }),
-      }),
+    expect(plantRepo.create).toHaveBeenCalledWith(
+      expect.objectContaining({ gardenId: 'garden-existing' }),
     )
   })
 })

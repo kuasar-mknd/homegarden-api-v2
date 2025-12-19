@@ -4,6 +4,8 @@
  * Represents a plant in a user's garden.
  */
 
+import type { GardenProps } from './garden.entity.js'
+
 export type PlantExposure = 'FULL_SUN' | 'PARTIAL_SHADE' | 'SHADE'
 export type PlantUse = 'ORNAMENTAL' | 'GROUNDCOVER' | 'FOOD' | 'MEDICINAL' | 'FRAGRANCE'
 
@@ -30,6 +32,7 @@ export interface PlantProps {
   gardenId: string
   createdAt: Date
   updatedAt: Date
+  garden?: GardenProps
 }
 
 export class Plant {
@@ -51,53 +54,31 @@ export class Plant {
   // GETTERS
   // ============================================================
 
-  get id(): string {
-    return this.props.id
-  }
+  get id(): string { return this.props.id }
+  get nickname(): string | null | undefined { return this.props.nickname }
+  get speciesId(): string | null | undefined { return this.props.speciesId }
+  get commonName(): string | null | undefined { return this.props.commonName }
+  get scientificName(): string | null | undefined { return this.props.scientificName }
+  get family(): string | null | undefined { return this.props.family }
+  get exposure(): PlantExposure | null | undefined { return this.props.exposure }
+  get watering(): string | null | undefined { return this.props.watering }
+  get soilType(): string | null | undefined { return this.props.soilType }
+  get flowerColor(): string | null | undefined { return this.props.flowerColor }
+  get height(): number | null | undefined { return this.props.height }
+  get plantedDate(): Date | null | undefined { return this.props.plantedDate }
+  get acquiredDate(): Date | null | undefined { return this.props.acquiredDate }
+  get bloomingSeason(): string | null | undefined { return this.props.bloomingSeason }
+  get plantingSeason(): string | null | undefined { return this.props.plantingSeason }
+  get careNotes(): string | null | undefined { return this.props.careNotes }
+  get imageUrl(): string | null | undefined { return this.props.imageUrl }
+  get thumbnailUrl(): string | null | undefined { return this.props.thumbnailUrl }
+  get use(): PlantUse | null | undefined { return this.props.use }
+  get gardenId(): string { return this.props.gardenId }
+  get createdAt(): Date { return this.props.createdAt }
+  get updatedAt(): Date { return this.props.updatedAt }
+  get displayName(): string { return this.props.nickname ?? this.props.commonName ?? 'Unnamed Plant' }
 
-  get displayName(): string {
-    return this.props.nickname ?? this.props.commonName ?? 'Unnamed Plant'
-  }
-
-  get nickname(): string | null | undefined {
-    return this.props.nickname
-  }
-
-  get speciesId(): string | null | undefined {
-    return this.props.speciesId
-  }
-
-  get commonName(): string | null | undefined {
-    return this.props.commonName
-  }
-
-  get scientificName(): string | null | undefined {
-    return this.props.scientificName
-  }
-
-  get family(): string | null | undefined {
-    return this.props.family
-  }
-
-  get exposure(): PlantExposure | null | undefined {
-    return this.props.exposure
-  }
-
-  get gardenId(): string {
-    return this.props.gardenId
-  }
-
-  get imageUrl(): string | null | undefined {
-    return this.props.imageUrl
-  }
-
-  get createdAt(): Date {
-    return this.props.createdAt
-  }
-
-  get updatedAt(): Date {
-    return this.props.updatedAt
-  }
+  get garden(): GardenProps | undefined { return this.props.garden }
 
   // ============================================================
   // BUSINESS METHODS

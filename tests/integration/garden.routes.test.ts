@@ -1,4 +1,4 @@
-import { afterAll, beforeAll, describe, expect, it, vi } from 'vitest'
+import { afterAll, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest'
 import app from '../../index.js'
 import { disconnectDb, resetDb } from '../helpers/reset-db.js'
 
@@ -22,6 +22,12 @@ vi.mock('@supabase/supabase-js', () => ({
 describe('Garden Routes Integration', () => {
   beforeAll(async () => {
     await resetDb()
+  })
+  
+  // Clean up after each test to ensure isolation, or rely on resetDb at start
+  // Given serial execution, resetDb at start of suite is good, but let's be safe.
+  beforeEach(async () => {
+      // Optional: reset per test? Might be too slow.
   })
 
   afterAll(async () => {

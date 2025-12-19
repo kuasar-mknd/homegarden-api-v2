@@ -14,5 +14,18 @@ export default defineConfig({
       '@infrastructure': path.resolve(__dirname, './infrastructure'),
       '@shared': path.resolve(__dirname, './shared'),
     },
+    coverage: {
+      provider: 'v8',
+      reporter: ['text', 'json', 'html'],
+      exclude: [
+        'node_modules/**',
+        'dist/**',
+        '**/*.d.ts',
+        'tests/**',
+        '**/*.test.ts',
+        '**/*.config.ts',
+        'prisma/**',
+      ],
+    },
   },
 })

@@ -1,5 +1,6 @@
-import type { Plant } from '@prisma/client'
-import { prisma } from '../../../infrastructure/database/prisma.client.js'
+import type { Plant } from '../../../domain/entities/plant.entity.js'
+import type { GardenRepository } from '../../../domain/repositories/garden.repository.js'
+import type { PlantRepository } from '../../../domain/repositories/plant.repository.js'
 import { AppError } from '../../../shared/errors/app-error.js'
 import { fail, ok, type Result } from '../../../shared/types/result.type.js'
 
@@ -16,6 +17,11 @@ interface AddPlantInput {
 }
 
 export class AddPlantUseCase {
+  constructor(
+    private readonly gardenRepository: GardenRepository,
+    private readonly plantRepository: PlantRepository
+  ) {}
+
   async execute(input: AddPlantInput): Promise<Result<Plant, AppError>> {
     try {
       if (!input.userId) {
@@ -26,42 +32,31 @@ export class AddPlantUseCase {
       }
 
       // 1. Find or Create Garden
-      // We look for a garden with the given name for this user
-      // If not found, we create a default "indoor/virtual" garden with (0,0) coords
-      let garden = await prisma.garden.findFirst({
-        where: {
-          userId: input.userId,
-          name: input.location,
-        },
-      })
+      let garden = await this.gardenRepository.findByUserAndName(input.userId, input.location)
 
       if (!garden) {
-        garden = await prisma.garden.create({
-          data: {
-            userId: input.userId,
-            name: input.location,
-            latitude: 0,
-            longitude: 0,
-            description: 'Auto-created location',
-            climate: 'Indoor', // Default assumption
-          },
+        garden = await this.gardenRepository.create({
+          userId: input.userId,
+          name: input.location,
+          latitude: 0,
+          longitude: 0,
+          description: 'Auto-created location',
+          climate: 'Indoor', // Default assumption
         })
       }
 
       // 2. Create Plant
-      const plant = await prisma.plant.create({
-        data: {
-          gardenId: garden.id,
-          nickname: input.nickname || input.speciesInfo?.commonName || 'My Plant',
-          commonName: input.speciesInfo?.commonName ?? null,
-          scientificName: input.speciesInfo?.scientificName ?? null,
-          family: input.speciesInfo?.family ?? null,
-          imageUrl: input.speciesInfo?.imageUrl ?? null,
-          acquiredDate: new Date(),
-        },
+      const plant = await this.plantRepository.create({
+        gardenId: garden.id,
+        nickname: input.nickname || input.speciesInfo?.commonName || 'My Plant',
+        commonName: input.speciesInfo?.commonName ?? null,
+        scientificName: input.speciesInfo?.scientificName ?? null,
+        family: input.speciesInfo?.family ?? null,
+        imageUrl: input.speciesInfo?.imageUrl ?? null,
+        acquiredDate: new Date(),
       })
 
-      return ok(plant)
+      return ok(plant as unknown as Plant) // Casting because Repository Plant entity might slightly differ from Prisma type imported
     } catch (error) {
       console.error('AddPlantUseCase Error:', error)
       return fail(new AppError('Failed to add plant to garden', 500))

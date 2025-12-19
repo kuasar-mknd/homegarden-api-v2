@@ -1,4 +1,5 @@
 import { serve } from '@hono/node-server'
+import { fileURLToPath } from 'node:url'
 import { OpenAPIHono } from '@hono/zod-openapi'
 import { swaggerUI } from '@hono/swagger-ui'
 import { cors } from 'hono/cors'
@@ -18,19 +19,28 @@ import { DiagnosePlantUseCase } from './application/use-cases/dr-plant/diagnose-
 // Use Cases - Garden
 import { AddPlantUseCase } from './application/use-cases/garden/add-plant.use-case.js'
 import { GetUserPlantsUseCase } from './application/use-cases/garden/get-user-plants.use-case.js'
+import { GetGardenWeatherUseCase } from './application/use-cases/garden/get-garden-weather.use-case.js'
+import { FindNearbyGardensUseCase } from './application/use-cases/garden/find-nearby-gardens.use-case.js'
+import { GardenPrismaRepository } from './infrastructure/database/repositories/garden.prisma-repository.js'
+import { PlantPrismaRepository } from './infrastructure/database/repositories/plant.prisma-repository.js'
+import { UserPrismaRepository } from './infrastructure/database/repositories/user.prisma-repository.js'
 // Use Cases
 import { createIdentifySpeciesUseCase } from './application/use-cases/plant-id/identify-species.use-case.js'
+import { GetUserPublicProfileUseCase } from './application/use-cases/user/get-user-public-profile.use-case.js'
 // External Service Adapters
 import { getGeminiPlantAdapter } from './infrastructure/external-services/gemini-plant.adapter.js'
+import { OpenMeteoAdapter } from './infrastructure/external-services/open-meteo.adapter.js'
 // Controllers
 import { DrPlantController } from './infrastructure/http/controllers/dr-plant.controller.js'
 import { GardenController } from './infrastructure/http/controllers/garden.controller.js'
+import { UserController } from './infrastructure/http/controllers/user.controller.js'
 // Controllers
 import { createPlantIdController } from './infrastructure/http/controllers/plant-id.controller.js'
 import { authMiddleware } from './infrastructure/http/middleware/auth.middleware.js'
 import { createDrPlantRoutes } from './infrastructure/http/routes/dr-plant.routes.js'
 // Routes,
 import { createGardenRoutes } from './infrastructure/http/routes/garden.routes.js'
+import { createUserRoutes } from './infrastructure/http/routes/user.routes.js'
 // Routes
 import { createPlantIdRoutes } from './infrastructure/http/routes/plant-id.routes.js'
 
@@ -46,9 +56,24 @@ const drPlantController = new DrPlantController(diagnosePlantUseCase)
 const drPlantRoutes = createDrPlantRoutes(drPlantController)
 
 // Garden (My Plants)
-const addPlantUseCase = new AddPlantUseCase()
-const getUserPlantsUseCase = new GetUserPlantsUseCase()
-const gardenController = new GardenController(addPlantUseCase, getUserPlantsUseCase)
+// Garden (My Plants & Weather)
+const gardenRepository = new GardenPrismaRepository()
+const plantRepository = new PlantPrismaRepository()
+const weatherAdapter = new OpenMeteoAdapter()
+
+const addPlantUseCase = new AddPlantUseCase(gardenRepository, plantRepository)
+const getUserPlantsUseCase = new GetUserPlantsUseCase(plantRepository)
+const getGardenWeatherUseCase = new GetGardenWeatherUseCase(gardenRepository, weatherAdapter)
+const findNearbyGardensUseCase = new FindNearbyGardensUseCase(gardenRepository)
+
+// User
+const userRepository = new UserPrismaRepository()
+const getUserPublicProfileUseCase = new GetUserPublicProfileUseCase(userRepository)
+
+const userController = new UserController(getUserPublicProfileUseCase)
+const userRoutes = createUserRoutes(userController)
+
+const gardenController = new GardenController(addPlantUseCase, getUserPlantsUseCase, getGardenWeatherUseCase, findNearbyGardensUseCase)
 const gardenRoutes = createGardenRoutes(gardenController)
 
 // ============================================================
@@ -162,6 +187,9 @@ app.route('/api/v2/dr-plant', drPlantRoutes)
 // My Garden
 app.route('/api/v2/gardens', gardenRoutes) // Auth is applied inside createGardenRoutes
 
+// Auth & User
+app.route('/api/v2/users', userRoutes)
+
 // TODO: Mount remaining routes when implemented
 // app.route('/api/v2/auth', authRoutes)
 // app.route('/api/v2/users', userRoutes)
@@ -209,8 +237,13 @@ app.onError((err, c) => {
 
 const port = env.PORT
 
-if (env.NODE_ENV !== 'test') {
-  logger.info(`
+if (env.NODE_ENV !== 'test' && (process.env.npm_lifecycle_event !== 'test')) {
+  // Check if the module is being run directly (e.g. node dist/index.js)
+  // When running with Vite, this file is imported, so we don't want to start the server here
+  const isMainModule = process.argv[1] === fileURLToPath(import.meta.url)
+
+  if (isMainModule) {
+    logger.info(`
 🌱 HomeGarden API v2.0
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 📍 Server:     http://localhost:${port}
@@ -223,10 +256,11 @@ if (env.NODE_ENV !== 'test') {
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 `)
 
-  serve({
-    fetch: app.fetch,
-    port,
-  })
+    serve({
+      fetch: app.fetch,
+      port,
+    })
+  }
 }
 
 export default app
