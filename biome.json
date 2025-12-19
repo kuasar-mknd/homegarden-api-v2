@@ -27,7 +27,15 @@
   },
   "overrides": [
     {
-      "includes": ["tests/**", "**/*.controller.ts", "**/*.use-case.test.ts"],
+      "includes": [
+        "tests/**",
+        "**/*.controller.ts",
+        "**/*.use-case.test.ts",
+        "infrastructure/database/repositories/**",
+        "infrastructure/repositories/**",
+        "prisma/seed.ts",
+        "infrastructure/websocket/**"
+      ],
       "linter": {
         "rules": {
           "suspicious": {
