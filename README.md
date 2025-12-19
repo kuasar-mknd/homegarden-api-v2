@@ -1,124 +1,250 @@
-# 🌱 HomeGarden API v2 (AI-Powered)
+# 🌱 HomeGarden API v2.0 (AI-Powered)
 
-A modern plant management API with AI-powered species identification and disease diagnosis, built with **Clean Architecture**.
+A modern plant management API with AI-powered species identification and disease diagnosis, built with **Clean Architecture** principles.
 
-## Tech Stack
+[![Test Coverage](https://img.shields.io/badge/coverage-98.21%25-brightgreen.svg)](.) 
+[![Tests](https://img.shields.io/badge/tests-285%20passing-success.svg)](.)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.9-blue.svg)](.)
+
+## ✨ Features
+
+- 🤖 **AI-Powered** - Species identification and disease diagnosis using Google Gemini Vision
+- 🏗️ **Clean Architecture** - Testable, maintainable, and framework-independent
+- 🔒 **Supabase Auth** - Secure authentication with automatic user sync
+- ⚡ **WebSocket Support** - Real-time weather updates and care reminders
+- 🌐 **Interactive API Docs** - Built-in Swagger UI at `/ui`
+- 🧪 **98% Test Coverage** - Unit, integration, and E2E tests
+- 📊 **OpenAPI 3.0** - Full API specification
+
+## 🚀 Tech Stack
 
 | Component | Technology |
 |-----------|------------|
 | **Runtime** | Node.js 20+ |
-| **Framework** | Hono |
-| **Language** | TypeScript (Strict) |
-| **Database** | PostgreSQL + Prisma 6 |
-| **AI** | Google Gemini (Vision) |
-| **Auth** | Supabase Auth |
-| **Architecture** | Clean Architecture |
+| **Framework** | Hono (Fast web framework) |
+| **Language** | TypeScript 5.9 (Strict mode) |
+| **Database** | PostgreSQL + Prisma 7 |
+| **AI** | Google Gemini (gemini-3-flash-preview) |
+| **Auth** | Supabase Auth + JWT |
+| **WebSocket** | ws library |
+| **Testing** | Vitest + SuperTest |
+| **Linting** | Biome |
 
-## Project Structure
-
-The project follows strict Clean Architecture principles:
+## 📁 Project Structure
 
 ```
-src/
-├── application/       # Business logic (Use Cases, Ports)
-├── domain/           # Core business rules (Entities, Repositories)
-├── infrastructure/   # External/Framework implementations (DB, Hono, Gemini)
-├── shared/           # Shared kernel (Errors, Types, Utils)
-└── index.ts          # Application entry point
+/
+├── application/       # Use Cases, Ports (Business Logic)
+├── domain/           # Entities, Value Objects, Services
+├── infrastructure/   # HTTP, DB, External Services, WebSocket
+│   ├── http/        # Routes, Controllers, Middleware
+│   ├── database/    # Prisma repositories
+│   ├── external-services/  # Gemini, OpenMeteo adapters
+│   └── websocket/   # Real-time handlers
+├── shared/          # Errors, Types, Utils
+├── tests/           # Unit, Integration, E2E tests
+└── index.ts         # Application entry point
 ```
 
-## Prerequisites
+## 🛠️ Prerequisites
 
 - Node.js >= 20.0.0
-- PostgreSQL 14+
-- Google Cloud API Key (for Gemini)
+- PostgreSQL 14+ with PostGIS extension
+- Google Cloud API Key (for Gemini Vision)
+- Supabase project (for authentication)
 
-## Setup
+## 📦 Installation
 
-1. **Install dependencies**
+1. **Clone and install**
    ```bash
+   git clone <repository-url>
+   cd archiOweb-api
    npm install
    ```
 
 2. **Configure environment**
    ```bash
    cp .env.example .env
-   # Edit .env with your values
+   # Edit .env with your credentials
    ```
 
-   **Important:** For Gemini, verify available models key:
+   Required variables:
    ```env
-   # Example valid configuration
+   # Server
+   PORT=3000
+   NODE_ENV=development
+
+   # Database
+   DATABASE_URL=postgresql://user:password@localhost:5432/homegarden
+
+   # AI (Google Gemini)
    GOOGLE_AI_API_KEY=your-api-key
    GEMINI_IDENTIFICATION_MODEL=gemini-3-flash-preview
    GEMINI_DIAGNOSIS_MODEL=gemini-3-flash-preview
+
+   # Auth (Supabase)
+   SUPABASE_URL=your-project-url
+   SUPABASE_ANON_KEY=your-anon-key
+
+   # JWT
+   JWT_SECRET=your-secret-key
    ```
 
-3. **Generate Prisma client**
+3. **Setup database**
    ```bash
-   npm run db:generate
+   npm run db:generate    # Generate Prisma client
+   npm run db:migrate     # Run migrations
+   npm run db:seed        # (Optional) Seed data
    ```
 
-4. **Run migrations** (when connected to DB)
-   ```bash
-   npm run db:migrate
-   ```
+## 🎯 Running
 
-## Running
-
+### Development
 ```bash
-# Development (hot-reload)
-npm run dev
-
-# Production build
-npm run build
-npm start
+npm run dev            # Hot-reload with Vite
 ```
 
-## API Endpoints
+### Production
+```bash
+npm run build          # TypeScript compilation
+npm start              # Start production server
+```
 
-### 🌿 Plant Identification (AI)
+### Testing
+```bash
+npm test               # Run all tests
+npm run test:coverage  # Run with coverage report
+npm run test:e2e       # Run End-to-End tests only
+```
 
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| `POST` | `/api/v2/plant-id/identify` | Identify plant species from image |
-| `GET` | `/api/v2/plant-id/status` | Check AI service availability |
+### Code Quality
+```bash
+npm run lint           # Lint code
+npm run format         # Format code
+npm run check          # Lint + format
+npm run ci:check       # CI linting (strict)
+```
 
-**Example Request:**
+## 🌐 API Endpoints
+
+Once running, visit `http://localhost:3000`:
+
+- **Landing Page**: `/` - Interactive HTML landing page
+- **Swagger UI**: `/ui` - Interactive API documentation
+- **OpenAPI Spec**: `/doc` - Raw JSON specification
+- **API Base**: `/api/v2` - All API endpoints
+
+### Key Endpoints
+
+| Category | Method | Endpoint | Description |
+|----------|--------|----------|-------------|
+| **Plant ID** | POST | `/api/v2/plant-id/identify` | Identify plant species from image |
+| **Plant ID** | GET | `/api/v2/plant-id/status` | Check AI service status |
+| **Dr. Plant** | POST | `/api/v2/dr-plant/diagnose` | Diagnose plant diseases |
+| **Gardens** | GET | `/api/v2/gardens/plants` | Get user's plants |
+| **Gardens** | GET | `/api/v2/gardens/nearby` | Find nearby gardens |
+| **Gardens** | GET | `/api/v2/gardens/:id/weather` | Get garden weather |
+| **Gardens** | POST | `/api/v2/gardens/:id/plants` | Add plant to garden |
+| **Users** | GET | `/api/v2/users/:id` | Get user public profile |
+
+### Example Request
+
+```bash
+curl -X POST http://localhost:3000/api/v2/plant-id/identify \
+  -H "Authorization: Bearer YOUR_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "imageUrl": "https://example.com/plant.jpg",
+    "maxSuggestions": 3
+  }'
+```
+
+## 🔌 WebSocket API
+
+Real-time features are available via WebSocket at `ws://localhost:3000`:
+
+### Weather Updates
 ```json
-POST /api/v2/plant-id/identify
 {
-  "imageUrl": "https://example.com/plant.jpg",
-  "maxSuggestions": 3
+  "type": "SUBSCRIBE",
+  "channel": "weather",
+  "payload": {
+    "gardenId": "garden-id",
+    "latitude": 46.5,
+    "longitude": 6.6
+  }
 }
 ```
 
-### 🏥 Dr. Plant (Diagnosis) - *Coming Soon*
-
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| `POST` | `/api/v2/dr-plant/diagnose` | Diagnose plant health issues |
-
-## Environment Variables
-
-```env
-# Server
-PORT=3000
-NODE_ENV=development
-CORS_ORIGINS=http://localhost:3000
-
-# Database
-DATABASE_URL=postgresql://user:password@localhost:5432/homegarden
-
-# AI (Google Gemini)
-GOOGLE_AI_API_KEY=AI...
-GEMINI_IDENTIFICATION_MODEL=gemini-3-flash-preview
-GEMINI_DIAGNOSIS_MODEL=gemini-3-flash-preview
-
-# Auth
-JWT_SECRET=super_secret_key
+### Care Reminders
+```json
+{
+  "type": "SUBSCRIBE",
+  "channel": "care-reminders",
+  "payload": {
+    "userId": "user-id"
+  }
+}
 ```
 
-## License
+## 🧪 Testing
+
+The project has **98.21% test coverage** with 285 tests:
+
+- **Unit Tests**: Domain entities, value objects, services
+- **Integration Tests**: Use cases, controllers, repositories
+- **E2E Tests**: Full HTTP + WebSocket flows
+
+```bash
+# Run all tests
+npm test
+
+# Run with coverage
+npm run test:coverage
+
+# Run E2E tests only
+npm run test:e2e
+```
+
+## 📚 Documentation
+
+- **[API.md](docs/API.md)** - Detailed API documentation
+- **[ARCHITECTURE.md](docs/ARCHITECTURE.md)** - Clean Architecture guide
+- **[AI.md](docs/AI.md)** - AI integration details
+- **[ENV.md](docs/ENV.md)** - Environment variables reference
+
+## 🏗️ Architecture
+
+This project follows **Clean Architecture** with strict layer separation:
+
+```
+Domain (Entities, Business Rules)
+  ↑
+Application (Use Cases, Ports)
+  ↑  
+Infrastructure (HTTP, DB, External APIs)
+```
+
+**Benefits:**
+- ✅ Testable (98% coverage)
+- ✅ Framework-independent business logic
+- ✅ Easy to swap implementations (DB, AI provider, etc.)
+- ✅ Clear separation of concerns
+
+## 🤝 Contributing
+
+1. Fork the repository
+2. Create a feature branch (`git checkout -b feature/amazing-feature`)
+3. Make your changes
+4. Run tests (`npm test`)
+5. Commit (`git commit -m 'feat: add amazing feature'`)
+6. Push (`git push origin feature/amazing-feature`)
+7. Open a Pull Request
+
+## 📄 License
 
 ISC
+
+---
+
+**Made with ❤️ using Clean Architecture and AI**
