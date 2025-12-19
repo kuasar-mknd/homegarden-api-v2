@@ -22,12 +22,23 @@ import { createPlantIdController } from './infrastructure/http/controllers/plant
 
 // Routes
 import { createPlantIdRoutes } from './infrastructure/http/routes/plant-id.routes.js'
+import { createDrPlantRoutes } from './infrastructure/http/routes/dr-plant.routes.js'
+
+// Use Cases
+import { DiagnosePlantUseCase } from './application/use-cases/dr-plant/diagnose-plant.use-case.js'
+// Controllers
+import { DrPlantController } from './infrastructure/http/controllers/dr-plant.controller.js'
 
 // Initialize dependencies
 const geminiAdapter = getGeminiPlantAdapter()
 const identifySpeciesUseCase = createIdentifySpeciesUseCase(geminiAdapter)
 const plantIdController = createPlantIdController(identifySpeciesUseCase)
 const plantIdRoutes = createPlantIdRoutes(plantIdController)
+
+// Dr. Plant (Diagnosis)
+const diagnosePlantUseCase = new DiagnosePlantUseCase(geminiAdapter)
+const drPlantController = new DrPlantController(diagnosePlantUseCase)
+const drPlantRoutes = createDrPlantRoutes(drPlantController)
 
 // ============================================================
 // CREATE HONO APP
@@ -99,6 +110,9 @@ app.get('/api/v2', (c) => {
 // Plant Identification
 app.route('/api/v2/plant-id', plantIdRoutes)
 
+// Dr. Plant (Diagnosis)
+app.route('/api/v2/dr-plant', drPlantRoutes)
+
 // TODO: Mount remaining routes when implemented
 // app.route('/api/v2/auth', authRoutes)
 // app.route('/api/v2/users', userRoutes)
@@ -149,6 +163,7 @@ console.log(`
 📍 Health:     http://localhost:${port}/
 📍 API:        http://localhost:${port}/api/v2
 📍 PlantID:    http://localhost:${port}/api/v2/plant-id
+📍 Dr.Plant:   http://localhost:${port}/api/v2/dr-plant/diagnose
 🔧 Environment: ${env.NODE_ENV}
 🤖 AI Service: ${env.GOOGLE_AI_API_KEY ? '✅ Configured' : '⚠️ Not configured'}
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
