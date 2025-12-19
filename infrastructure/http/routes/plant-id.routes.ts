@@ -33,6 +33,7 @@ export const createPlantIdRoutes = (controller: PlantIdController) => {
           400,
         )
       }
+      return
     },
   })
 
