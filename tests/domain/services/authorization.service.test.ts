@@ -1,8 +1,8 @@
 import { describe, expect, it } from 'vitest'
-import { AuthorizationService } from '../../../domain/services/authorization.service.js'
 import { Garden } from '../../../domain/entities/garden.entity.js'
 import { Plant } from '../../../domain/entities/plant.entity.js'
 import { User } from '../../../domain/entities/user.entity.js'
+import { AuthorizationService } from '../../../domain/services/authorization.service.js'
 
 describe('AuthorizationService', () => {
   const adminUser = User.create({
@@ -12,7 +12,7 @@ describe('AuthorizationService', () => {
     lastName: 'User',
     role: 'ADMIN',
     createdAt: new Date(),
-    updatedAt: new Date()
+    updatedAt: new Date(),
   })
 
   const regularUser = User.create({
@@ -22,7 +22,7 @@ describe('AuthorizationService', () => {
     lastName: 'User',
     role: 'USER',
     createdAt: new Date(),
-    updatedAt: new Date()
+    updatedAt: new Date(),
   })
 
   const otherUser = User.create({
@@ -32,7 +32,7 @@ describe('AuthorizationService', () => {
     lastName: 'User',
     role: 'USER',
     createdAt: new Date(),
-    updatedAt: new Date()
+    updatedAt: new Date(),
   })
 
   const garden = Garden.create({
@@ -42,14 +42,14 @@ describe('AuthorizationService', () => {
     longitude: 0,
     userId: 'user-id',
     createdAt: new Date(),
-    updatedAt: new Date()
+    updatedAt: new Date(),
   })
 
   const plant = Plant.create({
     id: 'plant-id',
     gardenId: 'garden-id',
     createdAt: new Date(),
-    updatedAt: new Date()
+    updatedAt: new Date(),
   })
 
   describe('canManageGarden', () => {
@@ -87,7 +87,7 @@ describe('AuthorizationService', () => {
         longitude: 0,
         userId: 'user-id',
         createdAt: new Date(),
-        updatedAt: new Date()
+        updatedAt: new Date(),
       })
 
       expect(AuthorizationService.canManagePlant(regularUser, plant, otherGarden)).toBe(false)

@@ -26,6 +26,6 @@ export class AuthorizationService {
     if (plant.gardenId !== garden.id) {
       return false
     }
-    return this.canManageGarden(user, garden)
+    return AuthorizationService.canManageGarden(user, garden)
   }
 }
