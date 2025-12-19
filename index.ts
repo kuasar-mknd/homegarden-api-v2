@@ -264,7 +264,7 @@ if (env.NODE_ENV !== 'test' && process.env.npm_lifecycle_event !== 'test') {
       port,
     })
 
-    initializeWebSocketServer(server)
+    initializeWebSocketServer(server as any)
   }
 }
 

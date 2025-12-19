@@ -26,12 +26,12 @@ export async function handleWeatherMessage(ws: WebSocket, message: WSMessage) {
             message.payload.longitude,
           )
 
-          if (weather.isOk()) {
+          if (weather.success) {
             ws.send(
               JSON.stringify({
                 type: 'WEATHER_UPDATE',
                 channel: 'weather',
-                payload: weather.value,
+                payload: weather.data,
               }),
             )
           }
@@ -44,12 +44,12 @@ export async function handleWeatherMessage(ws: WebSocket, message: WSMessage) {
             message.payload.latitude,
             message.payload.longitude,
           )
-          if (weather.isOk()) {
+          if (weather.success) {
             ws.send(
               JSON.stringify({
                 type: 'WEATHER_UPDATE',
                 channel: 'weather',
-                payload: weather.value,
+                payload: weather.data,
               }),
             )
           } else {
