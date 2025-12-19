@@ -47,8 +47,20 @@ describe('User Public Profile Integration', () => {
   })
 
   it('should return public profile for existing user', async () => {
-    // Mock Auth as Viewer
-    mockGetUser.mockResolvedValue({ data: { user: { email: 'viewer@example.com' } }, error: null })
+    // Mock Auth as Viewer with full user data
+    mockGetUser.mockResolvedValue({
+      data: {
+        user: {
+          id: 'supabase-viewer-id',
+          email: 'viewer@example.com',
+          user_metadata: { full_name: 'Viewer Person' },
+          app_metadata: {},
+          aud: 'authenticated',
+          created_at: new Date().toISOString(),
+        },
+      },
+      error: null,
+    })
 
     const res = await app.request(`/api/v2/users/${targetUser.id}`, {
       headers: { Authorization: 'Bearer valid-token' },
