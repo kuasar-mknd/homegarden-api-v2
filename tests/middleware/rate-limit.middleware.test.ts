@@ -1,5 +1,4 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest'
-import { env } from '../../infrastructure/config/env.js'
 import { rateLimitMiddleware } from '../../infrastructure/http/middleware/rate-limit.middleware.js'
 
 vi.mock('../../infrastructure/config/env.js', () => ({

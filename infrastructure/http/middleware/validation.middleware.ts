@@ -11,10 +11,7 @@ import type { ZodSchema } from 'zod'
  * @param target - The part of the request to validate ('json', 'query', 'param', etc.)
  * @param schema - The Zod schema to validate against
  */
-export const validate = <T extends keyof ValidationTargets>(
-  target: T,
-  schema: ZodSchema,
-) =>
+export const validate = <T extends keyof ValidationTargets>(target: T, schema: ZodSchema) =>
   zValidator(target, schema, (result, c) => {
     if (!result.success) {
       return c.json(

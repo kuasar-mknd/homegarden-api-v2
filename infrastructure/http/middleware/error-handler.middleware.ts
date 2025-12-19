@@ -14,9 +14,12 @@ export const errorHandler: ErrorHandler = (err, c) => {
   const statusCode = 'statusCode' in err ? (err.statusCode as number) : 500
 
   // Determine status code safely
-  const responseStatus = (
-    statusCode >= 400 && statusCode < 600 ? statusCode : 500
-  ) as 400 | 401 | 403 | 404 | 500
+  const responseStatus = (statusCode >= 400 && statusCode < 600 ? statusCode : 500) as
+    | 400
+    | 401
+    | 403
+    | 404
+    | 500
 
   return c.json(
     {
