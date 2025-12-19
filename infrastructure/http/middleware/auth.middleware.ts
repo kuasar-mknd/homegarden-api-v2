@@ -48,7 +48,7 @@ export const authMiddleware = createMiddleware(async (c, next) => {
         {
           success: false,
           error: 'UNAUTHORIZED',
-          message: 'Invalid or expired token',
+          message: 'Invalid or expired Supabase token',
         },
         401,
       )
