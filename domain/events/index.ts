@@ -1,6 +1,6 @@
-import { Plant } from '../entities/plant.entity.js'
-import { Diagnosis } from '../entities/diagnosis.entity.js'
-import { CareSchedule } from '../entities/care-schedule.entity.js'
+import type { CareSchedule } from '../entities/care-schedule.entity.js'
+import type { Diagnosis } from '../entities/diagnosis.entity.js'
+import type { Plant } from '../entities/plant.entity.js'
 
 export interface DomainEvent {
   occurredOn: Date
