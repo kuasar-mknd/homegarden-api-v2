@@ -1,3 +1,4 @@
+import { logger } from '../../../infrastructure/config/logger.js'
 import { getGeminiPlantAdapter } from '../../../infrastructure/external-services/gemini-plant.adapter.js'
 import { AppError } from '../../../shared/errors/app-error.js'
 import { fail, ok, type Result } from '../../../shared/types/result.type.js'
@@ -41,7 +42,7 @@ export class DiagnosePlantUseCase {
 
       return ok(result)
     } catch (error) {
-      console.error('UseCase Error:', error)
+      logger.error({ err: error }, 'UseCase Error')
       return fail(new AppError('Internal server error during diagnosis', 500))
     }
   }

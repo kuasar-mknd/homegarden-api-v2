@@ -57,6 +57,8 @@ const parseEnv = () => {
     return envSchema.parse(process.env)
   } catch (error) {
     if (error instanceof z.ZodError) {
+      // Use console.error directly here because logger depends on env being parsed
+      // and we want to ensure this error is seen in stdout before exiting
       console.error('❌ Environment validation failed:')
       for (const issue of error.issues) {
         console.error(`   - ${issue.path.join('.')}: ${issue.message}`)
