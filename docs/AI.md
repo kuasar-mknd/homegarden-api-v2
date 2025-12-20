@@ -22,8 +22,8 @@ HomeGarden API uses **Google Gemini Vision** models for intelligent plant identi
 
 | Feature | Default Model | Env Variable | Purpose |
 |---------|--------------|--------------|---------|
-| **Plant ID** | `gemini-3-flash-preview` | `GEMINI_IDENTIFICATION_MODEL` | Fast visual recognition |
-| **Dr. Plant** | `gemini-3-flash-preview` | `GEMINI_DIAGNOSIS_MODEL` | Complex reasoning & diagnosis |
+| **Plant ID** | `gemini-2.0-flash` | `GEMINI_IDENTIFICATION_MODEL` | Fast visual recognition |
+| **Dr. Plant** | `gemini-2.5-pro-preview-06-05` | `GEMINI_DIAGNOSIS_MODEL` | Complex reasoning & diagnosis |
 
 > **Flexibility:** Change models via environment variables without redeployment
 
@@ -39,8 +39,8 @@ HomeGarden API uses **Google Gemini Vision** models for intelligent plant identi
 2. **Configure Environment**
    ```env
    GOOGLE_AI_API_KEY=your-api-key-here
-   GEMINI_IDENTIFICATION_MODEL=gemini-3-flash-preview
-   GEMINI_DIAGNOSIS_MODEL=gemini-3-flash-preview
+   GEMINI_IDENTIFICATION_MODEL=gemini-2.0-flash
+   GEMINI_DIAGNOSIS_MODEL=gemini-2.5-pro-preview-06-05
    ```
 
 3. **Verify Setup**
@@ -149,7 +149,7 @@ class GeminiPlantAdapter implements AIIdentificationPort {
       }
     ],
     "processingTimeMs": 1245,
-    "modelUsed": "gemini-3-flash-preview"
+    "modelUsed": "gemini-2.0-flash"
   }
 }
 ```
@@ -193,7 +193,7 @@ class GeminiPlantAdapter implements AIIdentificationPort {
       "Isolate plant to prevent spread to other plants"
     ],
     "processingMs": 2456,
-    "aiModel": "gemini-3-flash-preview"
+    "aiModel": "gemini-2.5-pro-preview-06-05"
   }
 }
 ```

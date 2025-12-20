@@ -133,9 +133,11 @@ export const AddPlantResponseSchema = z.object({
 
 export const GetUserPlantsResponseSchema = z.object({
   success: z.boolean().openapi({ example: true }),
-  data: z.object({
-    plants: z.array(PlantSchema),
-  }).or(z.array(PlantSchema)), // Support both formats for backward compatibility
+  data: z
+    .object({
+      plants: z.array(PlantSchema),
+    })
+    .or(z.array(PlantSchema)), // Support both formats for backward compatibility
 })
 
 // =============================================================================

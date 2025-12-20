@@ -1,4 +1,3 @@
-
 import { lookup } from 'node:dns/promises'
 import { URL } from 'node:url'
 
@@ -31,13 +30,7 @@ function ipV4ToNumber(ip: string): number | null {
   const parts = ip.split('.').map(Number)
   if (parts.length !== 4 || parts.some(isNaN)) return null
   const [p0, p1, p2, p3] = parts
-  if (
-    p0 === undefined ||
-    p1 === undefined ||
-    p2 === undefined ||
-    p3 === undefined
-  )
-    return null
+  if (p0 === undefined || p1 === undefined || p2 === undefined || p3 === undefined) return null
   return (p0 << 24) | (p1 << 16) | (p2 << 8) | p3
 }
 
@@ -84,7 +77,6 @@ export async function isSafeUrl(urlString: string): Promise<boolean> {
     }
 
     return true
-
   } catch (_error) {
     // URL parse error or DNS resolution error
     return false

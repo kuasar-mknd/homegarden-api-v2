@@ -141,7 +141,8 @@ export const createGardenRoutes = (controller: GardenController) => {
       path: '/plants',
       tags: ['Gardens'],
       summary: 'Get user plants',
-      description: 'Retrieve all plants belonging to the authenticated user across all their gardens.',
+      description:
+        'Retrieve all plants belonging to the authenticated user across all their gardens.',
       responses: {
         200: {
           content: {

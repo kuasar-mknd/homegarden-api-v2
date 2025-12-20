@@ -48,9 +48,9 @@ import { createCareTrackerRoutes } from './infrastructure/http/routes/care-track
 import { createDrPlantRoutes } from './infrastructure/http/routes/dr-plant.routes.js'
 // Routes,
 import { createGardenRoutes } from './infrastructure/http/routes/garden.routes.js'
+import { createPlantRoutes } from './infrastructure/http/routes/plant.routes.js'
 // Routes
 import { createPlantIdRoutes } from './infrastructure/http/routes/plant-id.routes.js'
-import { createPlantRoutes } from './infrastructure/http/routes/plant.routes.js'
 import { createUserRoutes } from './infrastructure/http/routes/user.routes.js'
 import { initializeWebSocketServer } from './infrastructure/websocket/index.js'
 
@@ -143,9 +143,7 @@ Most endpoints require authentication using Bearer Token (JWT).
     { name: 'PlantID', description: 'AI-powered plant identification' },
     { name: 'DrPlant', description: 'AI-powered disease diagnosis' },
   ],
-  servers: [
-    { url: 'http://localhost:3000', description: 'Local Development Server' },
-  ],
+  servers: [{ url: 'http://localhost:3000', description: 'Local Development Server' }],
 })
 
 // Swagger UI

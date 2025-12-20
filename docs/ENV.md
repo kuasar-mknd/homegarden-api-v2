@@ -24,7 +24,7 @@ These must be set for the application to run:
 | `DATABASE_URL` | PostgreSQL connection string | `postgresql://user:pass@localhost:5432/homegarden` |
 | `GOOGLE_AI_API_KEY` | Google Gemini API key | `AIza...` |
 | `SUPABASE_URL` | Supabase project URL | `https://xxx.supabase.co` |
-| `SUPABASE_ANON_KEY` | Supabase public anonymous key | `eyJhbGc...` |
+| `SUPABASE_PUBLISHABLE_KEY` | Supabase public API key | `eyJhbGc...` |
 | `JWT_SECRET` | Secret for signing JWTs (min 32 chars) | `your-super-secret-key-here` |
 
 ---
@@ -78,8 +78,8 @@ DATABASE_URL=postgresql://postgres:[PASSWORD]@db.[PROJECT-REF].supabase.co:5432/
 | Variable | Required | Default | Description |
 |----------|----------|---------|-------------|
 | `GOOGLE_AI_API_KEY` | **Yes** | - | API key from Google AI Studio |
-| `GEMINI_IDENTIFICATION_MODEL` | No | `gemini-3-flash-preview` | Model for plant identification |
-| `GEMINI_DIAGNOSIS_MODEL` | No | `gemini-3-flash-preview` | Model for disease diagnosis |
+| `GEMINI_IDENTIFICATION_MODEL` | No | `gemini-2.0-flash` | Model for plant identification |
+| `GEMINI_DIAGNOSIS_MODEL` | No | `gemini-2.5-pro-preview-06-05` | Model for disease diagnosis |
 
 **How to get an API key:**
 1. Visit [Google AI Studio](https://aistudio.google.com/)
@@ -89,8 +89,8 @@ DATABASE_URL=postgresql://postgres:[PASSWORD]@db.[PROJECT-REF].supabase.co:5432/
 **Example:**
 ```env
 GOOGLE_AI_API_KEY=AIzaSyC...
-GEMINI_IDENTIFICATION_MODEL=gemini-3-flash-preview
-GEMINI_DIAGNOSIS_MODEL=gemini-3-flash-preview
+GEMINI_IDENTIFICATION_MODEL=gemini-2.0-flash
+GEMINI_DIAGNOSIS_MODEL=gemini-2.5-pro-preview-06-05
 ```
 
 ---
@@ -100,16 +100,16 @@ GEMINI_DIAGNOSIS_MODEL=gemini-3-flash-preview
 | Variable | Required | Description |
 |----------|----------|-------------|
 | `SUPABASE_URL` | **Yes** | Your Supabase project URL |
-| `SUPABASE_ANON_KEY` | **Yes** | Public anonymous key (safe to expose) |
-| `SUPABASE_SERVICE_ROLE_KEY` | No | Service role key (keep secret!) |
+| `SUPABASE_PUBLISHABLE_KEY` | **Yes** | Public anonymous key (safe to expose) |
+| `SUPABASE_SECRET_KEY` | No | Service role key (keep secret!) |
 | `JWT_SECRET` | **Yes** | Secret for signing JWTs (min 32 characters) |
 | `JWT_EXPIRES_IN` | No | Access token expiry duration |
 
 **Example:**
 ```env
 SUPABASE_URL=https://abcdefgh.supabase.co
-SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
-SUPABASE_SERVICE_ROLE_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9... # Optional
+SUPABASE_PUBLISHABLE_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+SUPABASE_SECRET_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9... # Optional
 JWT_SECRET=my-super-secret-jwt-key-at-least-32-chars
 JWT_EXPIRES_IN=1h
 ```
@@ -122,7 +122,7 @@ No API key required! OpenMeteo is free and open-source.
 
 | Variable | Required | Default | Description |
 |----------|----------|---------|-------------|
-| `OPENMETEO_API_URL` | No | `https://api.open-meteo.com` | OpenMeteo API base URL |
+| `WEATHER_API_BASE_URL` | No | `https://api.open-meteo.com/v1` | OpenMeteo API base URL |
 
 ---
 
@@ -130,8 +130,8 @@ No API key required! OpenMeteo is free and open-source.
 
 | Variable | Required | Default | Description |
 |----------|----------|---------|-------------|
-| `RATE_LIMIT_WINDOW_MS` | No | `60000` | Time window in milliseconds (1 minute) |
-| `RATE_LIMIT_MAX` | No | `100` | Max requests per window per IP |
+| `RATE_LIMIT_WINDOW_MS` | No | `900000` | Time window in milliseconds (15 minutes) |
+| `RATE_LIMIT_MAX` | No | `350` | Max requests per window per IP |
 
 **Example:**
 ```env
@@ -190,26 +190,26 @@ DATABASE_URL=postgresql://postgres:password@localhost:5432/homegarden
 # AI (Google Gemini)
 # ============================================
 GOOGLE_AI_API_KEY=AIzaSyC_your_api_key_here
-GEMINI_IDENTIFICATION_MODEL=gemini-3-flash-preview
-GEMINI_DIAGNOSIS_MODEL=gemini-3-flash-preview
+GEMINI_IDENTIFICATION_MODEL=gemini-2.0-flash
+GEMINI_DIAGNOSIS_MODEL=gemini-2.5-pro-preview-06-05
 
 # ============================================
 # Authentication (Supabase)
 # ============================================
 SUPABASE_URL=https://abcdefgh.supabase.co
-SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+SUPABASE_PUBLISHABLE_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
 JWT_SECRET=my-super-secret-jwt-key-at-least-32-characters-long
 
 # ============================================
 # Rate Limiting
 # ============================================
-RATE_LIMIT_WINDOW_MS=60000
-RATE_LIMIT_MAX=100
+RATE_LIMIT_WINDOW_MS=900000
+RATE_LIMIT_MAX=350
 
 # ============================================
 # Weather (OpenMeteo)
 # ============================================
-OPENMETEO_API_URL=https://api.open-meteo.com
+WEATHER_API_BASE_URL=https://api.open-meteo.com/v1
 ```
 
 ---

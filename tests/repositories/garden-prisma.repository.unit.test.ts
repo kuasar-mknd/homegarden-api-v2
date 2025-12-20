@@ -21,6 +21,7 @@ vi.mock('../../infrastructure/database/prisma.client.js', () => {
 
 // Access the mocked prisma client to set expectations
 import { prisma } from '../../infrastructure/database/prisma.client.js'
+
 const mockQueryRaw = prisma.$queryRaw as unknown as ReturnType<typeof vi.fn>
 
 describe('PrismaGardenRepository Unit Tests', () => {
