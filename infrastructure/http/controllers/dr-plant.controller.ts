@@ -1,5 +1,6 @@
 import type { Context } from 'hono'
 import type { DiagnosePlantUseCase } from '../../../application/use-cases/dr-plant/diagnose-plant.use-case.js'
+import { logger } from '../../config/logger.js'
 
 export class DrPlantController {
   constructor(private diagnosePlantUseCase: DiagnosePlantUseCase) {}
@@ -73,7 +74,7 @@ export class DrPlantController {
         200,
       )
     } catch (error) {
-      console.error('DrPlant Controller Error:', error)
+      logger.error({ err: error }, 'DrPlant Controller Error')
       return c.json(
         {
           success: false,

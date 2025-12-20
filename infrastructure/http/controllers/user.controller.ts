@@ -1,5 +1,6 @@
 import type { Context } from 'hono'
 import type { GetUserPublicProfileUseCase } from '../../../application/use-cases/user/get-user-public-profile.use-case.js'
+import { logger } from '../../config/logger.js'
 
 export class UserController {
   constructor(private readonly getUserPublicProfileUseCase: GetUserPublicProfileUseCase) {}
@@ -44,7 +45,7 @@ export class UserController {
         200,
       )
     } catch (error) {
-      console.error('User Profile Error:', error)
+      logger.error({ err: error }, 'User Profile Error')
       return c.json(
         {
           success: false,
