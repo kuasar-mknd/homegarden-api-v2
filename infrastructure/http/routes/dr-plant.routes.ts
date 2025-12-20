@@ -12,7 +12,8 @@ export const createDrPlantRoutes = (controller: DrPlantController) => {
     path: '/diagnose',
     tags: ['Dr. Plant'],
     summary: 'Diagnose plant health',
-    description: 'AI-powered plant disease and health diagnosis from an image. Upload a photo of your plant to get detailed analysis, treatment recommendations, and recovery guidance.',
+    description:
+      'AI-powered plant disease and health diagnosis from an image. Upload a photo of your plant to get detailed analysis, treatment recommendations, and recovery guidance.',
     request: {
       body: {
         content: {

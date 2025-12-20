@@ -1,4 +1,4 @@
-import { describe, expect, it, vi, beforeEach } from 'vitest'
+import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 // Mock the env before importing the middleware
 vi.mock('../../infrastructure/config/env.js', () => ({

@@ -24,7 +24,7 @@ A modern plant management API with AI-powered species identification and disease
 | **Framework** | Hono (Fast web framework) |
 | **Language** | TypeScript 5.9 (Strict mode) |
 | **Database** | PostgreSQL + Prisma 7 |
-| **AI** | Google Gemini (gemini-3-flash-preview) |
+| **AI** | Google Gemini (gemini-2.0-flash / gemini-2.5-pro) |
 | **Auth** | Supabase Auth + JWT |
 | **WebSocket** | ws library |
 | **Testing** | Vitest + SuperTest |
@@ -49,6 +49,7 @@ A modern plant management API with AI-powered species identification and disease
 ## 🛠️ Prerequisites
 
 - Node.js >= 20.0.0
+- pnpm (Package Manager)
 - PostgreSQL 14+ with PostGIS extension
 - Google Cloud API Key (for Gemini Vision)
 - Supabase project (for authentication)
@@ -58,8 +59,8 @@ A modern plant management API with AI-powered species identification and disease
 1. **Clone and install**
    ```bash
    git clone <repository-url>
-   cd archiOweb-api
-   npm install
+   cd homegarden-api
+   pnpm install
    ```
 
 2. **Configure environment**
@@ -79,12 +80,12 @@ A modern plant management API with AI-powered species identification and disease
 
    # AI (Google Gemini)
    GOOGLE_AI_API_KEY=your-api-key
-   GEMINI_IDENTIFICATION_MODEL=gemini-3-flash-preview
-   GEMINI_DIAGNOSIS_MODEL=gemini-3-flash-preview
+   GEMINI_IDENTIFICATION_MODEL=gemini-2.0-flash
+   GEMINI_DIAGNOSIS_MODEL=gemini-2.5-pro-preview-06-05
 
    # Auth (Supabase)
    SUPABASE_URL=your-project-url
-   SUPABASE_ANON_KEY=your-anon-key
+   SUPABASE_PUBLISHABLE_KEY=your-publishable-key
 
    # JWT
    JWT_SECRET=your-secret-key
@@ -92,37 +93,37 @@ A modern plant management API with AI-powered species identification and disease
 
 3. **Setup database**
    ```bash
-   npm run db:generate    # Generate Prisma client
-   npm run db:migrate     # Run migrations
-   npm run db:seed        # (Optional) Seed data
+   pnpm run db:generate    # Generate Prisma client
+   pnpm run db:migrate     # Run migrations
+   pnpm run db:seed        # (Optional) Seed data
    ```
 
 ## 🎯 Running
 
 ### Development
 ```bash
-npm run dev            # Hot-reload with Vite
+pnpm run dev            # Hot-reload with Vite
 ```
 
 ### Production
 ```bash
-npm run build          # TypeScript compilation
-npm start              # Start production server
+pnpm run build          # TypeScript compilation
+pnpm start              # Start production server
 ```
 
 ### Testing
 ```bash
-npm test               # Run all tests
-npm run test:coverage  # Run with coverage report
-npm run test:e2e       # Run End-to-End tests only
+pnpm test               # Run all tests
+pnpm run test:coverage  # Run with coverage report
+pnpm run test:e2e       # Run End-to-End tests only
 ```
 
 ### Code Quality
 ```bash
-npm run lint           # Lint code
-npm run format         # Format code
-npm run check          # Lint + format
-npm run ci:check       # CI linting (strict)
+pnpm run lint           # Lint code
+pnpm run format         # Format code
+pnpm run check          # Lint + format
+pnpm run ci:check       # CI linting (strict)
 ```
 
 ## 🌐 API Endpoints
@@ -197,13 +198,13 @@ The project has **98.21% test coverage** with 285 tests:
 
 ```bash
 # Run all tests
-npm test
+pnpm test
 
 # Run with coverage
-npm run test:coverage
+pnpm run test:coverage
 
 # Run E2E tests only
-npm run test:e2e
+pnpm run test:e2e
 ```
 
 ## 📚 Documentation
@@ -236,7 +237,7 @@ Infrastructure (HTTP, DB, External APIs)
 1. Fork the repository
 2. Create a feature branch (`git checkout -b feature/amazing-feature`)
 3. Make your changes
-4. Run tests (`npm test`)
+4. Run tests (`pnpm test`)
 5. Commit (`git commit -m 'feat: add amazing feature'`)
 6. Push (`git push origin feature/amazing-feature`)
 7. Open a Pull Request
