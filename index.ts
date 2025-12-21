@@ -2,6 +2,7 @@ import { fileURLToPath } from 'node:url'
 import { serve } from '@hono/node-server'
 import { swaggerUI } from '@hono/swagger-ui'
 import { OpenAPIHono } from '@hono/zod-openapi'
+import { compress } from 'hono/compress'
 import { cors } from 'hono/cors'
 import { prettyJSON } from 'hono/pretty-json'
 import { secureHeaders } from 'hono/secure-headers'
@@ -155,6 +156,9 @@ app.get('/ui', swaggerUI({ url: '/doc' }))
 
 // Security headers
 app.use('*', secureHeaders())
+
+// Compression
+app.use('*', compress())
 
 // CORS
 app.use(
