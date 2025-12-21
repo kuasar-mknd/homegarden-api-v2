@@ -341,7 +341,7 @@ app.get('/', (c) => {
       box-sizing: border-box;
     }
     .card:hover {
-      transform: translateY(-2px);
+      transform: translateY(-2px) scale(1.01);
       box-shadow: 0 4px 12px rgba(0,0,0,0.05);
       border-color: var(--secondary);
     }
@@ -363,6 +363,11 @@ app.get('/', (c) => {
       font-size: 0.85rem;
       color: var(--status-text);
     }
+    @keyframes pulse {
+      0% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.7; transform: scale(0.9); }
+      100% { opacity: 1; transform: scale(1); }
+    }
     .status-dot {
       display: inline-block;
       width: 8px;
@@ -370,6 +375,7 @@ app.get('/', (c) => {
       background-color: var(--secondary);
       border-radius: 50%;
       margin-right: 6px;
+      animation: pulse 2s infinite ease-in-out;
     }
     @media (prefers-reduced-motion: reduce) {
       .card, .skip-link {
@@ -402,24 +408,32 @@ app.get('/', (c) => {
     <main id="main">
       <p>Welcome to the HomeGarden API. Connect your applications to smart plant management services.</p>
 
-      <div class="grid">
-        <a href="/ui" class="card">
-          <h3>📚 Documentation</h3>
-          <p>Interactive Swagger UI for API exploration.</p>
-        </a>
-        <a href="/doc" class="card">
-          <h3>🔍 OpenAPI Spec</h3>
-          <p>Raw JSON specification for integration.</p>
-        </a>
-        <a href="/ui#/PlantID" class="card">
-          <h3>🌿 Plant ID</h3>
-          <p>Identify species using AI vision (Docs).</p>
-        </a>
-        <a href="/ui#/DrPlant" class="card">
-          <h3>🩺 Dr. Plant</h3>
-          <p>Diagnose diseases and pests (Docs).</p>
-        </a>
-      </div>
+      <ul class="grid" role="list">
+        <li>
+          <a href="/ui" class="card" aria-describedby="desc-ui">
+            <h3>📚 Documentation</h3>
+            <p id="desc-ui">Interactive Swagger UI for API exploration.</p>
+          </a>
+        </li>
+        <li>
+          <a href="/doc" class="card" aria-describedby="desc-doc">
+            <h3>🔍 OpenAPI Spec</h3>
+            <p id="desc-doc">Raw JSON specification for integration.</p>
+          </a>
+        </li>
+        <li>
+          <a href="/ui#/PlantID" class="card" aria-describedby="desc-plantid">
+            <h3>🌿 Plant ID</h3>
+            <p id="desc-plantid">Identify species using AI vision (Docs).</p>
+          </a>
+        </li>
+        <li>
+          <a href="/ui#/DrPlant" class="card" aria-describedby="desc-drplant">
+            <h3>🩺 Dr. Plant</h3>
+            <p id="desc-drplant">Diagnose diseases and pests (Docs).</p>
+          </a>
+        </li>
+      </ul>
     </main>
 
     <footer class="status" role="status">

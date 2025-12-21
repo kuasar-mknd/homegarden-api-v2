@@ -18,7 +18,6 @@ vi.mock('@supabase/supabase-js', () => ({
 describe('E2E: Authentication Flow', () => {
   let server: any
   let baseUrl: string
-  // biome-ignore lint/correctness/noUnusedVariables: used for setup
   let _testUser: any
 
   beforeAll(async () => {
