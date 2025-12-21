@@ -24,13 +24,18 @@ export class GardenController {
         return c.json({ success: false, error: 'UNAUTHORIZED' }, 401)
       }
 
-      const body = await c.req.json()
+      const body = c.req.valid('json')
 
       const result = await this.addPlantUseCase.execute({
         userId: user.id,
         nickname: body.nickname,
         location: body.location,
-        speciesInfo: body.speciesInfo,
+        speciesInfo: {
+          commonName: body.commonName,
+          scientificName: body.scientificName,
+          family: body.family,
+          imageUrl: body.imageUrl,
+        },
       })
 
       if (!result.success) {
