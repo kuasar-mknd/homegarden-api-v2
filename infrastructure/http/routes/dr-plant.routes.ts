@@ -67,9 +67,9 @@ export const createDrPlantRoutes = (controller: DrPlantController) => {
     },
   })
 
-  // Apply body limit middleware and route handler
-  app.openapi(
-    diagnoseRoute,
+  // Apply body limit middleware
+  app.use(
+    '/diagnose',
     bodyLimit({
       maxSize: 10 * 1024 * 1024, // 10MB
       onError: (c) => {
@@ -83,8 +83,10 @@ export const createDrPlantRoutes = (controller: DrPlantController) => {
         )
       },
     }),
-    controller.diagnose,
   )
+
+  // Register route handler
+  app.openapi(diagnoseRoute, controller.diagnose)
 
   return app
 }

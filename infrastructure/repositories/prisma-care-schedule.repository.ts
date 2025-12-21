@@ -9,7 +9,7 @@ import { prisma } from '../database/prisma.client.js'
 export class PrismaCareScheduleRepository implements CareScheduleRepository {
   async create(data: CreateCareScheduleData): Promise<CareSchedule> {
     const schedule = await prisma.careSchedule.create({
-      data,
+      data: data as any,
     })
     return CareSchedule.fromPersistence(schedule)
   }
@@ -49,7 +49,7 @@ export class PrismaCareScheduleRepository implements CareScheduleRepository {
   async update(id: string, data: UpdateCareScheduleData): Promise<CareSchedule> {
     const schedule = await prisma.careSchedule.update({
       where: { id },
-      data,
+      data: data as any,
     })
     return CareSchedule.fromPersistence(schedule)
   }
@@ -96,13 +96,6 @@ export class PrismaCareScheduleRepository implements CareScheduleRepository {
   }
 
   async markComplete(id: string, notes?: string, photoUrl?: string): Promise<CareSchedule> {
-    // Transaction to update schedule and create completion record
-    // However, the interface only returns the CareSchedule.
-    // We need to calculate the next due date based on frequency and interval.
-    // This logic might belong in the domain entity or service, but repositories often handle this atomic operation.
-    // But wait, the repository interface just says `markComplete`.
-    // It implies the logic of updating the schedule is handled here or triggered.
-
     const schedule = await prisma.careSchedule.findUnique({ where: { id } })
     if (!schedule) throw new Error('Schedule not found')
 
@@ -111,7 +104,6 @@ export class PrismaCareScheduleRepository implements CareScheduleRepository {
     const nextDueDate = new Date(lastDoneAt)
 
     // Simple calculation based on frequency
-    // In a real app this should be more robust (handling months, etc.)
     switch (schedule.frequency) {
       case 'DAILY':
         nextDueDate.setDate(nextDueDate.getDate() + 1)
@@ -150,8 +142,8 @@ export class PrismaCareScheduleRepository implements CareScheduleRepository {
         data: {
           scheduleId: id,
           completedAt: lastDoneAt,
-          notes,
-          photoUrl,
+          notes: notes ?? null,
+          photoUrl: photoUrl ?? null,
         },
       }),
     ])

@@ -1,4 +1,4 @@
-import { Plant } from '../../domain/entities/plant.entity.js'
+import { Plant, type PlantExposure as DomainPlantExposure } from '../../domain/entities/plant.entity.js'
 import type {
   CreatePlantData,
   PlantRepository,
@@ -9,9 +9,9 @@ import { prisma } from '../database/prisma.client.js'
 export class PrismaPlantRepository implements PlantRepository {
   async create(data: CreatePlantData): Promise<Plant> {
     const plant = await prisma.plant.create({
-      data,
+      data: data as any,
     })
-    return Plant.fromPersistence(plant)
+    return this.mapToEntity(plant)
   }
 
   async findById(id: string): Promise<Plant | null> {
@@ -19,7 +19,7 @@ export class PrismaPlantRepository implements PlantRepository {
       where: { id },
     })
     if (!plant) return null
-    return Plant.fromPersistence(plant)
+    return this.mapToEntity(plant)
   }
 
   async findByGardenId(gardenId: string): Promise<Plant[]> {
@@ -27,7 +27,7 @@ export class PrismaPlantRepository implements PlantRepository {
       where: { gardenId },
       orderBy: { createdAt: 'desc' },
     })
-    return plants.map(Plant.fromPersistence)
+    return plants.map((p) => this.mapToEntity(p))
   }
 
   async findByUserId(userId: string): Promise<Plant[]> {
@@ -39,15 +39,15 @@ export class PrismaPlantRepository implements PlantRepository {
       },
       orderBy: { createdAt: 'desc' },
     })
-    return plants.map(Plant.fromPersistence)
+    return plants.map((p) => this.mapToEntity(p))
   }
 
   async update(id: string, data: UpdatePlantData): Promise<Plant> {
     const plant = await prisma.plant.update({
       where: { id },
-      data,
+      data: data as any,
     })
-    return Plant.fromPersistence(plant)
+    return this.mapToEntity(plant)
   }
 
   async delete(id: string): Promise<void> {
@@ -93,7 +93,7 @@ export class PrismaPlantRepository implements PlantRepository {
     ])
 
     return {
-      plants: plants.map(Plant.fromPersistence),
+      plants: plants.map((p) => this.mapToEntity(p)),
       total,
     }
   }
@@ -119,5 +119,12 @@ export class PrismaPlantRepository implements PlantRepository {
         name: item.commonName as string,
         count: item._count.commonName,
       }))
+  }
+
+  private mapToEntity(plant: any): Plant {
+    return Plant.fromPersistence({
+      ...plant,
+      exposure: plant.exposure as DomainPlantExposure,
+    })
   }
 }

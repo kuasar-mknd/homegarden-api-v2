@@ -14,7 +14,10 @@ export class PrismaDiagnosisRepository implements DiagnosisRepository {
         status: 'PENDING',
       },
     })
-    return Diagnosis.fromPersistence(diagnosis)
+    return Diagnosis.fromPersistence({
+      ...diagnosis,
+      rawResponse: diagnosis.rawResponse as Record<string, unknown> | null,
+    })
   }
 
   async findById(id: string): Promise<Diagnosis | null> {
@@ -22,7 +25,10 @@ export class PrismaDiagnosisRepository implements DiagnosisRepository {
       where: { id },
     })
     if (!diagnosis) return null
-    return Diagnosis.fromPersistence(diagnosis)
+    return Diagnosis.fromPersistence({
+      ...diagnosis,
+      rawResponse: diagnosis.rawResponse as Record<string, unknown> | null,
+    })
   }
 
   async findByUserId(
@@ -54,7 +60,12 @@ export class PrismaDiagnosisRepository implements DiagnosisRepository {
     ])
 
     return {
-      diagnoses: diagnoses.map(Diagnosis.fromPersistence),
+      diagnoses: diagnoses.map((d) =>
+        Diagnosis.fromPersistence({
+          ...d,
+          rawResponse: d.rawResponse as Record<string, unknown> | null,
+        }),
+      ),
       total,
     }
   }
@@ -64,7 +75,12 @@ export class PrismaDiagnosisRepository implements DiagnosisRepository {
       where: { plantId },
       orderBy: { createdAt: 'desc' },
     })
-    return diagnoses.map(Diagnosis.fromPersistence)
+    return diagnoses.map((d) =>
+      Diagnosis.fromPersistence({
+        ...d,
+        rawResponse: d.rawResponse as Record<string, unknown> | null,
+      }),
+    )
   }
 
   async update(id: string, data: UpdateDiagnosisData): Promise<Diagnosis> {
@@ -76,7 +92,10 @@ export class PrismaDiagnosisRepository implements DiagnosisRepository {
         rawResponse: data.rawResponse as any,
       },
     })
-    return Diagnosis.fromPersistence(diagnosis)
+    return Diagnosis.fromPersistence({
+      ...diagnosis,
+      rawResponse: diagnosis.rawResponse as Record<string, unknown> | null,
+    })
   }
 
   async delete(id: string): Promise<void> {
@@ -90,6 +109,11 @@ export class PrismaDiagnosisRepository implements DiagnosisRepository {
       where: { status: 'PENDING' },
       orderBy: { createdAt: 'asc' },
     })
-    return diagnoses.map(Diagnosis.fromPersistence)
+    return diagnoses.map((d) =>
+      Diagnosis.fromPersistence({
+        ...d,
+        rawResponse: d.rawResponse as Record<string, unknown> | null,
+      }),
+    )
   }
 }
