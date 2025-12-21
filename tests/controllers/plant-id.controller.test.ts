@@ -81,7 +81,8 @@ describe('PlantIdController', () => {
 
       expect(res.status).toBe(400)
       const resData = await res.json()
-      expect(resData.error).toBe('MISSING_IMAGE')
+      // Now checks VALIDATION_ERROR instead of MISSING_IMAGE
+      expect(resData.error).toBe('VALIDATION_ERROR')
     })
 
     it('should return use case error with correct status', async () => {
