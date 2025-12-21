@@ -28,6 +28,7 @@ import type {
 import { AppError } from '../../shared/errors/app-error.js'
 import { isSafeUrl } from '../../shared/utils/ssrf.validator.js'
 import { env } from '../config/env.js'
+import { logger } from '../config/logger.js'
 
 // ============================================================
 // CONFIGURATION - Models are read from env
@@ -141,7 +142,7 @@ export class GeminiPlantAdapter implements AIIdentificationPort, AIDiagnosisPort
     this.apiKey = apiKey ?? env.GOOGLE_AI_API_KEY ?? ''
 
     if (!this.apiKey) {
-      console.warn('⚠️ GOOGLE_AI_API_KEY not configured - AI features will be unavailable')
+      logger.warn('⚠️ GOOGLE_AI_API_KEY not configured - AI features will be unavailable')
     }
 
     this.genAI = new GoogleGenerativeAI(this.apiKey)
@@ -255,7 +256,7 @@ export class GeminiPlantAdapter implements AIIdentificationPort, AIDiagnosisPort
         modelUsed: getIdentificationModel(),
       }
     } catch (error) {
-      console.error('Gemini identification error:', error)
+      logger.error({ err: error }, 'Gemini identification error')
       return {
         success: false,
         suggestions: [],
@@ -440,7 +441,7 @@ export class GeminiPlantAdapter implements AIIdentificationPort, AIDiagnosisPort
 
       return diagnosisResult
     } catch (error) {
-      console.error('Gemini diagnosis error:', error)
+      logger.error({ err: error }, 'Gemini diagnosis error')
       return {
         success: false,
         isHealthy: false,
@@ -551,8 +552,8 @@ export class GeminiPlantAdapter implements AIIdentificationPort, AIDiagnosisPort
 
     try {
       return JSON.parse(cleaned) as T
-    } catch (_error) {
-      console.error('Failed to parse AI response:', cleaned)
+    } catch (error) {
+      logger.error({ err: error, response: cleaned }, 'Failed to parse AI response')
       throw new AppError('Invalid AI response format', 500)
     }
   }

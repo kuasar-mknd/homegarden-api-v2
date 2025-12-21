@@ -24,6 +24,7 @@ describe('GardenController', () => {
       set: vi.fn(),
       req: {
         json: vi.fn(),
+        valid: vi.fn(),
         param: vi.fn(),
         query: vi.fn(),
       },
@@ -34,7 +35,12 @@ describe('GardenController', () => {
   describe('addPlant', () => {
     it('should add plant successfully', async () => {
       mockContext.get.mockImplementation((key: string) => (key === 'user' ? { id: 'u1' } : null))
-      mockContext.req.json.mockResolvedValue({ nickname: 'Fern' })
+      mockContext.req.valid.mockReturnValue({
+        nickname: 'Fern',
+        location: 'My Garden',
+        commonName: 'Fern',
+        scientificName: 'Fernus',
+      })
       mockAddPlant.execute.mockResolvedValue(ok({ id: 'p1', nickname: 'Fern' }))
 
       const result = (await controller.addPlant(mockContext)) as any
@@ -42,6 +48,17 @@ describe('GardenController', () => {
       expect(result.status).toBe(201)
       expect(result.data.success).toBe(true)
       expect(result.data.data.nickname).toBe('Fern')
+      expect(mockAddPlant.execute).toHaveBeenCalledWith({
+        userId: 'u1',
+        nickname: 'Fern',
+        location: 'My Garden',
+        speciesInfo: {
+          commonName: 'Fern',
+          scientificName: 'Fernus',
+          family: undefined,
+          imageUrl: undefined,
+        },
+      })
     })
 
     it('should return 401 if unauthorized', async () => {
@@ -52,7 +69,7 @@ describe('GardenController', () => {
 
     it('should handle use case error', async () => {
       mockContext.get.mockReturnValue({ id: 'u1' })
-      mockContext.req.json.mockResolvedValue({})
+      mockContext.req.valid.mockReturnValue({ location: 'G1' })
       mockAddPlant.execute.mockResolvedValue(fail(new AppError('Invalid', 400, 'BAD')))
 
       const result = (await controller.addPlant(mockContext)) as any
@@ -62,7 +79,9 @@ describe('GardenController', () => {
 
     it('should handle generic error', async () => {
       mockContext.get.mockReturnValue({ id: 'u1' })
-      mockContext.req.json.mockRejectedValue(new Error('Boom'))
+      mockContext.req.valid.mockImplementation(() => {
+        throw new Error('Boom')
+      })
       const result = (await controller.addPlant(mockContext)) as any
       expect(result.status).toBe(500)
     })

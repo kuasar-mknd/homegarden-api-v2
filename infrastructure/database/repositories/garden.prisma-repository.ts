@@ -5,6 +5,7 @@ import type {
   NearbyQuery,
   UpdateGardenData,
 } from '../../../domain/repositories/garden.repository.js'
+import { logger } from '../../config/logger.js'
 import { prisma } from '../prisma.client.js'
 
 export class GardenPrismaRepository implements GardenRepository {
@@ -88,7 +89,7 @@ export class GardenPrismaRepository implements GardenRepository {
 
       return gardens.map(this.mapToEntity)
     } catch (error) {
-      console.error('Geospatial Query Error:', error)
+      logger.error({ err: error }, 'Geospatial Query Error')
       // Fallback or empty array if PostGIS fails/missing
       return []
     }

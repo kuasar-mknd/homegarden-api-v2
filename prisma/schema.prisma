@@ -267,6 +267,8 @@ model CareSchedule {
 
   @@index([userId])
   @@index([nextDueDate])
+  @@index([gardenId])
+  @@index([plantId])
   @@map("care_schedules")
 }
 

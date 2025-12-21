@@ -3,6 +3,7 @@ import type { AddPlantUseCase } from '../../../application/use-cases/garden/add-
 import type { FindNearbyGardensUseCase } from '../../../application/use-cases/garden/find-nearby-gardens.use-case.js'
 import type { GetGardenWeatherUseCase } from '../../../application/use-cases/garden/get-garden-weather.use-case.js'
 import type { GetUserPlantsUseCase } from '../../../application/use-cases/garden/get-user-plants.use-case.js'
+import { logger } from '../../config/logger.js'
 
 export class GardenController {
   constructor(
@@ -23,13 +24,18 @@ export class GardenController {
         return c.json({ success: false, error: 'UNAUTHORIZED' }, 401)
       }
 
-      const body = await c.req.json()
+      const body = c.req.valid('json')
 
       const result = await this.addPlantUseCase.execute({
         userId: user.id,
         nickname: body.nickname,
         location: body.location,
-        speciesInfo: body.speciesInfo,
+        speciesInfo: {
+          commonName: body.commonName,
+          scientificName: body.scientificName,
+          family: body.family,
+          imageUrl: body.imageUrl,
+        },
       })
 
       if (!result.success) {
@@ -52,7 +58,7 @@ export class GardenController {
         201,
       )
     } catch (error) {
-      console.error('Garden Controller Error:', error)
+      logger.error({ err: error }, 'Garden Controller Error')
       return c.json(
         {
           success: false,
@@ -96,7 +102,7 @@ export class GardenController {
         200,
       )
     } catch (error) {
-      console.error('Garden Controller Error:', error)
+      logger.error({ err: error }, 'Garden Controller Error')
       return c.json(
         {
           success: false,
@@ -145,7 +151,7 @@ export class GardenController {
         200,
       )
     } catch (error) {
-      console.error('Garden Weather Error:', error)
+      logger.error({ err: error }, 'Garden Weather Error')
       return c.json(
         {
           success: false,
@@ -213,7 +219,7 @@ export class GardenController {
         200,
       )
     } catch (error) {
-      console.error('Garden Nearby Error:', error)
+      logger.error({ err: error }, 'Garden Nearby Error')
       return c.json(
         {
           success: false,
