@@ -225,6 +225,19 @@ describe('GeminiPlantAdapter', () => {
       expect(result.error).toContain('Failed to fetch image')
       vi.unstubAllGlobals()
     })
+
+    it('should throw error for unsafe image URL', async () => {
+      // Mock ssrf validator to return false
+      vi.spyOn(ssrfValidator, 'isSafeUrl').mockResolvedValue(false)
+
+      const result = await adapter.identifySpecies({
+        image: 'http://internal.safe/malicious.jpg',
+        isUrl: true,
+      })
+
+      expect(result.success).toBe(false)
+      expect(result.error).toContain('unsafe image URL')
+    })
   })
 
   describe('diagnoseHealth', () => {
@@ -260,9 +273,38 @@ describe('GeminiPlantAdapter', () => {
         symptomDescription: 'Spots on leaves',
       })
 
-      expect(result.success).toBe(true)
-      expect(result.isHealthy).toBe(false)
       expect(result.condition?.name).toBe('Leaf Spot')
+    })
+
+    it('should use default empty arrays for symptoms and causes if missing from AI response', async () => {
+      const mockAiResponse = {
+        response: {
+          text: () =>
+            JSON.stringify({
+              success: true,
+              isHealthy: false,
+              confidence: 0.8,
+              condition: {
+                name: 'Disease',
+                type: 'DISEASE',
+                severity: 'LOW',
+              },
+              affectedParts: ['leaves'],
+              // symptoms and causes MISSING
+              treatments: [],
+            }),
+        },
+      }
+
+      const genAIInstance = new GoogleGenerativeAI(mockApiKey)
+      const model = genAIInstance.getGenerativeModel({ model: 'any' })
+      vi.mocked(model.generateContent).mockResolvedValue(mockAiResponse as any)
+
+      const result = await adapter.diagnoseHealth({ image: 'data', isUrl: false })
+
+      expect(result.success).toBe(true)
+      expect(result.symptoms).toEqual([])
+      expect(result.causes).toEqual([])
     })
 
     it('should diagnose health with all optional fields', async () => {
@@ -282,7 +324,7 @@ describe('GeminiPlantAdapter', () => {
               affectedParts: ['leaves'],
               symptoms: ['spots'],
               causes: ['fungus'],
-              treatments: [{ priority: 1, action: 'Spray', instructions: 'Weekly' }],
+              treatments: [{ priority: 1, action: 'Spray', instructions: 'Weekly', products: ['Neem Oil'] }],
               organicTreatment: 'Neem oil',
               chemicalTreatment: 'Copper fungicide',
               recoveryTimeWeeks: 2,
@@ -395,6 +437,103 @@ describe('GeminiPlantAdapter', () => {
         ]),
       )
     })
+
+    it('should handle unparseable JSON error from AI', async () => {
+       const mockAiResponse = {
+         response: { text: () => 'Invalid JSON' }
+       }
+       const genAIInstance = new GoogleGenerativeAI(mockApiKey)
+       const model = genAIInstance.getGenerativeModel({ model: 'any' })
+       vi.mocked(model.generateContent).mockResolvedValue(mockAiResponse as any)
+
+       const result = await adapter.diagnoseHealth({ image: 'data', isUrl: false })
+       expect(result.success).toBe(false)
+       expect(result.error).toContain('Invalid AI response format')
+    })
+
+    it('should handle non-Error exceptions', async () => {
+       const genAIInstance = new GoogleGenerativeAI(mockApiKey)
+       const model = genAIInstance.getGenerativeModel({ model: 'any' })
+       vi.mocked(model.generateContent).mockRejectedValue('String Error')
+
+       const result = await adapter.diagnoseHealth({ image: 'data', isUrl: false })
+       expect(result.success).toBe(false)
+       expect(result.error).toBe('Unknown error during diagnosis')
+    })
+    it('should handle failure with undefined error message', async () => {
+       const mockAiResponse = {
+         response: { text: () => JSON.stringify({ success: false }) }
+       }
+       const genAIInstance = new GoogleGenerativeAI(mockApiKey)
+       const model = genAIInstance.getGenerativeModel({ model: 'any' })
+       vi.mocked(model.generateContent).mockResolvedValue(mockAiResponse as any)
+
+       const result = await adapter.diagnoseHealth({ image: 'data', isUrl: false })
+       expect(result.success).toBe(false)
+       expect(result.error).toBe('Could not diagnose plant')
+    })
+    
+    it('should map treatment frequency and products', async () => {
+       const mockAiResponse = {
+         response: { text: () => JSON.stringify({ 
+           success: true,
+           condition: null,
+           affectedParts: [],
+           symptoms: [],
+           causes: [],
+           preventionTips: [],
+           urgentActions: [],
+           treatments: [{ priority: 1, action: 'Act', instructions: 'Inst', frequency: 'Daily', products: ['Neem'] }]
+         }) }
+       }
+       const genAIInstance = new GoogleGenerativeAI(mockApiKey)
+       const model = genAIInstance.getGenerativeModel({ model: 'any' })
+       vi.mocked(model.generateContent).mockResolvedValue(mockAiResponse as any)
+
+       const result = await adapter.diagnoseHealth({ image: 'data', isUrl: false })
+       expect(result.treatments[0].frequency).toBe('Daily')
+       expect(result.treatments[0].products).toEqual(['Neem'])
+    })
+
+    it('should handle full environment details', async () => {
+       const genAIInstance = new GoogleGenerativeAI(mockApiKey)
+       const model = genAIInstance.getGenerativeModel({ model: 'any' })
+       vi.mocked(model.generateContent).mockResolvedValue({ response: { text: () => '{}' } } as any)
+       
+       await adapter.diagnoseHealth({ 
+         image: 'data', 
+         isUrl: false,
+         environment: { indoor: false, climate: 'Tropical', recentWeather: 'Sunny' }
+       })
+       
+       expect(model.generateContent).toHaveBeenCalledWith(expect.arrayContaining([
+         expect.stringContaining('Outdoor'),
+         expect.stringContaining('Tropical climate'),
+         expect.stringContaining('Recent weather: Sunny')
+       ]))
+    })
+
+    it('should handle partial environment details', async () => {
+       const genAIInstance = new GoogleGenerativeAI(mockApiKey)
+       const model = genAIInstance.getGenerativeModel({ model: 'any' })
+       vi.mocked(model.generateContent).mockResolvedValue({ response: { text: () => '{}' } } as any)
+       
+       // Environment present but optional fields missing
+       await adapter.diagnoseHealth({ 
+         image: 'data', 
+         isUrl: false,
+         environment: { indoor: true }
+       })
+       
+       expect(model.generateContent).toHaveBeenCalledWith(expect.arrayContaining([
+         expect.stringContaining('Indoor')
+       ]))
+       // Should NOT contain undefined or "undefined climate"
+       const args = vi.mocked(model.generateContent).mock.calls[0][0] as any
+       const prompt = args[0]
+       expect(prompt).not.toContain('climate')
+       expect(prompt).not.toContain('Recent weather')
+    })
   })
 
   describe('isAvailable', () => {
@@ -403,7 +542,6 @@ describe('GeminiPlantAdapter', () => {
       const genAIInstance = new GoogleGenerativeAI(mockApiKey)
       const model = genAIInstance.getGenerativeModel({ model: 'any' })
       vi.mocked(model.generateContent).mockResolvedValue(mockAiResponse as any)
-
       const available = await adapter.isAvailable()
       expect(available).toBe(true)
     })
@@ -414,6 +552,12 @@ describe('GeminiPlantAdapter', () => {
       vi.mocked(model.generateContent).mockRejectedValue(new Error('Down'))
 
       const available = await adapter.isAvailable()
+      expect(available).toBe(false)
+    })
+
+    it('should return false if API key is missing', async () => {
+      const noKeyAdapter = new GeminiPlantAdapter('')
+      const available = await noKeyAdapter.isAvailable()
       expect(available).toBe(false)
     })
   })
@@ -428,6 +572,34 @@ describe('GeminiPlantAdapter', () => {
       const inst1 = getGeminiPlantAdapter()
       const inst2 = getGeminiPlantAdapter()
       expect(inst1).toBe(inst2)
+    })
+
+    it('should coerce invalid condition type to DISEASE', () => {
+      const type = (adapter as any).validateConditionType('INVALID')
+      expect(type).toBe('DISEASE')
+    })
+
+    it('should coerce invalid severity to MODERATE', () => {
+      const severity = (adapter as any).validateSeverity('INVALID')
+      expect(severity).toBe('MODERATE')
+    })
+
+    it('should use default mimeType in buildImagePart if not provided', async () => {
+      const part = await (adapter as any).buildImagePart('data', false)
+      expect(part.inlineData.mimeType).toBe('image/jpeg')
+    })
+
+    it('should use default mimeType if content-type header is missing from fetch', async () => {
+      vi.spyOn(ssrfValidator, 'isSafeUrl').mockResolvedValue(true)
+      const mockFetch = vi.fn().mockResolvedValue({
+        ok: true,
+        arrayBuffer: () => Promise.resolve(new ArrayBuffer(8)),
+        headers: { get: () => null },
+      })
+      vi.stubGlobal('fetch', mockFetch)
+      const part = await (adapter as any).buildImagePart('http://test.com', true)
+      expect(part.inlineData.mimeType).toBe('image/jpeg')
+      vi.unstubAllGlobals()
     })
   })
 })

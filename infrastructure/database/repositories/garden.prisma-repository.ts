@@ -1,4 +1,4 @@
-import type { Garden } from '../../../domain/entities/garden.entity.js'
+import { Garden } from '../../../domain/entities/garden.entity.js'
 import type {
   CreateGardenData,
   GardenRepository,
@@ -119,15 +119,17 @@ export class GardenPrismaRepository implements GardenRepository {
   }
 
   private mapToEntity(prismaGarden: any): Garden {
-    return {
+    return Garden.fromPersistence({
       id: prismaGarden.id,
       name: prismaGarden.name,
       description: prismaGarden.description ?? undefined,
       latitude: prismaGarden.latitude,
       longitude: prismaGarden.longitude,
       userId: prismaGarden.userId,
+      size: prismaGarden.size ?? undefined,
+      climate: prismaGarden.climate ?? undefined,
       createdAt: prismaGarden.createdAt,
       updatedAt: prismaGarden.updatedAt,
-    } as Garden
+    })
   }
 }

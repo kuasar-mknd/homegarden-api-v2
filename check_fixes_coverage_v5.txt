@@ -1,0 +1,317 @@
+
+> homegarden-api@2.0.0 test:coverage
+> vitest run --coverage --no-file-parallelism
+
+
+[1m[46m RUN [49m[22m [36mv4.0.16 [39m[90m/Users/samueldulex/git/archiOweb-api[39m
+      [2mCoverage enabled with [22m[33mv8[39m
+
+[90mstdout[2m | tests/e2e/garden.e2e.test.ts
+[22m[39m[dotenv@17.2.3] injecting env (16) from .env -- tip: 🔄 add secrets lifecycle management: https://dotenvx.com/ops
+
+[90mstdout[2m | tests/e2e/garden.e2e.test.ts[2m > [22m[2mE2E: Garden Management
+[22m[39mprisma:error 
+Invalid `prisma.careCompletion.deleteMany()` invocation:
+
+
+
+
+[90mstderr[2m | tests/e2e/garden.e2e.test.ts[2m > [22m[2mE2E: Garden Management
+[22m[39mReset DB Error: PrismaClientKnownRequestError: 
+Invalid `prisma.careCompletion.deleteMany()` invocation:
+
+
+
+    at qr.handleRequestError [90m(/Users/samueldulex/git/archiOweb-api/[39mnode_modules/[4m@prisma/client[24m/runtime/client.js:65:8172[90m)[39m
+    at qr.handleAndLogRequestError [90m(/Users/samueldulex/git/archiOweb-api/[39mnode_modules/[4m@prisma/client[24m/runtime/client.js:65:7467[90m)[39m
+    at qr.request [90m(/Users/samueldulex/git/archiOweb-api/[39mnode_modules/[4m@prisma/client[24m/runtime/client.js:65:7174[90m)[39m
+[90m    at processTicksAndRejections (node:internal/process/task_queues:103:5)[39m
+    at a [90m(/Users/samueldulex/git/archiOweb-api/[39mnode_modules/[4m@prisma/client[24m/runtime/client.js:75:5816[90m)[39m
+    at Module.resetDb [90m(/Users/samueldulex/git/archiOweb-api/[39mtests/helpers/reset-db.ts:5:5[90m)[39m
+    at [90m/Users/samueldulex/git/archiOweb-api/[39mtests/e2e/garden.e2e.test.ts:66:5 {
+  code: [32m'ECONNREFUSED'[39m,
+  meta: { modelName: [32m'CareCompletion'[39m },
+  clientVersion: [32m'7.2.0'[39m
+}
+
+ [31m❯[39m tests/e2e/garden.e2e.test.ts [2m([22m[2m7 tests[22m[2m | [22m[33m7 skipped[39m[2m)[22m[32m 29[2mms[22m[39m
+       [2m[90m↓[39m[22m should return empty plants list for user
+       [2m[90m↓[39m[22m should find nearby gardens
+       [2m[90m↓[39m[22m should return 400 for missing coordinates
+       [2m[90m↓[39m[22m should return weather for garden location
+       [2m[90m↓[39m[22m should return 404 for non-existent garden
+       [2m[90m↓[39m[22m should add a plant to garden
+       [2m[90m↓[39m[22m should return 404 for non-existent garden
+[90mstdout[2m | tests/domain/services/password.service.test.ts
+[22m[39m[dotenv@17.2.3] injecting env (16) from .env -- tip: 🔄 add secrets lifecycle management: https://dotenvx.com/ops
+
+ [32m✓[39m tests/domain/services/password.service.test.ts [2m([22m[2m4 tests[22m[2m)[22m[33m 364[2mms[22m[39m
+[90mstdout[2m | tests/e2e/health.e2e.test.ts
+[22m[39m[dotenv@17.2.3] injecting env (16) from .env -- tip: 🔐 encrypt with Dotenvx: https://dotenvx.com
+
+ [32m✓[39m tests/e2e/health.e2e.test.ts [2m([22m[2m5 tests[22m[2m)[22m[32m 33[2mms[22m[39m
+[90mstdout[2m | tests/e2e/auth.e2e.test.ts
+[22m[39m[dotenv@17.2.3] injecting env (16) from .env -- tip: ⚙️  suppress all logs with { quiet: true }
+
+ [32m✓[39m tests/e2e/auth.e2e.test.ts [2m([22m[2m7 tests[22m[2m)[22m[32m 33[2mms[22m[39m
+[90mstdout[2m | tests/auth.test.ts
+[22m[39m[dotenv@17.2.3] injecting env (16) from .env -- tip: 🔐 prevent building .env in docker: https://dotenvx.com/prebuild
+
+ [32m✓[39m tests/auth.test.ts [2m([22m[2m4 tests[22m[2m)[22m[32m 8[2mms[22m[39m
+[90mstdout[2m | tests/integration/nearby-gardens.test.ts
+[22m[39m[dotenv@17.2.3] injecting env (16) from .env -- tip: 📡 add observability to secrets: https://dotenvx.com/ops
+
+ [32m✓[39m tests/integration/nearby-gardens.test.ts [2m([22m[2m3 tests[22m[2m)[22m[32m 8[2mms[22m[39m
+[90mstdout[2m | tests/integration/dr-plant.test.ts
+[22m[39m[dotenv@17.2.3] injecting env (16) from .env -- tip: ⚙️  enable debug logging with { debug: true }
+
+ [32m✓[39m tests/integration/dr-plant.test.ts [2m([22m[2m5 tests[22m[2m)[22m[32m 17[2mms[22m[39m
+[90mstdout[2m | tests/integration/garden.routes.test.ts
+[22m[39m[dotenv@17.2.3] injecting env (16) from .env -- tip: 📡 add observability to secrets: https://dotenvx.com/ops
+
+ [32m✓[39m tests/integration/garden.routes.test.ts [2m([22m[2m3 tests[22m[2m)[22m[32m 8[2mms[22m[39m
+[90mstdout[2m | tests/integration/plant.test.ts
+[22m[39m[dotenv@17.2.3] injecting env (16) from .env -- tip: 🔐 prevent building .env in docker: https://dotenvx.com/prebuild
+
+ [32m✓[39m tests/integration/plant.test.ts [2m([22m[2m4 tests[22m[2m)[22m[32m 8[2mms[22m[39m
+[90mstdout[2m | tests/middleware/error-handler.middleware.test.ts
+[22m[39m[dotenv@17.2.3] injecting env (16) from .env -- tip: ✅ audit secrets and track compliance: https://dotenvx.com/ops
+
+{"level":50,"time":1766360151718,"env":"production","err":{"type":"Error","message":"Secret error","stack":"Error: Secret error\n    at /Users/samueldulex/git/archiOweb-api/tests/middleware/error-handler.middleware.test.ts:50:17\n    at processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at file:///Users/samueldulex/git/archiOweb-api/node_modules/@vitest/runner/dist/index.js:915:20"},"msg":"Unhandled error"}
+ [32m✓[39m tests/middleware/error-handler.middleware.test.ts [2m([22m[2m6 tests[22m[2m)[22m[32m 7[2mms[22m[39m
+[90mstdout[2m | tests/middleware/logger.middleware.test.ts
+[22m[39m[dotenv@17.2.3] injecting env (16) from .env -- tip: ⚙️  override existing env vars with { override: true }
+
+ [32m✓[39m tests/middleware/logger.middleware.test.ts [2m([22m[2m4 tests[22m[2m)[22m[32m 11[2mms[22m[39m
+[90mstdout[2m | tests/middleware/validation.middleware.test.ts
+[22m[39m[dotenv@17.2.3] injecting env (16) from .env -- tip: ⚙️  suppress all logs with { quiet: true }
+
+ [32m✓[39m tests/middleware/validation.middleware.test.ts [2m([22m[2m3 tests[22m[2m)[22m[32m 14[2mms[22m[39m
+[90mstdout[2m | infrastructure/http/routes/plant-id.routes.test.ts
+[22m[39m[dotenv@17.2.3] injecting env (16) from .env -- tip: 📡 add observability to secrets: https://dotenvx.com/ops
+
+ [32m✓[39m infrastructure/http/routes/plant-id.routes.test.ts [2m([22m[2m5 tests[22m[2m)[22m[32m 27[2mms[22m[39m
+[90mstdout[2m | tests/middleware/rate-limit.middleware.test.ts
+[22m[39m[dotenv@17.2.3] injecting env (16) from .env -- tip: 📡 add observability to secrets: https://dotenvx.com/ops
+
+ [32m✓[39m tests/middleware/rate-limit.middleware.test.ts [2m([22m[2m3 tests[22m[2m)[22m[32m 3[2mms[22m[39m
+[90mstdout[2m | tests/middleware/auth.middleware.test.ts
+[22m[39m[dotenv@17.2.3] injecting env (16) from .env -- tip: ⚙️  suppress all logs with { quiet: true }
+
+{"level":40,"time":1766360152203,"err":{"type":"Object","message":"Invalid token","stack":""},"msg":"Auth failed"}
+{"level":30,"time":1766360152204,"userId":"new-db-id","msg":"Synced new user"}
+{"level":30,"time":1766360152205,"userId":"id","msg":"Synced new user"}
+{"level":50,"time":1766360152205,"err":{"type":"Error","message":"Supabase URL or Publishable Key not configured","stack":"Error: Supabase URL or Publishable Key not configured\n    at getSupabase (/Users/samueldulex/git/archiOweb-api/infrastructure/http/middleware/auth.middleware.ts:11:11)\n    at Module.<anonymous> (/Users/samueldulex/git/archiOweb-api/infrastructure/http/middleware/auth.middleware.ts:38:22)\n    at /Users/samueldulex/git/archiOweb-api/tests/middleware/auth.middleware.test.ts:147:27\n    at file:///Users/samueldulex/git/archiOweb-api/node_modules/@vitest/runner/dist/index.js:145:11\n    at file:///Users/samueldulex/git/archiOweb-api/node_modules/@vitest/runner/dist/index.js:915:26\n    at file:///Users/samueldulex/git/archiOweb-api/node_modules/@vitest/runner/dist/index.js:1243:20\n    at new Promise (<anonymous>)\n    at runWithTimeout (file:///Users/samueldulex/git/archiOweb-api/node_modules/@vitest/runner/dist/index.js:1209:10)\n    at file:///Users/samueldulex/git/archiOweb-api/node_modules/@vitest/runner/dist/index.js:1653:37\n    at Traces.$ (file:///Users/samueldulex/git/archiOweb-api/node_modules/vitest/dist/chunks/traces.U4xDYhzZ.js:115:27)"},"msg":"AuthMiddleware Error"}
+{"level":50,"time":1766360152207,"err":{"type":"Error","message":"Database connection not initialized","stack":"Error: Database connection not initialized\n    at /Users/samueldulex/git/archiOweb-api/infrastructure/http/middleware/auth.middleware.ts:59:13\n    at processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at /Users/samueldulex/git/archiOweb-api/tests/middleware/auth.middleware.test.ts:172:21\n    at file:///Users/samueldulex/git/archiOweb-api/node_modules/@vitest/runner/dist/index.js:915:20"},"msg":"AuthMiddleware Error"}
+{"level":50,"time":1766360152207,"err":"String Error","msg":"AuthMiddleware Error"}
+ [32m✓[39m tests/middleware/auth.middleware.test.ts [2m([22m[2m8 tests[22m[2m)[22m[32m 6[2mms[22m[39m
+[90mstdout[2m | tests/middleware/compression.test.ts
+[22m[39m[dotenv@17.2.3] injecting env (16) from .env -- tip: ⚙️  override existing env vars with { override: true }
+
+ [32m✓[39m tests/middleware/compression.test.ts [2m([22m[2m2 tests[22m[2m)[22m[32m 13[2mms[22m[39m
+[90mstdout[2m | tests/integration/weather.test.ts
+[22m[39m[dotenv@17.2.3] injecting env (16) from .env -- tip: ⚙️  load multiple .env files with { path: ['.env.local', '.env'] }
+
+ [32m✓[39m tests/integration/weather.test.ts [2m([22m[2m3 tests[22m[2m)[22m[32m 7[2mms[22m[39m
+[90mstdout[2m | tests/integration/dr-plant.integration.test.ts
+[22m[39m[dotenv@17.2.3] injecting env (16) from .env -- tip: ⚙️  specify custom .env file path with { path: '/custom/path/.env' }
+
+ [32m✓[39m tests/integration/dr-plant.integration.test.ts [2m([22m[2m2 tests[22m[2m)[22m[32m 14[2mms[22m[39m
+[90mstdout[2m | tests/infrastructure/config/logger.test.ts
+[22m[39m[dotenv@17.2.3] injecting env (16) from .env -- tip: 🔐 encrypt with Dotenvx: https://dotenvx.com
+
+ [32m✓[39m tests/infrastructure/config/logger.test.ts [2m([22m[2m3 tests[22m[2m)[22m[32m 10[2mms[22m[39m
+[90mstdout[2m | tests/controllers/dr-plant.controller.test.ts
+[22m[39m[dotenv@17.2.3] injecting env (16) from .env -- tip: ⚙️  load multiple .env files with { path: ['.env.local', '.env'] }
+
+ [32m✓[39m tests/controllers/dr-plant.controller.test.ts [2m([22m[2m10 tests[22m[2m)[22m[32m 4[2mms[22m[39m
+[90mstdout[2m | tests/integration/user-profile.test.ts
+[22m[39m[dotenv@17.2.3] injecting env (16) from .env -- tip: ⚙️  load multiple .env files with { path: ['.env.local', '.env'] }
+
+ [32m✓[39m tests/integration/user-profile.test.ts [2m([22m[2m4 tests[22m[2m)[22m[32m 8[2mms[22m[39m
+[90mstdout[2m | tests/repositories/garden-prisma.repository.test.ts
+[22m[39m[dotenv@17.2.3] injecting env (16) from .env -- tip: 👥 sync secrets across teammates & machines: https://dotenvx.com/ops
+
+ [32m✓[39m tests/repositories/garden-prisma.repository.test.ts [2m([22m[2m14 tests[22m[2m)[22m[32m 4[2mms[22m[39m
+[90mstdout[2m | tests/adapters/open-meteo.adapter.test.ts
+[22m[39m[dotenv@17.2.3] injecting env (16) from .env -- tip: ⚙️  specify custom .env file path with { path: '/custom/path/.env' }
+
+ [32m✓[39m tests/adapters/open-meteo.adapter.test.ts [2m([22m[2m11 tests[22m[2m)[22m[32m 6[2mms[22m[39m
+[90mstdout[2m | tests/websocket/weather.handler.test.ts
+[22m[39m[dotenv@17.2.3] injecting env (16) from .env -- tip: 🔐 prevent building .env in docker: https://dotenvx.com/prebuild
+
+ [32m✓[39m tests/websocket/weather.handler.test.ts [2m([22m[2m9 tests[22m[2m)[22m[32m 6[2mms[22m[39m
+[90mstdout[2m | tests/controllers/garden.controller.test.ts
+[22m[39m[dotenv@17.2.3] injecting env (16) from .env -- tip: ⚙️  specify custom .env file path with { path: '/custom/path/.env' }
+
+ [32m✓[39m tests/controllers/garden.controller.test.ts [2m([22m[2m21 tests[22m[2m)[22m[32m 5[2mms[22m[39m
+[90mstdout[2m | tests/websocket/care-reminder.handler.test.ts
+[22m[39m[dotenv@17.2.3] injecting env (16) from .env -- tip: 🗂️ backup and recover secrets: https://dotenvx.com/ops
+
+ [32m✓[39m tests/websocket/care-reminder.handler.test.ts [2m([22m[2m6 tests[22m[2m)[22m[32m 7[2mms[22m[39m
+[90mstdout[2m | tests/application/services/TokenService.test.ts
+[22m[39m[dotenv@17.2.3] injecting env (16) from .env -- tip: ⚙️  specify custom .env file path with { path: '/custom/path/.env' }
+
+ [32m✓[39m tests/application/services/TokenService.test.ts [2m([22m[2m6 tests[22m[2m)[22m[32m 4[2mms[22m[39m
+[90mstdout[2m | tests/adapters/gemini-plant.adapter.test.ts
+[22m[39m[dotenv@17.2.3] injecting env (16) from .env -- tip: 🔐 encrypt with Dotenvx: https://dotenvx.com
+
+ [32m✓[39m tests/adapters/gemini-plant.adapter.test.ts [2m([22m[2m33 tests[22m[2m)[22m[32m 6[2mms[22m[39m
+[90mstdout[2m | tests/controllers/plant-id.controller.test.ts
+[22m[39m[dotenv@17.2.3] injecting env (16) from .env -- tip: 🔑 add access controls to secrets: https://dotenvx.com/ops
+
+ [32m✓[39m tests/controllers/plant-id.controller.test.ts [2m([22m[2m10 tests[22m[2m)[22m[32m 4[2mms[22m[39m
+[90mstdout[2m | tests/use-cases/identify-species.use-case.test.ts
+[22m[39m[dotenv@17.2.3] injecting env (16) from .env -- tip: 🔐 encrypt with Dotenvx: https://dotenvx.com
+
+ [32m✓[39m tests/use-cases/identify-species.use-case.test.ts [2m([22m[2m9 tests[22m[2m)[22m[32m 3[2mms[22m[39m
+[90mstdout[2m | tests/repositories/user-prisma.repository.test.ts
+[22m[39m[dotenv@17.2.3] injecting env (16) from .env -- tip: ⚙️  specify custom .env file path with { path: '/custom/path/.env' }
+
+ [32m✓[39m tests/repositories/user-prisma.repository.test.ts [2m([22m[2m15 tests[22m[2m)[22m[32m 4[2mms[22m[39m
+[90mstdout[2m | tests/domain/value-objects/plant-exposure.vo.test.ts
+[22m[39m[dotenv@17.2.3] injecting env (16) from .env -- tip: ⚙️  write to custom object with { processEnv: myObject }
+
+ [32m✓[39m tests/domain/value-objects/plant-exposure.vo.test.ts [2m([22m[2m2 tests[22m[2m)[22m[32m 1[2mms[22m[39m
+[90mstdout[2m | tests/use-cases/find-nearby-gardens.use-case.test.ts
+[22m[39m[dotenv@17.2.3] injecting env (16) from .env -- tip: 🔑 add access controls to secrets: https://dotenvx.com/ops
+
+ [32m✓[39m tests/use-cases/find-nearby-gardens.use-case.test.ts [2m([22m[2m6 tests[22m[2m)[22m[32m 3[2mms[22m[39m
+[90mstdout[2m | tests/repositories/plant-prisma.repository.test.ts
+[22m[39m[dotenv@17.2.3] injecting env (16) from .env -- tip: 📡 add observability to secrets: https://dotenvx.com/ops
+
+ [32m✓[39m tests/repositories/plant-prisma.repository.test.ts [2m([22m[2m15 tests[22m[2m)[22m[32m 4[2mms[22m[39m
+[90mstdout[2m | tests/domain/plant.entity.test.ts
+[22m[39m[dotenv@17.2.3] injecting env (16) from .env -- tip: 🔑 add access controls to secrets: https://dotenvx.com/ops
+
+ [32m✓[39m tests/domain/plant.entity.test.ts [2m([22m[2m10 tests[22m[2m)[22m[32m 3[2mms[22m[39m
+[90mstdout[2m | tests/use-cases/add-plant.use-case.test.ts
+[22m[39m[dotenv@17.2.3] injecting env (16) from .env -- tip: 🔑 add access controls to secrets: https://dotenvx.com/ops
+
+ [32m✓[39m tests/use-cases/add-plant.use-case.test.ts [2m([22m[2m5 tests[22m[2m)[22m[32m 3[2mms[22m[39m
+[90mstdout[2m | tests/use-cases/get-garden-weather.use-case.test.ts
+[22m[39m[dotenv@17.2.3] injecting env (16) from .env -- tip: 🗂️ backup and recover secrets: https://dotenvx.com/ops
+
+ [32m✓[39m tests/use-cases/get-garden-weather.use-case.test.ts [2m([22m[2m5 tests[22m[2m)[22m[32m 2[2mms[22m[39m
+[90mstdout[2m | tests/shared/utils/date.utils.test.ts
+[22m[39m[dotenv@17.2.3] injecting env (16) from .env -- tip: 🗂️ backup and recover secrets: https://dotenvx.com/ops
+
+ [32m✓[39m tests/shared/utils/date.utils.test.ts [2m([22m[2m9 tests[22m[2m)[22m[32m 2[2mms[22m[39m
+[90mstdout[2m | tests/shared/utils/ssrf.validator.test.ts
+[22m[39m[dotenv@17.2.3] injecting env (16) from .env -- tip: ⚙️  enable debug logging with { debug: true }
+
+ [32m✓[39m tests/shared/utils/ssrf.validator.test.ts [2m([22m[2m9 tests[22m[2m)[22m[32m 2[2mms[22m[39m
+[90mstdout[2m | tests/domain/user.entity.test.ts
+[22m[39m[dotenv@17.2.3] injecting env (16) from .env -- tip: 🔐 prevent committing .env to code: https://dotenvx.com/precommit
+
+ [32m✓[39m tests/domain/user.entity.test.ts [2m([22m[2m9 tests[22m[2m)[22m[32m 2[2mms[22m[39m
+[90mstdout[2m | tests/domain/garden.entity.test.ts
+[22m[39m[dotenv@17.2.3] injecting env (16) from .env -- tip: ✅ audit secrets and track compliance: https://dotenvx.com/ops
+
+ [32m✓[39m tests/domain/garden.entity.test.ts [2m([22m[2m9 tests[22m[2m)[22m[32m 2[2mms[22m[39m
+[90mstdout[2m | tests/use-cases/diagnose-plant.use-case.test.ts
+[22m[39m[dotenv@17.2.3] injecting env (16) from .env -- tip: ⚙️  load multiple .env files with { path: ['.env.local', '.env'] }
+
+ [32m✓[39m tests/use-cases/diagnose-plant.use-case.test.ts [2m([22m[2m6 tests[22m[2m)[22m[32m 3[2mms[22m[39m
+[90mstdout[2m | tests/domain/value-objects/geo-location.vo.test.ts
+[22m[39m[dotenv@17.2.3] injecting env (16) from .env -- tip: 🔑 add access controls to secrets: https://dotenvx.com/ops
+
+ [32m✓[39m tests/domain/value-objects/geo-location.vo.test.ts [2m([22m[2m3 tests[22m[2m)[22m[32m 2[2mms[22m[39m
+[90mstdout[2m | tests/use-cases/get-user-plants.use-case.test.ts
+[22m[39m[dotenv@17.2.3] injecting env (16) from .env -- tip: 🔐 prevent building .env in docker: https://dotenvx.com/prebuild
+
+ [32m✓[39m tests/use-cases/get-user-plants.use-case.test.ts [2m([22m[2m5 tests[22m[2m)[22m[32m 2[2mms[22m[39m
+[90mstdout[2m | tests/domain/services/authorization.service.test.ts
+[22m[39m[dotenv@17.2.3] injecting env (16) from .env -- tip: 👥 sync secrets across teammates & machines: https://dotenvx.com/ops
+
+ [32m✓[39m tests/domain/services/authorization.service.test.ts [2m([22m[2m7 tests[22m[2m)[22m[32m 1[2mms[22m[39m
+[90mstdout[2m | tests/domain/species.entity.test.ts
+[22m[39m[dotenv@17.2.3] injecting env (16) from .env -- tip: 🔄 add secrets lifecycle management: https://dotenvx.com/ops
+
+ [32m✓[39m tests/domain/species.entity.test.ts [2m([22m[2m5 tests[22m[2m)[22m[32m 2[2mms[22m[39m
+[90mstdout[2m | tests/shared/errors/app-error.test.ts
+[22m[39m[dotenv@17.2.3] injecting env (16) from .env -- tip: 🔐 prevent committing .env to code: https://dotenvx.com/precommit
+
+ [32m✓[39m tests/shared/errors/app-error.test.ts [2m([22m[2m3 tests[22m[2m)[22m[32m 1[2mms[22m[39m
+[90mstdout[2m | tests/smoke.test.ts
+[22m[39m[dotenv@17.2.3] injecting env (16) from .env -- tip: 📡 add observability to secrets: https://dotenvx.com/ops
+
+ [32m✓[39m tests/smoke.test.ts [2m([22m[2m1 test[22m[2m)[22m[32m 1[2mms[22m[39m
+[90mstdout[2m | tests/controllers/user.controller.test.ts
+[22m[39m[dotenv@17.2.3] injecting env (16) from .env -- tip: 🔐 prevent building .env in docker: https://dotenvx.com/prebuild
+
+ [32m✓[39m tests/controllers/user.controller.test.ts [2m([22m[2m5 tests[22m[2m)[22m[32m 2[2mms[22m[39m
+[90mstdout[2m | tests/domain/care-schedule.entity.test.ts
+[22m[39m[dotenv@17.2.3] injecting env (16) from .env -- tip: ⚙️  enable debug logging with { debug: true }
+
+ [32m✓[39m tests/domain/care-schedule.entity.test.ts [2m([22m[2m9 tests[22m[2m)[22m[32m 3[2mms[22m[39m
+[90mstdout[2m | tests/controllers/plant.controller.test.ts
+[22m[39m[dotenv@17.2.3] injecting env (16) from .env -- tip: ⚙️  write to custom object with { processEnv: myObject }
+
+ [32m✓[39m tests/controllers/plant.controller.test.ts [2m([22m[2m5 tests[22m[2m)[22m[32m 1[2mms[22m[39m
+[90mstdout[2m | tests/controllers/auth.controller.test.ts
+[22m[39m[dotenv@17.2.3] injecting env (16) from .env -- tip: ⚙️  load multiple .env files with { path: ['.env.local', '.env'] }
+
+ [32m✓[39m tests/controllers/auth.controller.test.ts [2m([22m[2m3 tests[22m[2m)[22m[32m 1[2mms[22m[39m
+[90mstdout[2m | tests/controllers/care-tracker.controller.test.ts
+[22m[39m[dotenv@17.2.3] injecting env (16) from .env -- tip: 🔐 prevent committing .env to code: https://dotenvx.com/precommit
+
+ [32m✓[39m tests/controllers/care-tracker.controller.test.ts [2m([22m[2m4 tests[22m[2m)[22m[32m 1[2mms[22m[39m
+[90mstdout[2m | tests/domain/diagnosis.entity.test.ts
+[22m[39m[dotenv@17.2.3] injecting env (16) from .env -- tip: 🔐 prevent committing .env to code: https://dotenvx.com/precommit
+
+ [32m✓[39m tests/domain/diagnosis.entity.test.ts [2m([22m[2m10 tests[22m[2m)[22m[32m 2[2mms[22m[39m
+[90mstdout[2m | tests/domain/value-objects/email.vo.test.ts
+[22m[39m[dotenv@17.2.3] injecting env (16) from .env -- tip: ⚙️  enable debug logging with { debug: true }
+
+ [32m✓[39m tests/domain/value-objects/email.vo.test.ts [2m([22m[2m4 tests[22m[2m)[22m[32m 1[2mms[22m[39m
+[90mstdout[2m | tests/shared/utils/geo.utils.test.ts
+[22m[39m[dotenv@17.2.3] injecting env (16) from .env -- tip: ⚙️  write to custom object with { processEnv: myObject }
+
+ [32m✓[39m tests/shared/utils/geo.utils.test.ts [2m([22m[2m6 tests[22m[2m)[22m[32m 2[2mms[22m[39m
+[90mstdout[2m | tests/domain/value-objects/password.vo.test.ts
+[22m[39m[dotenv@17.2.3] injecting env (16) from .env -- tip: 🔐 prevent committing .env to code: https://dotenvx.com/precommit
+
+ [32m✓[39m tests/domain/value-objects/password.vo.test.ts [2m([22m[2m3 tests[22m[2m)[22m[32m 1[2mms[22m[39m
+
+[31m⎯⎯⎯⎯⎯⎯[39m[1m[41m Failed Suites 1 [49m[22m[31m⎯⎯⎯⎯⎯⎯⎯[39m
+
+[41m[1m FAIL [22m[49m tests/e2e/garden.e2e.test.ts[2m > [22mE2E: Garden Management
+[31m[1mPrismaClientKnownRequestError[22m: 
+Invalid `prisma.careCompletion.deleteMany()` invocation:
+
+
+[39m
+[90m [2m❯[22m qr.handleRequestError node_modules/@prisma/client/runtime/client.js:[2m65:8172[22m[39m
+[90m [2m❯[22m qr.handleAndLogRequestError node_modules/@prisma/client/runtime/client.js:[2m65:7467[22m[39m
+[90m [2m❯[22m qr.request node_modules/@prisma/client/runtime/client.js:[2m65:7174[22m[39m
+[90m [2m❯[22m a node_modules/@prisma/client/runtime/client.js:[2m75:5816[22m[39m
+[36m [2m❯[22m Module.resetDb tests/helpers/reset-db.ts:[2m5:5[22m[39m
+    [90m  3| [39m[35mexport[39m [35mconst[39m resetDb [33m=[39m [35masync[39m () [33m=>[39m {
+    [90m  4| [39m  [35mtry[39m {
+    [90m  5| [39m    [35mawait[39m prisma[33m.[39mcareCompletion[33m.[39m[34mdeleteMany[39m()
+    [90m   | [39m    [31m^[39m
+    [90m  6| [39m    [35mawait[39m prisma[33m.[39mcareSchedule[33m.[39m[34mdeleteMany[39m()
+    [90m  7| [39m    [35mawait[39m prisma[33m.[39mdiagnosis[33m.[39m[34mdeleteMany[39m()
+[90m [2m❯[22m tests/e2e/garden.e2e.test.ts:[2m66:5[22m[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/2]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/e2e/garden.e2e.test.ts[2m > [22mE2E: Garden Management
+[31m[1mTypeError[22m: Cannot read properties of undefined (reading 'close')[39m
+[36m [2m❯[22m tests/e2e/garden.e2e.test.ts:[2m100:12[22m[39m
+    [90m 98| [39m
+    [90m 99| [39m  [34mafterAll[39m([35masync[39m () [33m=>[39m {
+    [90m100| [39m    server[33m.[39m[34mclose[39m()
+    [90m   | [39m           [31m^[39m
+    [90m101| [39m    [35mawait[39m [34mdisconnectDb[39m()
+    [90m102| [39m  })
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/2]⎯[22m[39m
+
+
+[2m Test Files [22m [1m[31m1 failed[39m[22m[2m | [22m[1m[32m56 passed[39m[22m[90m (57)[39m
+[2m      Tests [22m [1m[32m380 passed[39m[22m[2m | [22m[33m7 skipped[39m[90m (387)[39m
+[2m   Start at [22m 18:35:49
+[2m   Duration [22m 6.38s[2m (transform 327ms, setup 385ms, import 1.52s, tests 733ms, environment 3ms)[22m
+

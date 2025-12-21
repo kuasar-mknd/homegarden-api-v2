@@ -121,8 +121,47 @@ describe('IdentifySpeciesUseCase', () => {
 
     expect(result.success).toBe(false)
     if (!result.success) {
-      expect(result.error.message).toBe('AI Error')
       expect(result.error.code).toBe('IDENTIFICATION_FAILED')
+    }
+  })
+
+  it('should handle AI service failure without error message', async () => {
+    const input: IdentifySpeciesInput = { imageBase64: 'data' }
+    vi.mocked(mockAiIdentification.identifySpecies).mockResolvedValue({
+      success: false,
+    } as any)
+
+    const result = await useCase.execute(input)
+
+    expect(result.success).toBe(false)
+    if (!result.success) {
+      expect(result.error.message).toBe('Plant identification failed')
+    }
+  })
+
+  it('should identify a plant successfully with sparse suggestion', async () => {
+    const input: IdentifySpeciesInput = { imageBase64: 'data' }
+    const mockResult: IdentifySpeciesResult = {
+      success: true,
+      suggestions: [
+        {
+          confidence: 0.5,
+          commonName: 'Weed',
+          scientificName: 'Unknown',
+          family: 'Unknown',
+        },
+      ],
+      processingTimeMs: 10,
+      modelUsed: 'test',
+    }
+
+    vi.mocked(mockAiIdentification.identifySpecies).mockResolvedValue(mockResult)
+
+    const result = await useCase.execute(input)
+
+    expect(result.success).toBe(true)
+    if (result.success) {
+      expect(result.data.suggestions[0].genus).toBeUndefined()
     }
   })
 

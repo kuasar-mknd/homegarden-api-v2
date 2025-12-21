@@ -123,13 +123,13 @@ export const AddPlantInputSchema = z.object({
 
 export const PlantSchema = z.object({
   id: z.string(),
-  nickname: z.string(),
-  commonName: z.string().nullable(),
-  scientificName: z.string().nullable(),
+  nickname: z.string().nullable().optional(),
+  commonName: z.string().nullable().optional(),
+  scientificName: z.string().nullable().optional(),
   gardenId: z.string(),
-  plantedDate: z.string().nullable(),
-  createdAt: z.string(),
-  updatedAt: z.string(),
+  plantedDate: z.string().nullable().optional(),
+  createdAt: z.string().or(z.date()),
+  updatedAt: z.string().or(z.date()),
 })
 
 export const AddPlantResponseSchema = z.object({

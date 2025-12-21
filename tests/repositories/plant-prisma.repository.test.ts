@@ -1,142 +1,251 @@
-import crypto from 'node:crypto'
-import { afterAll, describe, expect, it } from 'vitest'
-import { prisma } from '../../infrastructure/database/prisma.client.js'
+import { describe, expect, it, vi, beforeEach } from 'vitest'
+import { Plant } from '../../domain/entities/plant.entity.js'
 import { PlantPrismaRepository } from '../../infrastructure/database/repositories/plant.prisma-repository.js'
-import { disconnectDb } from '../helpers/reset-db.js'
 
-describe('PlantPrismaRepository', () => {
+// Mock Prisma client
+vi.mock('../../infrastructure/database/prisma.client.js', () => ({
+  prisma: {
+    plant: {
+      create: vi.fn(),
+      findUnique: vi.fn(),
+      findFirst: vi.fn(),
+      findMany: vi.fn(),
+      update: vi.fn(),
+      delete: vi.fn(),
+      deleteMany: vi.fn(),
+      count: vi.fn(),
+      groupBy: vi.fn(),
+    },
+  },
+}))
+
+import { prisma } from '../../infrastructure/database/prisma.client.js'
+
+describe('PlantPrismaRepository Unit Tests', () => {
   const repository = new PlantPrismaRepository()
-
-  afterAll(async () => {
-    await disconnectDb()
-  })
-
-  const setupBaseData = async (seed: string) => {
-    const user = await prisma.user.create({
-      data: {
-        email: `plant-repo-${seed}-${crypto.randomUUID()}@example.com`,
-        firstName: 'Repo',
-        lastName: 'Tester',
-        password: 'password',
-      },
-    })
-    const checkUser = await prisma.user.findUnique({ where: { id: user.id } })
-    if (!checkUser) console.error(`CRITICAL: User ${user.id} not found after creation!`)
-
-    const garden = await prisma.garden.create({
-      data: {
-        name: `Garden ${seed} ${crypto.randomUUID()}`,
-        userId: user.id,
-        latitude: 0,
-        longitude: 0,
-      },
-    })
-    const check = await prisma.garden.findUnique({ where: { id: garden.id } })
-    if (!check) console.error(`CRITICAL: Garden ${garden.id} not found after creation!`)
-    return { user, garden }
+  const mockPlant = {
+    id: 'plant-123',
+    nickname: 'My Plant',
+    gardenId: 'garden-123',
+    speciesId: 'species-123',
+    commonName: 'Tomato',
+    scientificName: 'Solanum lycopersicum',
+    family: 'Solanaceae',
+    exposure: 'Full Sun',
+    watering: 'Regular',
+    soilType: 'Loamy',
+    flowerColor: 'Yellow',
+    height: '1m',
+    plantedDate: new Date(),
+    acquiredDate: new Date(),
+    bloomingSeason: 'Summer',
+    plantingSeason: 'Spring',
+    careNotes: 'Water daily',
+    imageUrl: 'https://example.com/image.jpg',
+    thumbnailUrl: 'https://example.com/thumb.jpg',
+    use: 'Food',
+    createdAt: new Date(),
+    updatedAt: new Date(),
+    garden: {
+      id: 'garden-123',
+      name: 'Test Garden',
+      userId: 'user-123',
+      latitude: 0,
+      longitude: 0,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    },
   }
 
-  it('should create and find a plant', async () => {
-    const { garden } = await setupBaseData(crypto.randomUUID())
-    const created = await repository.create({
-      gardenId: garden.id,
-      nickname: 'My Plant',
-      commonName: 'Tomato',
-    })
-    expect(created.id).toBeDefined()
-    expect(created.nickname).toBe('My Plant')
+  beforeEach(() => {
+    vi.clearAllMocks()
+  })
 
-    const found = await repository.findById(created.id)
-    expect(found).not.toBeNull()
-    expect(found?.nickname).toBe('My Plant')
+  it('should create a plant', async () => {
+    ;(prisma.plant.create as any).mockResolvedValue(mockPlant)
+
+    const result = await repository.create({
+      gardenId: mockPlant.gardenId,
+      nickname: mockPlant.nickname,
+      commonName: mockPlant.commonName,
+    })
+
+    expect(prisma.plant.create).toHaveBeenCalled()
+    expect(result.id).toBe(mockPlant.id)
+    expect(result.gardenId).toBe(mockPlant.gardenId)
+  })
+
+  it('should find a plant by ID', async () => {
+    ;(prisma.plant.findUnique as any).mockResolvedValue(mockPlant)
+
+    const result = await repository.findById(mockPlant.id)
+
+    expect(prisma.plant.findUnique).toHaveBeenCalledWith(
+      expect.objectContaining({
+        where: { id: mockPlant.id },
+      }),
+    )
+    expect(result?.id).toBe(mockPlant.id)
+  })
+
+  it('should return null if plant not found by ID', async () => {
+    ;(prisma.plant.findUnique as any).mockResolvedValue(null)
+    const result = await repository.findById('non-existent')
+    expect(result).toBeNull()
   })
 
   it('should find plants by garden ID', async () => {
-    const { garden } = await setupBaseData(crypto.randomUUID())
-    await repository.create({ gardenId: garden.id, nickname: 'P1' })
-    await repository.create({ gardenId: garden.id, nickname: 'P2' })
+    ;(prisma.plant.findMany as any).mockResolvedValue([mockPlant])
 
-    const plants = await repository.findByGardenId(garden.id)
-    expect(plants).toHaveLength(2)
+    const result = await repository.findByGardenId(mockPlant.gardenId)
+
+    expect(result).toHaveLength(1)
+    expect(result[0].gardenId).toBe(mockPlant.gardenId)
   })
 
   it('should find plants by user ID', async () => {
-    const { user, garden } = await setupBaseData(crypto.randomUUID())
-    await repository.create({ gardenId: garden.id, nickname: 'P1' })
+    ;(prisma.plant.findMany as any).mockResolvedValue([mockPlant])
 
-    const plants = await repository.findByUserId(user.id)
-    expect(plants.length).toBeGreaterThanOrEqual(1)
-    expect(plants.some((p) => p.gardenId === garden.id)).toBe(true)
+    const result = await repository.findByUserId('user-123')
+
+    expect(result).toHaveLength(1)
+    expect(prisma.plant.findMany).toHaveBeenCalledWith(
+      expect.objectContaining({
+        where: { garden: { userId: 'user-123' } },
+      }),
+    )
   })
 
   it('should update a plant', async () => {
-    const { garden } = await setupBaseData(crypto.randomUUID())
-    const created = await repository.create({ gardenId: garden.id, nickname: 'Old Name' })
+    ;(prisma.plant.update as any).mockResolvedValue({
+      ...mockPlant,
+      nickname: 'New Name',
+    })
 
-    const updated = await repository.update(created.id, { nickname: 'New Name' })
-    expect(updated.nickname).toBe('New Name')
+    const result = await repository.update(mockPlant.id, { nickname: 'New Name' })
+
+    expect(prisma.plant.update).toHaveBeenCalled()
+    expect(result.nickname).toBe('New Name')
   })
 
   it('should delete a plant', async () => {
-    const { garden } = await setupBaseData(crypto.randomUUID())
-    const created = await repository.create({ gardenId: garden.id, nickname: 'To Delete' })
+    ;(prisma.plant.delete as any).mockResolvedValue(mockPlant)
 
-    await repository.delete(created.id)
-    const found = await repository.findById(created.id)
-    expect(found).toBeNull()
+    await repository.delete(mockPlant.id)
+
+    expect(prisma.plant.delete).toHaveBeenCalledWith({
+      where: { id: mockPlant.id },
+    })
   })
 
   it('should delete plants by garden ID', async () => {
-    const { garden } = await setupBaseData(crypto.randomUUID())
-    await repository.create({ gardenId: garden.id, nickname: 'P1' })
-    await repository.create({ gardenId: garden.id, nickname: 'P2' })
+    ;(prisma.plant.deleteMany as any).mockResolvedValue({ count: 2 })
 
-    await repository.deleteByGardenId(garden.id)
-    const plants = await repository.findByGardenId(garden.id)
-    expect(plants).toHaveLength(0)
+    await repository.deleteByGardenId(mockPlant.gardenId)
+
+    expect(prisma.plant.deleteMany).toHaveBeenCalledWith({
+      where: { gardenId: mockPlant.gardenId },
+    })
   })
 
   it('should find all with pagination and filters', async () => {
-    const { garden } = await setupBaseData(crypto.randomUUID())
-    const species = await prisma.species.create({
-      data: {
-        commonName: 'Test Species',
-        scientificName: `Testus scientificus ${crypto.randomUUID()}`,
-        family: 'Testaceae',
-      },
-    })
+    ;(prisma.plant.findMany as any).mockResolvedValue([mockPlant])
+    ;(prisma.plant.count as any).mockResolvedValue(1)
 
-    await repository.create({ gardenId: garden.id, nickname: 'P1', speciesId: species.id })
-    await repository.create({ gardenId: garden.id, nickname: 'P2', speciesId: species.id })
-    await repository.create({ gardenId: garden.id, nickname: 'P3' })
+    const result = await repository.findAll({ gardenId: mockPlant.gardenId, limit: 10 })
 
-    const result = await repository.findAll({ gardenId: garden.id, limit: 2 })
-    expect(result.plants).toHaveLength(2)
-    expect(result.total).toBe(3)
+    expect(result.plants).toHaveLength(1)
+    expect(result.total).toBe(1)
+  })
 
-    const resultWithSpecies = await repository.findAll({ speciesId: species.id })
-    expect(resultWithSpecies.plants).toHaveLength(2)
+  it('should find all with speciesId filter', async () => {
+    ;(prisma.plant.findMany as any).mockResolvedValue([mockPlant])
+    ;(prisma.plant.count as any).mockResolvedValue(1)
+
+    const result = await repository.findAll({ speciesId: 'species-123' })
+
+    expect(prisma.plant.findMany).toHaveBeenCalledWith(
+      expect.objectContaining({
+        where: { speciesId: 'species-123' },
+      }),
+    )
+    expect(result.plants).toHaveLength(1)
+  })
+
+  it('should find all with default options', async () => {
+    ;(prisma.plant.findMany as any).mockResolvedValue([mockPlant])
+    ;(prisma.plant.count as any).mockResolvedValue(1)
+
+    const result = await repository.findAll()
+
+    expect(prisma.plant.findMany).toHaveBeenCalledWith(
+      expect.objectContaining({
+        skip: 0,
+        take: 10,
+      }),
+    )
+    expect(result.plants).toHaveLength(1)
   })
 
   it('should count by garden ID', async () => {
-    const { garden } = await setupBaseData(crypto.randomUUID())
-    await repository.create({ gardenId: garden.id, nickname: 'P1' })
-    await repository.create({ gardenId: garden.id, nickname: 'P2' })
+    ;(prisma.plant.count as any).mockResolvedValue(5)
 
-    const count = await repository.countByGardenId(garden.id)
-    expect(count).toBe(2)
+    const count = await repository.countByGardenId(mockPlant.gardenId)
+
+    expect(count).toBe(5)
   })
 
   it('should aggregate by common name', async () => {
-    const { garden } = await setupBaseData(crypto.randomUUID())
-    await repository.create({ gardenId: garden.id, commonName: 'Rose' })
-    await repository.create({ gardenId: garden.id, commonName: 'Rose' })
-    await repository.create({ gardenId: garden.id, commonName: 'Tulip' })
-    await repository.create({ gardenId: garden.id, commonName: null })
+    ;(prisma.plant.groupBy as any).mockResolvedValue([
+      { commonName: 'Rose', _count: { _all: 2 } },
+      { commonName: 'Tulip', _count: { _all: 1 } },
+      { commonName: null, _count: { _all: 1 } },
+    ])
 
-    const stats = await repository.aggregateByCommonName(garden.id)
+    const stats = await repository.aggregateByCommonName(mockPlant.gardenId)
+
+    expect(stats).toHaveLength(3)
     expect(stats.find((s) => s.name === 'Rose')?.count).toBe(2)
-    expect(stats.find((s) => s.name === 'Tulip')?.count).toBe(1)
     expect(stats.find((s) => s.name === 'Unknown')?.count).toBe(1)
+  })
+
+  it('should map to entity without garden', async () => {
+    const { garden, ...plantWithoutGarden } = mockPlant
+    ;(prisma.plant.findUnique as any).mockResolvedValue(plantWithoutGarden)
+
+    const result = await repository.findById(mockPlant.id)
+
+    expect(result).toBeInstanceOf(Plant)
+    // Verify it doesn't have garden attached
+  })
+
+  it('should handle null fields during mapping', async () => {
+    const sparsePlant = {
+      ...mockPlant,
+      nickname: null,
+      speciesId: null,
+      commonName: null,
+      scientificName: null,
+      family: null,
+      exposure: null,
+      watering: null,
+      soilType: null,
+      flowerColor: null,
+      height: null,
+      plantedDate: null,
+      acquiredDate: null,
+      bloomingSeason: null,
+      plantingSeason: null,
+      careNotes: null,
+      imageUrl: null,
+      thumbnailUrl: null,
+      use: null,
+    }
+    ;(prisma.plant.findUnique as any).mockResolvedValue(sparsePlant)
+
+    const result = await repository.findById(mockPlant.id)
+
+    expect(result?.nickname).toBeNull()
+    expect(result?.commonName).toBeNull()
   })
 })

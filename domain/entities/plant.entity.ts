@@ -7,7 +7,7 @@
 import { differenceInDays } from '../../shared/utils/index.js'
 import type { GardenProps } from './garden.entity.js'
 
-export type PlantExposure = 'FULL_SUN' | 'PARTIAL_SHADE' | 'SHADE'
+export type PlantExposure = 'Full Sun' | 'Partial Shade' | 'Shade'
 export type PlantUse = 'ORNAMENTAL' | 'GROUNDCOVER' | 'FOOD' | 'MEDICINAL' | 'FRAGRANCE'
 
 export interface PlantProps {

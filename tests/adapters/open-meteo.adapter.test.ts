@@ -67,6 +67,44 @@ describe('OpenMeteoAdapter', () => {
       expect(fetch).toHaveBeenCalledTimes(2)
     })
 
+    it('should expire cache after TTL', async () => {
+      const mockData = { current: { temperature_2m: 20 } }
+      vi.mocked(fetch).mockResolvedValue({ ok: true, json: async () => mockData } as any)
+
+      vi.useFakeTimers()
+      const start = Date.now()
+      vi.setSystemTime(start)
+
+      await adapter.getCurrentWeather(48.8, 2.3)
+      expect(fetch).toHaveBeenCalledTimes(1)
+
+      // Move time forward by 1 hour + 1 second
+      vi.setSystemTime(start + 60 * 60 * 1000 + 1000)
+
+      await adapter.getCurrentWeather(48.8, 2.3)
+      expect(fetch).toHaveBeenCalledTimes(2)
+      vi.useRealTimers()
+    })
+
+    it('should clear cache if it grows too large', async () => {
+      const mockData = { current: { temperature_2m: 20 } }
+      vi.mocked(fetch).mockResolvedValue({ ok: true, json: async () => mockData } as any)
+
+      // Fill cache with 1001 entries to reach threshold
+      for (let i = 0; i < 1001; i++) {
+        await adapter.getCurrentWeather(i, 0)
+      }
+      expect(fetch).toHaveBeenCalledTimes(1001)
+
+      // 1002nd entry should trigger clear() because size was 1001
+      await adapter.getCurrentWeather(1002, 0)
+      expect(fetch).toHaveBeenCalledTimes(1002)
+
+      // Verify that the first entry (0, 0) is no longer in cache and triggers a new fetch
+      await adapter.getCurrentWeather(0, 0)
+      expect(fetch).toHaveBeenCalledTimes(1003)
+    })
+
     it('should handle API error response (not ok)', async () => {
       vi.mocked(fetch).mockResolvedValue({
         ok: false,

@@ -107,4 +107,20 @@ describe('FindNearbyGardensUseCase', () => {
       expect(result.error.message).toContain('required')
     }
   })
+
+  it('should use default radius and limit', async () => {
+    ;(mockGardenRepo.findNearby as any).mockResolvedValue([])
+
+    await useCase.execute({
+      latitude: 0,
+      longitude: 0,
+    })
+
+    expect(mockGardenRepo.findNearby).toHaveBeenCalledWith({
+      latitude: 0,
+      longitude: 0,
+      radiusKm: 10,
+      limit: 50,
+    })
+  })
 })

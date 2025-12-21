@@ -117,4 +117,23 @@ describe('GetGardenWeatherUseCase', () => {
       expect(result.error.message).toBe('Service Down')
     }
   })
+
+  it('should fail if forecast service fails', async () => {
+    ;(mockGardenRepo.findById as any).mockResolvedValue(mockGarden)
+    ;(mockWeatherPort.getCurrentWeather as any).mockResolvedValue({
+      success: true,
+      data: mockWeather,
+    })
+    ;(mockWeatherPort.getForecast as any).mockResolvedValue({
+      success: false,
+      error: new AppError('Forecast Error', 503),
+    })
+
+    const result = await useCase.execute('garden1', 'user1')
+
+    expect(result.success).toBe(false)
+    if (!result.success) {
+      expect(result.error.message).toBe('Forecast Error')
+    }
+  })
 })

@@ -1,5 +1,5 @@
 import jwt from 'jsonwebtoken'
-import type { UserRole } from '../../domain/entities/user.entity'
+import type { UserRole } from '../../domain/entities/user.entity.js'
 
 export interface TokenPayload {
   id: string
@@ -19,11 +19,11 @@ export class TokenService {
   }
 
   generateAccessToken(payload: TokenPayload): string {
-    return jwt.sign(payload, this.secret, { expiresIn: this.expiresIn })
+    return jwt.sign(payload, this.secret, { expiresIn: this.expiresIn as any })
   }
 
   generateRefreshToken(payload: TokenPayload): string {
-    return jwt.sign(payload, this.secret, { expiresIn: this.refreshExpiresIn })
+    return jwt.sign(payload, this.secret, { expiresIn: this.refreshExpiresIn as any })
   }
 
   verifyToken(token: string): TokenPayload {

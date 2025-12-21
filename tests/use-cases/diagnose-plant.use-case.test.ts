@@ -15,6 +15,11 @@ describe('DiagnosePlantUseCase', () => {
 
   const useCase = new DiagnosePlantUseCase(mockAiPort)
 
+  it('should use default adapter if none provided', () => {
+    const defaultUseCase = new DiagnosePlantUseCase()
+    expect((defaultUseCase as any).aiPort).toBeDefined()
+  })
+
   it('should return error if image buffer is empty', async () => {
     const result = await useCase.execute(Buffer.from(''), 'image/jpeg')
     expect(result.success).toBe(false)
@@ -73,6 +78,19 @@ describe('DiagnosePlantUseCase', () => {
     expect(result.success).toBe(false)
     if (!result.success) {
       expect(result.error.message).toBe('AI Error')
+    }
+  })
+
+  it('should handle AI service failure without error message', async () => {
+    vi.mocked(mockAiPort.diagnoseHealth).mockResolvedValueOnce({
+      success: false,
+    } as any)
+
+    const result = await useCase.execute(Buffer.from('data'), 'image/png')
+
+    expect(result.success).toBe(false)
+    if (!result.success) {
+      expect(result.error.message).toBe('Diagnosis failed')
     }
   })
 

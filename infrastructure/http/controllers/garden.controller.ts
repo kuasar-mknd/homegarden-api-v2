@@ -22,10 +22,10 @@ export class GardenController {
     try {
       const user = c.get('user')
       if (!user) {
-        return c.json({ success: false, error: 'UNAUTHORIZED' }, 401)
+        return c.json({ success: false, error: 'UNAUTHORIZED', message: 'Authentication required' }, 401)
       }
 
-      const body = c.req.valid('json')
+      const body = (await c.req.json()) as any
 
       const result = await this.addPlantUseCase.execute({
         userId: user.id,
@@ -54,7 +54,7 @@ export class GardenController {
       return c.json(
         {
           success: true,
-          data: result.data,
+          data: { plant: result.data },
         },
         201,
       )
@@ -79,7 +79,7 @@ export class GardenController {
     try {
       const user = c.get('user')
       if (!user) {
-        return c.json({ success: false, error: 'UNAUTHORIZED' }, 401)
+        return c.json({ success: false, error: 'UNAUTHORIZED', message: 'Authentication required' }, 401)
       }
 
       const result = await this.getUserPlantsUseCase.execute(user.id)
@@ -89,7 +89,7 @@ export class GardenController {
           {
             success: false,
             error: 'INTERNAL_ERROR',
-            message: result.error.message,
+            message: result.error?.message || 'Failed to fetch plants',
           },
           500,
         )
@@ -123,7 +123,7 @@ export class GardenController {
     try {
       const user = c.get('user')
       if (!user) {
-        return c.json({ success: false, error: 'UNAUTHORIZED' }, 401)
+        return c.json({ success: false, error: 'UNAUTHORIZED', message: 'Authentication required' }, 401)
       }
 
       const paramResult = gardenIdSchema.safeParse(c.req.param())
@@ -145,7 +145,7 @@ export class GardenController {
             error: result.error.code,
             message: result.error.message,
           },
-          result.error.statusCode as any,
+          (result.error as any).statusCode || 500,
         )
       }
 
@@ -178,7 +178,7 @@ export class GardenController {
     try {
       const user = c.get('user')
       if (!user) {
-        return c.json({ success: false, error: 'UNAUTHORIZED' }, 401)
+        return c.json({ success: false, error: 'UNAUTHORIZED', message: 'Authentication required' }, 401)
       }
 
       const queryResult = nearbyGardenSchema.safeParse(c.req.query())

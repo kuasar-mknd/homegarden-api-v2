@@ -68,4 +68,22 @@ describe('GetUserPlantsUseCase', () => {
       expect(result.data).toEqual([])
     }
   })
+
+  it('should handle repository errors', async () => {
+    plantRepo.findByUserId = vi.fn().mockRejectedValue(new Error('DB Error'))
+    const result = await useCase.execute('user-1')
+    expect(result.success).toBe(false)
+    if (!result.success) {
+      expect(result.error.statusCode).toBe(500)
+    }
+  })
+
+  it('should handle repository returning null/undefined', async () => {
+    plantRepo.findByUserId = vi.fn().mockResolvedValue(null)
+    const result = await useCase.execute('user-1')
+    expect(result.success).toBe(false)
+    if (!result.success) {
+      expect(result.error.statusCode).toBe(500)
+    }
+  })
 })

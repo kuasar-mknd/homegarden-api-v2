@@ -1,161 +1,220 @@
-import crypto from 'node:crypto'
-import { afterAll, describe, expect, it } from 'vitest'
-import { prisma } from '../../infrastructure/database/prisma.client.js'
+import { describe, expect, it, vi, beforeEach } from 'vitest'
+import { Garden } from '../../domain/entities/garden.entity.js'
 import { GardenPrismaRepository } from '../../infrastructure/database/repositories/garden.prisma-repository.js'
-import { disconnectDb } from '../helpers/reset-db.js'
 
-describe('GardenPrismaRepository', () => {
+// Mock Prisma client
+vi.mock('../../infrastructure/database/prisma.client.js', () => ({
+  prisma: {
+    garden: {
+      create: vi.fn(),
+      findUnique: vi.fn(),
+      findFirst: vi.fn(),
+      findMany: vi.fn(),
+      update: vi.fn(),
+      delete: vi.fn(),
+      count: vi.fn(),
+    },
+    $queryRaw: vi.fn(),
+  },
+}))
+
+import { prisma } from '../../infrastructure/database/prisma.client.js'
+
+describe('GardenPrismaRepository Unit Tests', () => {
   const repository = new GardenPrismaRepository()
-
-  afterAll(async () => {
-    await disconnectDb()
-  })
-
-  const setupUser = async (seed: string) => {
-    return await prisma.user.create({
-      data: {
-        email: `garden-repo-${seed}-${crypto.randomUUID()}@example.com`,
-        firstName: 'GardenRepo',
-        lastName: 'Tester',
-        password: 'password',
-      },
-    })
+  const mockGarden = {
+    id: 'garden-123',
+    name: 'My Garden',
+    userId: 'user-123',
+    latitude: 48.8566,
+    longitude: 2.3522,
+    description: 'Beautiful garden',
+    size: 50,
+    climate: 'Temperate',
+    createdAt: new Date(),
+    updatedAt: new Date(),
   }
 
-  it('should create and find a garden', async () => {
-    const user = await setupUser(crypto.randomUUID())
-    // Assuming CreateGardenProps is an interface/type for the create method's payload
-    const gardenData = {
-      // Changed from CreateGardenProps to object literal
-      userId: user.id,
-      name: 'My Garden',
-      latitude: 48.8566,
-      longitude: 2.3522,
-      description: 'Lush and sunny', // Added from original test
-      size: 100, // Added from original test
-      climate: 'TEMPERATE', // Added from original test
-    }
+  beforeEach(() => {
+    vi.clearAllMocks()
+  })
 
-    const created = await repository.create(gardenData)
-    expect(created.id).toBeDefined()
-    expect(created.name).toBe('My Garden')
+  it('should create a garden', async () => {
+    ;(prisma.garden.create as any).mockResolvedValue(mockGarden)
 
-    const found = await repository.findById(created.id)
-    expect(found).not.toBeNull()
-    expect(found?.name).toBe('My Garden')
+    const result = await repository.create({
+      name: mockGarden.name,
+      userId: mockGarden.userId,
+      latitude: mockGarden.latitude,
+      longitude: mockGarden.longitude,
+    })
+
+    expect(prisma.garden.create).toHaveBeenCalled()
+    expect(result).toBeInstanceOf(Garden)
+    expect(result.id).toBe(mockGarden.id)
+  })
+
+  it('should find a garden by ID', async () => {
+    ;(prisma.garden.findUnique as any).mockResolvedValue(mockGarden)
+
+    const result = await repository.findById(mockGarden.id)
+
+    expect(prisma.garden.findUnique).toHaveBeenCalledWith({
+      where: { id: mockGarden.id },
+    })
+    expect(result).toBeInstanceOf(Garden)
+    expect(result?.id).toBe(mockGarden.id)
+  })
+
+  it('should find a garden with plants by ID', async () => {
+    ;(prisma.garden.findUnique as any).mockResolvedValue(mockGarden)
+
+    const result = await repository.findByIdWithPlants(mockGarden.id)
+
+    expect(result?.id).toBe(mockGarden.id)
   })
 
   it('should find gardens by user ID', async () => {
-    const user = await setupUser(crypto.randomUUID())
-    await repository.create({ userId: user.id, name: 'G1', latitude: 1, longitude: 1 })
-    await repository.create({ userId: user.id, name: 'G2', latitude: 2, longitude: 2 })
+    ;(prisma.garden.findMany as any).mockResolvedValue([mockGarden])
 
-    const gardens = await repository.findByUserId(user.id)
-    expect(gardens).toHaveLength(2)
+    const result = await repository.findByUserId(mockGarden.userId)
+
+    expect(result).toHaveLength(1)
+    expect(result[0]).toBeInstanceOf(Garden)
   })
 
   it('should update a garden', async () => {
-    const user = await setupUser(crypto.randomUUID()) // Kept setupUser as setupBaseData is not defined
-    const garden = await repository.create({
-      name: 'Old',
-      latitude: 0,
-      longitude: 0,
-      userId: user.id,
-    }) // Kept original creation
-    const updated = await repository.update(garden.id, { name: 'Updated Garden' })
-    expect(updated.name).toBe('Updated Garden')
+    ;(prisma.garden.update as any).mockResolvedValue({
+      ...mockGarden,
+      name: 'Updated Garden',
+    })
+
+    const result = await repository.update(mockGarden.id, { name: 'Updated Garden' })
+
+    expect(prisma.garden.update).toHaveBeenCalled()
+    expect(result.name).toBe('Updated Garden')
+  })
+
+  it('should update a garden with all optional fields', async () => {
+    ;(prisma.garden.update as any).mockResolvedValue(mockGarden)
+    await repository.update(mockGarden.id, {
+      description: 'New Desc',
+      size: 100,
+      climate: 'Tropical',
+    })
+    expect(prisma.garden.update).toHaveBeenCalledWith(
+      expect.objectContaining({
+        data: expect.objectContaining({
+          description: 'New Desc',
+          size: 100,
+          climate: 'Tropical',
+        }),
+      }),
+    )
   })
 
   it('should delete a garden', async () => {
-    const user = await setupUser(crypto.randomUUID()) // Kept setupUser as setupBaseData is not defined
-    const garden = await repository.create({
-      name: 'Delete',
-      latitude: 0,
-      longitude: 0,
-      userId: user.id,
-    }) // Kept original creation
-    await repository.delete(garden.id)
-    const found = await repository.findById(garden.id)
-    expect(found).toBeNull()
+    ;(prisma.garden.delete as any).mockResolvedValue(mockGarden)
+
+    await repository.delete(mockGarden.id)
+
+    expect(prisma.garden.delete).toHaveBeenCalledWith({
+      where: { id: mockGarden.id },
+    })
   })
 
   it('should find by user and name', async () => {
-    const user = await setupUser(crypto.randomUUID()) // Kept setupUser as setupBaseData is not defined
-    const garden = await repository.create({
-      name: 'Unique Name',
-      latitude: 0,
-      longitude: 0,
-      userId: user.id,
-    }) // Kept original creation
-    const found = await repository.findByUserAndName(user.id, garden.name)
-    expect(found).not.toBeNull()
-    expect(found?.id).toBe(garden.id) // Changed from found?.name to found?.id for better assertion
+    ;(prisma.garden.findFirst as any).mockResolvedValue(mockGarden)
+
+    const result = await repository.findByUserAndName(mockGarden.userId, mockGarden.name)
+
+    expect(prisma.garden.findFirst).toHaveBeenCalled()
+    expect(result?.name).toBe(mockGarden.name)
   })
 
-  it('should find all with pagination', async () => {
-    const user = await setupUser(crypto.randomUUID())
-    // Use unique search term to only get our gardens
-    const searchTerm = `list-${crypto.randomUUID()}`
-
-    for (let i = 0; i < 5; i++) {
-      await repository.create({
-        name: `${searchTerm}-${i}`,
-        latitude: i,
-        longitude: i,
-        userId: user.id,
-      })
-    }
-
-    const result = await repository.findAll({ userId: user.id, search: searchTerm, limit: 3 })
-    expect(result.gardens).toHaveLength(3)
-    expect(result.total).toBe(5)
+  it('should return null when not found by user and name', async () => {
+    ;(prisma.garden.findFirst as any).mockResolvedValue(null)
+    const result = await repository.findByUserAndName('user', 'non-existent')
+    expect(result).toBeNull()
   })
 
-  it('should find nearby gardens', async () => {
-    const user = await setupUser(crypto.randomUUID())
-    // 48.8566, 2.3522 is Paris
-    await repository.create({
-      userId: user.id,
-      name: 'Paris Garden',
-      latitude: 48.8566,
-      longitude: 2.3522,
-    })
-    // Nearby (approx 1km away)
-    await repository.create({
-      userId: user.id,
-      name: 'Nearby Garden',
-      latitude: 48.8666,
-      longitude: 2.3622,
-    })
-    // Far away (London)
-    await repository.create({
-      userId: user.id,
-      name: 'Far Garden',
-      latitude: 51.5074,
-      longitude: -0.1278,
-    })
+  it('should find all gardens with pagination', async () => {
+    ;(prisma.garden.findMany as any).mockResolvedValue([mockGarden])
+    ;(prisma.garden.count as any).mockResolvedValue(1)
 
-    const nearby = await repository.findNearby({
+    const result = await repository.findAll({ page: 1, limit: 10, userId: 'user-123' })
+
+    expect(prisma.garden.findMany).toHaveBeenCalledWith(
+      expect.objectContaining({
+        skip: 0,
+        take: 10,
+        where: { userId: 'user-123' },
+      }),
+    )
+    expect(result.gardens).toHaveLength(1)
+    expect(result.total).toBe(1)
+  })
+
+  it('should find all with search and defaults', async () => {
+    ;(prisma.garden.findMany as any).mockResolvedValue([])
+    ;(prisma.garden.count as any).mockResolvedValue(0)
+
+    const result = await repository.findAll({ search: 'test' })
+
+    expect(prisma.garden.findMany).toHaveBeenCalledWith(
+      expect.objectContaining({
+        where: expect.objectContaining({
+          name: { contains: 'test' },
+        }),
+      }),
+    )
+    expect(result.total).toBe(0)
+  })
+
+  it('should find all without options', async () => {
+    ;(prisma.garden.findMany as any).mockResolvedValue([])
+    ;(prisma.garden.count as any).mockResolvedValue(0)
+
+    await repository.findAll()
+
+    expect(prisma.garden.findMany).toHaveBeenCalledWith(
+      expect.objectContaining({
+        skip: 0,
+        take: 10,
+      }),
+    )
+  })
+
+  it('should find nearby gardens using raw query', async () => {
+    ;(prisma.$queryRaw as any).mockResolvedValue([
+      {
+        ...mockGarden,
+        created_at: mockGarden.createdAt,
+        updated_at: mockGarden.updatedAt,
+        user_id: mockGarden.userId,
+      },
+    ])
+
+    const result = await repository.findNearby({
       latitude: 48.8566,
       longitude: 2.3522,
       radiusKm: 5,
     })
-    expect(nearby.length).toBeGreaterThanOrEqual(2)
-    expect(nearby.some((g) => g.name === 'Paris Garden')).toBe(true)
-    expect(nearby.some((g) => g.name === 'Nearby Garden')).toBe(true)
-    expect(nearby.some((g) => g.name === 'Far Garden')).toBe(false)
+
+    expect(prisma.$queryRaw).toHaveBeenCalled()
+    expect(result).toHaveLength(1)
+    expect(result[0]).toBeInstanceOf(Garden)
+    expect(result[0].name).toBe(mockGarden.name)
   })
 
   it('should return empty array for nearby search when error occurs', async () => {
-    // This is hard to trigger with real DB unless we break the query logic
-    // But we can check it by passing invalid types if we skip TypeScript checks
-    // Or just accept the coverage from integration tests if they hit the catch block (unlikely)
-    // For now, let's just make sure    // Search from somewhere remote (e.g. South Pole) where no gardens exist
-    const nearby = await repository.findNearby({
-      latitude: -90,
+    ;(prisma.$queryRaw as any).mockRejectedValue(new Error('PostGIS error'))
+
+    const result = await repository.findNearby({
+      latitude: 0,
       longitude: 0,
-      radiusKm: 1,
     })
-    expect(nearby).toEqual([])
+
+    expect(result).toEqual([])
   })
 })

@@ -131,12 +131,28 @@ describe('E2E: Authentication Flow', () => {
         error: null,
       })
 
+      // Mock User NOT found initially
+      ;(prisma.user.findUnique as any).mockResolvedValueOnce(null)
+      // Mock User Created
+      ;(prisma.user.create as any).mockResolvedValueOnce({
+        id: 'new-local-id',
+        email: newEmail,
+        firstName: 'New',
+        lastName: 'User',
+      })
+
       // Make authenticated request
       await request(baseUrl)
         .get('/api/v2/gardens/plants')
         .set('Authorization', 'Bearer new-user-token')
 
-      // Check user was created in local DB
+      // Check user was created in local DB (via subsequent call)
+      ;(prisma.user.findUnique as any).mockResolvedValueOnce({
+        id: 'new-local-id',
+        email: newEmail,
+        firstName: 'New',
+        lastName: 'User',
+      })
       const syncedUser = await prisma.user.findUnique({
         where: { email: newEmail },
       })

@@ -15,17 +15,40 @@ vi.mock('@supabase/supabase-js', () => ({
   }),
 }))
 
+// Mock Weather Adapter
+vi.mock('../../infrastructure/external-services/open-meteo.adapter.js', () => ({
+  OpenMeteoAdapter: class {
+    getCurrentWeather = vi.fn().mockResolvedValue({
+      success: true,
+      data: {
+        temperature: 20,
+        humidity: 50,
+        precipitation: 0,
+        windSpeed: 10,
+        conditions: 'Clear',
+        icon: 'sunny',
+      },
+    })
+    getForecast = vi.fn().mockResolvedValue({
+      success: true,
+      data: { daily: [] },
+    })
+  },
+}))
+
 describe('E2E: Garden Management', () => {
   let server: any
   let baseUrl: string
   let testUser: any
   let testGarden: any
+  const mockGardenId = 'c123456789012345678901234'
+  const mockUserId = 'supabase-garden-user'
 
   const mockAuthenticatedUser = () => {
     mockGetUser.mockResolvedValueOnce({
       data: {
         user: {
-          id: 'supabase-garden-user',
+          id: mockUserId,
           email: 'garden-e2e@example.com',
           user_metadata: { full_name: 'Garden Tester' },
           app_metadata: {},
@@ -38,6 +61,47 @@ describe('E2E: Garden Management', () => {
   }
 
   beforeAll(async () => {
+    // Override Mock Implementation for this test suite
+    ;(prisma.user.create as any).mockResolvedValue({
+      id: mockUserId,
+      email: 'garden-e2e@example.com',
+      firstName: 'Garden',
+    })
+
+    const mockUserResponse = {
+      id: mockUserId,
+      email: 'garden-e2e@example.com',
+      firstName: 'Garden',
+      role: 'USER',
+    }
+
+    ;(prisma.user.findUnique as any).mockResolvedValue(mockUserResponse)
+    ;(prisma.user.findFirst as any).mockResolvedValue(mockUserResponse)
+
+    ;(prisma.garden.create as any).mockResolvedValue({
+      id: mockGardenId,
+      name: 'E2E Test Garden',
+      userId: mockUserId,
+      latitude: 46.5196535,
+      longitude: 6.6322734,
+      description: 'A garden for E2E testing',
+    })
+
+    // Smart findUnique mock
+    ;(prisma.garden.findUnique as any).mockImplementation((args: any) => {
+      if (args.where.id === mockGardenId) {
+        return Promise.resolve({
+          id: mockGardenId,
+          name: 'E2E Test Garden',
+          userId: mockUserId,
+          latitude: 46.5196535,
+          longitude: 6.6322734,
+          description: 'A garden for E2E testing',
+        })
+      }
+      return Promise.resolve(null)
+    })
+
     await resetDb()
 
     // Create test user with a garden
@@ -52,6 +116,7 @@ describe('E2E: Garden Management', () => {
 
     testGarden = await prisma.garden.create({
       data: {
+        id: mockGardenId,
         name: 'E2E Test Garden',
         latitude: 46.5196535,
         longitude: 6.6322734,
@@ -69,7 +134,6 @@ describe('E2E: Garden Management', () => {
     const port = typeof address === 'object' && address ? address.port : 3000
     baseUrl = `http://localhost:${port}`
   })
-
   afterAll(async () => {
     server.close()
     await disconnectDb()
@@ -127,7 +191,7 @@ describe('E2E: Garden Management', () => {
       mockAuthenticatedUser()
 
       const res = await request(baseUrl)
-        .get(`/api/v2/gardens/${testGarden.id}/weather`)
+        .get(`/api/v2/gardens/${mockGardenId}/weather`)
         .set('Authorization', 'Bearer valid-token')
 
       // Weather API might succeed or fail depending on external service
@@ -143,7 +207,7 @@ describe('E2E: Garden Management', () => {
       mockAuthenticatedUser()
 
       const res = await request(baseUrl)
-        .get('/api/v2/gardens/non-existent-garden-id/weather')
+        .get('/api/v2/gardens/c123456789012345678909999/weather')
         .set('Authorization', 'Bearer valid-token')
 
       expect(res.status).toBe(404)
@@ -172,6 +236,9 @@ describe('E2E: Garden Management', () => {
 
     it('should return 404 for non-existent garden', async () => {
       mockAuthenticatedUser()
+
+      // Mock Garden not found
+      ;(prisma.garden.findUnique as any).mockResolvedValueOnce(null)
 
       const res = await request(baseUrl)
         .post('/api/v2/gardens/fake-garden-id/plants')
