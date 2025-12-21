@@ -395,27 +395,27 @@ app.get('/', (c) => {
 
       <ul class="grid" role="list">
         <li>
-          <a href="/ui" class="card">
+          <a href="/ui" class="card" aria-describedby="doc-desc">
             <h3>📚 Documentation</h3>
-            <p>Interactive Swagger UI for API exploration.</p>
+            <p id="doc-desc">Interactive Swagger UI for API exploration.</p>
           </a>
         </li>
         <li>
-          <a href="/doc" class="card">
+          <a href="/doc" class="card" aria-describedby="openapi-desc">
             <h3>🔍 OpenAPI Spec</h3>
-            <p>Raw JSON specification for integration.</p>
+            <p id="openapi-desc">Raw JSON specification for integration.</p>
           </a>
         </li>
         <li>
-          <a href="/api/v2/plant-id" class="card">
+          <a href="/ui#/PlantID" class="card" aria-describedby="plant-id-desc">
             <h3>🌿 Plant ID</h3>
-            <p>Identify species using AI vision.</p>
+            <p id="plant-id-desc">Identify species using AI vision.</p>
           </a>
         </li>
         <li>
-          <a href="/api/v2/dr-plant/diagnose" class="card">
+          <a href="/ui#/DrPlant" class="card" aria-describedby="dr-plant-desc">
             <h3>🩺 Dr. Plant</h3>
-            <p>Diagnose diseases and pests.</p>
+            <p id="dr-plant-desc">Diagnose diseases and pests.</p>
           </a>
         </li>
       </ul>
