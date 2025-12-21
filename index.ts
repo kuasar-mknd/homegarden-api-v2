@@ -189,9 +189,12 @@ app.get('/', (c) => {
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="description" content="Smart Plant Management API with AI capabilities. Identify plants, diagnose diseases, and track your garden.">
+  <meta name="theme-color" content="#2e7d32">
   <meta property="og:title" content="HomeGarden API v2">
   <meta property="og:description" content="Smart Plant Management API with AI capabilities.">
   <meta property="og:type" content="website">
+  <meta property="og:image" content="https://placehold.co/600x400/2e7d32/ffffff?text=HomeGarden+API">
+  <link rel="canonical" href="/">
   <title>HomeGarden API v2</title>
   <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🌱</text></svg>">
   <style>
@@ -217,9 +220,17 @@ app.get('/', (c) => {
         --status-text: #aaa;
       }
     }
+    ::selection {
+      background: var(--secondary);
+      color: white;
+    }
+    html {
+      scroll-behavior: smooth;
+    }
     body {
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
       background-color: var(--bg);
+      background-image: radial-gradient(circle at 50% 0, rgba(76, 175, 80, 0.1), transparent 70%);
       color: var(--text);
       line-height: 1.6;
       margin: 0;
@@ -229,20 +240,57 @@ app.get('/', (c) => {
       align-items: center;
       min-height: 100vh;
     }
+    /* Scrollbar */
+    ::-webkit-scrollbar {
+      width: 8px;
+    }
+    ::-webkit-scrollbar-track {
+      background: var(--bg);
+    }
+    ::-webkit-scrollbar-thumb {
+      background: var(--card-border);
+      border-radius: 4px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: var(--secondary);
+    }
+    .skip-link {
+      position: absolute;
+      top: -100px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: var(--primary);
+      color: #fff;
+      padding: 0.5rem 1rem;
+      border-radius: 0 0 8px 8px;
+      z-index: 100;
+      transition: top 0.3s;
+      text-decoration: none;
+      font-weight: 600;
+    }
+    .skip-link:focus {
+      top: 0;
+      outline: 2px solid var(--secondary);
+    }
     .container {
       background: var(--card-bg);
       padding: 3rem;
       border-radius: 16px;
+      border: 1px solid var(--card-border);
       box-shadow: 0 4px 20px rgba(0,0,0,0.05);
       max-width: 600px;
       width: 90%;
       text-align: center;
     }
-    header h1 { color: var(--primary); margin-bottom: 0.5rem; }
+    header h1 {
+      color: var(--primary);
+      margin-bottom: 0.5rem;
+      font-size: clamp(1.5rem, 5vw, 2.5rem);
+    }
     .badge {
       display: inline-block;
       background: #e8f5e9;
-      color: #2e7d32; /* Keep contrast high on light badge */
+      color: #2e7d32;
       padding: 4px 12px;
       border-radius: 12px;
       font-size: 0.85rem;
@@ -260,6 +308,8 @@ app.get('/', (c) => {
       grid-template-columns: 1fr 1fr;
       gap: 1.5rem;
       margin: 2rem 0;
+      list-style: none;
+      padding: 0;
     }
     @media (max-width: 600px) {
       .grid {
@@ -274,11 +324,16 @@ app.get('/', (c) => {
       text-decoration: none;
       color: inherit;
       display: block;
+      height: 100%;
+      box-sizing: border-box;
     }
     .card:hover {
       transform: translateY(-2px);
       box-shadow: 0 4px 12px rgba(0,0,0,0.05);
       border-color: var(--secondary);
+    }
+    .card:active {
+      transform: scale(0.98);
     }
     .card:focus-visible {
       outline: 2px solid var(--secondary);
@@ -304,47 +359,66 @@ app.get('/', (c) => {
       margin-right: 6px;
     }
     @media (prefers-reduced-motion: reduce) {
-      .card {
+      .card, .skip-link {
         transition: none;
       }
       .card:hover {
         transform: none;
       }
     }
+    @media print {
+      body { background: white; color: black; display: block; }
+      .container { box-shadow: none; border: none; max-width: 100%; width: 100%; padding: 0; }
+      .skip-link, .status-dot { display: none; }
+      .grid { display: block; }
+      .card { border: 1px solid #000; margin-bottom: 1rem; page-break-inside: avoid; box-shadow: none; }
+      a { text-decoration: underline; color: black; }
+      header h1 { color: black; }
+      .badge { border: 1px solid #ccc; background: none; color: black; }
+    }
   </style>
 </head>
 <body>
+  <a href="#main" class="skip-link">Skip to main content</a>
   <div class="container">
     <header>
       <h1>🌱 HomeGarden API</h1>
       <div class="badge">v2.0.0 • AI-Powered</div>
     </header>
 
-    <main>
+    <main id="main">
       <p>Welcome to the HomeGarden API. Connect your applications to smart plant management services.</p>
 
-      <div class="grid">
-        <a href="/ui" class="card">
-          <h3>📚 Documentation</h3>
-          <p>Interactive Swagger UI for API exploration.</p>
-        </a>
-        <a href="/doc" class="card">
-          <h3>🔍 OpenAPI Spec</h3>
-          <p>Raw JSON specification for integration.</p>
-        </a>
-        <a href="/api/v2/plant-id" class="card">
-          <h3>🌿 Plant ID</h3>
-          <p>Identify species using AI vision.</p>
-        </a>
-        <a href="/api/v2/dr-plant/diagnose" class="card">
-          <h3>🩺 Dr. Plant</h3>
-          <p>Diagnose diseases and pests.</p>
-        </a>
-      </div>
+      <ul class="grid" role="list">
+        <li>
+          <a href="/ui" class="card">
+            <h3>📚 Documentation</h3>
+            <p>Interactive Swagger UI for API exploration.</p>
+          </a>
+        </li>
+        <li>
+          <a href="/doc" class="card">
+            <h3>🔍 OpenAPI Spec</h3>
+            <p>Raw JSON specification for integration.</p>
+          </a>
+        </li>
+        <li>
+          <a href="/api/v2/plant-id" class="card">
+            <h3>🌿 Plant ID</h3>
+            <p>Identify species using AI vision.</p>
+          </a>
+        </li>
+        <li>
+          <a href="/api/v2/dr-plant/diagnose" class="card">
+            <h3>🩺 Dr. Plant</h3>
+            <p>Diagnose diseases and pests.</p>
+          </a>
+        </li>
+      </ul>
     </main>
 
-    <footer class="status">
-      <span class="status-dot" aria-label="Status: Operational"></span> System Operational • ${env.NODE_ENV}
+    <footer class="status" role="status">
+      <span class="status-dot" aria-label="Status: Operational" role="img"></span> System Operational • ${env.NODE_ENV}
     </footer>
   </div>
 </body>
