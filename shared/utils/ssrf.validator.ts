@@ -28,7 +28,7 @@ const PRIVATE_IPV4_RANGES = [
 // Helper to convert IPv4 string to number
 function ipV4ToNumber(ip: string): number | null {
   const parts = ip.split('.').map(Number)
-  if (parts.length !== 4 || parts.some(isNaN)) return null
+  if (parts.length !== 4 || parts.some(Number.isNaN)) return null
   const [p0, p1, p2, p3] = parts
   if (p0 === undefined || p1 === undefined || p2 === undefined || p3 === undefined) return null
   return (p0 << 24) | (p1 << 16) | (p2 << 8) | p3

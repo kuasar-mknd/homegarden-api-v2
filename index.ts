@@ -238,6 +238,19 @@ app.get('/', (c) => {
       width: 90%;
       text-align: center;
     }
+    .skip-link {
+      position: absolute;
+      top: -40px;
+      left: 0;
+      background: var(--primary);
+      color: white;
+      padding: 8px;
+      z-index: 100;
+      transition: top 0.2s;
+    }
+    .skip-link:focus {
+      top: 0;
+    }
     header h1 { color: var(--primary); margin-bottom: 0.5rem; }
     .badge {
       display: inline-block;
@@ -314,13 +327,14 @@ app.get('/', (c) => {
   </style>
 </head>
 <body>
+  <a href="#main" class="skip-link">Skip to main content</a>
   <div class="container">
     <header>
       <h1>🌱 HomeGarden API</h1>
-      <div class="badge">v2.0.0 • AI-Powered</div>
+      <div class="badge" role="status">v2.0.0 • AI-Powered</div>
     </header>
 
-    <main>
+    <main id="main">
       <p>Welcome to the HomeGarden API. Connect your applications to smart plant management services.</p>
 
       <div class="grid">
@@ -332,13 +346,13 @@ app.get('/', (c) => {
           <h3>🔍 OpenAPI Spec</h3>
           <p>Raw JSON specification for integration.</p>
         </a>
-        <a href="/api/v2/plant-id" class="card">
+        <a href="/ui#/PlantID" class="card">
           <h3>🌿 Plant ID</h3>
-          <p>Identify species using AI vision.</p>
+          <p>Identify species using AI vision (Docs).</p>
         </a>
-        <a href="/api/v2/dr-plant/diagnose" class="card">
+        <a href="/ui#/DrPlant" class="card">
           <h3>🩺 Dr. Plant</h3>
-          <p>Diagnose diseases and pests.</p>
+          <p>Diagnose diseases and pests (Docs).</p>
         </a>
       </div>
     </main>
