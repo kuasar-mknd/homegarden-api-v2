@@ -52,11 +52,17 @@ describe('DrPlantController', () => {
   })
 
   it('should return 400 if image size exceeds 10MB', async () => {
-    const mockFile = { size: 11 * 1024 * 1024, type: 'image/jpeg' }
+    // We create a mock file with a large size.
+    // Since Zod checks instanceOf File and then checks properties.
+    // However, File constructor doesn't accept size. Size is determined by content length.
+    // We can just define a property on the instance if needed, or use a large buffer.
+    // Creating 11MB buffer is slow. Let's mock the file object more directly if possible,
+    // or rely on the fact that we can cast to any to overwrite size.
+
+    const mockFile = new File([''], 'large.jpg', { type: 'image/jpeg' });
+    Object.defineProperty(mockFile, 'size', { value: 11 * 1024 * 1024 });
+
     mockContext.req.parseBody.mockResolvedValue({ image: mockFile })
-    // We need to pass the instanceof File check if possible, or mock it differently.
-    // In our test environment, we might need a real File or carefully mocked.
-    Object.setPrototypeOf(mockFile, File.prototype)
 
     const result = (await controller.diagnose(mockContext)) as any
     expect(result.status).toBe(400)

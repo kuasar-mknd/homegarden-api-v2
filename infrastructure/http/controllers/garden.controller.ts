@@ -4,6 +4,7 @@ import type { FindNearbyGardensUseCase } from '../../../application/use-cases/ga
 import type { GetGardenWeatherUseCase } from '../../../application/use-cases/garden/get-garden-weather.use-case.js'
 import type { GetUserPlantsUseCase } from '../../../application/use-cases/garden/get-user-plants.use-case.js'
 import { logger } from '../../config/logger.js'
+import { gardenIdSchema, nearbyGardenSchema } from '../validators/garden.validator.js'
 
 export class GardenController {
   constructor(
@@ -125,10 +126,15 @@ export class GardenController {
         return c.json({ success: false, error: 'UNAUTHORIZED' }, 401)
       }
 
-      const gardenId = c.req.param('gardenId')
-      if (!gardenId) {
-        return c.json({ success: false, error: 'BAD_REQUEST', message: 'Garden ID required' }, 400)
+      const paramResult = gardenIdSchema.safeParse(c.req.param())
+      if (!paramResult.success) {
+        return c.json(
+          { success: false, error: 'BAD_REQUEST', message: 'Invalid Garden ID' },
+          400,
+        )
       }
+
+      const { gardenId } = paramResult.data
 
       const result = await this.getGardenWeatherUseCase.execute(gardenId, user.id)
 
@@ -170,28 +176,25 @@ export class GardenController {
    */
   getNearby = async (c: Context) => {
     try {
-      // Optional: Require auth? Previous discussion suggested it's a social feature.
-      // Usually social features require auth.
       const user = c.get('user')
       if (!user) {
         return c.json({ success: false, error: 'UNAUTHORIZED' }, 401)
       }
 
-      const lat = parseFloat(c.req.query('lat') || '')
-      const lng = parseFloat(c.req.query('lng') || '')
-      const radius = parseFloat(c.req.query('radius') || '10')
-      const limit = parseInt(c.req.query('limit') || '50', 10)
+      const queryResult = nearbyGardenSchema.safeParse(c.req.query())
 
-      if (Number.isNaN(lat) || Number.isNaN(lng)) {
+      if (!queryResult.success) {
         return c.json(
           {
             success: false,
             error: 'BAD_REQUEST',
-            message: 'Valid latitude and longitude required',
+            message: queryResult.error.issues[0].message,
           },
           400,
         )
       }
+
+      const { lat, lng, radius, limit } = queryResult.data
 
       const result = await this.findNearbyGardensUseCase.execute({
         latitude: lat,

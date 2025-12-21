@@ -1,6 +1,7 @@
 import type { Context } from 'hono'
 import type { GetUserPublicProfileUseCase } from '../../../application/use-cases/user/get-user-public-profile.use-case.js'
 import { logger } from '../../config/logger.js'
+import { getProfileSchema } from '../validators/user.validator.js'
 
 export class UserController {
   constructor(private readonly getUserPublicProfileUseCase: GetUserPublicProfileUseCase) {}
@@ -17,10 +18,15 @@ export class UserController {
         return c.json({ success: false, error: 'UNAUTHORIZED' }, 401)
       }
 
-      const requestedUserId = c.req.param('id')
-      if (!requestedUserId) {
-        return c.json({ success: false, error: 'BAD_REQUEST', message: 'User ID required' }, 400)
+      const paramResult = getProfileSchema.safeParse(c.req.param())
+      if (!paramResult.success) {
+        return c.json(
+          { success: false, error: 'BAD_REQUEST', message: 'Invalid User ID' },
+          400,
+        )
       }
+
+      const { id: requestedUserId } = paramResult.data
 
       const result = await this.getUserPublicProfileUseCase.execute({
         userId: requestedUserId,
