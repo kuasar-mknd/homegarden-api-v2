@@ -5,6 +5,7 @@
  * Accepts an image and returns identification suggestions.
  */
 
+import { logger } from '../../../infrastructure/config/logger.js'
 import { AppError } from '../../../shared/errors/app-error.js'
 import { fail, ok, type Result } from '../../../shared/types/result.type.js'
 import type {
@@ -137,7 +138,7 @@ export class IdentifySpeciesUseCase {
 
       return ok(output)
     } catch (error) {
-      console.error('Identify species use case error:', error)
+      logger.error({ err: error }, 'Identify species use case error')
       return fail(
         new AppError(
           error instanceof Error ? error.message : 'Unknown identification error',

@@ -142,7 +142,7 @@ export class GeminiPlantAdapter implements AIIdentificationPort, AIDiagnosisPort
     this.apiKey = apiKey ?? env.GOOGLE_AI_API_KEY ?? ''
 
     if (!this.apiKey) {
-      logger.warn('GOOGLE_AI_API_KEY not configured - AI features will be unavailable')
+      logger.warn('⚠️ GOOGLE_AI_API_KEY not configured - AI features will be unavailable')
     }
 
     this.genAI = new GoogleGenerativeAI(this.apiKey)
@@ -552,8 +552,8 @@ export class GeminiPlantAdapter implements AIIdentificationPort, AIDiagnosisPort
 
     try {
       return JSON.parse(cleaned) as T
-    } catch (_error) {
-      logger.error({ err: _error, response: cleaned }, 'Failed to parse AI response')
+    } catch (error) {
+      logger.error({ err: error, response: cleaned }, 'Failed to parse AI response')
       throw new AppError('Invalid AI response format', 500)
     }
   }

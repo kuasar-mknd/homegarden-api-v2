@@ -12,6 +12,7 @@ import type {
   IdentifySpeciesUseCase,
 } from '../../../application/use-cases/plant-id/identify-species.use-case.js'
 import { isOk } from '../../../shared/types/result.type.js'
+import { logger } from '../../config/logger.js'
 
 // ============================================================
 // REQUEST/RESPONSE TYPES
@@ -108,7 +109,7 @@ export class PlantIdController {
         200,
       )
     } catch (error) {
-      console.error('Plant ID controller error:', error)
+      logger.error({ err: error }, 'Plant ID controller error')
 
       // Handle JSON parse errors
       if (error instanceof SyntaxError) {

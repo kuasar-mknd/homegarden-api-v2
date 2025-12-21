@@ -1,4 +1,5 @@
 import type { Garden } from '../../../domain/entities/garden.entity.js'
+import { logger } from '../../../infrastructure/config/logger.js'
 import type { GardenRepository } from '../../../domain/repositories/garden.repository.js'
 import { AppError } from '../../../shared/errors/app-error.js'
 import { fail, ok, type Result } from '../../../shared/types/result.type.js'
@@ -39,7 +40,7 @@ export class FindNearbyGardensUseCase {
 
       return ok({ gardens })
     } catch (error) {
-      console.error('FindNearbyGardensUseCase Error:', error)
+      logger.error({ err: error }, 'FindNearbyGardensUseCase Error')
       return fail(new AppError('Failed to find nearby gardens', 500, 'INTERNAL_ERROR'))
     }
   }
