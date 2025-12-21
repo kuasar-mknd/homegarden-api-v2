@@ -286,11 +286,20 @@ app.get('/', (c) => {
       width: 90%;
       text-align: center;
     }
-    header h1 {
-      color: var(--primary);
-      margin-bottom: 0.5rem;
-      font-size: clamp(1.5rem, 5vw, 2.5rem);
+    .skip-link {
+      position: absolute;
+      top: -40px;
+      left: 0;
+      background: var(--primary);
+      color: white;
+      padding: 8px;
+      z-index: 100;
+      transition: top 0.2s;
     }
+    .skip-link:focus {
+      top: 0;
+    }
+    header h1 { color: var(--primary); margin-bottom: 0.5rem; }
     .badge {
       display: inline-block;
       background: #e8f5e9;
@@ -387,38 +396,30 @@ app.get('/', (c) => {
   <div class="container">
     <header>
       <h1>🌱 HomeGarden API</h1>
-      <div class="badge">v2.0.0 • AI-Powered</div>
+      <div class="badge" role="status">v2.0.0 • AI-Powered</div>
     </header>
 
     <main id="main">
       <p>Welcome to the HomeGarden API. Connect your applications to smart plant management services.</p>
 
-      <ul class="grid" role="list">
-        <li>
-          <a href="/ui" class="card" aria-describedby="doc-desc">
-            <h3>📚 Documentation</h3>
-            <p id="doc-desc">Interactive Swagger UI for API exploration.</p>
-          </a>
-        </li>
-        <li>
-          <a href="/doc" class="card" aria-describedby="openapi-desc">
-            <h3>🔍 OpenAPI Spec</h3>
-            <p id="openapi-desc">Raw JSON specification for integration.</p>
-          </a>
-        </li>
-        <li>
-          <a href="/ui#/PlantID" class="card" aria-describedby="plant-id-desc">
-            <h3>🌿 Plant ID</h3>
-            <p id="plant-id-desc">Identify species using AI vision.</p>
-          </a>
-        </li>
-        <li>
-          <a href="/ui#/DrPlant" class="card" aria-describedby="dr-plant-desc">
-            <h3>🩺 Dr. Plant</h3>
-            <p id="dr-plant-desc">Diagnose diseases and pests.</p>
-          </a>
-        </li>
-      </ul>
+      <div class="grid">
+        <a href="/ui" class="card">
+          <h3>📚 Documentation</h3>
+          <p>Interactive Swagger UI for API exploration.</p>
+        </a>
+        <a href="/doc" class="card">
+          <h3>🔍 OpenAPI Spec</h3>
+          <p>Raw JSON specification for integration.</p>
+        </a>
+        <a href="/ui#/PlantID" class="card">
+          <h3>🌿 Plant ID</h3>
+          <p>Identify species using AI vision (Docs).</p>
+        </a>
+        <a href="/ui#/DrPlant" class="card">
+          <h3>🩺 Dr. Plant</h3>
+          <p>Diagnose diseases and pests (Docs).</p>
+        </a>
+      </div>
     </main>
 
     <footer class="status" role="status">
