@@ -37,6 +37,7 @@ model User {
   careSchedules CareSchedule[]
 
   @@map("users")
+  @@index([role])
 }
 
 enum UserRole {
@@ -64,6 +65,7 @@ model Garden {
 
   @@index([userId])
   @@index([latitude, longitude])
+  @@index([name])
   @@map("gardens")
 }
 
@@ -153,6 +155,7 @@ model Species {
 
   @@index([commonName])
   @@index([family])
+  @@index([genus])
   @@map("species")
 }
 
@@ -267,6 +270,9 @@ model CareSchedule {
 
   @@index([userId])
   @@index([nextDueDate])
+  @@index([gardenId])
+  @@index([plantId])
+  @@index([isEnabled])
   @@map("care_schedules")
 }
 
@@ -282,6 +288,7 @@ model CareCompletion {
   schedule   CareSchedule @relation(fields: [scheduleId], references: [id], onDelete: Cascade)
 
   @@index([scheduleId])
+  @@index([completedAt])
   @@map("care_completions")
 }
 

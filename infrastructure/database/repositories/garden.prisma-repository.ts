@@ -1,10 +1,11 @@
-import type { Garden } from '../../../domain/entities/garden.entity.js'
+import { Garden } from '../../../domain/entities/garden.entity.js'
 import type {
   CreateGardenData,
   GardenRepository,
   NearbyQuery,
   UpdateGardenData,
 } from '../../../domain/repositories/garden.repository.js'
+import { logger } from '../../config/logger.js'
 import { prisma } from '../prisma.client.js'
 
 export class GardenPrismaRepository implements GardenRepository {
@@ -88,7 +89,7 @@ export class GardenPrismaRepository implements GardenRepository {
 
       return gardens.map(this.mapToEntity)
     } catch (error) {
-      console.error('Geospatial Query Error:', error)
+      logger.error({ err: error }, 'Geospatial Query Error')
       // Fallback or empty array if PostGIS fails/missing
       return []
     }
@@ -118,15 +119,17 @@ export class GardenPrismaRepository implements GardenRepository {
   }
 
   private mapToEntity(prismaGarden: any): Garden {
-    return {
+    return Garden.fromPersistence({
       id: prismaGarden.id,
       name: prismaGarden.name,
       description: prismaGarden.description ?? undefined,
       latitude: prismaGarden.latitude,
       longitude: prismaGarden.longitude,
       userId: prismaGarden.userId,
+      size: prismaGarden.size ?? undefined,
+      climate: prismaGarden.climate ?? undefined,
       createdAt: prismaGarden.createdAt,
       updatedAt: prismaGarden.updatedAt,
-    } as Garden
+    })
   }
 }

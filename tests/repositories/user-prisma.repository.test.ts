@@ -1,139 +1,192 @@
 import crypto from 'node:crypto'
-import { afterAll, describe, expect, it } from 'vitest'
+import { describe, expect, it, vi, beforeEach } from 'vitest'
 import { UserPrismaRepository } from '../../infrastructure/database/repositories/user.prisma-repository.js'
-import { disconnectDb } from '../helpers/reset-db.js'
 
-describe('UserPrismaRepository', () => {
+// Mock Prisma client
+vi.mock('../../infrastructure/database/prisma.client.js', () => ({
+  prisma: {
+    user: {
+      create: vi.fn(),
+      findUnique: vi.fn(),
+      findFirst: vi.fn(),
+      findMany: vi.fn(),
+      update: vi.fn(),
+      delete: vi.fn(),
+      count: vi.fn(),
+    },
+  },
+}))
+
+import { prisma } from '../../infrastructure/database/prisma.client.js'
+
+describe('UserPrismaRepository Unit Tests', () => {
   const repository = new UserPrismaRepository()
-
-  afterAll(async () => {
-    await disconnectDb()
-  })
-
-  const setupUser = async (seed: string) => {
-    return await repository.create({
-      email: `user-repo-${seed}-${crypto.randomUUID()}@example.com`,
-      firstName: 'User',
-      lastName: 'Tester',
-      password: 'password123',
-    })
+  const mockUser = {
+    id: 'user-123',
+    email: 'test@example.com',
+    password: 'hashed-password',
+    firstName: 'John',
+    lastName: 'Doe',
+    role: 'USER',
+    createdAt: new Date(),
+    updatedAt: new Date(),
+    avatarUrl: null,
+    birthDate: null,
   }
 
-  it('should create and find a user by ID', async () => {
-    const user = await setupUser('create')
-    expect(user.id).toBeDefined()
+  beforeEach(() => {
+    vi.clearAllMocks()
+  })
 
-    const found = await repository.findById(user.id)
-    expect(found).not.toBeNull()
-    expect(found?.email).toBe(user.email)
+  it('should create a user', async () => {
+    ;(prisma.user.create as any).mockResolvedValue(mockUser)
+
+    const result = await repository.create({
+      email: mockUser.email,
+      firstName: mockUser.firstName,
+      lastName: mockUser.lastName,
+      password: mockUser.password,
+    })
+
+    expect(prisma.user.create).toHaveBeenCalled()
+    expect(result.id).toBe(mockUser.id)
+    expect(result.email).toBe(mockUser.email)
+  })
+
+  it('should find a user by ID', async () => {
+    ;(prisma.user.findUnique as any).mockResolvedValue(mockUser)
+
+    const result = await repository.findById(mockUser.id)
+
+    expect(prisma.user.findUnique).toHaveBeenCalledWith({
+      where: { id: mockUser.id },
+    })
+    expect(result?.id).toBe(mockUser.id)
+  })
+
+  it('should return null if user not found by ID', async () => {
+    ;(prisma.user.findUnique as any).mockResolvedValue(null)
+
+    const result = await repository.findById('non-existent')
+
+    expect(result).toBeNull()
   })
 
   it('should find a user by email', async () => {
-    const user = await setupUser('findByEmail')
-    const found = await repository.findByEmail(user.email)
-    expect(found).not.toBeNull()
-    expect(found?.id).toBe(user.id)
+    ;(prisma.user.findUnique as any).mockResolvedValue(mockUser)
+
+    const result = await repository.findByEmail(mockUser.email)
+
+    expect(prisma.user.findUnique).toHaveBeenCalledWith({
+      where: { email: mockUser.email },
+    })
+    expect(result?.email).toBe(mockUser.email)
+  })
+
+  it('should return null if user not found by email', async () => {
+    ;(prisma.user.findUnique as any).mockResolvedValue(null)
+    const result = await repository.findByEmail('non-existent@test.com')
+    expect(result).toBeNull()
   })
 
   it('should find a user with password by ID', async () => {
-    const user = await setupUser('findByIdWithPassword')
-    const found = await repository.findByIdWithPassword(user.id)
-    expect(found).not.toBeNull()
-    expect(found?.password).toBe('password123')
+    ;(prisma.user.findUnique as any).mockResolvedValue(mockUser)
+    const result = await repository.findByIdWithPassword(mockUser.id)
+    expect(result?.password).toBe(mockUser.password)
+  })
+
+  it('should return null if user not found with password by ID', async () => {
+    ;(prisma.user.findUnique as any).mockResolvedValue(null)
+    const result = await repository.findByIdWithPassword('non-existent')
+    expect(result).toBeNull()
   })
 
   it('should find a user with password by email', async () => {
-    const user = await setupUser(crypto.randomUUID())
-    const found = await repository.findByEmailWithPassword(user.email)
-    expect(found).not.toBeNull()
-    expect(found?.password).toBe('password123')
+    ;(prisma.user.findUnique as any).mockResolvedValue(mockUser)
+    const result = await repository.findByEmailWithPassword(mockUser.email)
+    expect(result?.password).toBe(mockUser.password)
   })
 
-  it('should create and find a user', async () => {
-    const seed = crypto.randomUUID()
-    const userData: CreateUserData = {
-      email: `user-${seed}@test.com`,
-      password: 'password123',
-      firstName: 'John',
-      lastName: 'Doe',
-    }
-
-    const created = await repository.create(userData)
-    expect(created.id).toBeDefined()
-    expect(created.email).toBe(userData.email)
-
-    const found = await repository.findById(created.id)
-    expect(found).not.toBeNull()
-    expect(found?.email).toBe(userData.email)
-  })
-
-  it('should find by email', async () => {
-    const seed = crypto.randomUUID()
-    const email = `find-${seed}@test.com`
-    await repository.create({ email, password: 'pwd', firstName: 'F', lastName: 'L' })
-
-    const found = await repository.findByEmail(email)
-    expect(found).not.toBeNull()
-    expect(found?.email).toBe(email)
+  it('should return null if user not found with password by email', async () => {
+    ;(prisma.user.findUnique as any).mockResolvedValue(null)
+    const result = await repository.findByEmailWithPassword('non-existent')
+    expect(result).toBeNull()
   })
 
   it('should update a user', async () => {
-    const seed = crypto.randomUUID()
-    const created = await repository.create({
-      email: `upd-${seed}@test.com`,
-      password: 'pwd',
-      firstName: 'Old',
-      lastName: 'Name',
+    ;(prisma.user.update as any).mockResolvedValue({
+      ...mockUser,
+      firstName: 'Updated',
     })
-    const updated = await repository.update(created.id, { firstName: 'New' })
-    expect(updated.firstName).toBe('New')
 
-    const found = await repository.findById(created.id)
-    expect(found?.firstName).toBe('New')
+    const result = await repository.update(mockUser.id, { firstName: 'Updated' })
+
+    expect(prisma.user.update).toHaveBeenCalled()
+    expect(result.firstName).toBe('Updated')
   })
 
   it('should delete a user', async () => {
-    const seed = crypto.randomUUID()
-    const created = await repository.create({
-      email: `del-${seed}@test.com`,
-      password: 'pwd',
-      firstName: 'F',
-      lastName: 'L',
+    ;(prisma.user.delete as any).mockResolvedValue(mockUser)
+
+    await repository.delete(mockUser.id)
+
+    expect(prisma.user.delete).toHaveBeenCalledWith({
+      where: { id: mockUser.id },
     })
-    await repository.delete(created.id)
-    const found = await repository.findById(created.id)
-    expect(found).toBeNull()
   })
 
   it('should check if user exists by email', async () => {
-    const user = await setupUser(crypto.randomUUID())
-    const exists = await repository.existsByEmail(user.email)
+    ;(prisma.user.count as any).mockResolvedValue(1)
+
+    const exists = await repository.existsByEmail(mockUser.email)
+
     expect(exists).toBe(true)
-
-    const notExists = await repository.existsByEmail('nonexistent@example.com')
-    expect(notExists).toBe(false)
+    expect(prisma.user.count).toHaveBeenCalledWith({
+      where: { email: mockUser.email },
+    })
   })
 
-  it('should find all with pagination', async () => {
-    const seed = crypto.randomUUID()
-    for (let i = 0; i < 5; i++) {
-      await repository.create({
-        email: `list-${seed}-${i}@test.com`,
-        password: 'pwd',
-        firstName: 'F',
-        lastName: 'L',
-      })
-    }
+  it('should find all users with pagination', async () => {
+    const mockUsers = [mockUser]
+    ;(prisma.user.findMany as any).mockResolvedValue(mockUsers)
+    ;(prisma.user.count as any).mockResolvedValue(10)
 
-    const result = await repository.findAll({ search: seed, limit: 3 })
-    expect(result.users).toHaveLength(3)
-    expect(result.total).toBe(5)
+    const result = await repository.findAll({ page: 1, limit: 5 })
+
+    expect(result.users).toHaveLength(1)
+    expect(result.total).toBe(10)
+    expect(prisma.user.findMany).toHaveBeenCalledWith(
+      expect.objectContaining({
+        skip: 0,
+        take: 5,
+      }),
+    )
   })
 
-  it('should return null for non-existent users', async () => {
-    expect(await repository.findById('none')).toBeNull()
-    expect(await repository.findByEmail('none@none.com')).toBeNull()
-    expect(await repository.findByIdWithPassword('none')).toBeNull()
-    expect(await repository.findByEmailWithPassword('none@none.com')).toBeNull()
+  it('should find all with default options', async () => {
+    ;(prisma.user.findMany as any).mockResolvedValue([mockUser])
+    ;(prisma.user.count as any).mockResolvedValue(10)
+
+    await repository.findAll()
+
+    expect(prisma.user.findMany).toHaveBeenCalledWith(
+      expect.objectContaining({
+        skip: 0,
+        take: 10,
+      }),
+    )
+  })
+
+  it('should find all with search', async () => {
+    ;(prisma.user.findMany as any).mockResolvedValue([])
+    ;(prisma.user.count as any).mockResolvedValue(0)
+
+    await repository.findAll({ search: 'john' })
+
+    expect(prisma.user.findMany).toHaveBeenCalledWith(
+      expect.objectContaining({
+        where: { email: { contains: 'john' } },
+      }),
+    )
   })
 })

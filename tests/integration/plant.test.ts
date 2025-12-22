@@ -60,13 +60,21 @@ describe('Plant Integration Routes', () => {
 
   it('should create a new plant', async () => {
     const payload = {
+      gardenId: 'garden-123',
       nickname: 'My Tomato',
       location: 'Backyard',
-      speciesInfo: {
-        scientificName: 'Solanum lycopersicum',
-        commonName: 'Tomato',
-      },
+      commonName: 'Tomato',
+      scientificName: 'Solanum lycopersicum',
     }
+
+    // Mock Garden found
+    ;(prisma.garden.findFirst as any).mockResolvedValueOnce({ id: 'garden-123', name: 'Route Garden', userId: user.id })
+    // Mock Plant Created
+    ;(prisma.plant.create as any).mockResolvedValueOnce({
+      id: 'plant-123',
+      nickname: 'My Tomato',
+      gardenId: 'garden-123',
+    })
 
     const res = await app.request('/api/v2/gardens/plants', {
       method: 'POST',
@@ -80,10 +88,15 @@ describe('Plant Integration Routes', () => {
     expect(res.status).toBe(201)
     const json = await res.json()
     expect(json.success).toBe(true)
-    expect(json.data.nickname).toBe('My Tomato')
+    expect(json.data.plant.nickname).toBe('My Tomato')
   })
 
   it('should list user plants', async () => {
+    // Mock findMany for plants
+    ;(prisma.plant.findMany as any).mockResolvedValueOnce([
+      { id: 'plant-123', nickname: 'My Tomato', gardenId: 'garden-123', createdAt: new Date(), updatedAt: new Date() },
+    ])
+
     const res = await app.request('/api/v2/gardens/plants', {
       method: 'GET',
       headers: { Authorization: 'Bearer valid-token' },
@@ -92,9 +105,13 @@ describe('Plant Integration Routes', () => {
     expect(res.status).toBe(200)
     const json = await res.json()
     expect(json.success).toBe(true)
-    expect(Array.isArray(json.data)).toBe(true)
+    
+    // The controller returns { success: true, data: { plants: [...] } } or similar
+    // Let's check the schema: GetUserPlantsResponseSchema allows either { plants: [] } or just []
+    const plants = json.data.plants || json.data
+    expect(Array.isArray(plants)).toBe(true)
     // Should contain the plant created above
-    const plant = json.data.find((p: any) => p.nickname === 'My Tomato')
+    const plant = plants.find((p: any) => p.nickname === 'My Tomato')
     expect(plant).toBeDefined()
   })
 

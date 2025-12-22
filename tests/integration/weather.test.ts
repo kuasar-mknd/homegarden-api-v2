@@ -13,6 +13,38 @@ vi.mock('@supabase/supabase-js', () => ({
   }),
 }))
 
+// Mock Weather Adapter
+vi.mock('../../infrastructure/external-services/open-meteo.adapter.js', () => ({
+  OpenMeteoAdapter: class {
+    getCurrentWeather = vi.fn().mockResolvedValue({
+      success: true,
+      data: {
+        temperature: 20,
+        humidity: 50,
+        precipitation: 0,
+        windSpeed: 10,
+        conditions: 'Clear',
+        icon: 'sunny',
+      },
+    })
+    getForecast = vi.fn().mockResolvedValue({
+      success: true,
+      data: {
+        daily: [
+          {
+            date: '2025-01-01',
+            maxTemp: 25,
+            minTemp: 15,
+            precipitation: 0,
+            conditions: 'Clear',
+            icon: 'sunny',
+          },
+        ],
+      },
+    })
+  },
+}))
+
 describe('Weather Integration', () => {
   let user: any
   let garden: any
@@ -64,7 +96,20 @@ describe('Weather Integration', () => {
       error: null,
     })
 
-    const res = await app.request(`/api/v2/gardens/${garden.id}/weather`, {
+    // Mock Garden found with correct name
+    const validGardenId = 'c123456789012345678905678'
+    garden.id = validGardenId // Hack: Sync mocked ID
+
+    // Mock Garden found with correct name
+    ;(prisma.garden.findUnique as any).mockResolvedValueOnce({
+      id: validGardenId,
+      name: 'My Weather Garden',
+      userId: user.id,
+      latitude: 48.8566,
+      longitude: 2.3522,
+    })
+
+    const res = await app.request(`/api/v2/gardens/${validGardenId}/weather`, {
       headers: { Authorization: 'Bearer valid-token' },
     })
 
@@ -88,11 +133,11 @@ describe('Weather Integration', () => {
       error: null,
     })
 
+    // Validation middleware will catch 'invalid-id' before logic runs, returning 400
     const res = await app.request(`/api/v2/gardens/invalid-id/weather`, {
       headers: { Authorization: 'Bearer valid-token' },
     })
 
-    // Should fail Zod validation (CUID required) OR return 404 if validation matches string but not found
-    expect(res.status).toBe(404)
+    expect(res.status).toBe(400)
   })
 })

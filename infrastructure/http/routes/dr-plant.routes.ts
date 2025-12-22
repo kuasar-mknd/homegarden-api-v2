@@ -68,25 +68,24 @@ export const createDrPlantRoutes = (controller: DrPlantController) => {
   })
 
   // Apply body limit middleware
-  app.use(
-    '/diagnose',
-    bodyLimit({
-      maxSize: 10 * 1024 * 1024, // 10MB
-      onError: (c) => {
-        return c.json(
-          {
-            success: false,
-            error: 'PAYLOAD_TOO_LARGE',
-            message: 'Image size exceeds 10MB limit',
-          },
-          413,
-        )
-      },
-    }),
-  )
+  app.use('/diagnose', bodyLimit({
+    maxSize: 10 * 1024 * 1024, // 10MB
+    onError: (c) => {
+      return c.json(
+        {
+          success: false,
+          error: 'PAYLOAD_TOO_LARGE',
+          message: 'Image size exceeds 10MB limit',
+        },
+        413,
+      )
+    },
+  }))
 
-  // Register route handler
-  app.openapi(diagnoseRoute, controller.diagnose)
+  app.openapi(
+    diagnoseRoute,
+    controller.diagnose as any,
+  )
 
   return app
 }

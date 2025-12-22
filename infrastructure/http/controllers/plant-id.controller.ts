@@ -12,34 +12,8 @@ import type {
   IdentifySpeciesUseCase,
 } from '../../../application/use-cases/plant-id/identify-species.use-case.js'
 import { isOk } from '../../../shared/types/result.type.js'
-
-// ============================================================
-// REQUEST/RESPONSE TYPES
-// ============================================================
-
-interface IdentifyRequestBody {
-  /** Base64 encoded image */
-  imageBase64?: string
-
-  /** Image URL */
-  imageUrl?: string
-
-  /** MIME type */
-  mimeType?: string
-
-  /** Plant organs visible */
-  organs?: PlantOrgan[]
-
-  /** Max suggestions */
-  maxSuggestions?: number
-
-  /** Location */
-  location?: {
-    latitude: number
-    longitude: number
-    country?: string
-  }
-}
+import { logger } from '../../config/logger.js'
+import { identifyPlantSchema } from '../validators/plant-id.validator.js'
 
 // ============================================================
 // CONTROLLER
@@ -60,29 +34,39 @@ export class PlantIdController {
    */
   identify = async (c: Context) => {
     try {
-      // Parse request body
-      const body = await c.req.json<IdentifyRequestBody>()
+      const body = await c.req.json()
 
-      // Validate - at least one image source required
-      if (!body.imageBase64 && !body.imageUrl) {
+      // Validate with Zod
+      const validationResult = identifyPlantSchema.safeParse(body)
+
+      if (!validationResult.success) {
         return c.json(
           {
             success: false,
-            error: 'MISSING_IMAGE',
-            message: 'Either imageBase64 or imageUrl is required',
+            error: 'VALIDATION_ERROR',
+            message: validationResult.error.issues[0]?.message || 'Validation failed',
+            details: validationResult.error.flatten(),
           },
           400,
         )
       }
 
-      // Build use case input - only add properties that have values
+      const validatedData = validationResult.data
+
+      // Build use case input
       const input: IdentifySpeciesInput = {}
-      if (body.imageBase64) input.imageBase64 = body.imageBase64
-      if (body.imageUrl) input.imageUrl = body.imageUrl
-      if (body.mimeType) input.mimeType = body.mimeType
-      if (body.organs) input.organs = body.organs
-      if (body.maxSuggestions) input.maxSuggestions = body.maxSuggestions
-      if (body.location) input.location = body.location
+      if (validatedData.imageBase64) input.imageBase64 = validatedData.imageBase64
+      if (validatedData.imageUrl) input.imageUrl = validatedData.imageUrl
+      if (validatedData.mimeType) input.mimeType = validatedData.mimeType
+      if (validatedData.organs) input.organs = validatedData.organs as PlantOrgan[]
+      if (validatedData.maxSuggestions) input.maxSuggestions = validatedData.maxSuggestions
+      if (validatedData.location) {
+        input.location = {
+          latitude: validatedData.location.latitude,
+          longitude: validatedData.location.longitude,
+          ...(validatedData.location.country ? { country: validatedData.location.country } : {}),
+        }
+      }
 
       // Execute use case
       const result = await this.identifySpeciesUseCase.execute(input)
@@ -108,7 +92,7 @@ export class PlantIdController {
         200,
       )
     } catch (error) {
-      console.error('Plant ID controller error:', error)
+      logger.error({ err: error }, 'Plant ID controller error')
 
       // Handle JSON parse errors
       if (error instanceof SyntaxError) {

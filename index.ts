@@ -2,6 +2,7 @@ import { fileURLToPath } from 'node:url'
 import { serve } from '@hono/node-server'
 import { swaggerUI } from '@hono/swagger-ui'
 import { OpenAPIHono } from '@hono/zod-openapi'
+import { compress } from 'hono/compress'
 import { cors } from 'hono/cors'
 import { prettyJSON } from 'hono/pretty-json'
 import { secureHeaders } from 'hono/secure-headers'
@@ -156,6 +157,9 @@ app.get('/ui', swaggerUI({ url: '/doc' }))
 // Security headers
 app.use('*', secureHeaders())
 
+// Compression
+app.use('*', compress())
+
 // CORS
 app.use(
   '*',
@@ -282,11 +286,20 @@ app.get('/', (c) => {
       width: 90%;
       text-align: center;
     }
-    header h1 {
-      color: var(--primary);
-      margin-bottom: 0.5rem;
-      font-size: clamp(1.5rem, 5vw, 2.5rem);
+    .skip-link {
+      position: absolute;
+      top: -40px;
+      left: 0;
+      background: var(--primary);
+      color: white;
+      padding: 8px;
+      z-index: 100;
+      transition: top 0.2s;
     }
+    .skip-link:focus {
+      top: 0;
+    }
+    header h1 { color: var(--primary); margin-bottom: 0.5rem; }
     .badge {
       display: inline-block;
       background: #e8f5e9;
@@ -328,7 +341,7 @@ app.get('/', (c) => {
       box-sizing: border-box;
     }
     .card:hover {
-      transform: translateY(-2px);
+      transform: translateY(-2px) scale(1.01);
       box-shadow: 0 4px 12px rgba(0,0,0,0.05);
       border-color: var(--secondary);
     }
@@ -350,6 +363,11 @@ app.get('/', (c) => {
       font-size: 0.85rem;
       color: var(--status-text);
     }
+    @keyframes pulse {
+      0% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.7; transform: scale(0.9); }
+      100% { opacity: 1; transform: scale(1); }
+    }
     .status-dot {
       display: inline-block;
       width: 8px;
@@ -357,6 +375,7 @@ app.get('/', (c) => {
       background-color: var(--secondary);
       border-radius: 50%;
       margin-right: 6px;
+      animation: pulse 2s infinite ease-in-out;
     }
     @media (prefers-reduced-motion: reduce) {
       .card, .skip-link {
@@ -383,7 +402,7 @@ app.get('/', (c) => {
   <div class="container">
     <header>
       <h1>🌱 HomeGarden API</h1>
-      <div class="badge">v2.0.0 • AI-Powered</div>
+      <div class="badge" role="status">v2.0.0 • AI-Powered</div>
     </header>
 
     <main id="main">
@@ -391,27 +410,27 @@ app.get('/', (c) => {
 
       <ul class="grid" role="list">
         <li>
-          <a href="/ui" class="card">
+          <a href="/ui" class="card" aria-describedby="desc-ui">
             <h3>📚 Documentation</h3>
-            <p>Interactive Swagger UI for API exploration.</p>
+            <p id="desc-ui">Interactive Swagger UI for API exploration.</p>
           </a>
         </li>
         <li>
-          <a href="/doc" class="card">
+          <a href="/doc" class="card" aria-describedby="desc-doc">
             <h3>🔍 OpenAPI Spec</h3>
-            <p>Raw JSON specification for integration.</p>
+            <p id="desc-doc">Raw JSON specification for integration.</p>
           </a>
         </li>
         <li>
-          <a href="/api/v2/plant-id" class="card">
+          <a href="/ui#/PlantID" class="card" aria-describedby="desc-plantid">
             <h3>🌿 Plant ID</h3>
-            <p>Identify species using AI vision.</p>
+            <p id="desc-plantid">Identify species using AI vision (Docs).</p>
           </a>
         </li>
         <li>
-          <a href="/api/v2/dr-plant/diagnose" class="card">
+          <a href="/ui#/DrPlant" class="card" aria-describedby="desc-drplant">
             <h3>🩺 Dr. Plant</h3>
-            <p>Diagnose diseases and pests.</p>
+            <p id="desc-drplant">Diagnose diseases and pests (Docs).</p>
           </a>
         </li>
       </ul>

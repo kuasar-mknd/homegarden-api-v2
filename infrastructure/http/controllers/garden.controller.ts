@@ -5,6 +5,7 @@ import type { GetGardenWeatherUseCase } from '../../../application/use-cases/gar
 import type { GetUserPlantsUseCase } from '../../../application/use-cases/garden/get-user-plants.use-case.js'
 import type { Plant } from '../../../domain/entities/plant.entity.js'
 import { logger } from '../../config/logger.js'
+import { gardenIdSchema, nearbyGardenSchema } from '../validators/garden.validator.js'
 
 export class GardenController {
   constructor(
@@ -28,13 +29,18 @@ export class GardenController {
         )
       }
 
-      const body = await c.req.json()
+      const body = (await c.req.json()) as any
 
       const result = await this.addPlantUseCase.execute({
         userId: user.id,
         nickname: body.nickname,
         location: body.location,
-        speciesInfo: body.speciesInfo,
+        speciesInfo: {
+          commonName: body.commonName,
+          scientificName: body.scientificName,
+          family: body.family,
+          imageUrl: body.imageUrl,
+        },
       })
 
       if (!result.success) {
@@ -92,7 +98,7 @@ export class GardenController {
           {
             success: false,
             error: 'INTERNAL_ERROR',
-            message: result.error.message,
+            message: result.error?.message || 'Failed to fetch plants',
           },
           500,
         )
@@ -132,10 +138,15 @@ export class GardenController {
         )
       }
 
-      const gardenId = c.req.param('gardenId')
-      if (!gardenId) {
-        return c.json({ success: false, error: 'BAD_REQUEST', message: 'Garden ID required' }, 400)
+      const paramResult = gardenIdSchema.safeParse(c.req.param())
+      if (!paramResult.success) {
+        return c.json(
+          { success: false, error: 'BAD_REQUEST', message: 'Invalid Garden ID' },
+          400,
+        )
       }
+
+      const { gardenId } = paramResult.data
 
       const result = await this.getGardenWeatherUseCase.execute(gardenId, user.id)
 
@@ -146,7 +157,7 @@ export class GardenController {
             error: result.error.code,
             message: result.error.message,
           },
-          result.error.statusCode as any,
+          (result.error as any).statusCode || 500,
         )
       }
 
@@ -185,21 +196,20 @@ export class GardenController {
         )
       }
 
-      const lat = parseFloat(c.req.query('lat') || '')
-      const lng = parseFloat(c.req.query('lng') || '')
-      const radius = parseFloat(c.req.query('radius') || '10')
-      const limit = parseInt(c.req.query('limit') || '50', 10)
+      const queryResult = nearbyGardenSchema.safeParse(c.req.query())
 
-      if (Number.isNaN(lat) || Number.isNaN(lng)) {
+      if (!queryResult.success) {
         return c.json(
           {
             success: false,
             error: 'BAD_REQUEST',
-            message: 'Valid latitude and longitude required',
+            message: queryResult.error.issues[0]?.message || 'Invalid query parameters',
           },
           400,
         )
       }
+
+      const { lat, lng, radius, limit } = queryResult.data
 
       const result = await this.findNearbyGardensUseCase.execute({
         latitude: lat,

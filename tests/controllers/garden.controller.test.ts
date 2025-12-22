@@ -24,6 +24,7 @@ describe('GardenController', () => {
       set: vi.fn(),
       req: {
         json: vi.fn(),
+        valid: vi.fn(),
         param: vi.fn(),
         query: vi.fn(),
       },
@@ -34,14 +35,30 @@ describe('GardenController', () => {
   describe('addPlant', () => {
     it('should add plant successfully', async () => {
       mockContext.get.mockImplementation((key: string) => (key === 'user' ? { id: 'u1' } : null))
-      mockContext.req.json.mockResolvedValue({ nickname: 'Fern' })
+      mockContext.req.json.mockResolvedValue({
+        nickname: 'Fern',
+        location: 'My Garden',
+        commonName: 'Fern',
+        scientificName: 'Fernus',
+      })
       mockAddPlant.execute.mockResolvedValue(ok({ id: 'p1', nickname: 'Fern' }))
 
       const result = (await controller.addPlant(mockContext)) as any
 
       expect(result.status).toBe(201)
       expect(result.data.success).toBe(true)
-      expect(result.data.data.nickname).toBe('Fern')
+      expect(result.data.data.plant.nickname).toBe('Fern')
+      expect(mockAddPlant.execute).toHaveBeenCalledWith({
+        userId: 'u1',
+        nickname: 'Fern',
+        location: 'My Garden',
+        speciesInfo: {
+          commonName: 'Fern',
+          scientificName: 'Fernus',
+          family: undefined,
+          imageUrl: undefined,
+        },
+      })
     })
 
     it('should return 401 if unauthorized', async () => {
@@ -52,7 +69,7 @@ describe('GardenController', () => {
 
     it('should handle use case error', async () => {
       mockContext.get.mockReturnValue({ id: 'u1' })
-      mockContext.req.json.mockResolvedValue({})
+      mockContext.req.json.mockResolvedValue({ location: 'G1' })
       mockAddPlant.execute.mockResolvedValue(fail(new AppError('Invalid', 400, 'BAD')))
 
       const result = (await controller.addPlant(mockContext)) as any
@@ -62,7 +79,9 @@ describe('GardenController', () => {
 
     it('should handle generic error', async () => {
       mockContext.get.mockReturnValue({ id: 'u1' })
-      mockContext.req.json.mockRejectedValue(new Error('Boom'))
+      mockContext.req.json.mockImplementation(() => {
+        throw new Error('Boom')
+      })
       const result = (await controller.addPlant(mockContext)) as any
       expect(result.status).toBe(500)
     })
@@ -86,6 +105,15 @@ describe('GardenController', () => {
       expect(result.status).toBe(500)
     })
 
+    it('should handle use case failure with generic error (no message)', async () => {
+       mockContext.get.mockReturnValue({ id: 'u1' })
+       // Mock result with empty error to trigger fallback
+       mockGetPlants.execute.mockResolvedValue({ success: false, error: {} })
+       const result = (await controller.getPlants(mockContext)) as any
+       expect(result.status).toBe(500)
+       expect(result.data.message).toBe('Failed to fetch plants')
+    })
+
     it('should return 401 if unauthorized in getPlants', async () => {
       mockContext.get.mockReturnValue(null)
       const result = (await controller.getPlants(mockContext)) as any
@@ -106,14 +134,27 @@ describe('GardenController', () => {
   })
 
   describe('getWeather', () => {
+    const validUuid = '123e4567-e89b-12d3-a456-426614174000'
+
     it('should return 200 and weather data', async () => {
       mockContext.get.mockReturnValue({ id: 'u1' })
-      mockContext.req.param.mockReturnValue('g1')
+      mockContext.req.param.mockReturnValue({ gardenId: validUuid })
       mockGetWeather.execute.mockResolvedValue(ok({ temperature: 20 }))
 
       const result = (await controller.getWeather(mockContext)) as any
       expect(result.status).toBe(200)
       expect(result.data.data.temperature).toBe(20)
+    })
+
+
+
+    it('should handle use case failure without statusCode (default 500)', async () => {
+      mockContext.get.mockReturnValue({ id: 'u1' })
+      mockContext.req.param.mockReturnValue({ gardenId: 'c123456789012345678901234' })
+      // Error without statusCode
+      mockGetWeather.execute.mockResolvedValue(fail({ code: 'ERR', message: 'Err' } as any))
+      const result = (await controller.getWeather(mockContext)) as any
+      expect(result.status).toBe(500)
     })
 
     it('should return 401 if unauthorized in getWeather', async () => {
@@ -122,18 +163,24 @@ describe('GardenController', () => {
       expect(result.status).toBe(401)
     })
 
-    it('should return 400 if gardenId is missing', async () => {
+    it('should return 400 if gardenId is missing or invalid', async () => {
       mockContext.get.mockReturnValue({ id: 'u1' })
-      mockContext.req.param.mockReturnValue(null)
-
-      const result = (await controller.getWeather(mockContext)) as any
+      // Missing
+      mockContext.req.param.mockReturnValue({})
+      let result = (await controller.getWeather(mockContext)) as any
       expect(result.status).toBe(400)
-      expect(result.data.error).toBe('BAD_REQUEST')
+      // Updated expectation: The controller returns "Invalid Garden ID" if validation fails
+      expect(result.data.message).toBe('Invalid Garden ID')
+
+      // Invalid UUID
+      mockContext.req.param.mockReturnValue({ gardenId: 'invalid' })
+      result = (await controller.getWeather(mockContext)) as any
+      expect(result.status).toBe(400)
     })
 
     it('should handle use case failure in getWeather', async () => {
       mockContext.get.mockReturnValue({ id: 'u1' })
-      mockContext.req.param.mockReturnValue('g1')
+      mockContext.req.param.mockReturnValue({ gardenId: validUuid })
       mockGetWeather.execute.mockResolvedValue(fail(new AppError('Unauthorized', 403, 'FORBIDDEN')))
       const result = (await controller.getWeather(mockContext)) as any
       expect(result.status).toBe(403)
@@ -152,10 +199,11 @@ describe('GardenController', () => {
   describe('getNearby', () => {
     it('should return 200 and nearby gardens', async () => {
       mockContext.get.mockReturnValue({ id: 'u1' })
-      mockContext.req.query.mockImplementation((name: string) => {
-        if (name === 'lat') return '10.5'
-        if (name === 'lng') return '20.3'
-        return null
+      mockContext.req.query.mockReturnValue({
+        lat: '10.5',
+        lng: '20.3',
+        radius: '15',
+        limit: '10'
       })
       mockGetNearby.execute.mockResolvedValue(ok([{ id: 'g2' }]))
 
@@ -172,27 +220,23 @@ describe('GardenController', () => {
 
     it('should return 400 if lat/lng is invalid', async () => {
       mockContext.get.mockReturnValue({ id: 'u1' })
-      mockContext.req.query.mockReturnValue('not-a-number')
+      mockContext.req.query.mockReturnValue({ lat: 'not-a-number', lng: '20' })
 
       const result = (await controller.getNearby(mockContext)) as any
       expect(result.status).toBe(400)
     })
 
-    it('should handle use case failure in getNearby', async () => {
+    it('should handle use case failure using statusCode from error', async () => {
       mockContext.get.mockReturnValue({ id: 'u1' })
-      mockContext.req.query.mockImplementation((name: string) => {
-        if (name === 'lat') return '10.5'
-        if (name === 'lng') return '20.3'
-        return null
-      })
+      mockContext.req.query.mockReturnValue({ lat: '10.5', lng: '20.3' })
       mockGetNearby.execute.mockResolvedValue(fail(new AppError('Fail', 400, 'ERR')))
       const result = (await controller.getNearby(mockContext)) as any
       expect(result.status).toBe(400)
     })
 
-    it('should return 400 if lat/lng are missing (fallback to empty string)', async () => {
+    it('should return 400 if lat/lng are missing', async () => {
       mockContext.get.mockReturnValue({ id: 'u1' })
-      mockContext.req.query.mockReturnValue(null) // query('lat') -> null -> '' -> NaN
+      mockContext.req.query.mockReturnValue({})
 
       const result = (await controller.getNearby(mockContext)) as any
       expect(result.status).toBe(400)

@@ -29,4 +29,13 @@ describe('Email Value Object', () => {
       }
     })
   })
+
+  it('should correctly compare emails', () => {
+    const email1 = (Email.create('test@example.com') as any).data
+    const email2 = (Email.create('test@example.com') as any).data
+    const email3 = (Email.create('other@example.com') as any).data
+
+    expect(email1.equals(email2)).toBe(true)
+    expect(email1.equals(email3)).toBe(false)
+  })
 })
