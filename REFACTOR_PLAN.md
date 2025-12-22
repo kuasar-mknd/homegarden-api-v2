@@ -896,7 +896,7 @@ npx prisma generate
 
 ### PlantID - Species Identification
 
-```
+```text
 ┌─────────────────┐     ┌──────────────────┐     ┌───────────────┐
 │  User uploads   │────▶│  IdentifySpecies │────▶│  PlantNet API │
 │  plant photo    │     │    Use Case      │     │   (Primary)   │
@@ -919,7 +919,7 @@ npx prisma generate
 
 ### DrPlant - Disease Diagnosis
 
-```
+```text
 ┌─────────────────┐     ┌──────────────────┐     ┌───────────────┐
 │  Upload photo   │────▶│  DiagnosePlant   │────▶│  GPT-4 Vision │
 │  + description  │     │    Use Case      │     │   Analysis    │
@@ -943,7 +943,7 @@ npx prisma generate
 
 ### CareTracker - Smart Scheduling
 
-```
+```text
 ┌─────────────────┐     ┌──────────────────┐     ┌───────────────┐
 │  Create plant   │────▶│  GenerateSchedule│────▶│  Species data │
 │  in garden      │     │    Use Case      │     │  + Weather API│
@@ -973,7 +973,7 @@ npx prisma generate
 
 ## Timeline & Phases
 
-```
+```text
 Week 1-2   │████████│ Phase 1: Foundation (TS, Hono, Prisma setup)
 Week 2-3   │████████│ Phase 2: Domain Layer (Entities, VOs, Repos)
 Week 3-4   │████████│ Phase 3: Application Layer (Use Cases, DTOs)
