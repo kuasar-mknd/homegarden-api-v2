@@ -65,7 +65,7 @@ cd homegarden-api
 pnpm install
 ```
 
-2. **Configure environment**
+1. **Configure environment**
 
 ```bash
    cp .env.example .env
@@ -95,7 +95,7 @@ SUPABASE_PUBLISHABLE_KEY=your-publishable-key
 JWT_SECRET=your-secret-key
 ```
 
-3. **Setup database**
+1. **Setup database**
 
 ```bash
 pnpm run db:generate    # Generate Prisma client
@@ -260,4 +260,4 @@ ISC
 
 ---
 
-**Made with ❤️ using Clean Architecture and AI**
+Made with ❤️ using Clean Architecture and AI
