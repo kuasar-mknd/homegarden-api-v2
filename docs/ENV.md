@@ -23,12 +23,8 @@ These must be set for the application to run:
 | Variable | Description | Example |
 |----------|-------------|---------|
 | `DATABASE_URL` | PostgreSQL connection string | `postgresql://user:pass@localhost:5432/homegarden` |
-| `GOOGLE_AI_API_KEY` | Google Gemini API key | `AIza...` |
 | `SUPABASE_URL` | Supabase project URL | `https://xxx.supabase.co` |
 | `SUPABASE_PUBLISHABLE_KEY` | Supabase public API key | `eyJhbGc...` |
-| `JWT_SECRET` | Secret for signing JWTs (min 32 chars) | `your-super-secret-key-here` |
-
-> **Note:** `JWT_SECRET` is marked as optional in code but required if you use the internal `TokenService`. It is recommended to set it for security consistency.
 
 ---
 
@@ -62,31 +58,17 @@ CORS_ORIGINS=https://app.example.com,https://admin.example.com
 postgresql://[user]:[password]@[host]:[port]/[database]?schema=public
 ```
 
-**Examples:**
-
-```env
-# Local development
-DATABASE_URL=postgresql://postgres:password@localhost:5432/homegarden
-
-# Supabase (Transaction Mode)
-DATABASE_URL=postgresql://postgres:[PASSWORD]@db.[PROJECT-REF].supabase.co:6543/postgres?pgbouncer=true
-```
-
 ---
 
 ## 🤖 AI Configuration (Google Gemini)
 
+Although marked as *optional* in the configuration validation, these are **required for AI features** (Plant ID, Diagnosis).
+
 | Variable | Required | Default | Description |
 |----------|----------|---------|-------------|
-| `GOOGLE_AI_API_KEY` | **Yes** | - | API key from Google AI Studio |
+| `GOOGLE_AI_API_KEY` | Conditional | - | API key from Google AI Studio (Required for AI features) |
 | `GEMINI_IDENTIFICATION_MODEL` | No | `gemini-2.0-flash` | Model for plant identification |
 | `GEMINI_DIAGNOSIS_MODEL` | No | `gemini-2.5-pro-preview-06-05` | Model for disease diagnosis |
-
-**How to get an API key:**
-
-1. Visit [Google AI Studio](https://aistudio.google.com/)
-2. Create a new API key
-3. Copy and paste into `.env`
 
 ---
 
@@ -96,21 +78,19 @@ DATABASE_URL=postgresql://postgres:[PASSWORD]@db.[PROJECT-REF].supabase.co:6543/
 |----------|----------|-------------|
 | `SUPABASE_URL` | **Yes** | Your Supabase project URL |
 | `SUPABASE_PUBLISHABLE_KEY` | **Yes** | Public anonymous key (safe to expose) |
-| `SUPABASE_SECRET_KEY` | No | Service role key (keep secret!) |
+| `SUPABASE_SECRET_KEY` | No | Service role key (Used for admin tasks if needed) |
 
 ### Legacy / Fallback Auth
 
-| Variable | Required | Description |
-|----------|----------|-------------|
-| `JWT_SECRET` | Optional* | Secret for signing custom JWTs (min 32 chars) |
-| `JWT_EXPIRES_IN` | No | Access token expiry (default: `1h`) |
-| `JWT_REFRESH_EXPIRES_IN` | No | Refresh token expiry (default: `7d`) |
+| Variable | Required | Default | Description |
+|----------|----------|---------|-------------|
+| `JWT_SECRET` | No* | - | Secret for signing custom JWTs (min 32 chars). *Required if using internal TokenService.* |
+| `JWT_EXPIRES_IN` | No | `1h` | Access token expiry |
+| `JWT_REFRESH_EXPIRES_IN` | No | `7d` | Refresh token expiry |
 
 ---
 
 ## 🌤️ Weather Service (OpenMeteo)
-
-No API key required! OpenMeteo is free and open-source.
 
 | Variable | Required | Default | Description |
 |----------|----------|---------|-------------|

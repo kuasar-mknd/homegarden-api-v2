@@ -16,119 +16,57 @@ Authorization: Bearer <your-supabase-jwt>
 
 ---
 
-## 🌿 Gardens
+## 📘 Interactive Documentation (Swagger UI)
 
-### Get User's Plants
+The best way to explore the API is via the built-in Swagger UI, which provides interactive documentation, schema definitions, and "Try it out" functionality.
 
-`GET /gardens/plants`
-Retrieves all plants in the authenticated user's garden.
-
-**Response:**
-
-```json
-{
-  "success": true,
-  "data": [
-    {
-      "id": "plant-123",
-      "name": "My Tomato",
-      "species": "Solanum lycopersicum",
-      "healthStatus": "HEALTHY"
-    }
-  ]
-}
-```
-
-### Add Plant
-
-`POST /gardens/:id/plants`
-Adds a new plant to a specific garden.
-
-**Body:**
-
-```json
-{
-  "name": "Basil",
-  "species": "Ocimum basilicum",
-  "imageUrl": "https://..."
-}
-```
-
-### Get Nearby Gardens
-
-`GET /gardens/nearby`
-Finds public gardens within a specific radius (geo-query).
-
-**Query Params:**
-
-- `lat`: Latitude
-- `lng`: Longitude
-- `radius`: Radius in km (default: 10)
+- **Swagger UI**: Visit `/ui` (e.g., `http://localhost:3000/ui`)
+- **OpenAPI Spec**: Visit `/doc` (e.g., `http://localhost:3000/doc`)
 
 ---
 
-## 🔍 AI Identification
+## 🌿 Core Resources
 
-### Identify Plant
+### Gardens
 
-`POST /plant-id/identify`
-Identifies a plant from an image URL.
+- `GET /gardens/plants` - Retrieves all plants in the authenticated user's garden.
+- `POST /gardens/:id/plants` - Adds a new plant to a specific garden.
+- `GET /gardens/nearby` - Finds public gardens within a specific radius (geo-query).
+- `GET /gardens/:id/weather` - Fetches current weather for a garden's location.
 
-**Body:**
+### AI Identification
 
-```json
-{
-  "imageUrl": "https://example.com/flower.jpg"
-}
-```
+- `POST /plant-id/identify` - Identifies a plant from an image URL.
+- `POST /dr-plant/diagnose` - Diagnoses plant health issues from an image.
 
-### Diagnose Disease
+### Users
 
-`POST /dr-plant/diagnose`
-Diagnoses plant health issues.
-
-**Body:**
-
-```json
-{
-  "imageUrl": "https://example.com/sick-plant.jpg",
-  "observation": "Leaves are turning yellow"
-}
-```
+- `GET /users/:id` - Get public profile information for a user.
 
 ---
 
-## 🌤️ Weather
+## 📝 Error Format
 
-### Get Garden Weather
-
-`GET /gardens/:id/weather`
-Fetches current weather for a garden's location.
-
-**Response:**
+Errors are returned in a standardized JSON format:
 
 ```json
 {
-  "temperature": 22.5,
-  "humidity": 60,
-  "condition": "Sunny"
+  "success": false,
+  "error": {
+    "code": "VALIDATION_ERROR",
+    "message": "Invalid input data",
+    "details": [
+      {
+        "field": "imageUrl",
+        "message": "Invalid URL format"
+      }
+    ]
+  }
 }
 ```
 
----
+## 🔌 WebSocket API
 
-## 👤 Users
+Real-time features are available via WebSocket at `ws://localhost:3000`.
 
-### Get Profile
-
-`GET /users/:id`
-Get public profile information for a user.
-
----
-
-## 📘 Interactive Documentation
-
-For a full interactive list of endpoints, schemas, and to test requests directly:
-
-- **Swagger UI**: Visit `/ui`
-- **OpenAPI Spec**: Visit `/doc`
+See `README.md` for subscription examples.

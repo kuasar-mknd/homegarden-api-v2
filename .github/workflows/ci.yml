@@ -2,28 +2,82 @@ name: CI
 
 on:
   push:
-    branches: [main, master]
+    branches: [ main, master ]
   pull_request:
-    branches: [main, master]
+    branches: [ main, master ]
 
 jobs:
   check:
-    name: Check & Test
+    name: Lint & Format
     runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
 
-    # Environment variables for testing
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v3
+        with:
+          version: 9
+
+      - name: Get pnpm store directory
+        shell: bash
+        run: |
+          echo "STORE_PATH=$(pnpm store path --silent)" >> $GITHUB_ENV
+
+      - name: Setup pnpm cache
+        uses: actions/cache@v4
+        with:
+          path: ${{ env.STORE_PATH }}
+          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-pnpm-store-
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Lint & Check
+        run: pnpm run ci:check
+
+  typecheck:
+    name: Typecheck
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v3
+        with:
+          version: 9
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Generate Prisma Client
+        run: pnpm run db:generate
+
+      - name: Build (Typecheck)
+        run: pnpm run build
+
+  test:
+    name: Test
+    runs-on: ubuntu-latest
     env:
-      NODE_ENV: test
-      DATABASE_URL: postgresql://postgres:postgres@localhost:5432/homegarden_test
-      # Dummy values for CI to pass env validation
-      SUPABASE_URL: https://ci.supabase.co
-      SUPABASE_PUBLISHABLE_KEY: dummy-key
-      JWT_SECRET: test_secret_at_least_32_chars_long
-      GOOGLE_AI_API_KEY: dummy-key
-
+      DATABASE_URL: "postgresql://postgres:postgres@localhost:5432/homegarden_test"
+      SUPABASE_URL: "https://test.supabase.co"
+      SUPABASE_PUBLISHABLE_KEY: "test-key"
+      JWT_SECRET: "test-secret-at-least-32-chars-long"
     services:
       postgres:
-        image: postgis/postgis:14-3.3-alpine
+        image: postgres:14-alpine
         env:
           POSTGRES_USER: postgres
           POSTGRES_PASSWORD: postgres
@@ -38,36 +92,26 @@ jobs:
           --health-retries 5
 
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Install pnpm
-        uses: pnpm/action-setup@v4
-        with:
-          version: 9
+      - uses: actions/checkout@v4
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: 20
-          cache: "pnpm"
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v3
+        with:
+          version: 9
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
-      - name: Lint & Format Check
-        run: pnpm run ci:check
-
       - name: Generate Prisma Client
         run: pnpm run db:generate
 
-      # We can't migrate in CI easily without a real DB url,
-      # but we can push the schema to the service container
-      - name: Push DB Schema
+      - name: Push Database Schema
         run: pnpm run db:push
 
-      - name: Build (Typecheck)
-        run: pnpm run build
-
       - name: Run Tests
-        run: pnpm test
+        run: pnpm run test

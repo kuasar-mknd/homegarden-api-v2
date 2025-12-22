@@ -60,9 +60,10 @@ GEMINI_DIAGNOSIS_MODEL=gemini-2.5-pro-preview-06-05
 
 ## 💰 Cost Control & Optimization
 
-1. **Caching**: Results for identical image URLs *should be* cached (implementation dependent) to avoid redundant API calls.
+1. **Caching (Recommended)**: Implement caching for identical image URLs to avoid redundant API calls. The `OpenMeteoAdapter` pattern can be adapted here.
 2. **Rate Limiting**: The API applies rate limits (`RATE_LIMIT_MAX`) to prevent abuse.
 3. **Model Selection**: `flash` models are used by default for high-volume tasks (identification) to minimize costs.
+4. **Token Management**: Prompts are optimized to be concise, reducing input token costs.
 
 ---
 
