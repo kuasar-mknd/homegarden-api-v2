@@ -2,7 +2,7 @@
 
 A modern plant management API with AI-powered species identification and disease diagnosis, built with **Clean Architecture** principles.
 
-[![Test Coverage](https://img.shields.io/badge/coverage-98.21%25-brightgreen.svg)](.) 
+[![Test Coverage](https://img.shields.io/badge/coverage-98.21%25-brightgreen.svg)](.)
 [![Tests](https://img.shields.io/badge/tests-285%20passing-success.svg)](.)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.9-blue.svg)](.)
 
@@ -57,6 +57,7 @@ A modern plant management API with AI-powered species identification and disease
 ## 📦 Installation
 
 1. **Clone and install**
+
    ```bash
    git clone <repository-url>
    cd homegarden-api
@@ -64,12 +65,14 @@ A modern plant management API with AI-powered species identification and disease
    ```
 
 2. **Configure environment**
+
    ```bash
    cp .env.example .env
    # Edit .env with your credentials
    ```
 
    Required variables:
+
    ```env
    # Server
    PORT=3000
@@ -92,6 +95,7 @@ A modern plant management API with AI-powered species identification and disease
    ```
 
 3. **Setup database**
+
    ```bash
    pnpm run db:generate    # Generate Prisma client
    pnpm run db:migrate     # Run migrations
@@ -101,17 +105,20 @@ A modern plant management API with AI-powered species identification and disease
 ## 🎯 Running
 
 ### Development
+
 ```bash
 pnpm run dev            # Hot-reload with Vite
 ```
 
 ### Production
+
 ```bash
 pnpm run build          # TypeScript compilation
 pnpm start              # Start production server
 ```
 
 ### Testing
+
 ```bash
 pnpm test               # Run all tests
 pnpm run test:coverage  # Run with coverage report
@@ -119,6 +126,7 @@ pnpm run test:e2e       # Run End-to-End tests only
 ```
 
 ### Code Quality
+
 ```bash
 pnpm run lint           # Lint code
 pnpm run format         # Format code
@@ -165,6 +173,7 @@ curl -X POST http://localhost:3000/api/v2/plant-id/identify \
 Real-time features are available via WebSocket at `ws://localhost:3000`:
 
 ### Weather Updates
+
 ```json
 {
   "type": "SUBSCRIBE",
@@ -178,6 +187,7 @@ Real-time features are available via WebSocket at `ws://localhost:3000`:
 ```
 
 ### Care Reminders
+
 ```json
 {
   "type": "SUBSCRIBE",
@@ -227,6 +237,7 @@ Infrastructure (HTTP, DB, External APIs)
 ```
 
 **Benefits:**
+
 - ✅ Testable (98% coverage)
 - ✅ Framework-independent business logic
 - ✅ Easy to swap implementations (DB, AI provider, etc.)

@@ -5,6 +5,7 @@ Complete reference for all environment variables used in the HomeGarden API.
 ## 📝 Setup
 
 1. Copy the example file:
+
    ```bash
    cp .env.example .env
    ```
@@ -40,6 +41,7 @@ These must be set for the application to run:
 | `CORS_ORIGINS` | No | `*` | Comma-separated allowed origins |
 
 **Example:**
+
 ```env
 NODE_ENV=production
 PORT=3000
@@ -55,11 +57,13 @@ CORS_ORIGINS=https://app.example.com,https://admin.example.com
 | `DATABASE_URL` | **Yes** | PostgreSQL connection string with credentials |
 
 **Format:**
+
 ```
 postgresql://[user]:[password]@[host]:[port]/[database]?schema=public
 ```
 
 **Examples:**
+
 ```env
 # Local development
 DATABASE_URL=postgresql://postgres:password@localhost:5432/homegarden
@@ -79,6 +83,7 @@ DATABASE_URL=postgresql://postgres:[PASSWORD]@db.[PROJECT-REF].supabase.co:6543/
 | `GEMINI_DIAGNOSIS_MODEL` | No | `gemini-2.5-pro-preview-06-05` | Model for disease diagnosis |
 
 **How to get an API key:**
+
 1. Visit [Google AI Studio](https://aistudio.google.com/)
 2. Create a new API key
 3. Copy and paste into `.env`
@@ -94,6 +99,7 @@ DATABASE_URL=postgresql://postgres:[PASSWORD]@db.[PROJECT-REF].supabase.co:6543/
 | `SUPABASE_SECRET_KEY` | No | Service role key (keep secret!) |
 
 ### Legacy / Fallback Auth
+
 | Variable | Required | Description |
 |----------|----------|-------------|
 | `JWT_SECRET` | Optional* | Secret for signing custom JWTs (min 32 chars) |

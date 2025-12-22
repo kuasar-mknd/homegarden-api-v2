@@ -21,11 +21,13 @@ The HomeGarden API has **98.21% test coverage** with **285 passing tests** acros
 **Coverage:** 100% on Domain entities and Value Objects
 
 **Examples:**
+
 - `tests/domain/user.entity.test.ts` - User entity validation
 - `tests/domain/value-objects/email.vo.test.ts` - Email validation logic
 - `tests/use-cases/diagnose-plant.use-case.test.ts` - Diagnosis business logic
 
 **Run:**
+
 ```bash
 npm test tests/domain
 npm test tests/use-cases
@@ -36,16 +38,19 @@ npm test tests/use-cases
 **Purpose:** Test multiple components working together
 
 **Includes:**
+
 - Use Cases + Repositories + Database
 - Controllers + Middleware + Routes
 - External service adapters
 
 **Examples:**
+
 - `tests/integration/user-profile.test.ts` - Full user profile flow
 - `tests/integration/dr-plant.test.ts` - Diagnosis with mocked Gemini
 - `tests/adapters/gemini-plant.adapter.test.ts` - AI adapter with mocked API
 
 **Run:**
+
 ```bash
 npm test tests/integration
 npm test tests/adapters
@@ -57,17 +62,20 @@ npm test tests/controllers
 **Purpose:** Test complete HTTP flows with real server
 
 **What's tested:**
+
 - Full HTTP request/response cycle
 - Authentication middleware
 - WebSocket connections
 - Real database operations
 
 **Test files:**
+
 - `tests/e2e/health.e2e.test.ts` (5 tests) - Landing page, OpenAPI docs
 - `tests/e2e/auth.e2e.test.ts` (7 tests) - Auth flow, user sync
 - `tests/e2e/garden.e2e.test.ts` (7 tests) - Garden CRUD, weather
 
 **Run:**
+
 ```bash
 npm run test:e2e
 ```
@@ -77,33 +85,39 @@ npm run test:e2e
 ## 🚀 Running Tests
 
 ### All Tests
+
 ```bash
 npm test                    # Run all tests in watch mode
 npm test -- --run           # Run once without watch
 ```
 
 ### With Coverage
+
 ```bash
 npm run test:coverage       # Generate full coverage report
 ```
 
 Output:
+
 - Terminal coverage summary
 - HTML report in `coverage/index.html`
 - JSON report in `coverage/coverage-final.json`
 
 ### E2E Tests Only
+
 ```bash
 npm run test:e2e
 ```
 
 ### Specific Test File
+
 ```bash
 npm test tests/domain/user.entity.test.ts
 npm test tests/e2e/auth.e2e.test.ts
 ```
 
 ### Filter by Test Name
+
 ```bash
 npm test -- -t "should create user"
 npm test -- --grep "authentication"
@@ -308,12 +322,14 @@ export const mockPlant = {
 ## ✅ Test Best Practices
 
 1. **Test Names Should Be Descriptive**
+
    ```typescript
    ✅ it('should return 401 when token is invalid')
    ❌ it('test auth')
    ```
 
 2. **One Assertion per Test (when possible)**
+
    ```typescript
    ✅ it('should return correct status code', () => {
      expect(res.status).toBe(200)
@@ -325,6 +341,7 @@ export const mockPlant = {
    ```
 
 3. **Use Arrange-Act-Assert Pattern**
+
    ```typescript
    it('should water plant successfully', async () => {
      // Arrange
@@ -339,6 +356,7 @@ export const mockPlant = {
    ```
 
 4. **Clean Up After Tests**
+
    ```typescript
    afterAll(async () => {
      await prisma.$disconnect()
@@ -363,6 +381,7 @@ export const mockPlant = {
 | **Overall** | 95%+ | ✅ 98.21% |
 
 **Files Excluded from Coverage:**
+
 - `index.ts` - Server startup
 - `env.ts` - Configuration
 - `prisma.client.ts` - Database connection
@@ -429,12 +448,14 @@ Tests run automatically on every push via GitHub Actions:
 ## 🐛 Debugging Tests
 
 **Run single test in watch mode:**
+
 ```bash
 npm test tests/domain/user.entity.test.ts
 ```
 
 **Debug with VSCode:**
 Add to `.vscode/launch.json`:
+
 ```json
 {
   "type": "node",
@@ -447,6 +468,7 @@ Add to `.vscode/launch.json`:
 ```
 
 **View detailed errors:**
+
 ```bash
 npm test -- --reporter=verbose
 ```

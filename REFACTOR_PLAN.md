@@ -910,6 +910,7 @@ npx prisma generate
 ```
 
 **API Endpoints:**
+
 - `POST /api/v2/plant-id/identify` - Upload photo, get species suggestions
 - `GET /api/v2/plant-id/species/:id` - Get detailed species info
 - `GET /api/v2/plant-id/search?q=` - Search species catalog
@@ -930,6 +931,7 @@ npx prisma generate
 ```
 
 **API Endpoints:**
+
 - `POST /api/v2/dr-plant/diagnose` - Submit photo + symptoms for diagnosis
 - `GET /api/v2/dr-plant/diagnoses` - List user's diagnosis history
 - `GET /api/v2/dr-plant/diagnoses/:id` - Get diagnosis details
@@ -957,6 +959,7 @@ npx prisma generate
 ```
 
 **API Endpoints:**
+
 - `POST /api/v2/care-tracker/schedules` - Create care schedule
 - `GET /api/v2/care-tracker/upcoming` - Get upcoming tasks (next 7 days)
 - `POST /api/v2/care-tracker/schedules/:id/complete` - Mark task done

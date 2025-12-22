@@ -1,6 +1,7 @@
 # Clean Architecture Guide
 
 This project strictly adheres to **Clean Architecture** principles to ensure:
+
 1. **Independence of Frameworks**: The architecture does not depend on the existence of some library of feature laden software.
 2. **Testability**: The business rules can be tested without the UI, Database, Web Server, or any other external element.
 3. **Independence of UI**: The UI can change easily, without changing the rest of the system.
@@ -14,6 +15,7 @@ This project strictly adheres to **Clean Architecture** principles to ensure:
 The code is organized into concentric circles (layers), where dependencies only point **inwards**.
 
 ### 1. Domain Layer (`domain/`) - The Core
+
 **Dependencies:** None
 
 Contains the enterprise-wide business rules and logic. It is the most stable layer.
@@ -25,6 +27,7 @@ Contains the enterprise-wide business rules and logic. It is the most stable lay
 - **Domain Events**: Events that happen in the domain (e.g., `PlantWateredEvent`).
 
 ### 2. Application Layer (`application/`) - The Use Cases
+
 **Dependencies:** Domain
 
 Orchestrates the flow of data to and from the entities, and directs those entities to use their Critical Business Rules to achieve the goals of the use case.
@@ -34,6 +37,7 @@ Orchestrates the flow of data to and from the entities, and directs those entiti
 - **Ports**: Interfaces for external services (e.g., `IAIService`, `IWeatherService`).
 
 ### 3. Infrastructure Layer (`infrastructure/`) - The Details
+
 **Dependencies:** Application, Domain
 
 Implements the interfaces defined in the inner layers. This is where frameworks and tools live.
@@ -44,6 +48,7 @@ Implements the interfaces defined in the inner layers. This is where frameworks 
 - **Config**: Environment variables, logger, server setup.
 
 ### 4. Shared (`shared/`)
+
 **Dependencies:** None (or strictly limited)
 
 Common utilities, constants, and types used across layers.
@@ -64,14 +69,17 @@ Common utilities, constants, and types used across layers.
 ## 🧩 Adding New Features
 
 ### 1. Define the Domain
+
 - Create `domain/entities/NewFeature.ts`.
 - Define repository interface `domain/repositories/INewFeatureRepository.ts`.
 
 ### 2. Implement the Use Case
+
 - Create `application/services/NewFeatureService.ts`.
 - Define input/output DTOs.
 
 ### 3. Implement Infrastructure
+
 - Create `infrastructure/database/repositories/PrismaNewFeatureRepository.ts`.
 - Create `infrastructure/http/routes/new-feature.routes.ts`.
 - Register routes in `index.ts` or main router.

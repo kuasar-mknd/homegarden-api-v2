@@ -28,6 +28,7 @@ GEMINI_DIAGNOSIS_MODEL=gemini-2.5-pro-preview-06-05
 ## 🧠 Features
 
 ### 1. Plant Identification
+
 - **Endpoint**: `POST /api/v2/plant-id/identify`
 - **Input**: Image URL (or base64)
 - **Output**: JSON containing:
@@ -37,6 +38,7 @@ GEMINI_DIAGNOSIS_MODEL=gemini-2.5-pro-preview-06-05
   - Care requirements
 
 ### 2. Disease Diagnosis (Dr. Plant)
+
 - **Endpoint**: `POST /api/v2/dr-plant/diagnose`
 - **Input**: Image URL + Optional user observation text
 - **Output**: JSON containing:
