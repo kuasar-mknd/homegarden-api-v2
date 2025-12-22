@@ -70,20 +70,57 @@ export class GardenPrismaRepository implements GardenRepository {
     const { latitude, longitude, radiusKm = 10, limit = 50 } = query
     const radiusMeters = radiusKm * 1000
 
+    // Bounding Box Calculation for Index Utilization
+    // 1 deg lat ~= 111km
+    const latDelta = radiusKm / 111.0
+    const minLat = Math.max(-90, latitude - latDelta)
+    const maxLat = Math.min(90, latitude + latDelta)
+
+    // Longitude Delta depends on latitude. Use max latitude in the box to be safe (largest delta).
+    // Avoid division by zero at poles.
+    const safeLat = Math.max(Math.abs(minLat), Math.abs(maxLat))
+    const lonDelta =
+      safeLat >= 89.9 ? 180 : radiusKm / (111.0 * Math.cos(safeLat * (Math.PI / 180)))
+
+    const minLon = longitude - lonDelta
+    const maxLon = longitude + lonDelta
+
     try {
       // Use Prisma's raw query for PostGIS optimization
-      // ST_DWithin uses spheroid distance for geography type (meters)
-      // We construct points from our Float columns on the fly
-      const gardens = await prisma.$queryRaw<Garden[]>`
+      // Optimization: Filter by Bounding Box first to use standard B-Tree indexes
+      // before running expensive ST_DWithin on the reduced set.
+      // Handle date line wrapping (longitude crossing 180/-180)
+      const gardens =
+        minLon < -180 || maxLon > 180
+          ? await prisma.$queryRaw<Garden[]>`
+        SELECT
+          id, name, latitude, longitude, description, size, climate,
+          created_at as "createdAt", updated_at as "updatedAt", user_id as "userId"
+        FROM gardens
+        WHERE
+          latitude BETWEEN ${minLat} AND ${maxLat}
+          AND (longitude BETWEEN ${minLon < -180 ? minLon + 360 : minLon} AND 180
+               OR longitude BETWEEN -180 AND ${maxLon > 180 ? maxLon - 360 : maxLon})
+          AND ST_DWithin(
+            ST_SetSRID(ST_MakePoint(longitude, latitude), 4326)::geography,
+            ST_SetSRID(ST_MakePoint(${longitude}, ${latitude}), 4326)::geography,
+            ${radiusMeters}
+          )
+        LIMIT ${limit};
+      `
+          : await prisma.$queryRaw<Garden[]>`
         SELECT 
           id, name, latitude, longitude, description, size, climate, 
           created_at as "createdAt", updated_at as "updatedAt", user_id as "userId"
         FROM gardens
-        WHERE ST_DWithin(
-          ST_SetSRID(ST_MakePoint(longitude, latitude), 4326)::geography,
-          ST_SetSRID(ST_MakePoint(${longitude}, ${latitude}), 4326)::geography,
-          ${radiusMeters}
-        )
+        WHERE
+          latitude BETWEEN ${minLat} AND ${maxLat}
+          AND longitude BETWEEN ${minLon} AND ${maxLon}
+          AND ST_DWithin(
+            ST_SetSRID(ST_MakePoint(longitude, latitude), 4326)::geography,
+            ST_SetSRID(ST_MakePoint(${longitude}, ${latitude}), 4326)::geography,
+            ${radiusMeters}
+          )
         LIMIT ${limit};
       `
 
