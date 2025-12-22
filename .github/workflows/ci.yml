@@ -2,9 +2,9 @@ name: CI
 
 on:
   push:
-    branches: [ main, master ]
+    branches: [main, master]
   pull_request:
-    branches: [ main, master ]
+    branches: [main, master]
 
 jobs:
   check:
@@ -38,7 +38,6 @@ jobs:
           --health-retries 5
 
     steps:
-<<<<<<< HEAD
       - name: Checkout code
         uses: actions/checkout@v4
 
@@ -49,19 +48,9 @@ jobs:
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
-=======
-      - uses: actions/checkout@v6
-
-      - uses: pnpm/action-setup@v4
-        with:
-          version: 9
-
-      - name: Use Node.js
-        uses: actions/setup-node@v6
->>>>>>> origin/main
         with:
           node-version: 20
-          cache: 'pnpm'
+          cache: "pnpm"
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
