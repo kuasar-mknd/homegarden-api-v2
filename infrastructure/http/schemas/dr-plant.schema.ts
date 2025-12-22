@@ -32,11 +32,13 @@ export const DiagnosePlantResponseSchema = z.object({
       example: 'Leaf Septoria',
       description: 'Identified condition name',
     }),
-    conditionType: z.enum(['DISEASE', 'PEST', 'DEFICIENCY', 'ENVIRONMENTAL']).openapi({
-      example: 'DISEASE',
-      description: 'Type of condition',
-    }),
-    severity: z.enum(['MILD', 'MODERATE', 'SEVERE', 'CRITICAL']).openapi({
+    conditionType: z
+      .enum(['DISEASE', 'PEST', 'DEFICIENCY', 'ENVIRONMENTAL', 'HEALTHY'])
+      .openapi({
+        example: 'DISEASE',
+        description: 'Type of condition',
+      }),
+    severity: z.enum(['LOW', 'MILD', 'MODERATE', 'SEVERE', 'HIGH', 'CRITICAL']).openapi({
       example: 'MODERATE',
       description: 'Severity level',
     }),

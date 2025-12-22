@@ -3,6 +3,7 @@ import type { AddPlantUseCase } from '../../../application/use-cases/garden/add-
 import type { FindNearbyGardensUseCase } from '../../../application/use-cases/garden/find-nearby-gardens.use-case.js'
 import type { GetGardenWeatherUseCase } from '../../../application/use-cases/garden/get-garden-weather.use-case.js'
 import type { GetUserPlantsUseCase } from '../../../application/use-cases/garden/get-user-plants.use-case.js'
+import type { Plant } from '../../../domain/entities/plant.entity.js'
 import { logger } from '../../config/logger.js'
 import { gardenIdSchema, nearbyGardenSchema } from '../validators/garden.validator.js'
 
@@ -22,7 +23,10 @@ export class GardenController {
     try {
       const user = c.get('user')
       if (!user) {
-        return c.json({ success: false, error: 'UNAUTHORIZED', message: 'Authentication required' }, 401)
+        return c.json(
+          { success: false, error: 'UNAUTHORIZED', message: 'User not authenticated' },
+          401,
+        )
       }
 
       const body = (await c.req.json()) as any
@@ -54,7 +58,9 @@ export class GardenController {
       return c.json(
         {
           success: true,
-          data: { plant: result.data },
+          data: {
+            plant: this.toDTO(result.data),
+          },
         },
         201,
       )
@@ -79,7 +85,10 @@ export class GardenController {
     try {
       const user = c.get('user')
       if (!user) {
-        return c.json({ success: false, error: 'UNAUTHORIZED', message: 'Authentication required' }, 401)
+        return c.json(
+          { success: false, error: 'UNAUTHORIZED', message: 'User not authenticated' },
+          401,
+        )
       }
 
       const result = await this.getUserPlantsUseCase.execute(user.id)
@@ -98,7 +107,7 @@ export class GardenController {
       return c.json(
         {
           success: true,
-          data: result.data,
+          data: result.data.map((p) => this.toDTO(p)),
         },
         200,
       )
@@ -123,7 +132,10 @@ export class GardenController {
     try {
       const user = c.get('user')
       if (!user) {
-        return c.json({ success: false, error: 'UNAUTHORIZED', message: 'Authentication required' }, 401)
+        return c.json(
+          { success: false, error: 'UNAUTHORIZED', message: 'User not authenticated' },
+          401,
+        )
       }
 
       const paramResult = gardenIdSchema.safeParse(c.req.param())
@@ -178,7 +190,10 @@ export class GardenController {
     try {
       const user = c.get('user')
       if (!user) {
-        return c.json({ success: false, error: 'UNAUTHORIZED', message: 'Authentication required' }, 401)
+        return c.json(
+          { success: false, error: 'UNAUTHORIZED', message: 'User not authenticated' },
+          401,
+        )
       }
 
       const queryResult = nearbyGardenSchema.safeParse(c.req.query())
@@ -188,7 +203,7 @@ export class GardenController {
           {
             success: false,
             error: 'BAD_REQUEST',
-            message: queryResult.error.issues[0].message,
+            message: queryResult.error.issues[0]?.message || 'Invalid query parameters',
           },
           400,
         )
@@ -231,6 +246,19 @@ export class GardenController {
         },
         500,
       )
+    }
+  }
+
+  private toDTO(plant: Plant) {
+    return {
+      id: plant.id,
+      nickname: plant.nickname || 'Unnamed Plant',
+      commonName: plant.commonName || null,
+      scientificName: plant.scientificName || null,
+      gardenId: plant.gardenId,
+      plantedDate: plant.plantedDate ? plant.plantedDate.toISOString() : null,
+      createdAt: plant.createdAt.toISOString(),
+      updatedAt: plant.updatedAt.toISOString(),
     }
   }
 }

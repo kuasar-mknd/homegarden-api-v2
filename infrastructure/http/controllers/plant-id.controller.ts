@@ -44,7 +44,7 @@ export class PlantIdController {
           {
             success: false,
             error: 'VALIDATION_ERROR',
-            message: validationResult.error.issues[0].message,
+            message: validationResult.error.issues[0]?.message || 'Validation failed',
             details: validationResult.error.flatten(),
           },
           400,
@@ -60,7 +60,13 @@ export class PlantIdController {
       if (validatedData.mimeType) input.mimeType = validatedData.mimeType
       if (validatedData.organs) input.organs = validatedData.organs as PlantOrgan[]
       if (validatedData.maxSuggestions) input.maxSuggestions = validatedData.maxSuggestions
-      if (validatedData.location) input.location = validatedData.location
+      if (validatedData.location) {
+        input.location = {
+          latitude: validatedData.location.latitude,
+          longitude: validatedData.location.longitude,
+          ...(validatedData.location.country ? { country: validatedData.location.country } : {}),
+        }
+      }
 
       // Execute use case
       const result = await this.identifySpeciesUseCase.execute(input)

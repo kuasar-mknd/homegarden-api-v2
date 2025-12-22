@@ -24,7 +24,7 @@ export class DrPlantController {
             success: false,
             error: 'VALIDATION_ERROR',
             // Zod 4 uses 'issues' instead of 'errors'
-            message: validationResult.error.issues[0].message,
+            message: validationResult.error.issues[0]?.message || 'Validation failed',
             details: validationResult.error.flatten(),
           },
           400,
@@ -53,10 +53,30 @@ export class DrPlantController {
         )
       }
 
+      const data = result.data
+      const responseData = {
+        isHealthy: data.isHealthy,
+        confidence: data.confidence,
+        conditionName: data.condition?.name || (data.isHealthy ? 'Healthy' : 'Unknown'),
+        conditionType: data.condition?.type || (data.isHealthy ? 'HEALTHY' : 'ENVIRONMENTAL'),
+        severity: data.condition?.severity || 'LOW',
+        affectedParts: data.affectedParts || [],
+        causes: data.causes || [],
+        symptoms: data.symptoms || [],
+        treatmentSteps: data.treatments?.map((t) => t.action) || [],
+        preventionTips: data.preventionTips || [],
+        organicTreatment: data.organicTreatment,
+        chemicalTreatment: data.chemicalTreatment,
+        recoveryTimeWeeks: data.recoveryTimeWeeks,
+        criticalActions: data.urgentActions || [],
+        processingMs: data.processingTimeMs,
+        aiModel: data.modelUsed,
+      }
+
       return c.json(
         {
           success: true,
-          data: result.data,
+          data: responseData,
         },
         200,
       )

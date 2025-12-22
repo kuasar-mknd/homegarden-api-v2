@@ -19,11 +19,15 @@ export class TokenService {
   }
 
   generateAccessToken(payload: TokenPayload): string {
-    return jwt.sign(payload, this.secret, { expiresIn: this.expiresIn as any })
+    return jwt.sign(payload, this.secret, {
+      expiresIn: this.expiresIn,
+    } as jwt.SignOptions)
   }
 
   generateRefreshToken(payload: TokenPayload): string {
-    return jwt.sign(payload, this.secret, { expiresIn: this.refreshExpiresIn as any })
+    return jwt.sign(payload, this.secret, {
+      expiresIn: this.refreshExpiresIn,
+    } as jwt.SignOptions)
   }
 
   verifyToken(token: string): TokenPayload {
