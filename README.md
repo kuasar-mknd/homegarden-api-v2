@@ -3,6 +3,7 @@
 A modern plant management API with AI-powered species identification and disease diagnosis, built with **Clean Architecture** principles.
 
 [![Test Coverage](https://img.shields.io/badge/coverage-98.21%25-brightgreen.svg)](.)
+
 [![Tests](https://img.shields.io/badge/tests-285%20passing-success.svg)](.)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.9-blue.svg)](.)
 
@@ -32,7 +33,7 @@ A modern plant management API with AI-powered species identification and disease
 
 ## 📁 Project Structure
 
-```
+```text
 /
 ├── application/       # Use Cases, Ports (Business Logic)
 ├── domain/           # Entities, Value Objects, Services
@@ -58,49 +59,49 @@ A modern plant management API with AI-powered species identification and disease
 
 1. **Clone and install**
 
-   ```bash
-   git clone <repository-url>
-   cd homegarden-api
-   pnpm install
-   ```
+```bash
+git clone <repository-url>
+cd homegarden-api
+pnpm install
+```
 
 2. **Configure environment**
 
-   ```bash
+```bash
    cp .env.example .env
-   # Edit .env with your credentials
-   ```
+# Edit .env with your credentials
+```
 
-   Required variables:
+Required variables:
 
-   ```env
-   # Server
-   PORT=3000
-   NODE_ENV=development
+```env
+# Server
+PORT=3000
+NODE_ENV=development
 
-   # Database
-   DATABASE_URL=postgresql://user:password@localhost:5432/homegarden
+# Database
+DATABASE_URL=postgresql://user:password@localhost:5432/homegarden
 
-   # AI (Google Gemini)
-   GOOGLE_AI_API_KEY=your-api-key
-   GEMINI_IDENTIFICATION_MODEL=gemini-2.0-flash
-   GEMINI_DIAGNOSIS_MODEL=gemini-2.5-pro-preview-06-05
+# AI (Google Gemini)
+GOOGLE_AI_API_KEY=your-api-key
+GEMINI_IDENTIFICATION_MODEL=gemini-2.0-flash
+GEMINI_DIAGNOSIS_MODEL=gemini-2.5-pro-preview-06-05
 
-   # Auth (Supabase)
-   SUPABASE_URL=your-project-url
-   SUPABASE_PUBLISHABLE_KEY=your-publishable-key
+# Auth (Supabase)
+SUPABASE_URL=your-project-url
+SUPABASE_PUBLISHABLE_KEY=your-publishable-key
 
-   # JWT
-   JWT_SECRET=your-secret-key
-   ```
+# JWT
+JWT_SECRET=your-secret-key
+```
 
 3. **Setup database**
 
-   ```bash
-   pnpm run db:generate    # Generate Prisma client
-   pnpm run db:migrate     # Run migrations
-   pnpm run db:seed        # (Optional) Seed data
-   ```
+```bash
+pnpm run db:generate    # Generate Prisma client
+pnpm run db:migrate     # Run migrations
+pnpm run db:seed        # (Optional) Seed data
+```
 
 ## 🎯 Running
 
@@ -228,7 +229,7 @@ pnpm run test:e2e
 
 This project follows **Clean Architecture** with strict layer separation:
 
-```
+```text
 Domain (Entities, Business Rules)
   ↑
 Application (Use Cases, Ports)

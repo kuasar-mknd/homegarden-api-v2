@@ -10,7 +10,7 @@ The HomeGarden API provides endpoints for plant management, AI identification, w
 
 Most endpoints require a Bearer Token (Supabase JWT).
 
-```
+```http
 Authorization: Bearer <your-supabase-jwt>
 ```
 

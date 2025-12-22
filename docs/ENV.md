@@ -58,7 +58,7 @@ CORS_ORIGINS=https://app.example.com,https://admin.example.com
 
 **Format:**
 
-```
+```text
 postgresql://[user]:[password]@[host]:[port]/[database]?schema=public
 ```
 

@@ -1,3 +1,5 @@
+# Sentinel - Security Learnings
+
 ## 2024-05-23 - Controller Input Validation Bypass
 
 **Vulnerability:** The `GardenController` was bypassing Zod validation by using `c.req.json()` instead of `c.req.valid('json')`, allowing unvalidated fields (like `location` and `speciesInfo`) to be processed.

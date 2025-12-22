@@ -5,7 +5,9 @@
 ### Spatial Query Optimization
 
 **Problem:** `findNearby` queries using the Haversine formula on the entire table scale poorly (O(N)).
+
 **Solution:** Implemented Bounding Box pre-filtering.
+
 **Details:**
 
 - Calculated `minLat`, `maxLat`, `minLng`, `maxLng` based on the search radius.

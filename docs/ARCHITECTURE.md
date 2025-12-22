@@ -98,7 +98,7 @@ The architecture enables testing in isolation:
 
 ## 📦 Directory Layout
 
-```
+```text
 /
 ├── application/         # Application Business Rules
 │   ├── dto/            # Data Transfer Objects
