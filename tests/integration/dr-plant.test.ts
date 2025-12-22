@@ -60,17 +60,20 @@ describe('Dr. Plant Integration', () => {
   })
 
   it('should diagnose a plant successfully from image', async () => {
-    // Mock successful AI response
-    const mockDiagnosis = {
-      isPlant: true,
-      name: 'Tomato',
-      health: 'Sick',
-      diseases: ['Early Blight'],
-      treatment: 'Apply fungicide',
+    // Mock successful AI response matching DiagnosisResult structure
+    mockDiagnoseHealth.mockResolvedValue({
+      success: true,
+      isHealthy: false,
       confidence: 0.95,
-      rawAnalysis: 'Detailed analysis...',
-    }
-    mockDiagnoseHealth.mockResolvedValue({ success: true, ...mockDiagnosis })
+      condition: { name: 'Early Blight', type: 'DISEASE', severity: 'MODERATE' },
+      affectedParts: ['leaves'],
+      causes: ['Fungal infection'],
+      symptoms: ['Yellow leaves', 'Brown spots'],
+      treatments: [{ action: 'Apply fungicide' }],
+      preventionTips: ['Water at base'],
+      processingTimeMs: 100,
+      modelUsed: 'gemini-pro',
+    })
 
     // Create a dummy image buffer
     const imageBuffer = Buffer.from('fake-image-data')
@@ -87,8 +90,9 @@ describe('Dr. Plant Integration', () => {
 
     expect(res.status).toBe(200)
     const json = await res.json()
-    expect(json.data).toEqual(expect.objectContaining(mockDiagnosis))
-    expect(json.data.success).toBe(true)
+    expect(json.success).toBe(true)
+    expect(json.data.confidence).toBe(0.95)
+    expect(json.data.conditionName).toBe('Early Blight')
     expect(mockDiagnoseHealth).toHaveBeenCalled()
   })
 

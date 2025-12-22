@@ -41,7 +41,7 @@ describe('GardenController', () => {
         commonName: 'Fern',
         scientificName: 'Fernus',
       })
-      mockAddPlant.execute.mockResolvedValue(ok({ id: 'p1', nickname: 'Fern' }))
+      mockAddPlant.execute.mockResolvedValue(ok({ id: 'p1', nickname: 'Fern', gardenId: 'g1', createdAt: new Date(), updatedAt: new Date() }))
 
       const result = (await controller.addPlant(mockContext)) as any
 
@@ -90,7 +90,7 @@ describe('GardenController', () => {
   describe('getPlants', () => {
     it('should return 200 and plants list', async () => {
       mockContext.get.mockReturnValue({ id: 'u1' })
-      mockGetPlants.execute.mockResolvedValue(ok([{ id: 'p1' }]))
+      mockGetPlants.execute.mockResolvedValue(ok([{ id: 'p1', gardenId: 'g1', nickname: 'Test', createdAt: new Date(), updatedAt: new Date() }]))
 
       const result = (await controller.getPlants(mockContext)) as any
 

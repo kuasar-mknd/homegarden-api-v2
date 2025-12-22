@@ -40,7 +40,7 @@ describe('DrPlant Integration', () => {
     expect(res.status).toBe(200)
     const body = await res.json()
     expect(body.success).toBe(true)
-    expect(body.data.condition.name).toBe('Leaf Spot')
+    expect(body.data.conditionName).toBe('Leaf Spot')
 
     expect(mockUseCase.execute).toHaveBeenCalledWith(
       expect.any(Buffer),

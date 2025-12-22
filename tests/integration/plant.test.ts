@@ -78,6 +78,8 @@ describe('Plant Integration Routes', () => {
       id: 'plant-123',
       nickname: 'My Tomato',
       gardenId: 'garden-123',
+      createdAt: new Date(),
+      updatedAt: new Date(),
     })
 
     const res = await app.request('/api/v2/gardens/plants', {
