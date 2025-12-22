@@ -3,8 +3,10 @@ import type { AddPlantUseCase } from '../../../application/use-cases/garden/add-
 import type { FindNearbyGardensUseCase } from '../../../application/use-cases/garden/find-nearby-gardens.use-case.js'
 import type { GetGardenWeatherUseCase } from '../../../application/use-cases/garden/get-garden-weather.use-case.js'
 import type { GetUserPlantsUseCase } from '../../../application/use-cases/garden/get-user-plants.use-case.js'
+import type { z } from '@hono/zod-openapi'
 import type { Plant } from '../../../domain/entities/plant.entity.js'
 import { logger } from '../../config/logger.js'
+import type { AddPlantInputSchema } from '../schemas/garden.schema.js'
 import { gardenIdSchema, nearbyGardenSchema } from '../validators/garden.validator.js'
 
 export class GardenController {
@@ -29,17 +31,18 @@ export class GardenController {
         )
       }
 
-      const body = (await c.req.json()) as any
+      // biome-ignore lint/suspicious/noExplicitAny: Hono Context inference limitation
+      const body = (await c.req.valid('json' as never)) as z.infer<typeof AddPlantInputSchema>
 
       const result = await this.addPlantUseCase.execute({
         userId: user.id,
         nickname: body.nickname,
         location: body.location,
         speciesInfo: {
-          commonName: body.commonName,
-          scientificName: body.scientificName,
-          family: body.family,
-          imageUrl: body.imageUrl,
+          ...(body.commonName ? { commonName: body.commonName } : {}),
+          ...(body.scientificName ? { scientificName: body.scientificName } : {}),
+          ...(body.family ? { family: body.family } : {}),
+          ...(body.imageUrl ? { imageUrl: body.imageUrl } : {}),
         },
       })
 

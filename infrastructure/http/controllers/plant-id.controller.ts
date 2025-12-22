@@ -5,6 +5,7 @@
  * Handles request parsing, validation, and response formatting.
  */
 
+import type { z } from '@hono/zod-openapi'
 import type { Context } from 'hono'
 import type { PlantOrgan } from '../../../application/ports/ai-identification.port.js'
 import type {
@@ -13,7 +14,7 @@ import type {
 } from '../../../application/use-cases/plant-id/identify-species.use-case.js'
 import { isOk } from '../../../shared/types/result.type.js'
 import { logger } from '../../config/logger.js'
-import { identifyPlantSchema } from '../validators/plant-id.validator.js'
+import type { IdentifySpeciesInputSchema } from '../schemas/plant-id.schema.js'
 
 // ============================================================
 // CONTROLLER
@@ -34,24 +35,10 @@ export class PlantIdController {
    */
   identify = async (c: Context) => {
     try {
-      const body = await c.req.json()
-
-      // Validate with Zod
-      const validationResult = identifyPlantSchema.safeParse(body)
-
-      if (!validationResult.success) {
-        return c.json(
-          {
-            success: false,
-            error: 'VALIDATION_ERROR',
-            message: validationResult.error.issues[0]?.message || 'Validation failed',
-            details: validationResult.error.flatten(),
-          },
-          400,
-        )
-      }
-
-      const validatedData = validationResult.data
+      // biome-ignore lint/suspicious/noExplicitAny: Hono Context inference limitation
+      const validatedData = (await c.req.valid('json' as never)) as z.infer<
+        typeof IdentifySpeciesInputSchema
+      >
 
       // Build use case input
       const input: IdentifySpeciesInput = {}

@@ -35,7 +35,7 @@ describe('GardenController', () => {
   describe('addPlant', () => {
     it('should add plant successfully', async () => {
       mockContext.get.mockImplementation((key: string) => (key === 'user' ? { id: 'u1' } : null))
-      mockContext.req.json.mockResolvedValue({
+      mockContext.req.valid.mockResolvedValue({
         nickname: 'Fern',
         location: 'My Garden',
         commonName: 'Fern',
@@ -77,7 +77,7 @@ describe('GardenController', () => {
 
     it('should handle use case error', async () => {
       mockContext.get.mockReturnValue({ id: 'u1' })
-      mockContext.req.json.mockResolvedValue({ location: 'G1' })
+      mockContext.req.valid.mockResolvedValue({ location: 'G1' })
       mockAddPlant.execute.mockResolvedValue(fail(new AppError('Invalid', 400, 'BAD')))
 
       const result = (await controller.addPlant(mockContext)) as any
@@ -87,7 +87,7 @@ describe('GardenController', () => {
 
     it('should handle generic error', async () => {
       mockContext.get.mockReturnValue({ id: 'u1' })
-      mockContext.req.json.mockImplementation(() => {
+      mockContext.req.valid.mockImplementation(() => {
         throw new Error('Boom')
       })
       const result = (await controller.addPlant(mockContext)) as any

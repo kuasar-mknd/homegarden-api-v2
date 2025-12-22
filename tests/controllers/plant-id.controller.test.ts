@@ -21,6 +21,7 @@ describe('PlantIdController', () => {
     mockContext = {
       req: {
         json: vi.fn(),
+        valid: vi.fn(),
       },
       json: vi.fn().mockImplementation(
         (val, status) =>
@@ -35,7 +36,7 @@ describe('PlantIdController', () => {
   describe('identify', () => {
     it('should return 200 on success', async () => {
       const body = { imageBase64: 'data', organs: ['leaf'] }
-      mockContext.req.json.mockResolvedValue(body)
+      mockContext.req.valid.mockResolvedValue(body)
 
       const mockResult = { suggestions: [] }
       vi.mocked(mockUseCase.execute).mockResolvedValue(ok(mockResult as any))
@@ -50,7 +51,7 @@ describe('PlantIdController', () => {
 
     it('should handle imageUrl source', async () => {
       const body = { imageUrl: 'http://link.com' }
-      mockContext.req.json.mockResolvedValue(body)
+      mockContext.req.valid.mockResolvedValue(body)
       vi.mocked(mockUseCase.execute).mockResolvedValue(ok({} as any))
 
       await controller.identify(mockContext)
@@ -67,26 +68,15 @@ describe('PlantIdController', () => {
         maxSuggestions: 3,
         location: { latitude: 10, longitude: 20 },
       }
-      mockContext.req.json.mockResolvedValue(body)
+      mockContext.req.valid.mockResolvedValue(body)
       vi.mocked(mockUseCase.execute).mockResolvedValue(ok({ suggestions: [] } as any))
 
       await controller.identify(mockContext)
       expect(mockUseCase.execute).toHaveBeenCalledWith(expect.objectContaining(body))
     })
 
-    it('should return 400 if image source is missing', async () => {
-      mockContext.req.json.mockResolvedValue({})
-
-      const res = await controller.identify(mockContext)
-
-      expect(res.status).toBe(400)
-      const resData = await res.json()
-      // Now checks VALIDATION_ERROR instead of MISSING_IMAGE
-      expect(resData.error).toBe('VALIDATION_ERROR')
-    })
-
     it('should return use case error with correct status', async () => {
-      mockContext.req.json.mockResolvedValue({ imageBase64: 'data' })
+      mockContext.req.valid.mockResolvedValue({ imageBase64: 'data' })
       vi.mocked(mockUseCase.execute).mockResolvedValue(
         fail(new AppError('Service Error', 503, 'SERVICE_UNAVAILABLE')),
       )
@@ -98,18 +88,8 @@ describe('PlantIdController', () => {
       expect(resData.error).toBe('SERVICE_UNAVAILABLE')
     })
 
-    it('should handle SyntaxError in JSON parsing', async () => {
-      mockContext.req.json.mockRejectedValue(new SyntaxError('Unexpected token'))
-
-      const res = await controller.identify(mockContext)
-
-      expect(res.status).toBe(400)
-      const resData = await res.json()
-      expect(resData.error).toBe('INVALID_JSON')
-    })
-
     it('should handle generic errors', async () => {
-      mockContext.req.json.mockRejectedValue(new Error('Boom'))
+      mockContext.req.valid.mockRejectedValue(new Error('Boom'))
 
       const res = await controller.identify(mockContext)
 
@@ -120,7 +100,7 @@ describe('PlantIdController', () => {
     })
 
     it('should handle non-error objects', async () => {
-      mockContext.req.json.mockRejectedValue('not an error')
+      mockContext.req.valid.mockRejectedValue('not an error')
 
       const res = await controller.identify(mockContext)
 
