@@ -43,7 +43,7 @@ This document outlines a comprehensive refactoring plan to migrate the **HomeGar
 
 ### Current Tech Stack
 
-```
+```text
 Node.js 20 + Express.js 5
 MongoDB + Mongoose 9
 JWT Authentication (jsonwebtoken)
@@ -53,7 +53,7 @@ Swagger/OpenAPI documentation
 
 ### Current Folder Structure
 
-```
+```text
 archiOweb-api/
 ├── app.js                 # Express app setup
 ├── bin/start              # Server entry point
@@ -174,7 +174,7 @@ archiOweb-api/
 
 ### Clean Architecture Layers
 
-```
+```text
 ┌──────────────────────────────────────────────────────────────────┐
 │                        INFRASTRUCTURE                             │
 │  (Hono HTTP, Prisma, External APIs, WebSocket, File Storage)     │
@@ -201,7 +201,7 @@ archiOweb-api/
 
 ## Proposed Folder Structure
 
-```
+```text
 src/
 ├── main.ts                           # Application entry point
 ├── app.ts                            # Hono app configuration
@@ -911,9 +911,11 @@ npx prisma generate
 
 **API Endpoints:**
 
+```text
 - `POST /api/v2/plant-id/identify` - Upload photo, get species suggestions
 - `GET /api/v2/plant-id/species/:id` - Get detailed species info
 - `GET /api/v2/plant-id/search?q=` - Search species catalog
+```
 
 ### DrPlant - Disease Diagnosis
 
@@ -932,10 +934,12 @@ npx prisma generate
 
 **API Endpoints:**
 
+```text
 - `POST /api/v2/dr-plant/diagnose` - Submit photo + symptoms for diagnosis
 - `GET /api/v2/dr-plant/diagnoses` - List user's diagnosis history
 - `GET /api/v2/dr-plant/diagnoses/:id` - Get diagnosis details
 - `GET /api/v2/dr-plant/treatments/:conditionId` - Get treatment guide
+```
 
 ### CareTracker - Smart Scheduling
 
