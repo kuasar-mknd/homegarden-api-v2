@@ -24,6 +24,7 @@ export class DiagnosePlantUseCase {
       // Convert buffer to base64
       const imageBase64 = imageBuffer.toString('base64')
 
+      // biome-ignore lint/suspicious/noExplicitAny: Google AI dynamic type
       const request: any = {
         image: imageBase64,
         isUrl: false,

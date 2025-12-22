@@ -114,8 +114,24 @@ describe('Nearby Gardens Integration', () => {
 
     // Mock queryRaw to return Paris and Versailles
     ;(prisma.$queryRaw as any).mockResolvedValueOnce([
-      { id: 'p', name: 'Paris Garden', latitude: 48.8566, longitude: 2.3522, user_id: user.id, created_at: new Date(), updated_at: new Date() },
-      { id: 'v', name: 'Versailles Garden', latitude: 48.8049, longitude: 2.1204, user_id: user.id, created_at: new Date(), updated_at: new Date() },
+      {
+        id: 'p',
+        name: 'Paris Garden',
+        latitude: 48.8566,
+        longitude: 2.3522,
+        user_id: user.id,
+        created_at: new Date(),
+        updated_at: new Date(),
+      },
+      {
+        id: 'v',
+        name: 'Versailles Garden',
+        latitude: 48.8049,
+        longitude: 2.1204,
+        user_id: user.id,
+        created_at: new Date(),
+        updated_at: new Date(),
+      },
     ])
 
     const res = await app.request('/api/v2/gardens/nearby?lat=48.8566&lng=2.3522&radius=30', {

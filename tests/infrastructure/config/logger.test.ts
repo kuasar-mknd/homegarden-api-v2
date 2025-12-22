@@ -8,7 +8,7 @@ describe('Logger Config', () => {
     }))
 
     const { logger } = await import('../../../infrastructure/config/logger.js')
-    
+
     expect(logger).toBeDefined()
     // Pino level might still be silent if not reconfigured correctly or pino.transport
     // But we want to ensure it TRIED to set it to info (default).

@@ -1,4 +1,4 @@
-import { describe, expect, it, vi, beforeEach } from 'vitest'
+import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { Plant } from '../../domain/entities/plant.entity.js'
 import { PlantPrismaRepository } from '../../infrastructure/database/repositories/plant.prisma-repository.js'
 

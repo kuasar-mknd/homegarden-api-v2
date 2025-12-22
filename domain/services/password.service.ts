@@ -1,5 +1,6 @@
 import bcrypt from 'bcrypt'
 
+// biome-ignore lint/complexity/noStaticOnlyClass: Domain service using static methods pattern
 export class PasswordService {
   private static readonly SALT_ROUNDS = 10
 

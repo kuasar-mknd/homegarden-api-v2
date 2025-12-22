@@ -106,12 +106,12 @@ describe('GardenController', () => {
     })
 
     it('should handle use case failure with generic error (no message)', async () => {
-       mockContext.get.mockReturnValue({ id: 'u1' })
-       // Mock result with empty error to trigger fallback
-       mockGetPlants.execute.mockResolvedValue({ success: false, error: {} })
-       const result = (await controller.getPlants(mockContext)) as any
-       expect(result.status).toBe(500)
-       expect(result.data.message).toBe('Failed to fetch plants')
+      mockContext.get.mockReturnValue({ id: 'u1' })
+      // Mock result with empty error to trigger fallback
+      mockGetPlants.execute.mockResolvedValue({ success: false, error: {} })
+      const result = (await controller.getPlants(mockContext)) as any
+      expect(result.status).toBe(500)
+      expect(result.data.message).toBe('Failed to fetch plants')
     })
 
     it('should return 401 if unauthorized in getPlants', async () => {
@@ -145,8 +145,6 @@ describe('GardenController', () => {
       expect(result.status).toBe(200)
       expect(result.data.data.temperature).toBe(20)
     })
-
-
 
     it('should handle use case failure without statusCode (default 500)', async () => {
       mockContext.get.mockReturnValue({ id: 'u1' })
@@ -203,7 +201,7 @@ describe('GardenController', () => {
         lat: '10.5',
         lng: '20.3',
         radius: '15',
-        limit: '10'
+        limit: '10',
       })
       mockGetNearby.execute.mockResolvedValue(ok([{ id: 'g2' }]))
 

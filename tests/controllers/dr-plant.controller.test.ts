@@ -59,8 +59,8 @@ describe('DrPlantController', () => {
     // Creating 11MB buffer is slow. Let's mock the file object more directly if possible,
     // or rely on the fact that we can cast to any to overwrite size.
 
-    const mockFile = new File([''], 'large.jpg', { type: 'image/jpeg' });
-    Object.defineProperty(mockFile, 'size', { value: 11 * 1024 * 1024 });
+    const mockFile = new File([''], 'large.jpg', { type: 'image/jpeg' })
+    Object.defineProperty(mockFile, 'size', { value: 11 * 1024 * 1024 })
 
     mockContext.req.parseBody.mockResolvedValue({ image: mockFile })
 

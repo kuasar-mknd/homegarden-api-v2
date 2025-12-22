@@ -324,7 +324,9 @@ describe('GeminiPlantAdapter', () => {
               affectedParts: ['leaves'],
               symptoms: ['spots'],
               causes: ['fungus'],
-              treatments: [{ priority: 1, action: 'Spray', instructions: 'Weekly', products: ['Neem Oil'] }],
+              treatments: [
+                { priority: 1, action: 'Spray', instructions: 'Weekly', products: ['Neem Oil'] },
+              ],
               organicTreatment: 'Neem oil',
               chemicalTreatment: 'Copper fungicide',
               recoveryTimeWeeks: 2,
@@ -439,100 +441,113 @@ describe('GeminiPlantAdapter', () => {
     })
 
     it('should handle unparseable JSON error from AI', async () => {
-       const mockAiResponse = {
-         response: { text: () => 'Invalid JSON' }
-       }
-       const genAIInstance = new GoogleGenerativeAI(mockApiKey)
-       const model = genAIInstance.getGenerativeModel({ model: 'any' })
-       vi.mocked(model.generateContent).mockResolvedValue(mockAiResponse as any)
+      const mockAiResponse = {
+        response: { text: () => 'Invalid JSON' },
+      }
+      const genAIInstance = new GoogleGenerativeAI(mockApiKey)
+      const model = genAIInstance.getGenerativeModel({ model: 'any' })
+      vi.mocked(model.generateContent).mockResolvedValue(mockAiResponse as any)
 
-       const result = await adapter.diagnoseHealth({ image: 'data', isUrl: false })
-       expect(result.success).toBe(false)
-       expect(result.error).toContain('Invalid AI response format')
+      const result = await adapter.diagnoseHealth({ image: 'data', isUrl: false })
+      expect(result.success).toBe(false)
+      expect(result.error).toContain('Invalid AI response format')
     })
 
     it('should handle non-Error exceptions', async () => {
-       const genAIInstance = new GoogleGenerativeAI(mockApiKey)
-       const model = genAIInstance.getGenerativeModel({ model: 'any' })
-       vi.mocked(model.generateContent).mockRejectedValue('String Error')
+      const genAIInstance = new GoogleGenerativeAI(mockApiKey)
+      const model = genAIInstance.getGenerativeModel({ model: 'any' })
+      vi.mocked(model.generateContent).mockRejectedValue('String Error')
 
-       const result = await adapter.diagnoseHealth({ image: 'data', isUrl: false })
-       expect(result.success).toBe(false)
-       expect(result.error).toBe('Unknown error during diagnosis')
+      const result = await adapter.diagnoseHealth({ image: 'data', isUrl: false })
+      expect(result.success).toBe(false)
+      expect(result.error).toBe('Unknown error during diagnosis')
     })
     it('should handle failure with undefined error message', async () => {
-       const mockAiResponse = {
-         response: { text: () => JSON.stringify({ success: false }) }
-       }
-       const genAIInstance = new GoogleGenerativeAI(mockApiKey)
-       const model = genAIInstance.getGenerativeModel({ model: 'any' })
-       vi.mocked(model.generateContent).mockResolvedValue(mockAiResponse as any)
+      const mockAiResponse = {
+        response: { text: () => JSON.stringify({ success: false }) },
+      }
+      const genAIInstance = new GoogleGenerativeAI(mockApiKey)
+      const model = genAIInstance.getGenerativeModel({ model: 'any' })
+      vi.mocked(model.generateContent).mockResolvedValue(mockAiResponse as any)
 
-       const result = await adapter.diagnoseHealth({ image: 'data', isUrl: false })
-       expect(result.success).toBe(false)
-       expect(result.error).toBe('Could not diagnose plant')
+      const result = await adapter.diagnoseHealth({ image: 'data', isUrl: false })
+      expect(result.success).toBe(false)
+      expect(result.error).toBe('Could not diagnose plant')
     })
-    
-    it('should map treatment frequency and products', async () => {
-       const mockAiResponse = {
-         response: { text: () => JSON.stringify({ 
-           success: true,
-           condition: null,
-           affectedParts: [],
-           symptoms: [],
-           causes: [],
-           preventionTips: [],
-           urgentActions: [],
-           treatments: [{ priority: 1, action: 'Act', instructions: 'Inst', frequency: 'Daily', products: ['Neem'] }]
-         }) }
-       }
-       const genAIInstance = new GoogleGenerativeAI(mockApiKey)
-       const model = genAIInstance.getGenerativeModel({ model: 'any' })
-       vi.mocked(model.generateContent).mockResolvedValue(mockAiResponse as any)
 
-       const result = await adapter.diagnoseHealth({ image: 'data', isUrl: false })
-       expect(result.treatments[0].frequency).toBe('Daily')
-       expect(result.treatments[0].products).toEqual(['Neem'])
+    it('should map treatment frequency and products', async () => {
+      const mockAiResponse = {
+        response: {
+          text: () =>
+            JSON.stringify({
+              success: true,
+              condition: null,
+              affectedParts: [],
+              symptoms: [],
+              causes: [],
+              preventionTips: [],
+              urgentActions: [],
+              treatments: [
+                {
+                  priority: 1,
+                  action: 'Act',
+                  instructions: 'Inst',
+                  frequency: 'Daily',
+                  products: ['Neem'],
+                },
+              ],
+            }),
+        },
+      }
+      const genAIInstance = new GoogleGenerativeAI(mockApiKey)
+      const model = genAIInstance.getGenerativeModel({ model: 'any' })
+      vi.mocked(model.generateContent).mockResolvedValue(mockAiResponse as any)
+
+      const result = await adapter.diagnoseHealth({ image: 'data', isUrl: false })
+      expect(result.treatments[0].frequency).toBe('Daily')
+      expect(result.treatments[0].products).toEqual(['Neem'])
     })
 
     it('should handle full environment details', async () => {
-       const genAIInstance = new GoogleGenerativeAI(mockApiKey)
-       const model = genAIInstance.getGenerativeModel({ model: 'any' })
-       vi.mocked(model.generateContent).mockResolvedValue({ response: { text: () => '{}' } } as any)
-       
-       await adapter.diagnoseHealth({ 
-         image: 'data', 
-         isUrl: false,
-         environment: { indoor: false, climate: 'Tropical', recentWeather: 'Sunny' }
-       })
-       
-       expect(model.generateContent).toHaveBeenCalledWith(expect.arrayContaining([
-         expect.stringContaining('Outdoor'),
-         expect.stringContaining('Tropical climate'),
-         expect.stringContaining('Recent weather: Sunny')
-       ]))
+      const genAIInstance = new GoogleGenerativeAI(mockApiKey)
+      const model = genAIInstance.getGenerativeModel({ model: 'any' })
+      vi.mocked(model.generateContent).mockResolvedValue({ response: { text: () => '{}' } } as any)
+
+      await adapter.diagnoseHealth({
+        image: 'data',
+        isUrl: false,
+        environment: { indoor: false, climate: 'Tropical', recentWeather: 'Sunny' },
+      })
+
+      expect(model.generateContent).toHaveBeenCalledWith(
+        expect.arrayContaining([
+          expect.stringContaining('Outdoor'),
+          expect.stringContaining('Tropical climate'),
+          expect.stringContaining('Recent weather: Sunny'),
+        ]),
+      )
     })
 
     it('should handle partial environment details', async () => {
-       const genAIInstance = new GoogleGenerativeAI(mockApiKey)
-       const model = genAIInstance.getGenerativeModel({ model: 'any' })
-       vi.mocked(model.generateContent).mockResolvedValue({ response: { text: () => '{}' } } as any)
-       
-       // Environment present but optional fields missing
-       await adapter.diagnoseHealth({ 
-         image: 'data', 
-         isUrl: false,
-         environment: { indoor: true }
-       })
-       
-       expect(model.generateContent).toHaveBeenCalledWith(expect.arrayContaining([
-         expect.stringContaining('Indoor')
-       ]))
-       // Should NOT contain undefined or "undefined climate"
-       const args = vi.mocked(model.generateContent).mock.calls[0][0] as any
-       const prompt = args[0]
-       expect(prompt).not.toContain('climate')
-       expect(prompt).not.toContain('Recent weather')
+      const genAIInstance = new GoogleGenerativeAI(mockApiKey)
+      const model = genAIInstance.getGenerativeModel({ model: 'any' })
+      vi.mocked(model.generateContent).mockResolvedValue({ response: { text: () => '{}' } } as any)
+
+      // Environment present but optional fields missing
+      await adapter.diagnoseHealth({
+        image: 'data',
+        isUrl: false,
+        environment: { indoor: true },
+      })
+
+      expect(model.generateContent).toHaveBeenCalledWith(
+        expect.arrayContaining([expect.stringContaining('Indoor')]),
+      )
+      // Should NOT contain undefined or "undefined climate"
+      const args = vi.mocked(model.generateContent).mock.calls[0][0] as any
+      const prompt = args[0]
+      expect(prompt).not.toContain('climate')
+      expect(prompt).not.toContain('Recent weather')
     })
   })
 

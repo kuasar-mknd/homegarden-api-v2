@@ -2,6 +2,7 @@ import type { Garden } from '../entities/garden.entity.js'
 import type { Plant } from '../entities/plant.entity.js'
 import type { User } from '../entities/user.entity.js'
 
+// biome-ignore lint/complexity/noStaticOnlyClass: Domain service using static methods pattern
 export class AuthorizationService {
   /**
    * Checks if a user can manage a specific garden.

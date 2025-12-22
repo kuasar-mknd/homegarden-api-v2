@@ -64,7 +64,11 @@ describe('Garden Routes Integration', () => {
     }
 
     // Mock Garden found
-    ;(prisma.garden.findFirst as any).mockResolvedValueOnce({ id: 'garden-123', name: 'Kitchen', userId: 'integration-user-id' })
+    ;(prisma.garden.findFirst as any).mockResolvedValueOnce({
+      id: 'garden-123',
+      name: 'Kitchen',
+      userId: 'integration-user-id',
+    })
     // Mock Plant created
     ;(prisma.plant.create as any).mockResolvedValueOnce({
       id: 'plant-123',
@@ -91,13 +95,13 @@ describe('Garden Routes Integration', () => {
   it('should retrieve the added plant', async () => {
     // Mock plant list
     ;(prisma.plant.findMany as any).mockResolvedValueOnce([
-      { 
-        id: 'plant-123', 
-        nickname: 'Basil', 
+      {
+        id: 'plant-123',
+        nickname: 'Basil',
         gardenId: 'garden-123',
         createdAt: new Date(),
         updatedAt: new Date(),
-        garden: { name: 'Kitchen' }
+        garden: { name: 'Kitchen' },
       },
     ])
 
@@ -106,7 +110,7 @@ describe('Garden Routes Integration', () => {
     })
     expect(res.status).toBe(200)
     const json = await res.json()
-    
+
     // Check if data is array or { plants: [] }
     const plants = json.data.plants || json.data
     expect(plants).toHaveLength(1)

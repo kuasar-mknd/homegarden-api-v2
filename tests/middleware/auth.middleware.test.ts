@@ -165,10 +165,12 @@ describe('AuthMiddleware', () => {
     vi.doMock('../../infrastructure/database/prisma.client.js', () => ({
       prisma: undefined,
     }))
-    
+
     // Re-import to get the fresh module with mocked prisma
-    const { authMiddleware: freshAuthMiddleware } = await import('../../infrastructure/http/middleware/auth.middleware.js')
-    
+    const { authMiddleware: freshAuthMiddleware } = await import(
+      '../../infrastructure/http/middleware/auth.middleware.js'
+    )
+
     const result = (await freshAuthMiddleware(mockContext, mockNext)) as any
     expect(result.status).toBe(500)
     expect(result.data.message).toContain('Authentication service error')
@@ -176,16 +178,18 @@ describe('AuthMiddleware', () => {
 
   it('should handle non-Error object rejection in auth middleware', async () => {
     vi.resetModules()
-    
+
     // Configure mockSupabase to throw a string
     mockSupabase.auth.getUser.mockRejectedValue('String Error')
-    
+
     mockContext.req.header.mockReturnValue('Bearer token')
-    
+
     // Re-import to ensure clean state (though might not be strictly necessary if createClient mock persists)
-    const { authMiddleware: freshAuthMiddleware } = await import('../../infrastructure/http/middleware/auth.middleware.js')
+    const { authMiddleware: freshAuthMiddleware } = await import(
+      '../../infrastructure/http/middleware/auth.middleware.js'
+    )
     const result = (await freshAuthMiddleware(mockContext, mockNext)) as any
-    
+
     expect(result.status).toBe(500)
     expect(result.data.message).toContain('String Error')
   })

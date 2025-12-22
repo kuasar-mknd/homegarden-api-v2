@@ -41,43 +41,47 @@ describe('ErrorHandlerMiddleware', () => {
   it('should sanitize error message in production', async () => {
     vi.resetModules()
     vi.doMock('../../infrastructure/config/env.js', () => ({
-      env: { NODE_ENV: 'production' }
+      env: { NODE_ENV: 'production' },
     }))
-    
+
     // We need to re-import errorHandler to pick up the mocked env
-    const { errorHandler: eh } = await import('../../infrastructure/http/middleware/error-handler.middleware.js')
-    
+    const { errorHandler: eh } = await import(
+      '../../infrastructure/http/middleware/error-handler.middleware.js'
+    )
+
     const err = new Error('Secret error')
     const mockContext: any = { json: vi.fn() }
-    
+
     eh(err, mockContext)
-    
+
     expect(mockContext.json).toHaveBeenCalledWith(
       expect.objectContaining({
         message: 'Something went wrong',
       }),
-      500
+      500,
     )
   })
 
   it('should include stack trace in development', async () => {
     vi.resetModules()
     vi.doMock('../../infrastructure/config/env.js', () => ({
-      env: { NODE_ENV: 'development' }
+      env: { NODE_ENV: 'development' },
     }))
-    
-    const { errorHandler: eh } = await import('../../infrastructure/http/middleware/error-handler.middleware.js')
-    
+
+    const { errorHandler: eh } = await import(
+      '../../infrastructure/http/middleware/error-handler.middleware.js'
+    )
+
     const err = new Error('Dev error')
     const mockContext: any = { json: vi.fn() }
-    
+
     eh(err, mockContext)
-    
+
     expect(mockContext.json).toHaveBeenCalledWith(
       expect.objectContaining({
         stack: expect.any(String),
       }),
-      500
+      500,
     )
   })
 
@@ -85,28 +89,30 @@ describe('ErrorHandlerMiddleware', () => {
     const err: any = new Error('Bad Status')
     err.statusCode = 200 // Success code shouldn't be an error status
     const mockContext: any = { json: vi.fn() }
-    
+
     await errorHandler(err, mockContext)
-    
+
     expect(mockContext.json).toHaveBeenCalledWith(
       expect.objectContaining({ message: 'Bad Status' }),
-      500
+      500,
     )
   })
 
   it('should use default error name if missing', async () => {
     const err: any = { message: 'No Name' } // Not an Error instance, name undefined
     const mockContext: any = { json: vi.fn() }
-    
+
     // reset modules to ensure clean env mock state (though default mock is fine)
     vi.resetModules()
-    const { errorHandler: eh } = await import('../../infrastructure/http/middleware/error-handler.middleware.js')
-    
+    const { errorHandler: eh } = await import(
+      '../../infrastructure/http/middleware/error-handler.middleware.js'
+    )
+
     eh(err, mockContext)
-    
+
     expect(mockContext.json).toHaveBeenCalledWith(
       expect.objectContaining({ error: 'InternalServerError' }),
-      500
+      500,
     )
   })
 })

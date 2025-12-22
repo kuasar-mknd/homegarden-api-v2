@@ -27,7 +27,7 @@ describe('SSRF Validator', () => {
   it('should return false for loopback addresses', async () => {
     ;(lookup as any).mockResolvedValue({ address: '127.0.0.1' })
     expect(await isSafeUrl('http://localhost')).toBe(false)
-    
+
     ;(lookup as any).mockResolvedValue({ address: '127.1' })
     expect(await isSafeUrl('http://127.1')).toBe(false)
   })

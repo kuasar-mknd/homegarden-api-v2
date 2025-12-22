@@ -98,7 +98,7 @@ export class IdentifySpeciesUseCase {
 
     // Build the request - only add optional properties if they have values
     const request: IdentifySpeciesRequest = {
-      image: input.imageUrl ?? input.imageBase64!,
+      image: input.imageUrl ?? input.imageBase64 ?? '',
       isUrl: !!input.imageUrl,
       mimeType: input.mimeType ?? 'image/jpeg',
       maxSuggestions: input.maxSuggestions ?? 5,

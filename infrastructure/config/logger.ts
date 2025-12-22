@@ -17,7 +17,8 @@ export const logger = pino({
             ignore: 'pid,hostname',
           },
         }
-      : (undefined as any),
+      : // biome-ignore lint/suspicious/noExplicitAny: pino types mismatch
+        (undefined as any),
   redact: {
     paths: [
       'password',

@@ -20,10 +20,7 @@ export class UserController {
 
       const paramResult = getProfileSchema.safeParse(c.req.param())
       if (!paramResult.success) {
-        return c.json(
-          { success: false, error: 'BAD_REQUEST', message: 'Invalid User ID' },
-          400,
-        )
+        return c.json({ success: false, error: 'BAD_REQUEST', message: 'Invalid User ID' }, 400)
       }
 
       const { id: requestedUserId } = paramResult.data

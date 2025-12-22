@@ -74,7 +74,12 @@ describe('User Public Profile Integration', () => {
     // Mock findUnique based on args
     ;(prisma.user.findUnique as any).mockImplementation((args: any) => {
       if (args.where.email === 'viewer@example.com') {
-        return Promise.resolve({ id: 'viewer-id', email: 'viewer@example.com', firstName: 'Viewer', lastName: 'Person' })
+        return Promise.resolve({
+          id: 'viewer-id',
+          email: 'viewer@example.com',
+          firstName: 'Viewer',
+          lastName: 'Person',
+        })
       }
       if (args.where.id === targetUser.id) {
         return Promise.resolve({
@@ -88,20 +93,20 @@ describe('User Public Profile Integration', () => {
       return Promise.resolve(null)
     })
 
-    // Override create mock to return a CUID-like ID if needed, 
+    // Override create mock to return a CUID-like ID if needed,
     // or just assume prisma mocks handle it. But we need to make sure the ID we request is valid.
     // The previous 'targetUser.id' comes from actual prisma.create() in beforeAll.
     // We should ensure that ID is treated or replaced by a valid CUID string if the real DB logic generates one.
-    // However, since we are mocking findUnique, let's just make sure the request URL uses a valid CUID, 
-    // and the mock expects it. 
-    
+    // However, since we are mocking findUnique, let's just make sure the request URL uses a valid CUID,
+    // and the mock expects it.
+
     // Actually targetUser.id comes from prisma.create which uses cuid() in schema likely.
     // Let's force it to be a known CUID for testing if we can't rely on it.
     // For now, let's assume valid ID is 'c123456789012345678905555' for this test case mock matching.
-    
+
     const validTargetId = 'c123456789012345678905555'
     targetUser.id = validTargetId // Hack to sync ID
-    
+
     const res = await app.request(`/api/v2/users/${validTargetId}`, {
       headers: { Authorization: 'Bearer valid-token' },
     })

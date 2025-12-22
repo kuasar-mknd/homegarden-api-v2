@@ -1,5 +1,4 @@
-import crypto from 'node:crypto'
-import { describe, expect, it, vi, beforeEach } from 'vitest'
+import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { UserPrismaRepository } from '../../infrastructure/database/repositories/user.prisma-repository.js'
 
 // Mock Prisma client

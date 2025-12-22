@@ -81,19 +81,19 @@ describe('Auth Middleware Integration', () => {
     // Mock Prisma findUnique to return null first (user doesn't exist)
     const mockFindUnique = prisma.user.findUnique as any
     const mockCreate = prisma.user.create as any
-    
+
     mockFindUnique.mockResolvedValueOnce(null)
     mockCreate.mockResolvedValueOnce({
       ...mockUser,
       firstName: 'Auth',
       lastName: 'Test User',
-      role: 'USER'
+      role: 'USER',
     })
     mockFindUnique.mockResolvedValueOnce({
       ...mockUser,
       firstName: 'Auth',
       lastName: 'Test User',
-      role: 'USER'
+      role: 'USER',
     })
 
     // Make request

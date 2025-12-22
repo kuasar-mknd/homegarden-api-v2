@@ -68,7 +68,11 @@ describe('Plant Integration Routes', () => {
     }
 
     // Mock Garden found
-    ;(prisma.garden.findFirst as any).mockResolvedValueOnce({ id: 'garden-123', name: 'Route Garden', userId: user.id })
+    ;(prisma.garden.findFirst as any).mockResolvedValueOnce({
+      id: 'garden-123',
+      name: 'Route Garden',
+      userId: user.id,
+    })
     // Mock Plant Created
     ;(prisma.plant.create as any).mockResolvedValueOnce({
       id: 'plant-123',
@@ -94,7 +98,13 @@ describe('Plant Integration Routes', () => {
   it('should list user plants', async () => {
     // Mock findMany for plants
     ;(prisma.plant.findMany as any).mockResolvedValueOnce([
-      { id: 'plant-123', nickname: 'My Tomato', gardenId: 'garden-123', createdAt: new Date(), updatedAt: new Date() },
+      {
+        id: 'plant-123',
+        nickname: 'My Tomato',
+        gardenId: 'garden-123',
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      },
     ])
 
     const res = await app.request('/api/v2/gardens/plants', {
@@ -105,7 +115,7 @@ describe('Plant Integration Routes', () => {
     expect(res.status).toBe(200)
     const json = await res.json()
     expect(json.success).toBe(true)
-    
+
     // The controller returns { success: true, data: { plants: [...] } } or similar
     // Let's check the schema: GetUserPlantsResponseSchema allows either { plants: [] } or just []
     const plants = json.data.plants || json.data
