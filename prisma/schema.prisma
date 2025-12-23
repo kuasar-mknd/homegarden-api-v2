@@ -18,15 +18,15 @@ datasource db {
 // ============================================================
 
 model User {
-  id        String   @id @default(cuid())
-  email     String   @unique
+  id        String    @id @default(cuid())
+  email     String    @unique
   password  String
-  firstName String   @map("first_name")
-  lastName  String   @map("last_name")
+  firstName String    @map("first_name")
+  lastName  String    @map("last_name")
   birthDate DateTime? @map("birth_date") @db.Date
-  role      UserRole @default(USER)
-  
-  avatarUrl   String?  @map("avatar_url")
+  role      UserRole  @default(USER)
+
+  avatarUrl   String? @map("avatar_url")
   preferences Json?
 
   createdAt DateTime @default(now()) @map("created_at")
@@ -36,8 +36,8 @@ model User {
   diagnoses     Diagnosis[]
   careSchedules CareSchedule[]
 
-  @@map("users")
   @@index([role])
+  @@map("users")
 }
 
 enum UserRole {
@@ -70,25 +70,25 @@ model Garden {
 }
 
 model Plant {
-  id             String  @id @default(cuid())
+  id             String         @id @default(cuid())
   nickname       String?
-  speciesId      String? @map("species_id")
-  species        Species? @relation(fields: [speciesId], references: [id])
-  commonName     String?  @map("common_name")
-  scientificName String?  @map("scientific_name")
+  speciesId      String?        @map("species_id")
+  species        Species?       @relation(fields: [speciesId], references: [id])
+  commonName     String?        @map("common_name")
+  scientificName String?        @map("scientific_name")
   family         String?
   exposure       PlantExposure?
   watering       String?
-  soilType       String?  @map("soil_type")
-  flowerColor    String?  @map("flower_color")
+  soilType       String?        @map("soil_type")
+  flowerColor    String?        @map("flower_color")
   height         Float?
-  plantedDate    DateTime? @map("planted_date") @db.Date
-  acquiredDate   DateTime? @map("acquired_date") @db.Date
-  bloomingSeason String?   @map("blooming_season")
-  plantingSeason String?   @map("planting_season")
-  careNotes      String?   @map("care_notes") @db.Text
-  imageUrl       String?   @map("image_url")
-  thumbnailUrl   String?   @map("thumbnail_url")
+  plantedDate    DateTime?      @map("planted_date") @db.Date
+  acquiredDate   DateTime?      @map("acquired_date") @db.Date
+  bloomingSeason String?        @map("blooming_season")
+  plantingSeason String?        @map("planting_season")
+  careNotes      String?        @map("care_notes") @db.Text
+  imageUrl       String?        @map("image_url")
+  thumbnailUrl   String?        @map("thumbnail_url")
   use            PlantUse?
 
   createdAt DateTime @default(now()) @map("created_at")
@@ -102,6 +102,8 @@ model Plant {
 
   @@index([gardenId])
   @@index([speciesId])
+  // Optimization: Composite index for aggregating plants by common name within a garden
+  @@index([gardenId, commonName])
   @@map("plants")
 }
 
@@ -124,29 +126,29 @@ enum PlantUse {
 // ============================================================
 
 model Species {
-  id                  String   @id @default(cuid())
-  commonName          String   @map("common_name")
-  scientificName      String   @unique @map("scientific_name")
-  family              String
-  genus               String?
-  description         String?  @db.Text
-  origin              String?
-  nativeRegions       String[] @map("native_regions")
-  minTempCelsius      Float?   @map("min_temp_celsius")
-  maxTempCelsius      Float?   @map("max_temp_celsius")
-  waterRequirement    WaterRequirement? @map("water_requirement")
-  lightRequirement    LightRequirement? @map("light_requirement")
-  soilType            String[]          @map("soil_types")
-  averageHeight       Float?            @map("average_height")
-  growthRate          GrowthRate?       @map("growth_rate")
-  lifespan            String?
-  bloomingSeason      String[]          @map("blooming_season")
-  harvestSeason       String[]          @map("harvest_season")
-  defaultWateringDays Int?              @map("default_watering_days")
-  defaultFertilizeDays Int?             @map("default_fertilize_days")
-  gbifId              String?           @map("gbif_id")
-  plantNetId          String?           @map("plant_net_id")
-  imageUrl            String?           @map("image_url")
+  id                   String            @id @default(cuid())
+  commonName           String            @map("common_name")
+  scientificName       String            @unique @map("scientific_name")
+  family               String
+  genus                String?
+  description          String?           @db.Text
+  origin               String?
+  nativeRegions        String[]          @map("native_regions")
+  minTempCelsius       Float?            @map("min_temp_celsius")
+  maxTempCelsius       Float?            @map("max_temp_celsius")
+  waterRequirement     WaterRequirement? @map("water_requirement")
+  lightRequirement     LightRequirement? @map("light_requirement")
+  soilType             String[]          @map("soil_types")
+  averageHeight        Float?            @map("average_height")
+  growthRate           GrowthRate?       @map("growth_rate")
+  lifespan             String?
+  bloomingSeason       String[]          @map("blooming_season")
+  harvestSeason        String[]          @map("harvest_season")
+  defaultWateringDays  Int?              @map("default_watering_days")
+  defaultFertilizeDays Int?              @map("default_fertilize_days")
+  gbifId               String?           @map("gbif_id")
+  plantNetId           String?           @map("plant_net_id")
+  imageUrl             String?           @map("image_url")
 
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
@@ -216,6 +218,8 @@ model Diagnosis {
   @@index([plantId])
   @@index([userId])
   @@index([status])
+  // Optimization: Composite index for filtering diagnoses by user and status (e.g., "My Pending Diagnoses")
+  @@index([userId, status])
   @@map("diagnoses")
 }
 
@@ -270,6 +274,8 @@ model CareSchedule {
 
   @@index([userId])
   @@index([nextDueDate])
+  // Optimization: Composite index for fetching a user's upcoming schedules efficiently
+  @@index([userId, nextDueDate])
   @@index([gardenId])
   @@index([plantId])
   @@index([isEnabled])
