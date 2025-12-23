@@ -156,7 +156,21 @@ app.get('/ui', swaggerUI({ url: '/doc' }))
 // ============================================================
 
 // Security headers
-app.use('*', secureHeaders())
+app.use(
+  '*',
+  secureHeaders({
+    contentSecurityPolicy: {
+      defaultSrc: ["'self'"],
+      scriptSrc: ["'self'", "'unsafe-inline'", 'https://cdn.jsdelivr.net'],
+      styleSrc: ["'self'", "'unsafe-inline'"],
+      imgSrc: ["'self'", 'data:', 'https:', 'blob:'],
+      connectSrc: ["'self'", 'https://api.open-meteo.com'],
+      fontSrc: ["'self'", 'https:', 'data:'],
+    },
+    xFrameOptions: 'DENY',
+    xXssProtection: '1; mode=block',
+  }),
+)
 
 // Compression
 app.use('*', compress())

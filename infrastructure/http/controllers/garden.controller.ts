@@ -37,10 +37,10 @@ export class GardenController {
         nickname: body.nickname,
         location: body.location,
         speciesInfo: {
-          commonName: body.commonName,
-          scientificName: body.scientificName,
-          family: body.family,
-          imageUrl: body.imageUrl,
+          ...(body.commonName ? { commonName: body.commonName } : {}),
+          ...(body.scientificName ? { scientificName: body.scientificName } : {}),
+          ...(body.family ? { family: body.family } : {}),
+          ...(body.imageUrl ? { imageUrl: body.imageUrl } : {}),
         },
       })
 
