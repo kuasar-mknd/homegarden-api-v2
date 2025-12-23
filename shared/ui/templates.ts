@@ -160,6 +160,34 @@ export const SHARED_STYLES = `
     outline: 2px solid var(--secondary);
     outline-offset: 2px;
   }
+  .btn-secondary {
+    background: transparent;
+    color: var(--text);
+    border: 1px solid var(--card-border);
+  }
+  .btn-secondary:hover {
+    background: var(--card-border);
+    color: var(--text);
+  }
+  .btn-group {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    margin-top: 1rem;
+    flex-wrap: wrap;
+  }
+  .btn-group .btn {
+    margin-top: 0;
+  }
+
+  .external-icon {
+    display: inline-block;
+    vertical-align: middle;
+    margin-left: 4px;
+    margin-bottom: 2px;
+    width: 0.9em;
+    height: 0.9em;
+  }
 
   footer.status {
     margin-top: 2rem;
@@ -200,7 +228,7 @@ export const SHARED_STYLES = `
   @media print {
     body { background: white; color: black; display: block; }
     .container { box-shadow: none; border: none; max-width: 100%; width: 100%; padding: 0; }
-    .skip-link, .status-dot { display: none; }
+    .skip-link, .status-dot, .external-icon { display: none; }
     .grid { display: block; }
     .card { border: 1px solid #000; margin-bottom: 1rem; page-break-inside: avoid; box-shadow: none; }
     a { text-decoration: underline; color: black; }
@@ -208,6 +236,8 @@ export const SHARED_STYLES = `
     .badge { border: 1px solid #ccc; background: none; color: black; }
   }
 `
+
+const EXTERNAL_LINK_ICON = `<svg class="external-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>`
 
 interface LayoutProps {
   title: string
@@ -257,7 +287,7 @@ export function baseLayout({ title, description, content }: LayoutProps): string
         <span class="status-dot" aria-label="Status: Operational" title="System Operational" role="img"></span> System Operational • ${env.NODE_ENV}
       </div>
       <div style="margin-top: 0.5rem; opacity: 0.8;">
-        <a href="https://github.com/homegarden/api" target="_blank" rel="noopener noreferrer">View Source on GitHub</a>
+        <a href="https://github.com/homegarden/api" target="_blank" rel="noopener noreferrer" aria-label="View Source on GitHub (opens in a new tab)">View Source on GitHub${EXTERNAL_LINK_ICON}</a>
       </div>
     </footer>
   </div>
@@ -335,7 +365,10 @@ export function getNotFoundPageHtml(path: string): string {
       <code style="display: block; background: #f5f5f5; padding: 0.5rem; border-radius: 4px; margin: 1rem 0; word-break: break-all;">${safePath}</code>
       <p>Please check the URL or go back to the homepage.</p>
 
-      <a href="/" class="btn">Return Home</a>
+      <div class="btn-group">
+        <a href="/" class="btn">Return Home</a>
+        <a href="/ui" class="btn btn-secondary">Read Documentation</a>
+      </div>
     </main>
     `,
   })
