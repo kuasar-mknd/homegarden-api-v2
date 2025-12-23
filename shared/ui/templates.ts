@@ -24,7 +24,7 @@ export const SHARED_STYLES = `
     }
   }
   ::selection {
-    background: var(--secondary);
+    background: var(--primary);
     color: white;
   }
   html {
@@ -139,7 +139,7 @@ export const SHARED_STYLES = `
     outline-offset: 4px;
     border-color: var(--secondary);
   }
-  .card h3 { margin: 0 0 0.5rem 0; color: var(--primary); }
+  .card h2 { margin: 0 0 0.5rem 0; color: var(--primary); font-size: 1.3rem; }
   .card p { margin: 0; font-size: 0.9rem; color: var(--card-text); }
 
   .btn {
@@ -224,6 +224,9 @@ export const SHARED_STYLES = `
     .card:hover {
       transform: none;
     }
+    .status-dot {
+      animation: none;
+    }
   }
   @media print {
     body { background: white; color: black; display: block; }
@@ -282,8 +285,8 @@ export function baseLayout({ title, description, content }: LayoutProps): string
   <a href="#main" class="skip-link">Skip to main content</a>
   <div class="container">
     ${content}
-    <footer class="status" role="status">
-      <div>
+    <footer class="status" role="contentinfo">
+      <div role="status">
         <span class="status-dot" aria-label="Status: Operational" title="System Operational" role="img"></span> System Operational • ${env.NODE_ENV}
       </div>
       <div style="margin-top: 0.5rem; opacity: 0.8;">
@@ -311,25 +314,25 @@ export function getLandingPageHtml(): string {
       <ul class="grid" role="list">
         <li>
           <a href="/ui" class="card" aria-describedby="desc-ui">
-            <h3>📚 Documentation</h3>
+            <h2>📚 Documentation</h2>
             <p id="desc-ui">Interactive Swagger UI for API exploration.</p>
           </a>
         </li>
         <li>
           <a href="/doc" class="card" aria-describedby="desc-doc">
-            <h3>🔍 OpenAPI Spec</h3>
+            <h2>🔍 OpenAPI Spec</h2>
             <p id="desc-doc">Raw JSON specification for integration.</p>
           </a>
         </li>
         <li>
           <a href="/ui#/PlantID" class="card" aria-describedby="desc-plantid">
-            <h3>🌿 Plant ID</h3>
+            <h2>🌿 Plant ID</h2>
             <p id="desc-plantid">Identify species using AI vision (Docs).</p>
           </a>
         </li>
         <li>
           <a href="/ui#/DrPlant" class="card" aria-describedby="desc-drplant">
-            <h3>🩺 Dr. Plant</h3>
+            <h2>🩺 Dr. Plant</h2>
             <p id="desc-drplant">Diagnose diseases and pests (Docs).</p>
           </a>
         </li>
@@ -362,7 +365,7 @@ export function getNotFoundPageHtml(path: string): string {
 
     <main id="main">
       <p>Oops! The page you are looking for does not exist.</p>
-      <code style="display: block; background: #f5f5f5; padding: 0.5rem; border-radius: 4px; margin: 1rem 0; word-break: break-all;">${safePath}</code>
+      <code aria-label="Requested URL" style="display: block; background: #f5f5f5; padding: 0.5rem; border-radius: 4px; margin: 1rem 0; word-break: break-all;">${safePath}</code>
       <p>Please check the URL or go back to the homepage.</p>
 
       <div class="btn-group">
