@@ -30,7 +30,7 @@ export class GardenController {
       }
 
       // Use validated data from middleware
-      const body = c.req.valid('json' as never) as typeof AddPlantInputSchema['_output']
+      const body = c.req.valid('json' as never) as (typeof AddPlantInputSchema)['_output']
 
       const result = await this.addPlantUseCase.execute({
         userId: user.id,
@@ -189,7 +189,7 @@ export class GardenController {
         )
       }
 
-      const query = c.req.valid('query' as never) as typeof NearbyGardensQuerySchema['_output']
+      const query = c.req.valid('query' as never) as (typeof NearbyGardensQuerySchema)['_output']
       const { lat, lng, radius, limit } = query
 
       const result = await this.findNearbyGardensUseCase.execute({
