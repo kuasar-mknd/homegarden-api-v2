@@ -86,8 +86,7 @@ export class DrPlantController {
         {
           success: false,
           error: 'INTERNAL_ERROR',
-          message: error instanceof Error ? error.message : 'An unexpected error occurred',
-          stack: error instanceof Error ? error.stack : undefined,
+          message: 'An unexpected error occurred',
         },
         500,
       )

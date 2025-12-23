@@ -16,7 +16,7 @@ describe('UserController', () => {
     mockContext = {
       get: vi.fn(),
       req: {
-        param: vi.fn(),
+        valid: vi.fn(),
       },
       json: vi.fn().mockImplementation((data, status) => ({ data, status })),
     }
@@ -24,7 +24,7 @@ describe('UserController', () => {
 
   it('should get profile successfully', async () => {
     mockContext.get.mockReturnValue({ id: 'u1' })
-    mockContext.req.param.mockReturnValue({ id: validUuid })
+    mockContext.req.valid.mockReturnValue({ id: validUuid })
     mockUseCase.execute.mockResolvedValue(ok({ id: validUuid, firstName: 'John' }))
 
     const result = (await controller.getProfile(mockContext)) as any
@@ -40,22 +40,11 @@ describe('UserController', () => {
     expect(result.status).toBe(401)
   })
 
-  it('should return 400 if user ID is missing or invalid', async () => {
-    mockContext.get.mockReturnValue({ id: 'u1' })
-    // Missing (param() returns empty object or something invalid)
-    mockContext.req.param.mockReturnValue({})
-    let result = (await controller.getProfile(mockContext)) as any
-    expect(result.status).toBe(400)
-
-    // Invalid UUID
-    mockContext.req.param.mockReturnValue({ id: 'not-a-uuid' })
-    result = (await controller.getProfile(mockContext)) as any
-    expect(result.status).toBe(400)
-  })
+  // Validation handled by middleware
 
   it('should handle use case failure with mapped status', async () => {
     mockContext.get.mockReturnValue({ id: 'u1' })
-    mockContext.req.param.mockReturnValue({ id: validUuid })
+    mockContext.req.valid.mockReturnValue({ id: validUuid })
     mockUseCase.execute.mockResolvedValue(fail(new AppError('Not Found', 404, 'NOT_FOUND')))
 
     const result = (await controller.getProfile(mockContext)) as any
@@ -65,7 +54,7 @@ describe('UserController', () => {
 
   it('should return 500 on unexpected errors', async () => {
     mockContext.get.mockReturnValue({ id: 'u1' })
-    mockContext.req.param.mockImplementation(() => {
+    mockContext.req.valid.mockImplementation(() => {
       throw new Error('Explosion')
     })
     const result = (await controller.getProfile(mockContext)) as any
