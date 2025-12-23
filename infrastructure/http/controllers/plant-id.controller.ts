@@ -35,7 +35,9 @@ export class PlantIdController {
   identify = async (c: Context) => {
     try {
       // Validated by Zod OpenAPI middleware
-      const validatedData = c.req.valid('json' as never) as typeof IdentifySpeciesInputSchema['_output']
+      const validatedData = c.req.valid(
+        'json' as never,
+      ) as (typeof IdentifySpeciesInputSchema)['_output']
 
       // Build use case input
       const input: IdentifySpeciesInput = {}
