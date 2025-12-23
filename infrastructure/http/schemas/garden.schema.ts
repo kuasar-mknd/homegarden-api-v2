@@ -98,27 +98,27 @@ export const AddPlantInputSchema = z.object({
     description: 'Garden ID to add the plant to',
     example: 'cjld2cjxh0000qzrmn831i7rn',
   }),
-  location: z.string().min(1).openapi({
+  location: z.string().min(1).max(100).openapi({
     description: 'Garden Name (Required for identification)',
     example: 'My Backyard',
   }),
-  nickname: z.string().openapi({
+  nickname: z.string().max(50).openapi({
     description: 'Plant nickname/custom name',
     example: 'My Tomato Plant',
   }),
-  commonName: z.string().optional().openapi({
+  commonName: z.string().max(100).optional().openapi({
     description: 'Common plant name',
     example: 'Tomato',
   }),
-  scientificName: z.string().optional().openapi({
+  scientificName: z.string().max(100).optional().openapi({
     description: 'Scientific botanical name',
     example: 'Solanum lycopersicum',
   }),
-  family: z.string().optional().openapi({
+  family: z.string().max(100).optional().openapi({
     description: 'Plant family',
     example: 'Solanaceae',
   }),
-  imageUrl: z.string().url().optional().openapi({
+  imageUrl: z.string().url().max(500).optional().openapi({
     description: 'URL of plant image',
     example: 'https://example.com/tomato.jpg',
   }),
