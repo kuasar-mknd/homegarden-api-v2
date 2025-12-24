@@ -104,6 +104,8 @@ model Plant {
   @@index([speciesId])
   // Optimization: Composite index for aggregating plants by common name within a garden
   @@index([gardenId, commonName])
+  // Optimization: Composite index for sorted queries (e.g., "Newest plants in garden")
+  @@index([gardenId, createdAt])
   @@map("plants")
 }
 
@@ -220,6 +222,8 @@ model Diagnosis {
   @@index([status])
   // Optimization: Composite index for filtering diagnoses by user and status (e.g., "My Pending Diagnoses")
   @@index([userId, status])
+  // Optimization: Composite index for user history sorted by date
+  @@index([userId, createdAt])
   @@map("diagnoses")
 }
 
@@ -279,6 +283,8 @@ model CareSchedule {
   @@index([gardenId])
   @@index([plantId])
   @@index([isEnabled])
+  // Optimization: Composite index for garden calendar views
+  @@index([gardenId, nextDueDate])
   @@map("care_schedules")
 }
 
@@ -295,6 +301,8 @@ model CareCompletion {
 
   @@index([scheduleId])
   @@index([completedAt])
+  // Optimization: Composite index for schedule history sorted by date
+  @@index([scheduleId, completedAt])
   @@map("care_completions")
 }
 
