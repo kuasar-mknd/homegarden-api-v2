@@ -13,7 +13,7 @@ import type {
 } from '../../../application/use-cases/plant-id/identify-species.use-case.js'
 import { isOk } from '../../../shared/types/result.type.js'
 import { logger } from '../../config/logger.js'
-import { identifyPlantSchema } from '../validators/plant-id.validator.js'
+import type { IdentifySpeciesInputSchema } from '../schemas/plant-id.schema.js'
 
 // ============================================================
 // CONTROLLER
@@ -34,24 +34,10 @@ export class PlantIdController {
    */
   identify = async (c: Context) => {
     try {
-      const body = await c.req.json()
-
-      // Validate with Zod
-      const validationResult = identifyPlantSchema.safeParse(body)
-
-      if (!validationResult.success) {
-        return c.json(
-          {
-            success: false,
-            error: 'VALIDATION_ERROR',
-            message: validationResult.error.issues[0]?.message || 'Validation failed',
-            details: validationResult.error.flatten(),
-          },
-          400,
-        )
-      }
-
-      const validatedData = validationResult.data
+      // Validated by Zod OpenAPI middleware
+      const validatedData = c.req.valid(
+        'json' as never,
+      ) as (typeof IdentifySpeciesInputSchema)['_output']
 
       // Build use case input
       const input: IdentifySpeciesInput = {}

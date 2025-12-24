@@ -1,3 +1,4 @@
+// import { Prisma } from '@prisma/client'
 import { Garden } from '../../../domain/entities/garden.entity.js'
 import type {
   CreateGardenData,
@@ -103,8 +104,8 @@ export class GardenPrismaRepository implements GardenRepository {
                OR longitude BETWEEN -180 AND ${maxLon > 180 ? maxLon - 360 : maxLon})
           AND ST_DWithin(
             ST_SetSRID(ST_MakePoint(longitude, latitude), 4326)::geography,
-            ST_SetSRID(ST_MakePoint(${longitude}, ${latitude}), 4326)::geography,
-            ${radiusMeters}
+            ST_SetSRID(ST_MakePoint(${longitude}::float, ${latitude}::float), 4326)::geography,
+            ${radiusMeters}::float
           )
         LIMIT ${limit};
       `
@@ -118,8 +119,8 @@ export class GardenPrismaRepository implements GardenRepository {
           AND longitude BETWEEN ${minLon} AND ${maxLon}
           AND ST_DWithin(
             ST_SetSRID(ST_MakePoint(longitude, latitude), 4326)::geography,
-            ST_SetSRID(ST_MakePoint(${longitude}, ${latitude}), 4326)::geography,
-            ${radiusMeters}
+            ST_SetSRID(ST_MakePoint(${longitude}::float, ${latitude}::float), 4326)::geography,
+            ${radiusMeters}::float
           )
         LIMIT ${limit};
       `

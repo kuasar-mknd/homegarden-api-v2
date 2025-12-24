@@ -1,121 +1,45 @@
-# Clean Architecture Guide
+# Architecture
 
-This project strictly adheres to **Clean Architecture** principles to ensure:
+This project follows **Clean Architecture** principles to ensure separation of concerns, testability, and maintainability.
 
-1. **Independence of Frameworks**: The architecture does not depend on the existence of some library of feature laden software.
-2. **Testability**: The business rules can be tested without the UI, Database, Web Server, or any other external element.
-3. **Independence of UI**: The UI can change easily, without changing the rest of the system.
-4. **Independence of Database**: You can swap out PostgreSQL for Mongo, BigTable, CouchDB, or something else.
-5. **Independence of any external agency**: In fact your business rules simply don't know anything at all about the outside world.
+## 🏗 Directory Structure
 
----
+The codebase is organized into four main layers:
 
-## 🏗️ Layer Structure
+### 1. `domain/` (Enterprise Business Rules)
+This is the core of the application. It contains entities, value objects, and domain events that are independent of any external frameworks or tools.
+*   **Entities**: Core business objects (e.g., `User`, `Garden`, `Plant`) with behavior and validation logic.
+*   **Value Objects**: Immutable objects defined by their attributes (e.g., `Email`, `Coordinates`).
+*   **Repositories (Interfaces)**: Defines how data should be accessed, but not how it is implemented.
 
-The code is organized into concentric circles (layers), where dependencies only point **inwards**.
+### 2. `application/` (Application Business Rules)
+This layer orchestrates the flow of data to and from the domain entities. It implements specific use cases.
+*   **Services/UseCases**: Contains business logic for specific actions (e.g., `CreateGardenService`, `IdentifyPlantService`).
+*   **DTOs**: Data Transfer Objects used to pass data between layers.
 
-### 1. Domain Layer (`domain/`) - The Core
+### 3. `infrastructure/` (Frameworks & Drivers)
+This layer contains implementations of interfaces defined in the domain and application layers. It deals with external details like databases, web frameworks, and third-party APIs.
+*   **Http**: Hono server setup, controllers, middleware, and routes.
+*   **Database**: Prisma client and repository implementations.
+*   **Config**: Environment variables, logger configuration.
+*   **Adapters**: External service integrations (e.g., `GeminiAdapter`, `OpenMeteoAdapter`).
 
-**Dependencies:** None
-
-Contains the enterprise-wide business rules and logic. It is the most stable layer.
-
-- **Entities**: Business objects with methods (e.g., `Plant`, `User`, `Garden`).
-- **Value Objects**: Immutable objects defined by their attributes (e.g., `Email`, `Coordinates`).
-- **Domain Services**: Logic that doesn't fit into a single entity (e.g., `PlantHealthService`).
-- **Repository Interfaces**: Abstract definitions of data access (e.g., `IGardenRepository`).
-- **Domain Events**: Events that happen in the domain (e.g., `PlantWateredEvent`).
-
-### 2. Application Layer (`application/`) - The Use Cases
-
-**Dependencies:** Domain
-
-Orchestrates the flow of data to and from the entities, and directs those entities to use their Critical Business Rules to achieve the goals of the use case.
-
-- **Use Cases / Services**: Specific application actions (e.g., `IdentifyPlantService`, `CreateGardenUseCase`).
-- **DTOs**: Data Transfer Objects for input/output.
-- **Ports**: Interfaces for external services (e.g., `IAIService`, `IWeatherService`).
-
-### 3. Infrastructure Layer (`infrastructure/`) - The Details
-
-**Dependencies:** Application, Domain
-
-Implements the interfaces defined in the inner layers. This is where frameworks and tools live.
-
-- **HTTP**: Hono routes, controllers, middleware.
-- **Database**: Prisma repositories implementing domain interfaces.
-- **External Services**: Adapters for Google Gemini, OpenMeteo, Supabase.
-- **Config**: Environment variables, logger, server setup.
-
-### 4. Shared (`shared/`)
-
-**Dependencies:** None (or strictly limited)
-
-Common utilities, constants, and types used across layers.
-
----
-
-## 🔄 Data Flow
-
-1. **Request**: Comes in via HTTP (Infrastructure).
-2. **Controller**: Unpacks request, validates basic input, calls Use Case (Application).
-3. **Use Case**: Orchestrates domain logic, calls Repositories/Ports (Application).
-4. **Repository/Adapter**: Fetches/Saves data or calls external APIs (Infrastructure).
-5. **Entity**: Enforces business rules (Domain).
-6. **Response**: Data flows back up, converted to DTOs, and returned as JSON.
-
----
+### 4. `shared/`
+Contains shared utilities, types, and constants used across multiple layers (e.g., `Result` type, helper functions).
 
 ## 🧩 Adding New Features
 
-### 1. Define the Domain
+To add a new feature (e.g., "Watering Schedule"), follow this flow:
 
-- Create `domain/entities/NewFeature.ts`.
-- Define repository interface `domain/repositories/INewFeatureRepository.ts`.
+1.  **Domain**: Define the `WateringSchedule` entity and its repository interface in `domain/`.
+2.  **Application**: Create a service/use-case (e.g., `CreateWateringScheduleService`) in `application/`.
+3.  **Infrastructure**:
+    *   Implement the repository in `infrastructure/repositories/`.
+    *   Create a controller in `infrastructure/http/controllers/`.
+    *   Define the route in `infrastructure/http/routes/`.
+4.  **Tests**: Add unit tests for the domain and application logic, and integration tests for the infrastructure.
 
-### 2. Implement the Use Case
-
-- Create `application/services/NewFeatureService.ts`.
-- Define input/output DTOs.
-
-### 3. Implement Infrastructure
-
-- Create `infrastructure/database/repositories/PrismaNewFeatureRepository.ts`.
-- Create `infrastructure/http/routes/new-feature.routes.ts`.
-- Register routes in `index.ts` or main router.
-
----
-
-## 🧪 Testing Strategy
-
-The architecture enables testing in isolation:
-
-- **Unit Tests (`tests/domain`, `tests/application`)**: Test business logic using mocks for repositories/ports. Fast and reliable.
-- **Integration Tests (`tests/infrastructure`)**: Test real implementations (DB, API adapters) to ensure they work.
-- **E2E Tests (`tests/e2e`)**: Test the full flow from HTTP request to response.
-
----
-
-## 📦 Directory Layout
-
-```text
-/
-├── application/         # Application Business Rules
-│   ├── dto/            # Data Transfer Objects
-│   ├── ports/          # Interfaces for Infrastructure
-│   └── services/       # Use Cases
-├── domain/             # Enterprise Business Rules
-│   ├── entities/       # Core Business Objects
-│   ├── repositories/   # Repository Interfaces
-│   └── value-objects/  # Value Objects
-├── infrastructure/     # Frameworks & Drivers
-│   ├── config/         # Configuration
-│   ├── database/       # DB Implementations (Prisma)
-│   ├── external-services/ # API Adapters
-│   ├── http/           # Web Server (Hono)
-│   └── websocket/      # WebSocket Server
-└── shared/             # Cross-cutting concerns
-    ├── constants/
-    ├── types/
-    └── utils/
-```
+## 🔄 Dependency Rule
+Dependencies only point **inwards**.
+*   `Infrastructure` -> `Application` -> `Domain`
+*   The `Domain` layer knows nothing about the outer layers.
