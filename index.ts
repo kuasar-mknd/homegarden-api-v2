@@ -103,7 +103,6 @@ const plantRoutes = createPlantRoutes(plantController)
 const careTrackerController = new CareTrackerController()
 const careTrackerRoutes = createCareTrackerRoutes(careTrackerController)
 
-
 // ============================================================
 // CREATE HONO APP
 // ============================================================
@@ -170,6 +169,8 @@ app.use(
     },
     xFrameOptions: 'DENY',
     xXssProtection: '1; mode=block',
+    strictTransportSecurity: 'max-age=63072000; includeSubDomains; preload',
+    referrerPolicy: 'strict-origin-when-cross-origin',
   }),
 )
 
