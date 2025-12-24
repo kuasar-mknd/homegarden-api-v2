@@ -5,7 +5,7 @@ import { z } from '@hono/zod-openapi'
 // =============================================================================
 
 export const UserIdPropSchema = z.object({
-  id: z.string().openapi({
+  id: z.string().max(100).openapi({
     param: {
       name: 'id',
       in: 'path',

@@ -30,7 +30,6 @@ export class GardenController {
         )
       }
 
-      // biome-ignore lint/suspicious/noExplicitAny: Hono Context inference limitation
       const body = (await c.req.valid('json' as never)) as z.infer<typeof AddPlantInputSchema>
 
       const result = await this.addPlantUseCase.execute({

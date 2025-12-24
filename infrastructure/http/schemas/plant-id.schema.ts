@@ -39,20 +39,20 @@ export const IdentifySpeciesInputSchema = z
 // Output Schema Components
 export const SpeciesSuggestionSchema = z.object({
   confidence: z.number().min(0).max(1),
-  commonName: z.string(),
-  scientificName: z.string(),
-  family: z.string(),
-  genus: z.string().optional(),
-  description: z.string().optional(),
-  origin: z.string().optional(),
-  imageUrl: z.string().url().optional(),
+  commonName: z.string().max(200),
+  scientificName: z.string().max(200),
+  family: z.string().max(100),
+  genus: z.string().max(100).optional(),
+  description: z.string().max(5000).optional(),
+  origin: z.string().max(200).optional(),
+  imageUrl: z.string().url().max(2048).optional(),
 })
 
 export const IdentifySpeciesDataSchema = z.object({
   success: z.boolean(),
   suggestions: z.array(SpeciesSuggestionSchema),
   processingTimeMs: z.number(),
-  modelUsed: z.string(),
+  modelUsed: z.string().max(100),
 })
 
 // The actual response wrapper

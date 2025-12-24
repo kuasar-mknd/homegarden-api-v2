@@ -35,7 +35,6 @@ export class PlantIdController {
    */
   identify = async (c: Context) => {
     try {
-      // biome-ignore lint/suspicious/noExplicitAny: Hono Context inference limitation
       const validatedData = (await c.req.valid('json' as never)) as z.infer<
         typeof IdentifySpeciesInputSchema
       >
