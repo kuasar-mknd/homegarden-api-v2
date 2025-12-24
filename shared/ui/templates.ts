@@ -98,10 +98,31 @@ export const SHARED_STYLES = `
     font-weight: 600;
     margin-bottom: 2rem;
   }
+  .badge.error {
+    background: #ffebee;
+    color: #c62828;
+  }
+  .code-block {
+    display: block;
+    background: #f5f5f5;
+    padding: 0.5rem;
+    border-radius: 4px;
+    margin: 1rem 0;
+    word-break: break-all;
+    color: var(--text);
+  }
   @media (prefers-color-scheme: dark) {
     .badge {
       background: #1b5e20;
       color: #e8f5e9;
+    }
+    .badge.error {
+      background: #4a0d0d;
+      color: #ef5350;
+    }
+    .code-block {
+      background: var(--bg);
+      border: 1px solid var(--card-border);
     }
   }
   .grid {
@@ -276,6 +297,7 @@ export function baseLayout({ title, description, content }: LayoutProps): string
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="description" content="${metaDescription}">
   <meta name="theme-color" content="#2e7d32">
+  <meta name="theme-color" content="#121212" media="(prefers-color-scheme: dark)">
 
   <meta property="og:site_name" content="HomeGarden API">
   <meta property="og:title" content="${title}">
@@ -375,12 +397,12 @@ export function getNotFoundPageHtml(path: string): string {
     content: `
     <header>
       <h1>🌱 404 Not Found</h1>
-      <div class="badge" style="background: #ffebee; color: #c62828;">Error</div>
+      <div class="badge error">Error</div>
     </header>
 
     <main id="main">
       <p>Oops! The page you are looking for does not exist.</p>
-      <code aria-label="Requested URL" style="display: block; background: #f5f5f5; padding: 0.5rem; border-radius: 4px; margin: 1rem 0; word-break: break-all;">${safePath}</code>
+      <code class="code-block" aria-label="Requested URL">${safePath}</code>
       <p>Please check the URL or go back to the homepage.</p>
 
       <div class="btn-group">
