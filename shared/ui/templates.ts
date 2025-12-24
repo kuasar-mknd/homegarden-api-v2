@@ -10,6 +10,7 @@ export const SHARED_STYLES = `
     --card-border: #eee;
     --card-text: #666;
     --status-text: #888;
+    --error: #d32f2f;
   }
   @media (prefers-color-scheme: dark) {
     :root {
@@ -20,11 +21,12 @@ export const SHARED_STYLES = `
       --card-bg: #1e1e1e;
       --card-border: #333;
       --card-text: #b0b0b0;
-      --status-text: #aaa;
+    --status-text: #aaa;
+      --error: #ef5350;
     }
   }
   ::selection {
-    background: var(--primary);
+    background: var(--secondary);
     color: white;
   }
   html {
@@ -139,7 +141,7 @@ export const SHARED_STYLES = `
     outline-offset: 4px;
     border-color: var(--secondary);
   }
-  .card h2 { margin: 0 0 0.5rem 0; color: var(--primary); font-size: 1.3rem; }
+  .card h2 { margin: 0 0 0.5rem 0; color: var(--primary); font-size: 1.25rem; }
   .card p { margin: 0; font-size: 0.9rem; color: var(--card-text); }
 
   .btn {
@@ -217,6 +219,18 @@ export const SHARED_STYLES = `
     margin-right: 6px;
     animation: pulse 2s infinite ease-in-out;
   }
+  .error-code {
+    font-size: 4rem;
+    font-weight: 800;
+    color: var(--secondary);
+    margin: 0;
+    line-height: 1;
+  }
+  .error-message {
+    font-size: 1.2rem;
+    color: var(--card-text);
+    margin-bottom: 2rem;
+  }
   @media (prefers-reduced-motion: reduce) {
     .card, .skip-link, .btn {
       transition: none;
@@ -268,6 +282,7 @@ export function baseLayout({ title, description, content }: LayoutProps): string
   <meta property="og:description" content="${metaDescription}">
   <meta property="og:type" content="website">
   <meta property="og:image" content="${image}">
+  <meta property="og:image:alt" content="HomeGarden API Banner with green branding">
 
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="${title}">
