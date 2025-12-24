@@ -49,6 +49,7 @@ export const NearbyGardensQuerySchema = z.object({
   radius: z.coerce
     .number()
     .positive()
+    .max(1000) // 1000 km max radius
     .optional()
     .default(10)
     .openapi({ example: 10, description: 'Radius in km' }),
@@ -56,6 +57,7 @@ export const NearbyGardensQuerySchema = z.object({
     .number()
     .int()
     .positive()
+    .max(100) // Max 100 results
     .optional()
     .default(50)
     .openapi({ example: 20, description: 'Max number of results' }),

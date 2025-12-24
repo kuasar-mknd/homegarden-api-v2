@@ -9,15 +9,24 @@ export const PlantOrganSchema = z.enum(['leaf', 'flower', 'fruit', 'bark', 'habi
 export const LocationSchema = z.object({
   latitude: z.number(),
   longitude: z.number(),
-  country: z.string().optional(),
+  country: z.string().max(100).optional(),
 })
 
 // Input Schema (Validation)
 export const IdentifySpeciesInputSchema = z
   .object({
-    imageBase64: z.string().optional().openapi({ description: 'Base64 image data' }),
-    imageUrl: z.string().url().optional().openapi({ description: 'Public URL of the image' }),
-    mimeType: z.string().optional(),
+    imageBase64: z
+      .string()
+      .max(15_728_640) // ~15MB (allows for ~11MB image)
+      .optional()
+      .openapi({ description: 'Base64 image data' }),
+    imageUrl: z
+      .string()
+      .url()
+      .max(2048)
+      .optional()
+      .openapi({ description: 'Public URL of the image' }),
+    mimeType: z.string().max(50).optional(),
     organs: z.array(PlantOrganSchema).optional(),
     maxSuggestions: z.number().max(10).optional().default(5),
     location: LocationSchema.optional(),
