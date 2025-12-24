@@ -4,7 +4,7 @@ const MAX_FILE_SIZE = 10 * 1024 * 1024
 const ACCEPTED_IMAGE_TYPES = ['image/jpeg', 'image/png', 'image/webp', 'image/heic']
 
 export const diagnosePlantSchema = z.object({
-  symptoms: z.string().optional(),
+  symptoms: z.string().max(1000).optional(),
   image: z
     .custom<File>(
       (val) => val && typeof val === 'object' && val instanceof File,
