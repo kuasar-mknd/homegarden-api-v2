@@ -122,6 +122,11 @@ export class PlantPrismaRepository implements PlantRepository {
       _count: {
         _all: true,
       },
+      // Optimization: We added @@index([gardenId, commonName])
+      // Ordering by commonName will leverage the index for faster grouping
+      orderBy: {
+        commonName: 'asc',
+      },
     })
     return groups.map((g: any) => ({
       name: g.commonName || 'Unknown',

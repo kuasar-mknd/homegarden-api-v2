@@ -1,4 +1,4 @@
-import { Prisma } from '@prisma/client'
+// import { Prisma } from '@prisma/client'
 import { Garden } from '../../../domain/entities/garden.entity.js'
 import type {
   CreateGardenData,
@@ -71,56 +71,56 @@ export class GardenPrismaRepository implements GardenRepository {
     const { latitude, longitude, radiusKm = 10, limit = 50 } = query
     const radiusMeters = radiusKm * 1000
 
-    // Optimization: Bounding Box Pre-filtering
-    // Calculate rough bounding box to use B-Tree index on [latitude, longitude]
-    // before applying expensive PostGIS ST_DWithin function.
-    // 1 degree lat ~= 111km
-    // 1 degree lon ~= 111km * cos(lat)
-    const latDelta = radiusKm / 111
-    // Handle pole proximity: if close to poles (e.g. > 80 deg), skip lon check or widen significantly
-    // cos(80 deg) is approx 0.17, so delta is 6x larger.
-    // If we are really close to the pole, longitude doesn't matter much or spans the whole globe.
-    const isNearPole = Math.abs(latitude) > 80
-    const lonDelta = isNearPole ? 360 : radiusKm / (111 * Math.cos(latitude * (Math.PI / 180)))
-
+    // Bounding Box Calculation for Index Utilization
+    // 1 deg lat ~= 111km
+    const latDelta = radiusKm / 111.0
     const minLat = Math.max(-90, latitude - latDelta)
     const maxLat = Math.min(90, latitude + latDelta)
+
+    // Longitude Delta depends on latitude. Use max latitude in the box to be safe (largest delta).
+    // Avoid division by zero at poles.
+    const safeLat = Math.max(Math.abs(minLat), Math.abs(maxLat))
+    const lonDelta =
+      safeLat >= 89.9 ? 180 : radiusKm / (111.0 * Math.cos(safeLat * (Math.PI / 180)))
 
     const minLon = longitude - lonDelta
     const maxLon = longitude + lonDelta
 
-    // Handle International Date Line wrapping
-    let lonCondition: Prisma.Sql
-
-    if (minLon < -180 || maxLon > 180) {
-      // Wrap around case
-      // Normalize to -180 to 180 range isn't quite right for the query directly
-      // If query spans date line, we need OR logic: (lon >= minLonWrapped OR lon <= maxLonWrapped)
-      // But Prisma raw query composition is tricky with dynamic conditions.
-      // For simplicity in this optimization pass, if we cross the date line, we skip the longitude pre-filter.
-      // It's an edge case where performance might degrade slightly back to baseline, which is acceptable.
-      lonCondition = Prisma.sql`1=1`
-    } else {
-      // Standard case
-      lonCondition = Prisma.sql`longitude BETWEEN ${minLon} AND ${maxLon}`
-    }
-
     try {
       // Use Prisma's raw query for PostGIS optimization
-      // ST_DWithin uses spheroid distance for geography type (meters)
-      // We construct points from our Float columns on the fly
-      const gardens = await prisma.$queryRaw<Garden[]>`
+      // Optimization: Filter by Bounding Box first to use standard B-Tree indexes
+      // before running expensive ST_DWithin on the reduced set.
+      // Handle date line wrapping (longitude crossing 180/-180)
+      const gardens =
+        minLon < -180 || maxLon > 180
+          ? await prisma.$queryRaw<Garden[]>`
+        SELECT
+          id, name, latitude, longitude, description, size, climate,
+          created_at as "createdAt", updated_at as "updatedAt", user_id as "userId"
+        FROM gardens
+        WHERE
+          latitude BETWEEN ${minLat} AND ${maxLat}
+          AND (longitude BETWEEN ${minLon < -180 ? minLon + 360 : minLon} AND 180
+               OR longitude BETWEEN -180 AND ${maxLon > 180 ? maxLon - 360 : maxLon})
+          AND ST_DWithin(
+            ST_SetSRID(ST_MakePoint(longitude, latitude), 4326)::geography,
+            ST_SetSRID(ST_MakePoint(${longitude}::float, ${latitude}::float), 4326)::geography,
+            ${radiusMeters}::float
+          )
+        LIMIT ${limit};
+      `
+          : await prisma.$queryRaw<Garden[]>`
         SELECT 
           id, name, latitude, longitude, description, size, climate, 
           created_at as "createdAt", updated_at as "updatedAt", user_id as "userId"
         FROM gardens
         WHERE
           latitude BETWEEN ${minLat} AND ${maxLat}
-          AND ${lonCondition}
+          AND longitude BETWEEN ${minLon} AND ${maxLon}
           AND ST_DWithin(
             ST_SetSRID(ST_MakePoint(longitude, latitude), 4326)::geography,
-            ST_SetSRID(ST_MakePoint(${longitude}, ${latitude}), 4326)::geography,
-            ${radiusMeters}
+            ST_SetSRID(ST_MakePoint(${longitude}::float, ${latitude}::float), 4326)::geography,
+            ${radiusMeters}::float
           )
         LIMIT ${limit};
       `
