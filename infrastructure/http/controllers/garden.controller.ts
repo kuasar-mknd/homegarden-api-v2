@@ -3,6 +3,7 @@ import type { AddPlantUseCase } from '../../../application/use-cases/garden/add-
 import type { FindNearbyGardensUseCase } from '../../../application/use-cases/garden/find-nearby-gardens.use-case.js'
 import type { GetGardenWeatherUseCase } from '../../../application/use-cases/garden/get-garden-weather.use-case.js'
 import type { GetUserPlantsUseCase } from '../../../application/use-cases/garden/get-user-plants.use-case.js'
+import type { z } from '@hono/zod-openapi'
 import type { Plant } from '../../../domain/entities/plant.entity.js'
 import { logger } from '../../config/logger.js'
 import type { AddPlantInputSchema, NearbyGardensQuerySchema } from '../schemas/garden.schema.js'
@@ -29,8 +30,8 @@ export class GardenController {
         )
       }
 
-      // Use validated data from middleware
-      const body = c.req.valid('json' as never) as (typeof AddPlantInputSchema)['_output']
+      // biome-ignore lint/suspicious/noExplicitAny: Hono Context inference limitation
+      const body = (await c.req.valid('json' as never)) as z.infer<typeof AddPlantInputSchema>
 
       const result = await this.addPlantUseCase.execute({
         userId: user.id,

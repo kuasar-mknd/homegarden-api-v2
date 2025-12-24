@@ -36,7 +36,7 @@ describe('PlantIdController', () => {
   describe('identify', () => {
     it('should return 200 on success', async () => {
       const body = { imageBase64: 'data', organs: ['leaf'] }
-      mockContext.req.valid.mockReturnValue(body)
+      mockContext.req.valid.mockResolvedValue(body)
 
       const mockResult = { suggestions: [] }
       vi.mocked(mockUseCase.execute).mockResolvedValue(ok(mockResult as any))
@@ -51,7 +51,7 @@ describe('PlantIdController', () => {
 
     it('should handle imageUrl source', async () => {
       const body = { imageUrl: 'http://link.com' }
-      mockContext.req.valid.mockReturnValue(body)
+      mockContext.req.valid.mockResolvedValue(body)
       vi.mocked(mockUseCase.execute).mockResolvedValue(ok({} as any))
 
       await controller.identify(mockContext)
@@ -68,7 +68,7 @@ describe('PlantIdController', () => {
         maxSuggestions: 3,
         location: { latitude: 10, longitude: 20 },
       }
-      mockContext.req.valid.mockReturnValue(body)
+      mockContext.req.valid.mockResolvedValue(body)
       vi.mocked(mockUseCase.execute).mockResolvedValue(ok({ suggestions: [] } as any))
 
       await controller.identify(mockContext)
@@ -76,7 +76,7 @@ describe('PlantIdController', () => {
     })
 
     it('should return use case error with correct status', async () => {
-      mockContext.req.valid.mockReturnValue({ imageBase64: 'data' })
+      mockContext.req.valid.mockResolvedValue({ imageBase64: 'data' })
       vi.mocked(mockUseCase.execute).mockResolvedValue(
         fail(new AppError('Service Error', 503, 'SERVICE_UNAVAILABLE')),
       )
@@ -89,9 +89,7 @@ describe('PlantIdController', () => {
     })
 
     it('should handle generic errors', async () => {
-      mockContext.req.valid.mockImplementation(() => {
-        throw new Error('Boom')
-      })
+      mockContext.req.valid.mockRejectedValue(new Error('Boom'))
 
       const res = await controller.identify(mockContext)
 
@@ -99,6 +97,16 @@ describe('PlantIdController', () => {
       const resData = await res.json()
       expect(resData.error).toBe('INTERNAL_ERROR')
       expect(resData.message).toBe('Boom')
+    })
+
+    it('should handle non-error objects', async () => {
+      mockContext.req.valid.mockRejectedValue('not an error')
+
+      const res = await controller.identify(mockContext)
+
+      expect(res.status).toBe(500)
+      const resData = await res.json()
+      expect(resData.message).toBe('An unexpected error occurred')
     })
   })
 

@@ -5,6 +5,7 @@
  * Handles request parsing, validation, and response formatting.
  */
 
+import type { z } from '@hono/zod-openapi'
 import type { Context } from 'hono'
 import type { PlantOrgan } from '../../../application/ports/ai-identification.port.js'
 import type {
@@ -34,10 +35,10 @@ export class PlantIdController {
    */
   identify = async (c: Context) => {
     try {
-      // Validated by Zod OpenAPI middleware
-      const validatedData = c.req.valid(
-        'json' as never,
-      ) as (typeof IdentifySpeciesInputSchema)['_output']
+      // biome-ignore lint/suspicious/noExplicitAny: Hono Context inference limitation
+      const validatedData = (await c.req.valid('json' as never)) as z.infer<
+        typeof IdentifySpeciesInputSchema
+      >
 
       // Build use case input
       const input: IdentifySpeciesInput = {}
