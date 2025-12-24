@@ -5,7 +5,6 @@ import { logger } from '../../config/logger.js'
 import { prisma } from '../../database/prisma.client.js'
 
 // Initialize Supabase client
-// We use a factory or singleton pattern here to// Initialize Supabase client
 const getSupabase = () => {
   if (!env.SUPABASE_URL || !env.SUPABASE_PUBLISHABLE_KEY) {
     throw new Error('Supabase URL or Publishable Key not configured')
@@ -29,6 +28,18 @@ export const authMiddleware = createMiddleware(async (c, next) => {
         message: 'Missing Authorization header',
       },
       401,
+    )
+  }
+
+  // Prevent DoS via extremely long headers (limit to 8KB which is generous for JWT)
+  if (authHeader.length > 8192) {
+    return c.json(
+      {
+        success: false,
+        error: 'BAD_REQUEST',
+        message: 'Authorization header too long',
+      },
+      400,
     )
   }
 
