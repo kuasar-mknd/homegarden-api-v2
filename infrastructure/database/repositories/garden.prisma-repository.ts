@@ -1,3 +1,4 @@
+import { Prisma } from '@prisma/client'
 import { Garden } from '../../../domain/entities/garden.entity.js'
 import type {
   CreateGardenData,
@@ -70,6 +71,40 @@ export class GardenPrismaRepository implements GardenRepository {
     const { latitude, longitude, radiusKm = 10, limit = 50 } = query
     const radiusMeters = radiusKm * 1000
 
+    // Optimization: Bounding Box Pre-filtering
+    // Calculate rough bounding box to use B-Tree index on [latitude, longitude]
+    // before applying expensive PostGIS ST_DWithin function.
+    // 1 degree lat ~= 111km
+    // 1 degree lon ~= 111km * cos(lat)
+    const latDelta = radiusKm / 111
+    // Handle pole proximity: if close to poles (e.g. > 80 deg), skip lon check or widen significantly
+    // cos(80 deg) is approx 0.17, so delta is 6x larger.
+    // If we are really close to the pole, longitude doesn't matter much or spans the whole globe.
+    const isNearPole = Math.abs(latitude) > 80
+    const lonDelta = isNearPole ? 360 : radiusKm / (111 * Math.cos(latitude * (Math.PI / 180)))
+
+    const minLat = Math.max(-90, latitude - latDelta)
+    const maxLat = Math.min(90, latitude + latDelta)
+
+    const minLon = longitude - lonDelta
+    const maxLon = longitude + lonDelta
+
+    // Handle International Date Line wrapping
+    let lonCondition: Prisma.Sql
+
+    if (minLon < -180 || maxLon > 180) {
+      // Wrap around case
+      // Normalize to -180 to 180 range isn't quite right for the query directly
+      // If query spans date line, we need OR logic: (lon >= minLonWrapped OR lon <= maxLonWrapped)
+      // But Prisma raw query composition is tricky with dynamic conditions.
+      // For simplicity in this optimization pass, if we cross the date line, we skip the longitude pre-filter.
+      // It's an edge case where performance might degrade slightly back to baseline, which is acceptable.
+      lonCondition = Prisma.sql`1=1`
+    } else {
+      // Standard case
+      lonCondition = Prisma.sql`longitude BETWEEN ${minLon} AND ${maxLon}`
+    }
+
     try {
       // Use Prisma's raw query for PostGIS optimization
       // ST_DWithin uses spheroid distance for geography type (meters)
@@ -79,11 +114,14 @@ export class GardenPrismaRepository implements GardenRepository {
           id, name, latitude, longitude, description, size, climate, 
           created_at as "createdAt", updated_at as "updatedAt", user_id as "userId"
         FROM gardens
-        WHERE ST_DWithin(
-          ST_SetSRID(ST_MakePoint(longitude, latitude), 4326)::geography,
-          ST_SetSRID(ST_MakePoint(${longitude}, ${latitude}), 4326)::geography,
-          ${radiusMeters}
-        )
+        WHERE
+          latitude BETWEEN ${minLat} AND ${maxLat}
+          AND ${lonCondition}
+          AND ST_DWithin(
+            ST_SetSRID(ST_MakePoint(longitude, latitude), 4326)::geography,
+            ST_SetSRID(ST_MakePoint(${longitude}, ${latitude}), 4326)::geography,
+            ${radiusMeters}
+          )
         LIMIT ${limit};
       `
 

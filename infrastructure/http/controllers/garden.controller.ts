@@ -5,7 +5,7 @@ import type { GetGardenWeatherUseCase } from '../../../application/use-cases/gar
 import type { GetUserPlantsUseCase } from '../../../application/use-cases/garden/get-user-plants.use-case.js'
 import type { Plant } from '../../../domain/entities/plant.entity.js'
 import { logger } from '../../config/logger.js'
-import { gardenIdSchema, nearbyGardenSchema } from '../validators/garden.validator.js'
+import type { AddPlantInputSchema, NearbyGardensQuerySchema } from '../schemas/garden.schema.js'
 
 export class GardenController {
   constructor(
@@ -29,17 +29,18 @@ export class GardenController {
         )
       }
 
-      const body = (await c.req.json()) as any
+      // Use validated data from middleware
+      const body = c.req.valid('json' as never) as (typeof AddPlantInputSchema)['_output']
 
       const result = await this.addPlantUseCase.execute({
         userId: user.id,
         nickname: body.nickname,
         location: body.location,
         speciesInfo: {
-          commonName: body.commonName,
-          scientificName: body.scientificName,
-          family: body.family,
-          imageUrl: body.imageUrl,
+          ...(body.commonName ? { commonName: body.commonName } : {}),
+          ...(body.scientificName ? { scientificName: body.scientificName } : {}),
+          ...(body.family ? { family: body.family } : {}),
+          ...(body.imageUrl ? { imageUrl: body.imageUrl } : {}),
         },
       })
 
@@ -138,12 +139,7 @@ export class GardenController {
         )
       }
 
-      const paramResult = gardenIdSchema.safeParse(c.req.param())
-      if (!paramResult.success) {
-        return c.json({ success: false, error: 'BAD_REQUEST', message: 'Invalid Garden ID' }, 400)
-      }
-
-      const { gardenId } = paramResult.data
+      const { gardenId } = c.req.valid('param' as never) as { gardenId: string }
 
       const result = await this.getGardenWeatherUseCase.execute(gardenId, user.id)
 
@@ -193,20 +189,8 @@ export class GardenController {
         )
       }
 
-      const queryResult = nearbyGardenSchema.safeParse(c.req.query())
-
-      if (!queryResult.success) {
-        return c.json(
-          {
-            success: false,
-            error: 'BAD_REQUEST',
-            message: queryResult.error.issues[0]?.message || 'Invalid query parameters',
-          },
-          400,
-        )
-      }
-
-      const { lat, lng, radius, limit } = queryResult.data
+      const query = c.req.valid('query' as never) as (typeof NearbyGardensQuerySchema)['_output']
+      const { lat, lng, radius, limit } = query
 
       const result = await this.findNearbyGardensUseCase.execute({
         latitude: lat,

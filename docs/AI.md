@@ -1,97 +1,52 @@
-# AI Integration Guide
+# AI Integration
 
-HomeGarden API uses **Google Gemini Vision** for intelligent plant analysis.
+HomeGarden leverages Google Gemini Vision models to provide advanced plant identification and health diagnosis capabilities.
 
----
+## 🤖 Models Configured
 
-## 🤖 Models & Configuration
+The specific models are configurable via environment variables to allow for easy upgrades or testing different model versions.
 
-The application uses different models for specific tasks to balance speed, cost, and accuracy.
+| Feature | Env Variable | Default Model | Description |
+|---|---|---|---|
+| **Plant Identification** | `GEMINI_IDENTIFICATION_MODEL` | `gemini-2.0-flash` | Optimized for speed and general object recognition. |
+| **Plant Diagnosis** | `GEMINI_DIAGNOSIS_MODEL` | `gemini-2.5-pro-preview-06-05` | A more capable model for complex reasoning and detailed analysis. |
 
-| Task | Env Variable | Default Model | Purpose |
-|------|--------------|---------------|---------|
-| **Identification** | `GEMINI_IDENTIFICATION_MODEL` | `gemini-2.0-flash` | Fast, efficient image analysis for species ID. |
-| **Diagnosis** | `GEMINI_DIAGNOSIS_MODEL` | `gemini-2.5-pro-preview-06-05` | High-reasoning model for complex disease analysis. |
+## 🔑 Configuration
 
-### Configuration
+To enable AI features, you must provide a Google AI API key:
 
-Set these in your `.env` file:
-
-```env
-GOOGLE_AI_API_KEY=your-api-key
-GEMINI_IDENTIFICATION_MODEL=gemini-2.0-flash
-GEMINI_DIAGNOSIS_MODEL=gemini-2.5-pro-preview-06-05
+```bash
+GOOGLE_AI_API_KEY=your_api_key_here
 ```
 
----
+## 📋 JSON Schemas
 
-## 🧠 Features
+The application instructs the AI to return structured JSON data.
 
-### 1. Plant Identification
-
-- **Endpoint**: `POST /api/v2/plant-id/identify`
-- **Input**: Image URL (or base64)
-- **Output**: JSON containing:
-  - Species name (Common & Scientific)
-  - Confidence score
-  - Description
-  - Care requirements
-
-### 2. Disease Diagnosis (Dr. Plant)
-
-- **Endpoint**: `POST /api/v2/dr-plant/diagnose`
-- **Input**: Image URL + Optional user observation text
-- **Output**: JSON containing:
-  - Diagnosis (Health status)
-  - Disease name (if any)
-  - Confidence
-  - Treatment recommendations
-  - Prevention tips
-
----
-
-## 🛡️ Security & Safety
-
-- **SSRF Protection**: Image URLs are validated to prevent Server-Side Request Forgery.
-- **Content Safety**: Gemini's built-in safety settings block harmful/explicit content.
-- **Prompt Engineering**: System instructions utilize strict JSON schemas to ensure reliable structured output.
-
----
-
-## 💰 Cost Control & Optimization
-
-1. **Caching (Recommended)**: Implement caching for identical image URLs to avoid redundant API calls. The `OpenMeteoAdapter` pattern can be adapted here.
-2. **Rate Limiting**: The API applies rate limits (`RATE_LIMIT_MAX`) to prevent abuse.
-3. **Model Selection**: `flash` models are used by default for high-volume tasks (identification) to minimize costs.
-4. **Token Management**: Prompts are optimized to be concise, reducing input token costs.
-
----
-
-## 🧪 Testing with AI
-
-- **Integration Tests**: Mock the `IGenerativeAI` adapter or the Google API response to avoid real costs during CI.
-- **Live Tests**: Use the `google-ai-studio` playground to verify prompt performance before updating the codebase.
-
----
-
-## 📝 Example Response (Diagnosis)
-
+### Identification Schema
 ```json
 {
-  "isHealthy": false,
-  "disease": "Powdery Mildew",
+  "name": "Monstera Deliciosa",
   "confidence": 0.95,
-  "symptoms": [
-    "White powdery spots on leaves",
-    "Yellowing leaves"
-  ],
-  "treatment": [
-    "Remove infected leaves",
-    "Apply fungicide (neem oil)"
-  ],
-  "prevention": [
-    "Improve air circulation",
-    "Avoid overhead watering"
-  ]
+  "details": "A tropical plant with holey leaves...",
+  "care_tips": ["Indirect light", "Water weekly"]
 }
 ```
+
+### Diagnosis Schema
+```json
+{
+  "condition": "Root Rot",
+  "severity": "high",
+  "description": "Roots are turning brown and mushy due to overwatering.",
+  "treatment": ["Repot immediately", "Trim affected roots", "Reduce watering frequency"]
+}
+```
+
+## 💰 Cost Control Strategy
+
+To manage costs and latency:
+
+1.  **Strict Rate Limiting**: The API enforces rate limits per user/IP (configured via `RATE_LIMIT_WINDOW_MS` and `RATE_LIMIT_MAX`).
+2.  **Stateless**: The AI service is stateless; no conversation history is maintained to minimize token usage.
+3.  **JSON Mode**: We strictly request JSON output to avoid verbose, unstructured text responses.
