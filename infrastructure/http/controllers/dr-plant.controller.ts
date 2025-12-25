@@ -2,6 +2,7 @@ import type { Context } from 'hono'
 import type { DiagnosePlantUseCase } from '../../../application/use-cases/dr-plant/diagnose-plant.use-case.js'
 import { logger } from '../../config/logger.js'
 import { diagnosePlantSchema } from '../validators/dr-plant.validator.js'
+import { validateImageSignature } from '../validators/file-signature.validator.js'
 
 export class DrPlantController {
   constructor(private diagnosePlantUseCase: DiagnosePlantUseCase) {}
@@ -36,6 +37,18 @@ export class DrPlantController {
       // Extract buffer from File
       const arrayBuffer = await image.arrayBuffer()
       const buffer = Buffer.from(arrayBuffer)
+
+      // Validate file signature (magic bytes) to prevent extension spoofing
+      if (!validateImageSignature(buffer, image.type)) {
+        return c.json(
+          {
+            success: false,
+            error: 'VALIDATION_ERROR',
+            message: 'Invalid file signature. The file content does not match its extension.',
+          },
+          400,
+        )
+      }
 
       const result = await this.diagnosePlantUseCase.execute(buffer, image.type, symptoms)
 
