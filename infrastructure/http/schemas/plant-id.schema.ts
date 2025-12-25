@@ -7,9 +7,9 @@ export const PlantOrganSchema = z.enum(['leaf', 'flower', 'fruit', 'bark', 'habi
 })
 
 export const LocationSchema = z.object({
-  latitude: z.number(),
-  longitude: z.number(),
-  country: z.string().max(100).optional(),
+  latitude: z.number().min(-90).max(90),
+  longitude: z.number().min(-180).max(180),
+  country: z.string().trim().max(100).optional(),
 })
 
 // Input Schema (Validation)
@@ -26,9 +26,9 @@ export const IdentifySpeciesInputSchema = z
       .max(2048)
       .optional()
       .openapi({ description: 'Public URL of the image' }),
-    mimeType: z.string().max(50).optional(),
+    mimeType: z.string().trim().max(50).optional(),
     organs: z.array(PlantOrganSchema).optional(),
-    maxSuggestions: z.number().max(10).optional().default(5),
+    maxSuggestions: z.number().min(1).max(10).optional().default(5),
     location: LocationSchema.optional(),
   })
   .refine((data) => data.imageBase64 || data.imageUrl, {

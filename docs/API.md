@@ -41,7 +41,15 @@ The best way to explore the API is via the built-in Swagger UI, which provides i
 
 ### Users
 
+- `GET /users/me` - Get current user profile.
+- `PUT /users/me` - Update user profile (display name, preferences).
 - `GET /users/:id` - Get public profile information for a user.
+
+### Care Tracker
+
+- `GET /plants/:plantId/schedules` - Get care schedules for a plant.
+- `POST /plants/:plantId/schedules` - Create a care schedule.
+- `POST /schedules/:id/logs` - Log a care activity (mark as completed).
 
 ---
 

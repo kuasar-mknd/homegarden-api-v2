@@ -2,7 +2,7 @@ import { rateLimiter } from 'hono-rate-limiter'
 import { env } from '../../config/env.js'
 
 /**
- * Rate Limiter Middleware
+ * Global Rate Limiter Middleware
  *
  * Limits the number of requests from the same IP address within a time window.
  * Uses hono-rate-limiter with in-memory storage.
@@ -12,4 +12,21 @@ export const rateLimitMiddleware = rateLimiter({
   limit: env.RATE_LIMIT_MAX,
   standardHeaders: 'draft-6',
   keyGenerator: (c) => c.req.header('x-forwarded-for') ?? 'unknown',
+})
+
+/**
+ * AI Rate Limiter Middleware
+ *
+ * Stricter limits for expensive AI endpoints (Gemini).
+ */
+export const aiRateLimitMiddleware = rateLimiter({
+  windowMs: 60 * 1000, // 1 minute
+  limit: 10, // 10 requests per minute
+  standardHeaders: 'draft-6',
+  keyGenerator: (c) => c.req.header('x-forwarded-for') ?? 'unknown',
+  message: {
+    success: false,
+    error: 'TOO_MANY_REQUESTS',
+    message: 'AI request limit exceeded. Please try again later.',
+  },
 })
