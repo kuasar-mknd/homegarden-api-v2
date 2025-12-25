@@ -6,6 +6,19 @@ import type {
 } from '../../../domain/repositories/plant.repository.js'
 import { prisma } from '../prisma.client.js'
 
+// Optimization: Shared selection object to reduce payload size and avoid code duplication
+const GARDEN_SELECT = {
+  select: {
+    id: true,
+    name: true,
+    userId: true,
+    latitude: true,
+    longitude: true,
+    createdAt: true,
+    updatedAt: true,
+  },
+}
+
 export class PlantPrismaRepository implements PlantRepository {
   async create(data: CreatePlantData): Promise<Plant> {
     const plant = await prisma.plant.create({
@@ -30,7 +43,9 @@ export class PlantPrismaRepository implements PlantRepository {
         thumbnailUrl: data.thumbnailUrl,
         use: data.use,
       } as any,
-      include: { garden: true }, // Often needed for domain entity completeness if linked
+      include: {
+        garden: GARDEN_SELECT,
+      },
     })
     return this.mapToEntity(plant)
   }
@@ -38,7 +53,9 @@ export class PlantPrismaRepository implements PlantRepository {
   async findById(id: string): Promise<Plant | null> {
     const plant = await prisma.plant.findUnique({
       where: { id },
-      include: { garden: true },
+      include: {
+        garden: GARDEN_SELECT,
+      },
     })
     return plant ? this.mapToEntity(plant) : null
   }
@@ -46,7 +63,9 @@ export class PlantPrismaRepository implements PlantRepository {
   async findByGardenId(gardenId: string): Promise<Plant[]> {
     const plants = await prisma.plant.findMany({
       where: { gardenId },
-      include: { garden: true },
+      include: {
+        garden: GARDEN_SELECT,
+      },
       orderBy: { createdAt: 'desc' },
     })
     return plants.map(this.mapToEntity)
@@ -57,7 +76,9 @@ export class PlantPrismaRepository implements PlantRepository {
       where: {
         garden: { userId },
       },
-      include: { garden: true },
+      include: {
+        garden: GARDEN_SELECT,
+      },
       orderBy: { createdAt: 'desc' },
     })
     return plants.map(this.mapToEntity)
@@ -69,7 +90,9 @@ export class PlantPrismaRepository implements PlantRepository {
       data: {
         ...data,
       } as any,
-      include: { garden: true },
+      include: {
+        garden: GARDEN_SELECT,
+      },
     })
     return this.mapToEntity(plant)
   }
@@ -99,7 +122,9 @@ export class PlantPrismaRepository implements PlantRepository {
         where,
         skip,
         take: limit,
-        include: { garden: true },
+        include: {
+          garden: GARDEN_SELECT,
+        },
         orderBy: { createdAt: 'desc' },
       }),
       prisma.plant.count({ where }),
