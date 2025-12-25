@@ -10,16 +10,19 @@ describe('UI Templates', () => {
     })
 
     it('should include dark mode media query', () => {
-      expect(SHARED_STYLES).toContain('@media (prefers-color-scheme: dark)')
+      // Handles minified CSS
+      expect(SHARED_STYLES).toContain('@media (prefers-color-scheme:dark)')
     })
 
     it('should include selection style', () => {
         expect(SHARED_STYLES).toContain('::selection')
-        expect(SHARED_STYLES).toContain('background: var(--primary)')
+        // Handles minified CSS
+        expect(SHARED_STYLES).toContain('background:var(--primary)')
     })
 
     it('should include focus-visible style with primary color', () => {
-        expect(SHARED_STYLES).toContain('outline: 2px solid var(--primary)')
+        // Handles minified CSS
+        expect(SHARED_STYLES).toContain('outline:2px solid var(--primary)')
     })
 
     it('should include new utility classes', () => {
@@ -29,7 +32,8 @@ describe('UI Templates', () => {
     })
 
     it('should include print styles for expanding URLs', () => {
-        expect(SHARED_STYLES).toContain('a[href^="http"]:after { content: " (" attr(href) ")"; }')
+        // Handles minified CSS
+        expect(SHARED_STYLES).toContain('a[href^="http"]:after{content:" (" attr(href) ")"}')
     })
   })
 

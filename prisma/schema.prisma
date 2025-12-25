@@ -66,6 +66,8 @@ model Garden {
   @@index([userId])
   @@index([latitude, longitude])
   @@index([name])
+  // Optimization: Composite index for finding a garden by user and name (AddPlantUseCase)
+  @@index([userId, name])
   @@map("gardens")
 }
 
