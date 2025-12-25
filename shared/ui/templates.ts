@@ -11,6 +11,14 @@ export const SHARED_STYLES = `
     --card-text: #666;
     --status-text: #888;
     --error: #d32f2f;
+
+    /* Radius System */
+    --radius-sm: 4px;
+    --radius-md: 8px;
+    --radius-lg: 12px;
+    --radius-xl: 16px;
+
+    accent-color: var(--primary);
   }
   @media (prefers-color-scheme: dark) {
     :root {
@@ -32,6 +40,7 @@ export const SHARED_STYLES = `
   html {
     scroll-behavior: smooth;
     scroll-padding-top: 2rem;
+    scrollbar-color: var(--card-border) var(--bg);
   }
   body {
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
@@ -46,7 +55,7 @@ export const SHARED_STYLES = `
     align-items: center;
     min-height: 100vh;
   }
-  /* Scrollbar */
+  /* Scrollbar for Webkit */
   ::-webkit-scrollbar {
     width: 8px;
   }
@@ -55,7 +64,7 @@ export const SHARED_STYLES = `
   }
   ::-webkit-scrollbar-thumb {
     background: var(--card-border);
-    border-radius: 4px;
+    border-radius: var(--radius-sm);
   }
   ::-webkit-scrollbar-thumb:hover {
     background: var(--secondary);
@@ -68,7 +77,7 @@ export const SHARED_STYLES = `
     background: var(--primary);
     color: #fff;
     padding: 0.5rem 1rem;
-    border-radius: 0 0 8px 8px;
+    border-radius: 0 0 var(--radius-md) var(--radius-md);
     z-index: 100;
     transition: top 0.3s;
     text-decoration: none;
@@ -77,11 +86,12 @@ export const SHARED_STYLES = `
   .skip-link:focus {
     top: 0;
     outline: 2px solid var(--primary);
+    outline-offset: 4px;
   }
   .container {
     background: var(--card-bg);
     padding: 3rem;
-    border-radius: 16px;
+    border-radius: var(--radius-xl);
     border: 1px solid var(--card-border);
     box-shadow: 0 4px 20px rgba(0,0,0,0.05);
     max-width: 600px;
@@ -94,7 +104,7 @@ export const SHARED_STYLES = `
     background: #e8f5e9;
     color: #2e7d32;
     padding: 4px 12px;
-    border-radius: 12px;
+    border-radius: var(--radius-lg);
     font-size: 0.85rem;
     font-weight: 600;
     margin-bottom: 2rem;
@@ -125,11 +135,14 @@ export const SHARED_STYLES = `
     .grid {
       grid-template-columns: 1fr;
     }
+    header h1 {
+      font-size: 1.75rem;
+    }
   }
   .card {
     border: 1px solid var(--card-border);
     padding: 1.5rem;
-    border-radius: 12px;
+    border-radius: var(--radius-lg);
     transition: transform 0.2s, box-shadow 0.2s;
     text-decoration: none;
     color: inherit;
@@ -161,7 +174,7 @@ export const SHARED_STYLES = `
     background: var(--primary);
     color: white;
     padding: 0.75rem 1.5rem;
-    border-radius: 8px;
+    border-radius: var(--radius-md);
     text-decoration: none;
     font-weight: 600;
     margin-top: 1rem;
@@ -208,6 +221,23 @@ export const SHARED_STYLES = `
     height: 0.9em;
   }
 
+  /* Support for commonly used documentation elements */
+  kbd {
+    background-color: var(--card-border);
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--status-text);
+    padding: 2px 4px;
+    font-size: 0.85em;
+    font-family: monospace;
+  }
+  blockquote {
+    border-left: 4px solid var(--primary);
+    margin: 1rem 0;
+    padding-left: 1rem;
+    color: var(--card-text);
+    font-style: italic;
+  }
+
   footer.status {
     margin-top: 2rem;
     padding-top: 2rem;
@@ -218,9 +248,15 @@ export const SHARED_STYLES = `
   footer a {
     color: var(--primary);
     text-decoration: none;
+    text-underline-offset: 4px;
   }
   footer a:hover {
     text-decoration: underline;
+  }
+  footer a:focus-visible {
+    outline: 2px solid var(--primary);
+    outline-offset: 2px;
+    border-radius: var(--radius-sm);
   }
   .footer-links {
     margin-top: 0.5rem;
@@ -256,9 +292,10 @@ export const SHARED_STYLES = `
     display: block;
     background: #f5f5f5;
     padding: 0.5rem;
-    border-radius: 4px;
+    border-radius: var(--radius-sm);
     margin: 1rem 0;
     word-break: break-all;
+    overflow-x: auto;
   }
   @media (prefers-color-scheme: dark) {
     .code-block {
