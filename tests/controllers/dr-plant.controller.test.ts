@@ -3,12 +3,18 @@ import { DrPlantController } from '../../infrastructure/http/controllers/dr-plan
 import { AppError } from '../../shared/errors/app-error.js'
 import { fail, ok } from '../../shared/types/result.type.js'
 
+// Mock the file signature validator
+vi.mock('../../infrastructure/http/validators/file-signature.validator.js', () => ({
+  validateImageSignature: vi.fn().mockReturnValue(true),
+}))
+
 describe('DrPlantController', () => {
   let controller: DrPlantController
   let mockUseCase: any
   let mockContext: any
 
   beforeEach(() => {
+    vi.clearAllMocks()
     mockUseCase = { execute: vi.fn() }
     controller = new DrPlantController(mockUseCase)
 
