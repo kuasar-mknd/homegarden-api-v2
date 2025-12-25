@@ -26,6 +26,17 @@ describe('UI Templates', () => {
       expect(SHARED_STYLES).toContain('.badge-error')
       expect(SHARED_STYLES).toContain('.code-block')
       expect(SHARED_STYLES).toContain('.footer-links')
+      expect(SHARED_STYLES).toContain('.btn-icon')
+    })
+
+    it('should include correct dark mode error badge color', () => {
+        expect(SHARED_STYLES).toContain('color: #ffcdd2')
+    })
+
+    it('should use flexbox for buttons', () => {
+        expect(SHARED_STYLES).toContain('display: inline-flex')
+        expect(SHARED_STYLES).toContain('align-items: center')
+        expect(SHARED_STYLES).toContain('gap: 0.5rem')
     })
 
     it('should include print styles for expanding URLs', () => {
@@ -78,6 +89,11 @@ describe('UI Templates', () => {
         const html = getNotFoundPageHtml('/foo')
         expect(html).toContain('class="code-block"')
         expect(html).not.toContain('style="display: block;')
+    })
+
+    it('should include icons in buttons', () => {
+        const html = getNotFoundPageHtml('/foo')
+        expect(html).toContain('<svg class="btn-icon"')
     })
   })
 })
