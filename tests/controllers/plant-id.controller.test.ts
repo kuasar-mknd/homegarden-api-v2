@@ -96,7 +96,7 @@ describe('PlantIdController', () => {
       expect(res.status).toBe(500)
       const resData = await res.json()
       expect(resData.error).toBe('INTERNAL_ERROR')
-      expect(resData.message).toBe('Boom')
+      expect(resData.message).toBe('An unexpected error occurred')
     })
 
     it('should handle non-error objects', async () => {
