@@ -112,7 +112,7 @@ export const authMiddleware = createMiddleware(async (c, next) => {
       {
         success: false,
         error: 'INTERNAL_ERROR',
-        message: `Authentication service error: ${error instanceof Error ? error.message : String(error)}`,
+        message: 'Authentication service error',
       },
       500,
     )

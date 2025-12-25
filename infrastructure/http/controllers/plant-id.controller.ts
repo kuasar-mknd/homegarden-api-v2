@@ -96,7 +96,7 @@ export class PlantIdController {
         {
           success: false,
           error: 'INTERNAL_ERROR',
-          message: error instanceof Error ? error.message : 'An unexpected error occurred',
+          message: 'An unexpected error occurred',
         },
         500,
       )

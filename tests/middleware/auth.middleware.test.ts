@@ -147,7 +147,7 @@ describe('AuthMiddleware', () => {
     const result = (await authMiddleware(mockContext, mockNext)) as any
 
     expect(result.status).toBe(500)
-    expect(result.data.message).toContain('Supabase URL or Publishable Key not configured')
+    expect(result.data.message).toBe('Authentication service error')
 
     // Restore
     ;(env as any).SUPABASE_URL = originalUrl
@@ -191,6 +191,6 @@ describe('AuthMiddleware', () => {
     const result = (await freshAuthMiddleware(mockContext, mockNext)) as any
 
     expect(result.status).toBe(500)
-    expect(result.data.message).toContain('String Error')
+    expect(result.data.message).toBe('Authentication service error')
   })
 })
