@@ -110,7 +110,7 @@ export const SHARED_STYLES = `
     }
     .badge-error {
       background: #3e2723;
-      color: #ef5350;
+      color: #ffcdd2;
     }
   }
   .grid {
@@ -154,7 +154,10 @@ export const SHARED_STYLES = `
   .card p { margin: 0; font-size: 0.9rem; color: var(--card-text); }
 
   .btn {
-    display: inline-block;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
     background: var(--primary);
     color: white;
     padding: 0.75rem 1.5rem;
@@ -171,14 +174,19 @@ export const SHARED_STYLES = `
     outline: 2px solid var(--primary);
     outline-offset: 2px;
   }
+  .btn-icon {
+    width: 1.25em;
+    height: 1.25em;
+  }
   .btn-secondary {
     background: transparent;
     color: var(--text);
-    border: 1px solid var(--card-border);
+    border: 1px solid var(--status-text);
   }
   .btn-secondary:hover {
     background: var(--card-border);
     color: var(--text);
+    border-color: var(--card-border);
   }
   .btn-group {
     display: flex;
@@ -282,6 +290,8 @@ export const SHARED_STYLES = `
 `
 
 const EXTERNAL_LINK_ICON = `<svg class="external-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>`
+const HOME_ICON = `<svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>`
+const DOC_ICON = `<svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>`
 
 interface LayoutProps {
   title: string
@@ -413,8 +423,8 @@ export function getNotFoundPageHtml(path: string): string {
       <p>Please check the URL or go back to the homepage.</p>
 
       <div class="btn-group">
-        <a href="/" class="btn">Return Home</a>
-        <a href="/ui" class="btn btn-secondary">Read Documentation</a>
+        <a href="/" class="btn">${HOME_ICON}Return Home</a>
+        <a href="/ui" class="btn btn-secondary">${DOC_ICON}Read Documentation</a>
       </div>
     </main>
     `,
