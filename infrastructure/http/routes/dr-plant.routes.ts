@@ -1,10 +1,14 @@
 import { createRoute, OpenAPIHono } from '@hono/zod-openapi'
 import { bodyLimit } from 'hono/body-limit'
 import type { DrPlantController } from '../controllers/dr-plant.controller.js'
+import { aiRateLimitMiddleware } from '../middleware/rate-limit.middleware.js'
 import { DiagnosePlantResponseSchema, ErrorSchema } from '../schemas/dr-plant.schema.js'
 
 export const createDrPlantRoutes = (controller: DrPlantController) => {
   const app = new OpenAPIHono()
+
+  // Apply rate limiting middleware for AI endpoints
+  app.use('/diagnose', aiRateLimitMiddleware)
 
   // Define OpenAPI route for diagnosis
   const diagnoseRoute = createRoute({
