@@ -106,6 +106,10 @@ model Plant {
   @@index([gardenId, commonName])
   // Optimization: Composite index for sorted queries (e.g., "Newest plants in garden")
   @@index([gardenId, createdAt])
+  // Optimization: Filter plants by exposure in a garden
+  @@index([gardenId, exposure])
+  // Optimization: Filter plants by watering needs in a garden
+  @@index([gardenId, watering])
   @@map("plants")
 }
 
@@ -285,6 +289,8 @@ model CareSchedule {
   @@index([isEnabled])
   // Optimization: Composite index for garden calendar views
   @@index([gardenId, nextDueDate])
+  // Optimization: Filter tasks by type for a user (e.g., "My Watering Tasks")
+  @@index([userId, taskType])
   @@map("care_schedules")
 }
 

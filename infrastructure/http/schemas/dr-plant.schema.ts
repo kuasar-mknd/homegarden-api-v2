@@ -11,7 +11,7 @@ export const DiagnosePlantInputSchema = z.object({
     description: 'Plant image file (JPEG, PNG, WEBP)',
     example: '[Binary file data]',
   }),
-  symptoms: z.string().max(1000).optional().openapi({
+  symptoms: z.string().trim().max(1000).optional().openapi({
     description: 'Optional description of visible symptoms',
     example: 'Leaves are turning yellow with brown spots',
   }),

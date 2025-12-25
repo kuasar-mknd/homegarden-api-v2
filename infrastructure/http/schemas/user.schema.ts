@@ -5,21 +5,30 @@ import { z } from '@hono/zod-openapi'
 // =============================================================================
 
 export const UserIdPropSchema = z.object({
-  id: z.string().openapi({
-    param: {
-      name: 'id',
-      in: 'path',
-    },
-    example: 'cjld2cjxh0000qzrmn831i7rn',
-    description: 'User ID',
-  }),
+  id: z
+    .string()
+    .trim()
+    .max(50)
+    .openapi({
+      param: {
+        name: 'id',
+        in: 'path',
+      },
+      example: 'cjld2cjxh0000qzrmn831i7rn',
+      description: 'User ID',
+    }),
 })
 
 export const UserPublicProfileSchema = z.object({
   id: z.string().openapi({ example: 'cjld2cjxh0000qzrmn831i7rn' }),
-  firstName: z.string().openapi({ example: 'John' }),
-  lastName: z.string().openapi({ example: 'Doe' }),
-  avatarUrl: z.string().nullable().openapi({ example: 'https://example.com/avatar.jpg' }),
+  firstName: z.string().trim().max(50).openapi({ example: 'John' }),
+  lastName: z.string().trim().max(50).openapi({ example: 'Doe' }),
+  avatarUrl: z
+    .string()
+    .url()
+    .max(500)
+    .nullable()
+    .openapi({ example: 'https://example.com/avatar.jpg' }),
   createdAt: z
     .string()
     .datetime()

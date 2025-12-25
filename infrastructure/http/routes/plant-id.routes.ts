@@ -7,6 +7,7 @@
 import { createRoute, OpenAPIHono } from '@hono/zod-openapi'
 import { bodyLimit } from 'hono/body-limit'
 import type { PlantIdController } from '../controllers/plant-id.controller.js'
+import { aiRateLimitMiddleware } from '../middleware/rate-limit.middleware.js'
 import {
   ErrorSchema,
   IdentifySpeciesInputSchema,
@@ -40,6 +41,9 @@ export const createPlantIdRoutes = (controller: PlantIdController) => {
   // ============================================================
   // MIDDLEWARE
   // ============================================================
+
+  // Apply rate limiting middleware for AI endpoints
+  router.use('/identify', aiRateLimitMiddleware)
 
   // Body size limit for image uploads (10MB)
   router.use(

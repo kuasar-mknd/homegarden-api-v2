@@ -57,7 +57,24 @@ export class UserPrismaRepository implements UserRepository {
     const skip = (page - 1) * limit
     const where = search ? { email: { contains: search } } : {}
     const [users, total] = await Promise.all([
-      prisma.user.findMany({ where, skip, take: limit }),
+      prisma.user.findMany({
+        where,
+        skip,
+        take: limit,
+        // Optimization: Select only fields required for UserProps to avoid fetching large JSON blobs (preferences)
+        select: {
+          id: true,
+          email: true,
+          firstName: true,
+          lastName: true,
+          role: true,
+          avatarUrl: true,
+          birthDate: true,
+          createdAt: true,
+          updatedAt: true,
+          // preferences is explicitly excluded as it's not used in mapToUserProps/Entity
+        },
+      }),
       prisma.user.count({ where }),
     ])
 

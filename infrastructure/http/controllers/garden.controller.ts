@@ -1,3 +1,4 @@
+import type { z } from '@hono/zod-openapi'
 import type { Context } from 'hono'
 import type { AddPlantUseCase } from '../../../application/use-cases/garden/add-plant.use-case.js'
 import type { FindNearbyGardensUseCase } from '../../../application/use-cases/garden/find-nearby-gardens.use-case.js'
@@ -29,8 +30,7 @@ export class GardenController {
         )
       }
 
-      // Use validated data from middleware
-      const body = c.req.valid('json' as never) as (typeof AddPlantInputSchema)['_output']
+      const body = (await c.req.valid('json' as never)) as z.infer<typeof AddPlantInputSchema>
 
       const result = await this.addPlantUseCase.execute({
         userId: user.id,
