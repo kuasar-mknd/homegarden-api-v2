@@ -125,7 +125,7 @@ export const AddPlantInputSchema = z.object({
     description: 'URL of plant image',
     example: 'https://example.com/tomato.jpg',
   }),
-  plantedDate: z.string().trim().optional().openapi({
+  plantedDate: z.string().trim().max(30).optional().openapi({
     description: 'Date when the plant was planted (ISO 8601)',
     example: '2024-01-15',
   }),
