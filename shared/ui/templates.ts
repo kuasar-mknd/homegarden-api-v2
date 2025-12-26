@@ -288,14 +288,47 @@ export const SHARED_STYLES = `
     color: var(--card-text);
     margin-bottom: 2rem;
   }
+  .code-wrapper {
+    position: relative;
+    margin: 1rem 0;
+  }
   .code-block {
     display: block;
     background: #f5f5f5;
     padding: 0.5rem;
+    padding-right: 3rem;
     border-radius: var(--radius-sm);
-    margin: 1rem 0;
+    margin: 0;
     word-break: break-all;
     overflow-x: auto;
+    text-align: left;
+  }
+  .btn-copy {
+    position: absolute;
+    top: 50%;
+    right: 0.5rem;
+    transform: translateY(-50%);
+    background: var(--bg);
+    border: 1px solid var(--card-border);
+    color: var(--card-text);
+    cursor: pointer;
+    padding: 4px;
+    border-radius: var(--radius-sm);
+    transition: all 0.2s;
+    width: 2rem;
+    height: 2rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 10;
+  }
+  .btn-copy:hover {
+    background: var(--card-border);
+    color: var(--primary);
+  }
+  .btn-copy:focus-visible {
+    outline: 2px solid var(--primary);
+    outline-offset: 2px;
   }
   @media (prefers-color-scheme: dark) {
     .code-block {
@@ -303,7 +336,7 @@ export const SHARED_STYLES = `
     }
   }
   @media (prefers-reduced-motion: reduce) {
-    .card, .skip-link, .btn {
+    .card, .skip-link, .btn, .btn-copy {
       transition: none;
     }
     .card:hover {
@@ -316,7 +349,7 @@ export const SHARED_STYLES = `
   @media print {
     body { background: white; color: black; display: block; }
     .container { box-shadow: none; border: none; max-width: 100%; width: 100%; padding: 0; }
-    .skip-link, .status-dot, .external-icon { display: none; }
+    .skip-link, .status-dot, .external-icon, .btn-copy { display: none; }
     .grid { display: block; }
     .card { border: 1px solid #000; margin-bottom: 1rem; page-break-inside: avoid; box-shadow: none; }
     a { text-decoration: underline; color: black; }
@@ -329,6 +362,8 @@ export const SHARED_STYLES = `
 const EXTERNAL_LINK_ICON = `<svg class="external-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>`
 const HOME_ICON = `<svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>`
 const DOC_ICON = `<svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>`
+const COPY_ICON = `<svg class="btn-icon" style="width: 1rem; height: 1rem;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>`
+const CHECK_ICON = `<svg class="btn-icon" style="width: 1rem; height: 1rem;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>`
 
 interface LayoutProps {
   title: string
@@ -456,7 +491,14 @@ export function getNotFoundPageHtml(path: string): string {
 
     <main id="main">
       <p>Oops! The page you are looking for does not exist.</p>
-      <code aria-label="Requested URL" class="code-block">${safePath}</code>
+
+      <div class="code-wrapper">
+        <code id="error-path" aria-label="Requested URL" class="code-block">${safePath}</code>
+        <button class="btn-copy" aria-label="Copy error path" onclick="copyErrorPath()" title="Copy to clipboard">
+          ${COPY_ICON}
+        </button>
+      </div>
+
       <p>Please check the URL or go back to the homepage.</p>
 
       <div class="btn-group">
@@ -464,6 +506,26 @@ export function getNotFoundPageHtml(path: string): string {
         <a href="/ui" class="btn btn-secondary">${DOC_ICON}Read Documentation</a>
       </div>
     </main>
+
+    <script>
+      function copyErrorPath() {
+        const code = document.getElementById('error-path');
+        const btn = document.querySelector('.btn-copy');
+        if (!code || !btn) return;
+
+        const originalIcon = btn.innerHTML;
+        navigator.clipboard.writeText(code.innerText).then(() => {
+          btn.innerHTML = '${CHECK_ICON}';
+          btn.setAttribute('aria-label', 'Copied!');
+          setTimeout(() => {
+            btn.innerHTML = originalIcon;
+            btn.setAttribute('aria-label', 'Copy error path');
+          }, 2000);
+        }).catch(err => {
+          console.error('Failed to copy', err);
+        });
+      }
+    </script>
     `,
   })
 }

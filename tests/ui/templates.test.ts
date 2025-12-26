@@ -27,6 +27,8 @@ describe('UI Templates', () => {
       expect(SHARED_STYLES).toContain('.code-block')
       expect(SHARED_STYLES).toContain('.footer-links')
       expect(SHARED_STYLES).toContain('.btn-icon')
+      expect(SHARED_STYLES).toContain('.btn-copy')
+      expect(SHARED_STYLES).toContain('.code-wrapper')
     })
 
     it('should include correct dark mode error badge color', () => {
@@ -76,7 +78,8 @@ describe('UI Templates', () => {
       const unsafe = '<script>alert(1)</script>'
       const html = getNotFoundPageHtml(unsafe)
       expect(html).toContain('&lt;script&gt;alert(1)&lt;/script&gt;')
-      expect(html).not.toContain('<script>')
+      // Ensure the unsafe script content is not present as raw HTML
+      expect(html).not.toContain('<script>alert(1)</script>')
     })
 
     it('should use .badge-error class', () => {
@@ -94,6 +97,14 @@ describe('UI Templates', () => {
     it('should include icons in buttons', () => {
         const html = getNotFoundPageHtml('/foo')
         expect(html).toContain('<svg class="btn-icon"')
+    })
+
+    it('should include copy button and script', () => {
+      const html = getNotFoundPageHtml('/foo')
+      expect(html).toContain('class="btn-copy"')
+      expect(html).toContain('onclick="copyErrorPath()"')
+      expect(html).toContain('function copyErrorPath()')
+      expect(html).toContain('navigator.clipboard.writeText')
     })
   })
 })
