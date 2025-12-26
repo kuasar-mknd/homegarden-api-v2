@@ -9,7 +9,7 @@ export const SHARED_STYLES = `
     --card-bg: #ffffff;
     --card-border: #eee;
     --card-text: #666;
-    --status-text: #888;
+    --status-text: #5e5e5e; /* darkened from #888 for accessible contrast */
     --error: #d32f2f;
 
     /* Radius System */
@@ -54,6 +54,8 @@ export const SHARED_STYLES = `
     justify-content: center;
     align-items: center;
     min-height: 100vh;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
   }
   /* Scrollbar for Webkit */
   ::-webkit-scrollbar {
@@ -108,6 +110,7 @@ export const SHARED_STYLES = `
     font-size: 0.85rem;
     font-weight: 600;
     margin-bottom: 2rem;
+    cursor: default;
   }
   .badge-error {
     background: #ffebee;
@@ -149,6 +152,7 @@ export const SHARED_STYLES = `
     display: block;
     height: 100%;
     box-sizing: border-box;
+    position: relative; /* Ensure z-index works on focus */
   }
   .card:hover {
     transform: translateY(-2px) scale(1.01);
@@ -162,8 +166,10 @@ export const SHARED_STYLES = `
     outline: 2px solid var(--primary);
     outline-offset: 4px;
     border-color: var(--secondary);
+    z-index: 1;
   }
-  .card h2 { margin: 0 0 0.5rem 0; color: var(--primary); font-size: 1.25rem; }
+  .card h2 { margin: 0 0 0.5rem 0; color: var(--primary); font-size: 1.25rem; transition: color 0.2s; }
+  .card:hover h2 { color: var(--secondary); }
   .card p { margin: 0; font-size: 0.9rem; color: var(--card-text); }
 
   .btn {
@@ -178,10 +184,18 @@ export const SHARED_STYLES = `
     text-decoration: none;
     font-weight: 600;
     margin-top: 1rem;
-    transition: background 0.2s;
+    transition: background 0.2s, transform 0.1s, box-shadow 0.2s;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    min-height: 44px; /* Touch target size */
+    box-sizing: border-box;
   }
   .btn:hover {
     background: var(--secondary);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+  }
+  .btn:active {
+    transform: scale(0.98);
+    box-shadow: inset 0 2px 4px rgba(0,0,0,0.1);
   }
   .btn:focus-visible {
     outline: 2px solid var(--primary);
@@ -195,11 +209,16 @@ export const SHARED_STYLES = `
     background: transparent;
     color: var(--text);
     border: 1px solid var(--status-text);
+    box-shadow: none;
   }
   .btn-secondary:hover {
     background: var(--card-border);
     color: var(--text);
     border-color: var(--card-border);
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+  }
+  .btn-secondary:active {
+    box-shadow: none;
   }
   .btn-group {
     display: flex;
@@ -249,9 +268,11 @@ export const SHARED_STYLES = `
     color: var(--primary);
     text-decoration: none;
     text-underline-offset: 4px;
+    transition: color 0.2s, text-decoration-color 0.2s;
   }
   footer a:hover {
     text-decoration: underline;
+    color: var(--secondary);
   }
   footer a:focus-visible {
     outline: 2px solid var(--primary);
@@ -296,6 +317,8 @@ export const SHARED_STYLES = `
     margin: 1rem 0;
     word-break: break-all;
     overflow-x: auto;
+    user-select: all;
+    border: 1px solid var(--card-border);
   }
   @media (prefers-color-scheme: dark) {
     .code-block {
@@ -303,7 +326,7 @@ export const SHARED_STYLES = `
     }
   }
   @media (prefers-reduced-motion: reduce) {
-    .card, .skip-link, .btn {
+    .card, .skip-link, .btn, .card h2, footer a {
       transition: none;
     }
     .card:hover {
@@ -341,6 +364,7 @@ export function baseLayout({ title, description, content }: LayoutProps): string
     description ||
     'Smart Plant Management API with AI capabilities. Identify plants, diagnose diseases, and track your garden.'
   const image = 'https://placehold.co/600x400/2e7d32/ffffff?text=HomeGarden+API'
+  const icon = 'data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🌱</text></svg>'
 
   return `
 <!DOCTYPE html>
@@ -366,7 +390,8 @@ export function baseLayout({ title, description, content }: LayoutProps): string
 
   <link rel="canonical" href="/">
   <title>${title}</title>
-  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🌱</text></svg>">
+  <link rel="icon" href="${icon}">
+  <link rel="apple-touch-icon" href="${icon}">
   <link rel="preconnect" href="https://placehold.co">
   <style>
     ${SHARED_STYLES}
@@ -456,7 +481,7 @@ export function getNotFoundPageHtml(path: string): string {
 
     <main id="main">
       <p>Oops! The page you are looking for does not exist.</p>
-      <code aria-label="Requested URL" class="code-block">${safePath}</code>
+      <code aria-label="Requested URL" class="code-block" title="Requested URL">${safePath}</code>
       <p>Please check the URL or go back to the homepage.</p>
 
       <div class="btn-group">
