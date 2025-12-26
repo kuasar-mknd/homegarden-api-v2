@@ -28,7 +28,11 @@ describe('DrPlant Integration', () => {
 
     // Prepare multipart form data
     const formData = new FormData()
-    const blob = new Blob(['fake-image'], { type: 'image/jpeg' })
+    // Create a mock JPEG image with valid magic bytes (FF D8 FF)
+    const jpegBuffer = Buffer.from([
+      0xff, 0xd8, 0xff, 0xe0, 0x00, 0x10, 0x4a, 0x46, 0x49, 0x46, 0x00, 0x01,
+    ])
+    const blob = new Blob([jpegBuffer], { type: 'image/jpeg' })
     formData.append('image', blob, 'test.jpg')
     formData.append('symptoms', 'yellow spots')
 
