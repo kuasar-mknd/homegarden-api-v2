@@ -1,3 +1,4 @@
+
 import { z } from 'zod'
 
 const MAX_FILE_SIZE = 10 * 1024 * 1024
@@ -7,7 +8,7 @@ export const diagnosePlantSchema = z.object({
   symptoms: z.string().optional(),
   image: z
     .custom<File>(
-      (val) => val && typeof val === 'object' && val instanceof File,
+      (val) => val && typeof val === 'object' && (val instanceof File || val?.constructor?.name === 'File'),
       'Image file is required',
     )
     .refine((file) => file.size <= MAX_FILE_SIZE, 'Image size exceeds 10MB limit')

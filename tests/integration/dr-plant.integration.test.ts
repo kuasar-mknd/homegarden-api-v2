@@ -26,9 +26,13 @@ describe('DrPlant Integration', () => {
     }
     mockUseCase.execute.mockResolvedValue(ok(mockDiagnosis))
 
-    // Prepare multipart form data
+    // Prepare multipart form data with valid JPEG magic bytes (padded to >12 bytes)
+    const jpegMagicBytes = new Uint8Array([
+      0xff, 0xd8, 0xff, 0xe0, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+    ])
+    const blob = new Blob([jpegMagicBytes], { type: 'image/jpeg' })
+
     const formData = new FormData()
-    const blob = new Blob(['fake-image'], { type: 'image/jpeg' })
     formData.append('image', blob, 'test.jpg')
     formData.append('symptoms', 'yellow spots')
 
