@@ -29,8 +29,6 @@ import { GetUserPlantsUseCase } from './application/use-cases/garden/get-user-pl
 // Use Cases
 import { createIdentifySpeciesUseCase } from './application/use-cases/plant-id/identify-species.use-case.js'
 import { GetUserPublicProfileUseCase } from './application/use-cases/user/get-user-public-profile.use-case.js'
-import { CareSchedulePrismaRepository } from './infrastructure/database/repositories/care-schedule.prisma-repository.js'
-import { DiagnosisPrismaRepository } from './infrastructure/database/repositories/diagnosis.prisma-repository.js'
 import { GardenPrismaRepository } from './infrastructure/database/repositories/garden.prisma-repository.js'
 import { PlantPrismaRepository } from './infrastructure/database/repositories/plant.prisma-repository.js'
 import { UserPrismaRepository } from './infrastructure/database/repositories/user.prisma-repository.js'
@@ -170,7 +168,7 @@ app.use(
       fontSrc: ["'self'", 'https:', 'data:'],
     },
     xFrameOptions: 'DENY',
-    xXssProtection: '1; mode=block',
+    xXssProtection: '0', // Disable legacy XSS filter to prevent XS-Search/Info leaks
     strictTransportSecurity: 'max-age=63072000; includeSubDomains; preload',
     referrerPolicy: 'strict-origin-when-cross-origin',
   }),

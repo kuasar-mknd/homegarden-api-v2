@@ -71,7 +71,7 @@ export class GardenController {
         {
           success: false,
           error: 'INTERNAL_ERROR',
-          message: 'Failed to add plant',
+          message: 'An unexpected error occurred',
         },
         500,
       )
@@ -118,7 +118,7 @@ export class GardenController {
         {
           success: false,
           error: 'INTERNAL_ERROR',
-          message: 'Failed to fetch plants',
+          message: 'An unexpected error occurred',
         },
         500,
       )
@@ -167,7 +167,7 @@ export class GardenController {
         {
           success: false,
           error: 'INTERNAL_ERROR',
-          message: 'Failed to fetch weather',
+          message: 'An unexpected error occurred',
         },
         500,
       )
@@ -223,7 +223,7 @@ export class GardenController {
         {
           success: false,
           error: 'INTERNAL_ERROR',
-          message: 'Failed to find nearby gardens',
+          message: 'An unexpected error occurred',
         },
         500,
       )

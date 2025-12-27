@@ -1,5 +1,9 @@
-import { describe, it, expect } from 'vitest'
-import { getLandingPageHtml, getNotFoundPageHtml, SHARED_STYLES } from '../../shared/ui/templates.js'
+import { describe, expect, it } from 'vitest'
+import {
+  getLandingPageHtml,
+  getNotFoundPageHtml,
+  SHARED_STYLES,
+} from '../../shared/ui/templates.js'
 
 describe('UI Templates', () => {
   describe('SHARED_STYLES', () => {
@@ -14,12 +18,12 @@ describe('UI Templates', () => {
     })
 
     it('should include selection style', () => {
-        expect(SHARED_STYLES).toContain('::selection')
-        expect(SHARED_STYLES).toContain('background: var(--primary)')
+      expect(SHARED_STYLES).toContain('::selection')
+      expect(SHARED_STYLES).toContain('background: var(--primary)')
     })
 
     it('should include focus-visible style with primary color', () => {
-        expect(SHARED_STYLES).toContain('outline: 2px solid var(--primary)')
+      expect(SHARED_STYLES).toContain('outline: 2px solid var(--primary)')
     })
 
     it('should include new utility classes', () => {
@@ -30,17 +34,17 @@ describe('UI Templates', () => {
     })
 
     it('should include correct dark mode error badge color', () => {
-        expect(SHARED_STYLES).toContain('color: #ffcdd2')
+      expect(SHARED_STYLES).toContain('color: #ffcdd2')
     })
 
     it('should use flexbox for buttons', () => {
-        expect(SHARED_STYLES).toContain('display: inline-flex')
-        expect(SHARED_STYLES).toContain('align-items: center')
-        expect(SHARED_STYLES).toContain('gap: 0.5rem')
+      expect(SHARED_STYLES).toContain('display: inline-flex')
+      expect(SHARED_STYLES).toContain('align-items: center')
+      expect(SHARED_STYLES).toContain('gap: 0.5rem')
     })
 
     it('should include print styles for expanding URLs', () => {
-        expect(SHARED_STYLES).toContain('a[href^="http"]:after { content: " (" attr(href) ")"; }')
+      expect(SHARED_STYLES).toContain('a[href^="http"]:after { content: " (" attr(href) ")"; }')
     })
   })
 
@@ -61,13 +65,15 @@ describe('UI Templates', () => {
     })
 
     it('should include dark mode theme-color meta tag', () => {
-        const html = getLandingPageHtml()
-        expect(html).toContain('<meta name="theme-color" content="#121212" media="(prefers-color-scheme: dark)">')
+      const html = getLandingPageHtml()
+      expect(html).toContain(
+        '<meta name="theme-color" content="#121212" media="(prefers-color-scheme: dark)">',
+      )
     })
 
     it('should use footer-links class', () => {
-        const html = getLandingPageHtml()
-        expect(html).toContain('<div class="footer-links">')
+      const html = getLandingPageHtml()
+      expect(html).toContain('<div class="footer-links">')
     })
   })
 
@@ -80,20 +86,20 @@ describe('UI Templates', () => {
     })
 
     it('should use .badge-error class', () => {
-        const html = getNotFoundPageHtml('/foo')
-        expect(html).toContain('class="badge badge-error"')
-        expect(html).not.toContain('style="background: #ffebee; color: #c62828;"')
+      const html = getNotFoundPageHtml('/foo')
+      expect(html).toContain('class="badge badge-error"')
+      expect(html).not.toContain('style="background: #ffebee; color: #c62828;"')
     })
 
     it('should use .code-block class', () => {
-        const html = getNotFoundPageHtml('/foo')
-        expect(html).toContain('class="code-block"')
-        expect(html).not.toContain('style="display: block;')
+      const html = getNotFoundPageHtml('/foo')
+      expect(html).toContain('class="code-block"')
+      expect(html).not.toContain('style="display: block;')
     })
 
     it('should include icons in buttons', () => {
-        const html = getNotFoundPageHtml('/foo')
-        expect(html).toContain('<svg class="btn-icon"')
+      const html = getNotFoundPageHtml('/foo')
+      expect(html).toContain('<svg class="btn-icon"')
     })
   })
 })

@@ -46,7 +46,7 @@ export class UserController {
         {
           success: false,
           error: 'INTERNAL_ERROR',
-          message: 'Failed to fetch user profile',
+          message: 'An unexpected error occurred',
         },
         500,
       )

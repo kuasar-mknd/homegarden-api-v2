@@ -42,7 +42,6 @@ describe('DrPlant Integration', () => {
     })
 
     if (res.status !== 200) {
-      console.log('Error Response:', await res.json())
     }
 
     expect(res.status).toBe(200)
