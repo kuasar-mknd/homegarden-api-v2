@@ -313,12 +313,53 @@ export const SHARED_STYLES = `
     display: block;
     background: #f5f5f5;
     padding: 0.5rem;
+    padding-right: 2.5rem; /* Space for copy button */
     border-radius: var(--radius-sm);
     margin: 1rem 0;
     word-break: break-all;
     overflow-x: auto;
     user-select: all;
     border: 1px solid var(--card-border);
+  }
+  .copy-wrapper {
+    position: relative;
+    margin: 1rem 0;
+  }
+  .copy-wrapper .code-block {
+    margin: 0; /* Remove margin when wrapped */
+  }
+  .copy-btn {
+    position: absolute;
+    top: 0.25rem;
+    right: 0.25rem;
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    border-radius: var(--radius-sm);
+    padding: 4px;
+    cursor: pointer;
+    color: var(--card-text);
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    opacity: 0.7;
+    z-index: 2;
+  }
+  .copy-btn:hover {
+    opacity: 1;
+    background: var(--bg);
+    border-color: var(--secondary);
+    color: var(--primary);
+  }
+  .copy-btn:focus-visible {
+    opacity: 1;
+    outline: 2px solid var(--primary);
+  }
+  .copy-btn svg {
+    width: 16px;
+    height: 16px;
   }
   @media (prefers-color-scheme: dark) {
     .code-block {
@@ -352,6 +393,10 @@ export const SHARED_STYLES = `
 const EXTERNAL_LINK_ICON = `<svg class="external-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>`
 const HOME_ICON = `<svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>`
 const DOC_ICON = `<svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>`
+const BACK_ICON = `<svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 18-6-6 6-6"/></svg>`
+// Icons for client-side injection
+const COPY_ICON_SVG = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>`
+const CHECK_ICON_SVG = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>`
 
 interface LayoutProps {
   title: string
@@ -410,6 +455,45 @@ export function baseLayout({ title, description, content }: LayoutProps): string
       </div>
     </footer>
   </div>
+  <script>
+    // Progressive enhancement: Add copy buttons to code blocks
+    document.addEventListener('DOMContentLoaded', () => {
+      document.querySelectorAll('.code-block').forEach(block => {
+        // Create wrapper
+        const wrapper = document.createElement('div');
+        wrapper.className = 'copy-wrapper';
+
+        // Insert wrapper before block and move block into it
+        block.parentNode.insertBefore(wrapper, block);
+        wrapper.appendChild(block);
+
+        // Create button
+        const btn = document.createElement('button');
+        btn.className = 'copy-btn';
+        btn.setAttribute('aria-label', 'Copy to clipboard');
+        btn.innerHTML = '${COPY_ICON_SVG}';
+
+        btn.addEventListener('click', () => {
+          navigator.clipboard.writeText(block.innerText).then(() => {
+            const originalIcon = btn.innerHTML;
+            btn.innerHTML = '${CHECK_ICON_SVG}';
+            btn.setAttribute('aria-label', 'Copied!');
+            btn.style.color = 'var(--primary)';
+            btn.style.borderColor = 'var(--primary)';
+
+            setTimeout(() => {
+              btn.innerHTML = originalIcon;
+              btn.setAttribute('aria-label', 'Copy to clipboard');
+              btn.style.color = '';
+              btn.style.borderColor = '';
+            }, 2000);
+          }).catch(console.error);
+        });
+
+        wrapper.appendChild(btn);
+      });
+    });
+  </script>
 </body>
 </html>
   `
@@ -485,8 +569,9 @@ export function getNotFoundPageHtml(path: string): string {
       <p>Please check the URL or go back to the homepage.</p>
 
       <div class="btn-group">
+        <button onclick="history.back()" class="btn btn-secondary">${BACK_ICON}Go Back</button>
         <a href="/" class="btn">${HOME_ICON}Return Home</a>
-        <a href="/ui" class="btn btn-secondary">${DOC_ICON}Read Documentation</a>
+        <a href="/ui" class="btn btn-secondary">${DOC_ICON}Read Docs</a>
       </div>
     </main>
     `,

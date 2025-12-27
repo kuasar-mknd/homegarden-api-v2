@@ -16,8 +16,8 @@ export class DiagnosisPrismaRepository implements DiagnosisRepository {
     const diagnosis = await prisma.diagnosis.create({
       data: {
         imageUrl: data.imageUrl,
-        description: data.description,
-        plantId: data.plantId,
+        description: data.description ?? null,
+        plantId: data.plantId ?? null,
         userId: data.userId,
         status: 'PENDING',
       },
