@@ -285,7 +285,8 @@ model CareSchedule {
   // Optimization: Composite index for fetching a user's upcoming schedules efficiently
   @@index([userId, nextDueDate])
   @@index([gardenId])
-  @@index([plantId])
+  // Optimization: Composite index for fetching plant schedules sorted by date
+  @@index([plantId, nextDueDate])
   @@index([isEnabled])
   // Optimization: Composite index for garden calendar views
   @@index([gardenId, nextDueDate])
