@@ -56,7 +56,7 @@ describe('ErrorHandlerMiddleware', () => {
 
     expect(mockContext.json).toHaveBeenCalledWith(
       expect.objectContaining({
-        message: 'Something went wrong',
+        message: 'An unexpected error occurred',
       }),
       500,
     )

@@ -24,8 +24,9 @@ export const errorHandler: ErrorHandler = (err, c) => {
   return c.json(
     {
       success: false,
-      error: err.name || 'InternalServerError',
-      message: env.NODE_ENV === 'production' ? 'Something went wrong' : err.message,
+      error:
+        env.NODE_ENV === 'production' ? 'InternalServerError' : err.name || 'InternalServerError',
+      message: env.NODE_ENV === 'production' ? 'An unexpected error occurred' : err.message,
       ...(env.NODE_ENV === 'development' && { stack: err.stack }),
     },
     responseStatus,
