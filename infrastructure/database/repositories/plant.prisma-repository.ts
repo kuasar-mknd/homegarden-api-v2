@@ -46,7 +46,7 @@ export class PlantPrismaRepository implements PlantRepository {
   async findByGardenId(gardenId: string): Promise<Plant[]> {
     const plants = await prisma.plant.findMany({
       where: { gardenId },
-      include: { garden: true },
+      // Optimization: Removed redundant include: { garden: true }
       orderBy: { createdAt: 'desc' },
     })
     return plants.map(this.mapToEntity)
@@ -57,7 +57,7 @@ export class PlantPrismaRepository implements PlantRepository {
       where: {
         garden: { userId },
       },
-      include: { garden: true },
+      // Optimization: Removed redundant include: { garden: true }
       orderBy: { createdAt: 'desc' },
     })
     return plants.map(this.mapToEntity)
@@ -99,7 +99,7 @@ export class PlantPrismaRepository implements PlantRepository {
         where,
         skip,
         take: limit,
-        include: { garden: true },
+        // Optimization: Removed redundant include: { garden: true }
         orderBy: { createdAt: 'desc' },
       }),
       prisma.plant.count({ where }),
