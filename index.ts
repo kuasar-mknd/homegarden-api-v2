@@ -204,8 +204,9 @@ app.use('*', rateLimitMiddleware)
 // ============================================================
 
 // Landing Page
+const landingPageHtml = getLandingPageHtml()
 app.get('/', (c) => {
-  return c.html(getLandingPageHtml())
+  return c.html(landingPageHtml)
 })
 
 // API version prefix
