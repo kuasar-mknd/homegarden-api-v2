@@ -1,28 +1,46 @@
 from playwright.sync_api import sync_playwright
 
-def verify_frontend():
+def verify_ux():
     with sync_playwright() as p:
         browser = p.chromium.launch(headless=True)
         page = browser.new_page()
 
-        # Navigate to the landing page (using port 3001)
-        page.goto("http://localhost:3001/")
+        # 1. Verify 404 Page and "Go Back" button
+        print("Navigating to 404 page...")
+        page.goto("http://localhost:3000/this-page-does-not-exist")
 
         # Check title
-        print(f"Title: {page.title()}")
+        if "Page Not Found" not in page.title():
+            print(f"Error: Unexpected title '{page.title()}'")
 
-        # Take a screenshot of the landing page
-        page.screenshot(path="verification/landing_page_v2.png")
-        print("Landing page screenshot saved.")
+        # Check "Go Back" button existence and visibility
+        go_back_btn = page.get_by_role("button", name="Go Back")
+        if go_back_btn.is_visible():
+            print("SUCCESS: 'Go Back' button is visible")
+        else:
+            print("ERROR: 'Go Back' button not found")
 
-        # Navigate to a 404 page
-        page.goto("http://localhost:3001/non-existent-page")
+        # Check "Return Home" link
+        return_home = page.get_by_role("link", name="Return Home")
+        if return_home.is_visible():
+             print("SUCCESS: 'Return Home' link is visible")
 
-        # Take a screenshot of the 404 page
-        page.screenshot(path="verification/404_page_v2.png")
-        print("404 page screenshot saved.")
+        # 2. Verify "Copy" button on code block
+        print("Checking copy button...")
+        copy_btn = page.locator(".copy-btn")
+
+        # Wait for script to inject the button
+        try:
+            copy_btn.wait_for(state="visible", timeout=2000)
+            print("SUCCESS: Copy button injected and visible")
+        except:
+            print("ERROR: Copy button not found or not visible")
+
+        # Take screenshot of 404 page with buttons
+        page.screenshot(path="verification/ux_verification.png")
+        print("Screenshot saved to verification/ux_verification.png")
 
         browser.close()
 
 if __name__ == "__main__":
-    verify_frontend()
+    verify_ux()
