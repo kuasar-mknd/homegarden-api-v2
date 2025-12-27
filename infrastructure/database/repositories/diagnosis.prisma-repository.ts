@@ -11,6 +11,30 @@ import type {
 } from '../../../domain/repositories/diagnosis.repository.js'
 import { prisma } from '../prisma.client.js'
 
+// Optimization: Exclude heavy JSON and text fields for list queries
+const DIAGNOSIS_LIST_SELECT = {
+  id: true,
+  imageUrl: true,
+  description: true,
+  status: true,
+  confidence: true,
+  conditionName: true,
+  conditionType: true,
+  severity: true,
+  // affectedParts: false, // Arrays can be large but useful for summary?
+  // causes: false,
+  // symptoms: false,
+  // treatmentSteps: false, // Large array
+  // preventionTips: false,
+  // organicTreatment: false, // Large text
+  // chemicalTreatment: false, // Large text
+  // rawResponse: false, // Large JSON
+  plantId: true,
+  userId: true,
+  createdAt: true,
+  updatedAt: true,
+}
+
 export class DiagnosisPrismaRepository implements DiagnosisRepository {
   async create(data: CreateDiagnosisData): Promise<Diagnosis> {
     const diagnosis = await prisma.diagnosis.create({
@@ -47,6 +71,7 @@ export class DiagnosisPrismaRepository implements DiagnosisRepository {
         skip,
         take: limit,
         orderBy: { createdAt: 'desc' },
+        select: DIAGNOSIS_LIST_SELECT,
       }),
       prisma.diagnosis.count({ where }),
     ])
@@ -61,6 +86,7 @@ export class DiagnosisPrismaRepository implements DiagnosisRepository {
     const diagnoses = await prisma.diagnosis.findMany({
       where: { plantId },
       orderBy: { createdAt: 'desc' },
+      select: DIAGNOSIS_LIST_SELECT,
     })
     return diagnoses.map(this.mapToEntity)
   }

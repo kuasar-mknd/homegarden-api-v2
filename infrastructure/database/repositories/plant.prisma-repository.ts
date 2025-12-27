@@ -19,6 +19,32 @@ const GARDEN_SELECT = {
   },
 }
 
+// Optimization: Exclude heavy text fields for list queries
+const PLANT_LIST_SELECT = {
+  id: true,
+  nickname: true,
+  speciesId: true,
+  commonName: true,
+  scientificName: true,
+  family: true,
+  exposure: true,
+  watering: true,
+  soilType: true,
+  flowerColor: true,
+  height: true,
+  plantedDate: true,
+  acquiredDate: true,
+  bloomingSeason: true,
+  plantingSeason: true,
+  // careNotes: false, // Excluded
+  // imageUrl: false, // Excluded (rely on thumbnail)
+  thumbnailUrl: true,
+  use: true,
+  gardenId: true,
+  createdAt: true,
+  updatedAt: true,
+}
+
 export class PlantPrismaRepository implements PlantRepository {
   async create(data: CreatePlantData): Promise<Plant> {
     const plant = await prisma.plant.create({
@@ -64,6 +90,7 @@ export class PlantPrismaRepository implements PlantRepository {
     const plants = await prisma.plant.findMany({
       where: { gardenId },
       orderBy: { createdAt: 'desc' },
+      select: PLANT_LIST_SELECT,
     })
     return plants.map(this.mapToEntity)
   }
@@ -74,6 +101,7 @@ export class PlantPrismaRepository implements PlantRepository {
         garden: { userId },
       },
       orderBy: { createdAt: 'desc' },
+      select: PLANT_LIST_SELECT,
     })
     return plants.map(this.mapToEntity)
   }
@@ -117,6 +145,7 @@ export class PlantPrismaRepository implements PlantRepository {
         skip,
         take: limit,
         orderBy: { createdAt: 'desc' },
+        select: PLANT_LIST_SELECT,
       }),
       prisma.plant.count({ where }),
     ])
