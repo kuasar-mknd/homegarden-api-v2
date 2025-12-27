@@ -2,18 +2,18 @@ import { z } from 'zod'
 
 // Register DTO
 export const RegisterSchema = z.object({
-  email: z.string().email('Invalid email address'),
-  password: z.string().min(8, 'Password must be at least 8 characters'),
-  firstName: z.string().min(1, 'First name is required'),
-  lastName: z.string().min(1, 'Last name is required'),
+  email: z.string().trim().email('Invalid email address').max(255),
+  password: z.string().min(8, 'Password must be at least 8 characters').max(100),
+  firstName: z.string().trim().min(1, 'First name is required').max(100),
+  lastName: z.string().trim().min(1, 'Last name is required').max(100),
 })
 
 export type RegisterDTO = z.infer<typeof RegisterSchema>
 
 // Login DTO
 export const LoginSchema = z.object({
-  email: z.string().email('Invalid email address'),
-  password: z.string().min(1, 'Password is required'),
+  email: z.string().trim().email('Invalid email address').max(255),
+  password: z.string().min(1, 'Password is required').max(100),
 })
 
 export type LoginDTO = z.infer<typeof LoginSchema>

@@ -67,6 +67,16 @@ export class GardenController {
       )
     } catch (error) {
       logger.error({ err: error }, 'Garden Controller Error')
+      if (error instanceof SyntaxError) {
+        return c.json(
+          {
+            success: false,
+            error: 'INVALID_JSON',
+            message: 'Request body must be valid JSON',
+          },
+          400,
+        )
+      }
       return c.json(
         {
           success: false,

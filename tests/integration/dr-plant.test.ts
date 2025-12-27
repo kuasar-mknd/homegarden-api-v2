@@ -75,8 +75,11 @@ describe('Dr. Plant Integration', () => {
       modelUsed: 'gemini-pro',
     })
 
-    // Create a dummy image buffer
-    const imageBuffer = Buffer.from('fake-image-data')
+    // Create a dummy image buffer with valid JPEG magic bytes
+    const imageBuffer = Buffer.concat([
+        Buffer.from([0xff, 0xd8, 0xff, 0xe0]),
+        Buffer.alloc(20)
+    ])
     const blob = new Blob([imageBuffer], { type: 'image/jpeg' })
     const formData = new FormData()
     formData.append('image', blob as any, 'plant.jpg')
@@ -135,7 +138,10 @@ describe('Dr. Plant Integration', () => {
       statusCode: 503,
     })
 
-    const imageBuffer = Buffer.from('fake-image-data')
+    const imageBuffer = Buffer.concat([
+        Buffer.from([0xff, 0xd8, 0xff, 0xe0]),
+        Buffer.alloc(20)
+    ])
     const blob = new Blob([imageBuffer], { type: 'image/jpeg' })
     const formData = new FormData()
     formData.append('image', blob as any, 'plant.jpg')

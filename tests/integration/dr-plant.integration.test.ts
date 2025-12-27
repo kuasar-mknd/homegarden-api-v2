@@ -28,7 +28,12 @@ describe('DrPlant Integration', () => {
 
     // Prepare multipart form data
     const formData = new FormData()
-    const blob = new Blob(['fake-image'], { type: 'image/jpeg' })
+    // Create a buffer with valid JPEG magic bytes (FF D8 FF) and enough length
+    const jpegBuffer = Buffer.concat([
+        Buffer.from([0xff, 0xd8, 0xff, 0xe0]),
+        Buffer.alloc(20)
+    ])
+    const blob = new Blob([jpegBuffer], { type: 'image/jpeg' })
     formData.append('image', blob, 'test.jpg')
     formData.append('symptoms', 'yellow spots')
 
@@ -37,8 +42,11 @@ describe('DrPlant Integration', () => {
       body: formData,
     })
 
-    expect(res.status).toBe(200)
     const body = await res.json()
+    if (res.status !== 200) {
+      console.log('Test Failed Response:', JSON.stringify(body, null, 2))
+    }
+    expect(res.status).toBe(200)
     expect(body.success).toBe(true)
     expect(body.data.conditionName).toBe('Leaf Spot')
 
