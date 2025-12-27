@@ -38,7 +38,11 @@ export class DiagnosePlantUseCase {
       const result = await this.aiPort.diagnoseHealth(request)
 
       if (!result.success) {
-        return fail(new AppError(result.error || 'Diagnosis failed', 500))
+        // Pass through status code if available in the result (casted to any as it's not in the interface yet)
+        const statusCode = (result as any).statusCode || 500
+        return fail(
+          new AppError(result.error || 'Diagnosis failed', statusCode, 'DIAGNOSIS_FAILED'),
+        )
       }
 
       return ok(result)

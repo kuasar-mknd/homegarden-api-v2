@@ -75,8 +75,10 @@ describe('Dr. Plant Integration', () => {
       modelUsed: 'gemini-pro',
     })
 
-    // Create a dummy image buffer
-    const imageBuffer = Buffer.from('fake-image-data')
+    // Create a dummy image buffer with valid magic bytes (JPEG)
+    const imageBuffer = Buffer.from([
+      0xff, 0xd8, 0xff, 0xe0, 0x00, 0x10, 0x4a, 0x46, 0x49, 0x46, 0x00, 0x01,
+    ])
     const blob = new Blob([imageBuffer], { type: 'image/jpeg' })
     const formData = new FormData()
     formData.append('image', blob as any, 'plant.jpg')
@@ -87,6 +89,10 @@ describe('Dr. Plant Integration', () => {
       body: formData,
       headers: { Authorization: 'Bearer valid-token' },
     })
+
+    if (res.status !== 200) {
+      console.log('Error Response:', await res.json())
+    }
 
     expect(res.status).toBe(200)
     const json = await res.json()
@@ -135,7 +141,9 @@ describe('Dr. Plant Integration', () => {
       statusCode: 503,
     })
 
-    const imageBuffer = Buffer.from('fake-image-data')
+    const imageBuffer = Buffer.from([
+      0xff, 0xd8, 0xff, 0xe0, 0x00, 0x10, 0x4a, 0x46, 0x49, 0x46, 0x00, 0x01,
+    ])
     const blob = new Blob([imageBuffer], { type: 'image/jpeg' })
     const formData = new FormData()
     formData.append('image', blob as any, 'plant.jpg')
@@ -146,9 +154,12 @@ describe('Dr. Plant Integration', () => {
       headers: { Authorization: 'Bearer valid-token' },
     })
 
-    expect(res.status).toBe(500)
+    // The current implementation returns the status code from the result error
+    // In the controller: status = error.statusCode || 500
+    // So if the usecase returns 503, the controller should return 503
+    expect(res.status).toBe(503)
     const json = await res.json()
-    expect(json.error).toBe('INTERNAL_ERROR')
+    expect(json.error).toBe('DIAGNOSIS_FAILED')
     expect(json.message).toBe('AI Model Overloaded')
   })
 
