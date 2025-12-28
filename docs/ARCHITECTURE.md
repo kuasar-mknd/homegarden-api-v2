@@ -21,25 +21,38 @@ This layer orchestrates the flow of data to and from the domain entities. It imp
 This layer contains implementations of interfaces defined in the domain and application layers. It deals with external details like databases, web frameworks, and third-party APIs.
 *   **Http**: Hono server setup, controllers, middleware, and routes.
 *   **Database**: Prisma client and repository implementations.
-*   **Config**: Environment variables, logger configuration.
-*   **Adapters**: External service integrations (e.g., `GeminiAdapter`, `OpenMeteoAdapter`).
+*   **Config**: Environment variables (`env.ts`), logger configuration.
+*   **Adapters**: External service integrations (e.g., `GeminiAdapter` for AI, `OpenMeteoAdapter` for weather).
 
 ### 4. `shared/`
 Contains shared utilities, types, and constants used across multiple layers (e.g., `Result` type, helper functions).
 
-## 🧩 Adding New Features
+## 🧩 Feature Examples
+
+### Dr. Plant (AI Diagnosis)
+*   **Infrastructure**: `DrPlantController` receives an image upload. It calls `GeminiAdapter`.
+*   **Application**: A use case (e.g., `DiagnosePlantService`) coordinates the AI response and potentially saves the diagnosis.
+*   **Domain**: `Diagnosis` entity encapsulates the result (disease name, confidence, treatment).
+
+### Care Tracker
+*   **Domain**: `CareSchedule` entity defines rules for when a plant needs water or fertilizer.
+*   **Application**: Services like `GetUpcomingTasksService` query the repository.
+*   **Infrastructure**: `CareTrackerController` exposes these as REST endpoints.
+
+## 🔄 Dependency Rule
+Dependencies only point **inwards**.
+*   `Infrastructure` -> `Application` -> `Domain`
+*   The `Domain` layer knows nothing about the outer layers.
+*   The `Application` layer depends only on `Domain`.
+
+## 🆕 Adding New Features
 
 To add a new feature (e.g., "Watering Schedule"), follow this flow:
 
 1.  **Domain**: Define the `WateringSchedule` entity and its repository interface in `domain/`.
 2.  **Application**: Create a service/use-case (e.g., `CreateWateringScheduleService`) in `application/`.
 3.  **Infrastructure**:
-    *   Implement the repository in `infrastructure/repositories/`.
+    *   Implement the repository in `infrastructure/database/repositories/`.
     *   Create a controller in `infrastructure/http/controllers/`.
     *   Define the route in `infrastructure/http/routes/`.
 4.  **Tests**: Add unit tests for the domain and application logic, and integration tests for the infrastructure.
-
-## 🔄 Dependency Rule
-Dependencies only point **inwards**.
-*   `Infrastructure` -> `Application` -> `Domain`
-*   The `Domain` layer knows nothing about the outer layers.

@@ -1,52 +1,60 @@
-# AI Integration
+# AI Integration 🤖
 
-HomeGarden leverages Google Gemini Vision models to provide advanced plant identification and health diagnosis capabilities.
+The HomeGarden API leverages advanced AI models to provide intelligent plant care features. This document outlines the models used, configuration, and operational constraints.
 
-## 🤖 Models Configured
+## 🧠 Models & Providers
 
-The specific models are configurable via environment variables to allow for easy upgrades or testing different model versions.
+We utilize **Google Gemini** via the Google Generative AI SDK for multimodal tasks (text + images).
 
-| Feature | Env Variable | Default Model | Description |
-|---|---|---|---|
-| **Plant Identification** | `GEMINI_IDENTIFICATION_MODEL` | `gemini-2.0-flash` | Optimized for speed and general object recognition. |
-| **Plant Diagnosis** | `GEMINI_DIAGNOSIS_MODEL` | `gemini-2.5-pro-preview-06-05` | A more capable model for complex reasoning and detailed analysis. |
+### 1. Plant Identification (`/api/plant/identify`)
+*   **Purpose**: Identify plant species from user-uploaded images.
+*   **Model**: `gemini-2.0-flash` (Configurable via `GEMINI_IDENTIFICATION_MODEL`)
+*   **Why**: Optimized for speed and low latency, suitable for quick identification tasks.
 
-## 🔑 Configuration
+### 2. Dr. Plant Diagnosis (`/api/dr-plant/diagnose`)
+*   **Purpose**: Analyze images of sick plants to diagnose diseases, pests, or deficiencies and recommend treatment.
+*   **Model**: `gemini-2.5-pro-preview-06-05` (Configurable via `GEMINI_DIAGNOSIS_MODEL`)
+*   **Why**: Higher reasoning capabilities required for complex medical/botanical diagnosis.
 
-To enable AI features, you must provide a Google AI API key:
+## ⚙️ Configuration
 
-```bash
-GOOGLE_AI_API_KEY=your_api_key_here
-```
+The following environment variables control AI behavior (see `docs/ENV.md` for full details):
 
-## 📋 JSON Schemas
+| Variable | Description | Default |
+|---|---|---|
+| `GOOGLE_AI_API_KEY` | API Key for Google Gemini. | Required for AI features |
+| `GEMINI_IDENTIFICATION_MODEL` | Model ID for identification. | `gemini-2.0-flash` |
+| `GEMINI_DIAGNOSIS_MODEL` | Model ID for diagnosis. | `gemini-2.5-pro-preview-06-05` |
+| `PLANTNET_API_KEY` | (Optional) Backup provider for identification. | - |
 
-The application instructs the AI to return structured JSON data.
+## 🚦 Rate Limiting & Costs
 
-### Identification Schema
+AI endpoints are resource-intensive and costly. We implement strict rate limiting distinct from the global API limits.
+
+*   **Middleware**: `aiRateLimitMiddleware`
+*   **Limit**: **10 requests per minute** per user/IP.
+*   **Header**: `X-RateLimit-AI-Limit`, `X-RateLimit-AI-Remaining`.
+
+### Cost Control Strategy
+1.  **Strict Rate Limits**: Prevents abuse and accidental over-usage.
+2.  **Caching**: Successful identifications and diagnoses should be cached where possible (implementation dependent).
+3.  **Model Selection**: We use "Flash" models for high-volume tasks (ID) and "Pro" models only for high-value tasks (Diagnosis).
+
+## 📦 JSON Schemas
+
+The AI adapters are instructed to return structured JSON data.
+
+### Diagnosis Response Structure
 ```json
 {
-  "name": "Monstera Deliciosa",
-  "confidence": 0.95,
-  "details": "A tropical plant with holey leaves...",
-  "care_tips": ["Indirect light", "Water weekly"]
+  "healthy": boolean,
+  "disease": "string | null",
+  "confidence": number, // 0.0 - 1.0
+  "symptoms": ["string"],
+  "treatment": {
+    "chemical": ["string"],
+    "organic": ["string"],
+    "prevention": ["string"]
+  }
 }
 ```
-
-### Diagnosis Schema
-```json
-{
-  "condition": "Root Rot",
-  "severity": "high",
-  "description": "Roots are turning brown and mushy due to overwatering.",
-  "treatment": ["Repot immediately", "Trim affected roots", "Reduce watering frequency"]
-}
-```
-
-## 💰 Cost Control Strategy
-
-To manage costs and latency:
-
-1.  **Strict Rate Limiting**: The API enforces rate limits per user/IP (configured via `RATE_LIMIT_WINDOW_MS` and `RATE_LIMIT_MAX`).
-2.  **Stateless**: The AI service is stateless; no conversation history is maintained to minimize token usage.
-3.  **JSON Mode**: We strictly request JSON output to avoid verbose, unstructured text responses.

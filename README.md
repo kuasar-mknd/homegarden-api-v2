@@ -1,102 +1,100 @@
-# HomeGarden API
+# HomeGarden API 🌿
 
-HomeGarden is a robust, Clean Architecture-based REST API for managing gardens and plants, powered by AI for identification and diagnosis. It uses Hono, Prisma, and Supabase to provide a scalable and type-safe backend.
+A robust, production-ready TypeScript backend for managing home gardens, featuring AI-powered plant identification and diagnosis ("Dr. Plant"). Built with **Clean Architecture** principles to ensure maintainability, testability, and scalability.
 
-## 🌟 Features
+## 🚀 Core Features
 
-*   **Clean Architecture**: Separation of concerns into Domain, Application, and Infrastructure layers.
-*   **Plant Management**: CRUD operations for Gardens and Plants.
+*   **Clean Architecture**: Strict separation of concerns (Domain, Application, Infrastructure).
 *   **AI Integration**:
-    *   **Identification**: Identify plants from images using Google Gemini Vision (`gemini-2.0-flash`).
-    *   **Diagnosis**: Diagnose plant health issues using Google Gemini Vision (`gemini-2.5-pro-preview-06-05`).
-*   **Weather Integration**: Fetch weather data for garden locations via Open-Meteo.
-*   **Authentication**: Secure authentication using Supabase Auth (JWT).
-*   **Type Safety**: End-to-end type safety with TypeScript, Zod, and Prisma.
-*   **Interactive Docs**: OpenAPI (Swagger) documentation available at `/ui`.
+    *   **Dr. Plant**: AI-powered disease diagnosis using Google Gemini Vision.
+    *   **Plant ID**: Plant species identification (integrates with PlantNet/Gemini).
+*   **Care Tracker**: Schedule and track watering, fertilizing, and pruning tasks.
+*   **Tech Stack**:
+    *   [Hono](https://hono.dev/): Fast, lightweight web framework.
+    *   [Prisma](https://www.prisma.io/): Type-safe ORM.
+    *   [PostgreSQL](https://www.postgresql.org/): Relational database.
+    *   [Vitest](https://vitest.dev/): Blazing fast unit and integration testing.
+    *   [Zod](https://zod.dev/): Runtime schema validation (Env, API inputs).
 
-## 🛠️ Local Setup
+## 🛠 Local Development Setup
 
 ### Prerequisites
 
-*   Node.js >= 20.0.0
-*   pnpm (managed via `corepack` or installed globally)
-*   Docker (for local Postgres database)
+*   Node.js (v20+)
+*   pnpm (v9+)
+*   PostgreSQL running locally or via Docker
 
-### Installation
+### 1. Install Dependencies
 
-1.  **Clone the repository:**
-    ```bash
-    git clone <repo-url>
-    cd homegarden-api
-    ```
-
-2.  **Install dependencies:**
-    ```bash
-    pnpm install
-    ```
-
-3.  **Environment Setup:**
-    Copy `.env.example` to `.env` and fill in the required values.
-    ```bash
-    cp .env.example .env
-    ```
-    *   **Important**: You need a Supabase project for `SUPABASE_URL` and `SUPABASE_PUBLISHABLE_KEY`.
-    *   For AI features, get a key from [Google AI Studio](https://aistudio.google.com/).
-
-4.  **Database Setup:**
-    Start a Postgres database (e.g., via Docker) and set `DATABASE_URL` in `.env`.
-    ```bash
-    # Example using docker run
-    docker run --name homegarden-db -e POSTGRES_PASSWORD=password -e POSTGRES_DB=homegarden -p 5432:5432 -d postgres:15
-    ```
-    Push the schema to the database:
-    ```bash
-    pnpm db:push
-    ```
-    (Optional) Seed the database:
-    ```bash
-    pnpm db:seed
-    ```
-
-5.  **Run the Server:**
-    ```bash
-    pnpm dev
-    ```
-    The server will start on `http://localhost:3000`.
-
-## 🧪 Testing
-
-Run unit and integration tests:
 ```bash
+pnpm install
+```
+
+### 2. Environment Configuration
+
+Copy the example environment file and configure your secrets:
+
+```bash
+cp .env.example .env
+```
+
+Review `docs/ENV.md` for detailed information on each variable. You will need:
+-   **Database URL**: Connection string for your local PostgreSQL instance.
+-   **Supabase Config**: For authentication.
+-   **Google AI Key**: For Dr. Plant features.
+
+### 3. Database Setup
+
+Push the schema to your local database:
+
+```bash
+pnpm run db:push
+```
+
+(Optional) Seed the database with initial data:
+
+```bash
+pnpm run db:seed
+```
+
+### 4. Run the Server
+
+Start the development server with hot-reload:
+
+```bash
+pnpm dev
+```
+
+The API will be available at `http://localhost:3000`.
+Visit `http://localhost:3000/ui` for the interactive Swagger UI documentation.
+
+## ✅ Testing
+
+Run the test suite using Vitest:
+
+```bash
+# Run all tests
 pnpm test
+
+# Run with coverage
+pnpm run test:coverage
 ```
 
-Run tests with coverage:
-```bash
-pnpm test:coverage
-```
+**Note**: Integration tests require a running database. Ensure `DATABASE_URL` is set in your `.env`.
 
-## 📖 API Usage
+## 📖 Documentation
 
-The API is documented using Swagger. Once the server is running, visit:
-*   **Swagger UI**: [http://localhost:3000/ui](http://localhost:3000/ui)
-*   **OpenAPI Spec**: [http://localhost:3000/doc](http://localhost:3000/doc)
+*   [**Architecture**](./docs/ARCHITECTURE.md): Deep dive into the Clean Architecture layers.
+*   [**API Reference**](./docs/API.md): Overview of available endpoints.
+*   [**Environment Variables**](./docs/ENV.md): Complete list of configuration options.
+*   [**AI Features**](./docs/AI.md): Details on models, rate limits, and usage.
 
-### Example: Check API Status
-```bash
-curl http://localhost:3000/health
-```
+## 🐛 Troubleshooting
 
-### Example: Identify a Plant (requires Auth)
-```bash
-curl -X POST http://localhost:3000/api/v2/plant-id/identify \
-  -H "Authorization: Bearer <YOUR_SUPABASE_TOKEN>" \
-  -H "Content-Type: application/json" \
-  -d '{"imageUrl": "https://example.com/plant.jpg"}'
-```
+*   **`Error: P1001: Can't reach database server`**: Ensure your PostgreSQL service is running and the `DATABASE_URL` is correct.
+*   **`Prisma Client not initialized`**: Run `pnpm run db:generate`.
+*   **`Biome linting errors`**: Run `pnpm run format` to automatically fix formatting issues.
 
-## 🔧 Troubleshooting
+## 📄 License
 
-*   **`Supabase URL or Publishable Key not configured`**: Ensure `SUPABASE_URL` and `SUPABASE_PUBLISHABLE_KEY` are set in `.env`.
-*   **Database Connection Errors**: Check if your Postgres container is running and accessible. Verify `DATABASE_URL` matches your container settings.
-*   **AI Errors**: Verify `GOOGLE_AI_API_KEY` is valid and has access to the specified models.
+ISC

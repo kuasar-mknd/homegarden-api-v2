@@ -1,80 +1,59 @@
 # API Reference
 
-The HomeGarden API provides endpoints for plant management, AI identification, weather data, and more.
+The HomeGarden API is a RESTful service documented using **OpenAPI (Swagger)**.
 
-## Base URL
+## 📖 Interactive Documentation
 
-`http://localhost:3000/api/v2`
+When running locally, verify the full API specification and test endpoints directly in your browser:
 
-## Authentication
+👉 **[http://localhost:3000/ui](http://localhost:3000/ui)**
 
-Most endpoints require a Bearer Token (Supabase JWT).
+## 🔑 Authentication
 
-```http
-Authorization: Bearer <your-supabase-jwt>
-```
+Most endpoints require authentication via a Bearer Token (JWT) provided by Supabase.
 
----
+*   **Header**: `Authorization: Bearer <token>`
 
-## 📘 Interactive Documentation (Swagger UI)
+## 🛣️ Core Resources
 
-The best way to explore the API is via the built-in Swagger UI, which provides interactive documentation, schema definitions, and "Try it out" functionality.
+### 🌿 Garden (`/api/garden`)
+Manage your gardens.
+*   `GET /api/garden`: List all gardens.
+*   `POST /api/garden`: Create a new garden.
+*   `GET /api/garden/:id`: Get details.
+*   `GET /api/garden/location/:latitude/:longitude`: Find gardens near coordinates.
 
-- **Swagger UI**: Visit `/ui` (e.g., `http://localhost:3000/ui`)
-- **OpenAPI Spec**: Visit `/doc` (e.g., `http://localhost:3000/doc`)
+### 🌻 Plant (`/api/plant`)
+Manage plants within your gardens.
+*   `POST /api/plant`: Add a plant to a garden.
+*   `GET /api/plant`: List plants (filterable by garden).
 
----
+### 🔍 Plant ID (`/api/plant/identify`)
+*   `POST /api/plant/identify`: Upload an image to identify the plant species.
+    *   **Input**: `multipart/form-data` with `image` file.
+    *   **Output**: List of potential matches with confidence scores.
 
-## 🌿 Core Resources
+### 🩺 Dr. Plant (`/api/dr-plant`)
+*   `POST /api/dr-plant/diagnose`: Upload an image of a sick plant.
+    *   **Input**: `multipart/form-data` with `image` file.
+    *   **Output**: Diagnosis, confidence, and treatment plan.
 
-### Gardens
+### 📅 Care Tracker (`/api/care-tracker`)
+*   `GET /api/care-tracker/upcoming`: Get a list of pending tasks (water, fertilize).
+*   `POST /api/care-tracker/schedules`: Create a new care schedule.
 
-- `GET /gardens/plants` - Retrieves all plants in the authenticated user's garden.
-- `POST /gardens/:id/plants` - Adds a new plant to a specific garden.
-- `GET /gardens/nearby` - Finds public gardens within a specific radius (geo-query).
-- `GET /gardens/:id/weather` - Fetches current weather for a garden's location.
+### 👤 User (`/api/user`)
+*   `GET /api/user/profile`: Get current user profile.
+*   `PATCH /api/user/profile`: Update preferences.
 
-### AI Identification
+## ⚠️ Error Handling
 
-- `POST /plant-id/identify` - Identifies a plant from an image URL.
-- `POST /dr-plant/diagnose` - Diagnoses plant health issues from an image.
-
-### Users
-
-- `GET /users/me` - Get current user profile.
-- `PUT /users/me` - Update user profile (display name, preferences).
-- `GET /users/:id` - Get public profile information for a user.
-
-### Care Tracker
-
-- `GET /plants/:plantId/schedules` - Get care schedules for a plant.
-- `POST /plants/:plantId/schedules` - Create a care schedule.
-- `POST /schedules/:id/logs` - Log a care activity (mark as completed).
-
----
-
-## 📝 Error Format
-
-Errors are returned in a standardized JSON format:
+Errors follow a standard JSON format:
 
 ```json
 {
   "success": false,
-  "error": {
-    "code": "VALIDATION_ERROR",
-    "message": "Invalid input data",
-    "details": [
-      {
-        "field": "imageUrl",
-        "message": "Invalid URL format"
-      }
-    ]
-  }
+  "error": "ERROR_CODE",
+  "message": "Human readable description"
 }
 ```
-
-## 🔌 WebSocket API
-
-Real-time features are available via WebSocket at `ws://localhost:3000`.
-
-See `README.md` for subscription examples.
