@@ -75,7 +75,7 @@ describe('AuthMiddleware', () => {
   })
 
   it('should sync existing user and call next()', async () => {
-    mockContext.req.header.mockReturnValue('Bearer valid-token')
+    mockContext.req.header.mockReturnValue('Bearer valid-token-1')
     const mockUser = { id: 'auth-id', email: 'test@example.com' }
     mockSupabase.auth.getUser.mockResolvedValue({ data: { user: mockUser }, error: null })
 
@@ -90,7 +90,7 @@ describe('AuthMiddleware', () => {
   })
 
   it('should create and sync new user if not in database', async () => {
-    mockContext.req.header.mockReturnValue('Bearer valid-token')
+    mockContext.req.header.mockReturnValue('Bearer valid-token-2')
     const mockUser = {
       id: 'auth-id',
       email: 'new@example.com',
@@ -118,7 +118,7 @@ describe('AuthMiddleware', () => {
   })
 
   it('should handle metadata without full_name', async () => {
-    mockContext.req.header.mockReturnValue('Bearer token')
+    mockContext.req.header.mockReturnValue('Bearer token-3')
     mockSupabase.auth.getUser.mockResolvedValue({
       data: { user: { email: 'test@test.com', user_metadata: { first_name: 'OnlyFirst' } } },
       error: null,
@@ -139,7 +139,7 @@ describe('AuthMiddleware', () => {
   })
 
   it('should return 500 if environment variables are missing', async () => {
-    mockContext.req.header.mockReturnValue('Bearer token')
+    mockContext.req.header.mockReturnValue('Bearer token-4')
     // Temporarily break env
     const originalUrl = env.SUPABASE_URL
     ;(env as any).SUPABASE_URL = null
@@ -154,7 +154,7 @@ describe('AuthMiddleware', () => {
   })
 
   it('should return 500 if prisma is missing', async () => {
-    mockContext.req.header.mockReturnValue('Bearer token')
+    mockContext.req.header.mockReturnValue('Bearer token-5')
     mockSupabase.auth.getUser.mockResolvedValue({
       data: { user: { email: 't@t.com' } },
       error: null,
@@ -182,7 +182,7 @@ describe('AuthMiddleware', () => {
     // Configure mockSupabase to throw a string
     mockSupabase.auth.getUser.mockRejectedValue('String Error')
 
-    mockContext.req.header.mockReturnValue('Bearer token')
+    mockContext.req.header.mockReturnValue('Bearer token-6')
 
     // Re-import to ensure clean state (though might not be strictly necessary if createClient mock persists)
     const { authMiddleware: freshAuthMiddleware } = await import(
