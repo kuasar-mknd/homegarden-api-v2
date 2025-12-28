@@ -42,6 +42,17 @@ describe('UI Templates', () => {
     it('should include print styles for expanding URLs', () => {
         expect(SHARED_STYLES).toContain('a[href^="http"]:after { content: " (" attr(href) ")"; }')
     })
+
+    it('should include typography improvements', () => {
+      expect(SHARED_STYLES).toContain('text-wrap: balance;')
+      expect(SHARED_STYLES).toContain('hyphens: auto;')
+    })
+
+    it('should include copy button styles', () => {
+      expect(SHARED_STYLES).toContain('.copy-btn')
+      expect(SHARED_STYLES).toContain('.code-text')
+      expect(SHARED_STYLES).toContain('.copy-icon')
+    })
   })
 
   describe('getLandingPageHtml', () => {
@@ -76,7 +87,7 @@ describe('UI Templates', () => {
       const unsafe = '<script>alert(1)</script>'
       const html = getNotFoundPageHtml(unsafe)
       expect(html).toContain('&lt;script&gt;alert(1)&lt;/script&gt;')
-      expect(html).not.toContain('<script>')
+      expect(html).not.toContain('<div class="code-block"><script>')
     })
 
     it('should use .badge-error class', () => {
@@ -88,12 +99,24 @@ describe('UI Templates', () => {
     it('should use .code-block class', () => {
         const html = getNotFoundPageHtml('/foo')
         expect(html).toContain('class="code-block"')
-        expect(html).not.toContain('style="display: block;')
     })
 
     it('should include icons in buttons', () => {
         const html = getNotFoundPageHtml('/foo')
         expect(html).toContain('<svg class="btn-icon"')
+    })
+
+    it('should use .code-block structure with copy button', () => {
+        const html = getNotFoundPageHtml('/foo')
+        expect(html).toContain('class="code-block"')
+        expect(html).toContain('class="code-text"')
+        expect(html).toContain('class="copy-btn"')
+        expect(html).toContain('onclick="copySiblingText(this)"')
+    })
+
+    it('should include the copy script', () => {
+        const html = getNotFoundPageHtml('/foo')
+        expect(html).toContain('function copySiblingText(btn)')
     })
   })
 })
