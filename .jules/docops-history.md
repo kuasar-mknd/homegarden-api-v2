@@ -8,3 +8,4 @@
 | 2025-12-21 | DocOps | README.md, docs/ENV.md, docs/API.md, docs/AI.md, .env.example, .github/workflows/* | Refined docs, added CI workflows (with db push), dependabot, aligned ENV.md with code |
 | 2025-12-22 | DocOps | README.md, docs/*, .github/workflows/*, .env.example | Complete doc refresh (Architecture, AI, Env, API), robust CI pipeline with Postgres service, Dependabot config |
 | 2025-12-23 | DocOps | README.md, docs/*, .github/workflows/*.yml | Fix CI workflow versions, update API/ENV docs, refine testing instructions. |
+| 2025-12-24 | DocOps | README.md, docs/*, .github/workflows/*, .env.example | Update docs for pnpm, sync ENV.md/env.example with code, refine CI workflows, add AI docs. |
