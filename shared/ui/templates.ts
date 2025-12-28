@@ -18,6 +18,9 @@ export const SHARED_STYLES = `
     --radius-lg: 12px;
     --radius-xl: 16px;
 
+    --focus-ring: 2px solid var(--primary);
+    --focus-offset: 2px;
+
     accent-color: var(--primary);
   }
   @media (prefers-color-scheme: dark) {
@@ -87,8 +90,8 @@ export const SHARED_STYLES = `
   }
   .skip-link:focus {
     top: 0;
-    outline: 2px solid var(--primary);
-    outline-offset: 4px;
+    outline: var(--focus-ring);
+    outline-offset: var(--focus-offset);
   }
   .container {
     background: var(--card-bg);
@@ -100,7 +103,7 @@ export const SHARED_STYLES = `
     width: 90%;
     text-align: center;
   }
-  header h1 { color: var(--primary); margin-bottom: 0.5rem; }
+  header h1 { color: var(--primary); margin-bottom: 0.5rem; text-wrap: balance; }
   .badge {
     display: inline-block;
     background: #e8f5e9;
@@ -163,12 +166,12 @@ export const SHARED_STYLES = `
     transform: scale(0.98);
   }
   .card:focus-visible {
-    outline: 2px solid var(--primary);
-    outline-offset: 4px;
+    outline: var(--focus-ring);
+    outline-offset: var(--focus-offset);
     border-color: var(--secondary);
     z-index: 1;
   }
-  .card h2 { margin: 0 0 0.5rem 0; color: var(--primary); font-size: 1.25rem; transition: color 0.2s; }
+  .card h2 { margin: 0 0 0.5rem 0; color: var(--primary); font-size: 1.25rem; transition: color 0.2s; text-wrap: balance; }
   .card:hover h2 { color: var(--secondary); }
   .card p { margin: 0; font-size: 0.9rem; color: var(--card-text); }
 
@@ -188,6 +191,10 @@ export const SHARED_STYLES = `
     box-shadow: 0 2px 4px rgba(0,0,0,0.1);
     min-height: 44px; /* Touch target size */
     box-sizing: border-box;
+    cursor: pointer;
+    border: none;
+    font-family: inherit;
+    font-size: inherit;
   }
   .btn:hover {
     background: var(--secondary);
@@ -198,8 +205,8 @@ export const SHARED_STYLES = `
     box-shadow: inset 0 2px 4px rgba(0,0,0,0.1);
   }
   .btn:focus-visible {
-    outline: 2px solid var(--primary);
-    outline-offset: 2px;
+    outline: var(--focus-ring);
+    outline-offset: var(--focus-offset);
   }
   .btn-icon {
     width: 1.25em;
@@ -275,8 +282,8 @@ export const SHARED_STYLES = `
     color: var(--secondary);
   }
   footer a:focus-visible {
-    outline: 2px solid var(--primary);
-    outline-offset: 2px;
+    outline: var(--focus-ring);
+    outline-offset: var(--focus-offset);
     border-radius: var(--radius-sm);
   }
   .footer-links {
@@ -310,15 +317,41 @@ export const SHARED_STYLES = `
     margin-bottom: 2rem;
   }
   .code-block {
-    display: block;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
     background: #f5f5f5;
     padding: 0.5rem;
     border-radius: var(--radius-sm);
     margin: 1rem 0;
+    border: 1px solid var(--card-border);
+  }
+  .code-text {
+    font-family: monospace;
     word-break: break-all;
     overflow-x: auto;
-    user-select: all;
+  }
+  .copy-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: transparent;
     border: 1px solid var(--card-border);
+    color: var(--text);
+    padding: 0.5rem;
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    transition: background 0.2s;
+    min-width: 44px;
+    min-height: 44px;
+  }
+  .copy-btn:hover {
+    background: var(--card-border);
+  }
+  .copy-btn:focus-visible {
+    outline: var(--focus-ring);
+    outline-offset: var(--focus-offset);
   }
   @media (prefers-color-scheme: dark) {
     .code-block {
@@ -352,6 +385,9 @@ export const SHARED_STYLES = `
 const EXTERNAL_LINK_ICON = `<svg class="external-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>`
 const HOME_ICON = `<svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>`
 const DOC_ICON = `<svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>`
+const BACK_ICON = `<svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>`
+const COPY_ICON = `<svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>`
+const CHECK_ICON = `<svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"></polyline></svg>`
 
 interface LayoutProps {
   title: string
@@ -368,10 +404,11 @@ export function baseLayout({ title, description, content }: LayoutProps): string
 
   return `
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" dir="ltr">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="format-detection" content="telephone=no">
   <meta name="description" content="${metaDescription}">
   <meta name="theme-color" content="#2e7d32" media="(prefers-color-scheme: light)">
   <meta name="theme-color" content="#121212" media="(prefers-color-scheme: dark)">
@@ -410,6 +447,27 @@ export function baseLayout({ title, description, content }: LayoutProps): string
       </div>
     </footer>
   </div>
+  <script>
+    function copyToClipboard(button, text) {
+      if (!navigator.clipboard) return;
+      navigator.clipboard.writeText(text).then(() => {
+        const original = button.innerHTML;
+        button.innerHTML = '${CHECK_ICON}';
+        button.setAttribute('aria-label', 'Copied!');
+        setTimeout(() => {
+          button.innerHTML = original;
+          button.setAttribute('aria-label', 'Copy to clipboard');
+        }, 2000);
+      }).catch(err => console.error('Failed to copy:', err));
+    }
+    function goBack() {
+      if (window.history.length > 1) {
+        window.history.back();
+      } else {
+        window.location.href = '/';
+      }
+    }
+  </script>
 </body>
 </html>
   `
@@ -481,10 +539,16 @@ export function getNotFoundPageHtml(path: string): string {
 
     <main id="main">
       <p>Oops! The page you are looking for does not exist.</p>
-      <code aria-label="Requested URL" class="code-block" title="Requested URL">${safePath}</code>
+      <div class="code-block">
+        <code class="code-text" aria-label="Requested URL" title="Requested URL">${safePath}</code>
+        <button class="copy-btn" data-clipboard-text="${safePath}" onclick="copyToClipboard(this, this.dataset.clipboardText)" aria-label="Copy to clipboard" title="Copy to clipboard">
+          ${COPY_ICON}
+        </button>
+      </div>
       <p>Please check the URL or go back to the homepage.</p>
 
       <div class="btn-group">
+        <button onclick="goBack()" class="btn btn-secondary">${BACK_ICON} Go Back</button>
         <a href="/" class="btn">${HOME_ICON}Return Home</a>
         <a href="/ui" class="btn btn-secondary">${DOC_ICON}Read Documentation</a>
       </div>
