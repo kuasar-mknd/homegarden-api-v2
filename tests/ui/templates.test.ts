@@ -19,7 +19,7 @@ describe('UI Templates', () => {
     })
 
     it('should include focus-visible style with primary color', () => {
-        expect(SHARED_STYLES).toContain('outline: 2px solid var(--primary)')
+        expect(SHARED_STYLES).toContain('outline: var(--focus-ring)')
     })
 
     it('should include new utility classes', () => {
@@ -48,7 +48,7 @@ describe('UI Templates', () => {
     it('should return valid HTML string', () => {
       const html = getLandingPageHtml()
       expect(html).toContain('<!DOCTYPE html>')
-      expect(html).toContain('<html lang="en">')
+      expect(html).toContain('<html lang="en" dir="ltr">')
       expect(html).toContain('HomeGarden API')
     })
 
@@ -76,7 +76,8 @@ describe('UI Templates', () => {
       const unsafe = '<script>alert(1)</script>'
       const html = getNotFoundPageHtml(unsafe)
       expect(html).toContain('&lt;script&gt;alert(1)&lt;/script&gt;')
-      expect(html).not.toContain('<script>')
+      // We now have a legitimate script tag in the layout, so we check that the unsafe input is not present as raw HTML
+      expect(html).not.toContain(unsafe)
     })
 
     it('should use .badge-error class', () => {
@@ -94,6 +95,12 @@ describe('UI Templates', () => {
     it('should include icons in buttons', () => {
         const html = getNotFoundPageHtml('/foo')
         expect(html).toContain('<svg class="btn-icon"')
+    })
+
+    it('should include Go Back button', () => {
+        const html = getNotFoundPageHtml('/foo')
+        expect(html).toContain('Go Back')
+        expect(html).toContain('onclick="goBack()"')
     })
   })
 })
