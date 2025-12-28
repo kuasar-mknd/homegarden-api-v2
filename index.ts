@@ -5,13 +5,13 @@ import { OpenAPIHono } from '@hono/zod-openapi'
 import { compress } from 'hono/compress'
 import { cors } from 'hono/cors'
 import { prettyJSON } from 'hono/pretty-json'
-import { secureHeaders } from 'hono/secure-headers'
 import { env } from './infrastructure/config/env.js'
 import { logger } from './infrastructure/config/logger.js'
 import {
   errorHandler,
   loggerMiddleware,
   rateLimitMiddleware,
+  securityHeadersMiddleware,
 } from './infrastructure/http/middleware/index.js'
 import { getLandingPageHtml, getNotFoundPageHtml } from './shared/ui/templates.js'
 
@@ -158,23 +158,7 @@ app.get('/ui', swaggerUI({ url: '/doc' }))
 // ============================================================
 
 // Security headers
-app.use(
-  '*',
-  secureHeaders({
-    contentSecurityPolicy: {
-      defaultSrc: ["'self'"],
-      scriptSrc: ["'self'", "'unsafe-inline'", 'https://cdn.jsdelivr.net'],
-      styleSrc: ["'self'", "'unsafe-inline'"],
-      imgSrc: ["'self'", 'data:', 'https:', 'blob:'],
-      connectSrc: ["'self'", 'https://api.open-meteo.com'],
-      fontSrc: ["'self'", 'https:', 'data:'],
-    },
-    xFrameOptions: 'DENY',
-    xXssProtection: '1; mode=block',
-    strictTransportSecurity: 'max-age=63072000; includeSubDomains; preload',
-    referrerPolicy: 'strict-origin-when-cross-origin',
-  }),
-)
+app.use('*', securityHeadersMiddleware)
 
 // Compression
 app.use('*', compress())
