@@ -4,6 +4,12 @@ import { env } from '../../config/env.js'
 import { logger } from '../../config/logger.js'
 import { prisma } from '../../database/prisma.client.js'
 
+// Bolt Optimization: Cache by token to avoid Supabase roundtrip
+// Map<token, { user: User, timestamp: number }>
+const tokenCache = new Map<string, { user: any; timestamp: number }>()
+const CACHE_TTL = 60 * 1000 // 1 minute
+const MAX_CACHE_SIZE = 1000 // Prevent memory leaks
+
 // Initialize Supabase client
 const getSupabase = () => {
   if (!env.SUPABASE_URL || !env.SUPABASE_PUBLISHABLE_KEY) {
@@ -46,6 +52,14 @@ export const authMiddleware = createMiddleware(async (c, next) => {
   const token = authHeader.replace('Bearer ', '')
 
   try {
+    // Bolt Optimization: Check cache first
+    const cached = tokenCache.get(token)
+    if (cached && Date.now() - cached.timestamp < CACHE_TTL) {
+      c.set('user', cached.user)
+      c.set('userId', cached.user.id)
+      return await next()
+    }
+
     const supabase = getSupabase()
 
     // 1. Verify token with Supabase
@@ -100,6 +114,12 @@ export const authMiddleware = createMiddleware(async (c, next) => {
       })
       logger.info({ userId: localUser.id }, 'Synced new user')
     }
+
+    // Update Cache
+    if (tokenCache.size >= MAX_CACHE_SIZE) {
+      tokenCache.clear() // Simple eviction
+    }
+    tokenCache.set(token, { user: localUser, timestamp: Date.now() })
 
     // 3. Attach user to context
     c.set('user', localUser)

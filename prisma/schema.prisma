@@ -66,6 +66,7 @@ model Garden {
   @@index([userId])
   @@index([latitude, longitude])
   @@index([name])
+  @@index([createdAt]) // Bolt Optimization: Default sort
   @@map("gardens")
 }
 
@@ -110,6 +111,7 @@ model Plant {
   @@index([gardenId, exposure])
   // Optimization: Filter plants by watering needs in a garden
   @@index([gardenId, watering])
+  @@index([createdAt]) // Bolt Optimization: Default sort
   @@map("plants")
 }
 

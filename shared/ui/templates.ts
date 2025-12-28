@@ -415,10 +415,10 @@ export function baseLayout({ title, description, content }: LayoutProps): string
   `
 }
 
-export function getLandingPageHtml(): string {
-  return baseLayout({
-    title: 'HomeGarden API v2',
-    content: `
+// Bolt Optimization: Generate static HTML once at module scope
+const LANDING_PAGE_HTML = baseLayout({
+  title: 'HomeGarden API v2',
+  content: `
     <header>
       <h1>🌱 HomeGarden API</h1>
       <div class="badge" role="status">v2.0.0 • AI-Powered</div>
@@ -455,7 +455,10 @@ export function getLandingPageHtml(): string {
       </ul>
     </main>
     `,
-  })
+})
+
+export function getLandingPageHtml(): string {
+  return LANDING_PAGE_HTML
 }
 
 // Simple HTML escape function to prevent XSS
