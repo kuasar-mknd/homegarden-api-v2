@@ -1,5 +1,5 @@
-import { describe, expect, it } from 'vitest'
 import { validateImageSignature } from '@infrastructure/http/validators/file-signature.validator.js'
+import { describe, expect, it } from 'vitest'
 
 describe('File Signature Validator', () => {
   it('should validate JPEG files correctly', () => {

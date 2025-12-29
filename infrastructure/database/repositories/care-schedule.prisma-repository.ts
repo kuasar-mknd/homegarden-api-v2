@@ -16,13 +16,13 @@ export class CareSchedulePrismaRepository implements CareScheduleRepository {
       data: {
         taskType: data.taskType,
         frequency: data.frequency,
-        intervalDays: data.intervalDays,
+        intervalDays: data.intervalDays ?? null,
         nextDueDate: data.nextDueDate,
-        notes: data.notes,
+        notes: data.notes ?? null,
         isEnabled: data.isEnabled ?? true,
         weatherAdjust: data.weatherAdjust ?? false,
-        gardenId: data.gardenId,
-        plantId: data.plantId,
+        gardenId: data.gardenId ?? null,
+        plantId: data.plantId ?? null,
         userId: data.userId,
       },
     })
@@ -119,8 +119,8 @@ export class CareSchedulePrismaRepository implements CareScheduleRepository {
       prisma.careCompletion.create({
         data: {
           scheduleId: id,
-          notes,
-          photoUrl,
+          notes: notes ?? null,
+          photoUrl: photoUrl ?? null,
           completedAt,
         },
       }),

@@ -39,11 +39,23 @@ This document lists all environment variables used by the application, matching 
 | `GOOGLE_AI_API_KEY` | API Key for Google Gemini | Optional |
 | `GEMINI_IDENTIFICATION_MODEL` | Model for plant ID | `gemini-2.0-flash` |
 | `GEMINI_DIAGNOSIS_MODEL` | Model for plant diagnosis | `gemini-2.5-pro-preview-06-05` |
+| `PLANTNET_API_KEY` | API Key for PlantNet (fallback) | Optional |
+
+## Weather
+
+| Variable | Description | Default |
+|---|---|---|
+| `WEATHER_API_BASE_URL` | Base URL for Weather API | `https://api.open-meteo.com/v1` |
+
+## Storage
+
+| Variable | Description | Default |
+|---|---|---|
+| `STORAGE_BUCKET` | Bucket name for file storage | Optional |
 
 ## Security
 
 | Variable | Description | Default |
 |---|---|---|
-| `LOG_LEVEL` | Logging level (`fatal`, `error`, `warn`, `info`, `debug`, `trace`) | `info` |
 | `RATE_LIMIT_WINDOW_MS` | Window for rate limiting in ms | `900000` (15m) |
-| `RATE_LIMIT_MAX` | Max requests per window | `100` |
+| `RATE_LIMIT_MAX` | Max requests per window | `350` |

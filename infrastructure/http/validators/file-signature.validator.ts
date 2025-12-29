@@ -28,19 +28,11 @@ export function validateImageSignature(buffer: Buffer, mimeType: string): boolea
       // WEBP is bytes 8-11 (57 45 42 50)
       return signature.startsWith('52494646') && signature.slice(16, 24) === '57454250'
 
-    case 'image/heic':
-      // HEIC: ftypheic (usually at offset 4)
-      // ... ftyp heic ...
-      // Common signatures involve 'ftyp' at index 4
-      // 66 74 79 70 (ftyp)
-      // followed by 68 65 69 63 (heic) or similar brands
-      // Simplest check: bytes 4-8 are 'ftyp' and bytes 8-12 contain 'heic' or 'mif1' etc.
-      // But standard HEIC often has 'ftypheic' or 'ftypmsf1'
-      // Let's check for 'ftyp' at offset 4
-      {
-        const ftyp = buffer.subarray(4, 8).toString('utf8')
-        return ftyp === 'ftyp'
-      }
+    case 'image/heic': {
+      // Let's check for 'ftyp' at offset 4 // But standard HEIC often has 'ftypheic' or 'ftypmsf1' // Simplest check: bytes 4-8 are 'ftyp' and bytes 8-12 contain 'heic' or 'mif1' etc. // followed by 68 65 69 63 (heic) or similar brands // 66 74 79 70 (ftyp) // Common signatures involve 'ftyp' at index 4 // ... ftyp heic ... // HEIC: ftypheic (usually at offset 4)
+      const ftyp = buffer.subarray(4, 8).toString('utf8')
+      return ftyp === 'ftyp'
+    }
 
     default:
       return false
