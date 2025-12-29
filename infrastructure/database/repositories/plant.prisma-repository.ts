@@ -69,9 +69,19 @@ export class PlantPrismaRepository implements PlantRepository {
   }
 
   async findByUserId(userId: string): Promise<Plant[]> {
+    // Optimization: Fetch garden IDs first to avoid expensive join
+    const gardens = await prisma.garden.findMany({
+      where: { userId },
+      select: { id: true },
+    })
+
+    if (gardens.length === 0) return []
+
+    const gardenIds = gardens.map((g) => g.id)
+
     const plants = await prisma.plant.findMany({
       where: {
-        garden: { userId },
+        gardenId: { in: gardenIds },
       },
       orderBy: { createdAt: 'desc' },
     })
@@ -104,12 +114,26 @@ export class PlantPrismaRepository implements PlantRepository {
     limit?: number
     gardenId?: string
     speciesId?: string
+    userId?: string
   }): Promise<{ plants: Plant[]; total: number }> {
-    const { page = 1, limit = 10, gardenId, speciesId } = options || {}
+    const { page = 1, limit = 10, gardenId, speciesId, userId } = options || {}
     const skip = (page - 1) * limit
     const where: any = {}
+
     if (gardenId) where.gardenId = gardenId
     if (speciesId) where.speciesId = speciesId
+
+    // Optimization: If filtering by userId, use the 2-step approach if gardenId is not present
+    if (userId && !gardenId) {
+      const gardens = await prisma.garden.findMany({
+        where: { userId },
+        select: { id: true },
+      })
+      if (gardens.length === 0) {
+        return { plants: [], total: 0 }
+      }
+      where.gardenId = { in: gardens.map((g) => g.id) }
+    }
 
     const [plants, total] = await Promise.all([
       prisma.plant.findMany({
