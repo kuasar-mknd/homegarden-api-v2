@@ -293,6 +293,8 @@ model CareSchedule {
   @@index([userId, isEnabled, nextDueDate])
   // Optimization: Filter tasks by type for a user (e.g., "My Watering Tasks")
   @@index([userId, taskType])
+  // Optimization: Filter schedules for a specific plant sorted by date
+  @@index([plantId, nextDueDate])
   @@map("care_schedules")
 }
 

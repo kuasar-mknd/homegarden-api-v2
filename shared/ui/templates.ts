@@ -461,12 +461,14 @@ export function getLandingPageHtml(): string {
 
 // Simple HTML escape function to prevent XSS
 function escapeHtml(unsafe: string): string {
-  return unsafe
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;')
-    .replace(/'/g, '&#039;')
+  const ESCAPE_MAP: Record<string, string> = {
+    '&': '&amp;',
+    '<': '&lt;',
+    '>': '&gt;',
+    '"': '&quot;',
+    "'": '&#039;',
+  }
+  return unsafe.replace(/[&<>"']/g, (m) => ESCAPE_MAP[m])
 }
 
 export function getNotFoundPageHtml(path: string): string {
