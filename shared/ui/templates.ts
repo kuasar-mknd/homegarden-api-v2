@@ -100,7 +100,8 @@ export const SHARED_STYLES = `
     width: 90%;
     text-align: center;
   }
-  header h1 { color: var(--primary); margin-bottom: 0.5rem; }
+  p { hyphens: auto; }
+  header h1 { color: var(--primary); margin-bottom: 0.5rem; text-wrap: balance; }
   .badge {
     display: inline-block;
     background: #e8f5e9;
@@ -309,19 +310,54 @@ export const SHARED_STYLES = `
     color: var(--card-text);
     margin-bottom: 2rem;
   }
-  .code-block {
-    display: block;
+  .code-group {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
     background: #f5f5f5;
-    padding: 0.5rem;
+    border: 1px solid var(--card-border);
     border-radius: var(--radius-sm);
     margin: 1rem 0;
+    overflow: hidden;
+  }
+  .code-block {
+    display: block;
+    background: transparent;
+    padding: 0.5rem;
+    border: none;
+    margin: 0;
     word-break: break-all;
     overflow-x: auto;
     user-select: all;
-    border: 1px solid var(--card-border);
+    flex: 1;
+    text-align: left;
+  }
+  .btn-copy {
+    background: transparent;
+    border: none;
+    border-left: 1px solid var(--card-border);
+    cursor: pointer;
+    color: var(--primary);
+    padding: 0.75rem;
+    transition: background 0.2s, color 0.2s;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .btn-copy:hover {
+    background: rgba(0,0,0,0.05);
+    color: var(--secondary);
+  }
+  .btn-copy:focus-visible {
+    outline: 2px solid var(--primary);
+    outline-offset: -2px;
+  }
+  .btn-copy svg {
+    width: 1.2em;
+    height: 1.2em;
   }
   @media (prefers-color-scheme: dark) {
-    .code-block {
+    .code-group {
       background: #2d2d2d;
     }
   }
@@ -352,6 +388,9 @@ export const SHARED_STYLES = `
 const EXTERNAL_LINK_ICON = `<svg class="external-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>`
 const HOME_ICON = `<svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>`
 const DOC_ICON = `<svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>`
+const COPY_ICON = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>`
+const CHECK_ICON = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"></polyline></svg>`
+const BACK_ICON = `<svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>`
 
 interface LayoutProps {
   title: string
@@ -411,6 +450,40 @@ export function baseLayout({ title, description, content }: LayoutProps): string
       </div>
     </footer>
   </div>
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      document.querySelectorAll('[data-action="go-back"]').forEach(function(btn) {
+        btn.addEventListener('click', function(e) {
+          e.preventDefault();
+          if (window.history.length > 1) {
+            window.history.back();
+          } else {
+            window.location.href = '/';
+          }
+        });
+      });
+      document.querySelectorAll('[data-copy-target]').forEach(function(btn) {
+        btn.addEventListener('click', async function() {
+          var targetId = btn.getAttribute('data-copy-target');
+          var target = document.getElementById(targetId);
+          if (!target) return;
+          var text = target.textContent || target.innerText;
+          try {
+            await navigator.clipboard.writeText(text);
+            var originalHtml = btn.innerHTML;
+            btn.innerHTML = '${CHECK_ICON}';
+            btn.setAttribute('aria-label', 'Copied!');
+            setTimeout(function() {
+              btn.innerHTML = originalHtml;
+              btn.setAttribute('aria-label', 'Copy to clipboard');
+            }, 2000);
+          } catch (err) {
+            console.error('Failed to copy', err);
+          }
+        });
+      });
+    });
+  </script>
 </body>
 </html>
   `
@@ -482,10 +555,16 @@ export function getNotFoundPageHtml(path: string): string {
 
     <main id="main">
       <p>Oops! The page you are looking for does not exist.</p>
-      <code aria-label="Requested URL" class="code-block" title="Requested URL">${safePath}</code>
+      <div class="code-group">
+        <code id="error-path" aria-label="Requested URL" class="code-block" title="Requested URL">${safePath}</code>
+        <button class="btn-copy" data-copy-target="error-path" aria-label="Copy URL to clipboard" title="Copy to clipboard">
+          ${COPY_ICON}
+        </button>
+      </div>
       <p>Please check the URL or go back to the homepage.</p>
 
       <div class="btn-group">
+        <a href="#" data-action="go-back" class="btn btn-secondary">${BACK_ICON}Go Back</a>
         <a href="/" class="btn">${HOME_ICON}Return Home</a>
         <a href="/ui" class="btn btn-secondary">${DOC_ICON}Read Documentation</a>
       </div>

@@ -17,3 +17,7 @@
 ## Rejected Changes
 
 *(None yet)*
+
+## 2025-02-19 - Server-Side Interactive Elements
+**Learning:** For server-rendered templates, interactive elements (Copy, Go Back) can be implemented effectively using inline `data-` attributes and vanilla JS event delegation in the layout.
+**Action:** Use `data-action` and `data-copy-target` attributes for simple interactions in static templates to avoid hydration overhead.
