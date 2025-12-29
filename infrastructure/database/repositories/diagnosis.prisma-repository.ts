@@ -46,6 +46,9 @@ export class DiagnosisPrismaRepository implements DiagnosisRepository {
         where,
         skip,
         take: limit,
+        // Optimization: Use index on [userId, createdAt] for history
+        // or [userId, status] if filtering by status.
+        // Prisma picks the best index automatically, but explicit ordering helps matches.
         orderBy: { createdAt: 'desc' },
       }),
       prisma.diagnosis.count({ where }),

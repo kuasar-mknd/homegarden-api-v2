@@ -16,6 +16,9 @@ vi.mock('../../infrastructure/database/prisma.client.js', () => ({
       count: vi.fn(),
       groupBy: vi.fn(),
     },
+    garden: {
+      findMany: vi.fn(),
+    },
   },
 }))
 
@@ -103,17 +106,32 @@ describe('PlantPrismaRepository Unit Tests', () => {
     expect(result[0].gardenId).toBe(mockPlant.gardenId)
   })
 
-  it('should find plants by user ID', async () => {
+  it('should find plants by user ID (optimized)', async () => {
+    ;(prisma.garden.findMany as any).mockResolvedValue([{ id: 'garden-123' }])
     ;(prisma.plant.findMany as any).mockResolvedValue([mockPlant])
 
     const result = await repository.findByUserId('user-123')
 
-    expect(result).toHaveLength(1)
+    expect(prisma.garden.findMany).toHaveBeenCalledWith({
+      where: { userId: 'user-123' },
+      select: { id: true },
+    })
     expect(prisma.plant.findMany).toHaveBeenCalledWith(
       expect.objectContaining({
-        where: { garden: { userId: 'user-123' } },
+        where: { gardenId: { in: ['garden-123'] } },
       }),
     )
+    expect(result).toHaveLength(1)
+  })
+
+  it('should return empty list if user has no gardens', async () => {
+    ;(prisma.garden.findMany as any).mockResolvedValue([])
+
+    const result = await repository.findByUserId('user-no-garden')
+
+    expect(prisma.garden.findMany).toHaveBeenCalled()
+    expect(prisma.plant.findMany).not.toHaveBeenCalled()
+    expect(result).toHaveLength(0)
   })
 
   it('should update a plant', async () => {
@@ -167,6 +185,25 @@ describe('PlantPrismaRepository Unit Tests', () => {
     expect(prisma.plant.findMany).toHaveBeenCalledWith(
       expect.objectContaining({
         where: { speciesId: 'species-123' },
+      }),
+    )
+    expect(result.plants).toHaveLength(1)
+  })
+
+  it('should find all with userId filter (optimized)', async () => {
+    ;(prisma.garden.findMany as any).mockResolvedValue([{ id: 'garden-123' }])
+    ;(prisma.plant.findMany as any).mockResolvedValue([mockPlant])
+    ;(prisma.plant.count as any).mockResolvedValue(1)
+
+    const result = await repository.findAll({ userId: 'user-123' })
+
+    expect(prisma.garden.findMany).toHaveBeenCalledWith({
+      where: { userId: 'user-123' },
+      select: { id: true },
+    })
+    expect(prisma.plant.findMany).toHaveBeenCalledWith(
+      expect.objectContaining({
+        where: { gardenId: { in: ['garden-123'] } },
       }),
     )
     expect(result.plants).toHaveLength(1)
