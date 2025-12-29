@@ -11,6 +11,7 @@ describe('UI Templates', () => {
       expect(SHARED_STYLES).toContain('--primary:')
       expect(SHARED_STYLES).toContain('--secondary:')
       expect(SHARED_STYLES).toContain('--error:')
+      expect(SHARED_STYLES).toContain('--focus-ring:')
     })
 
     it('should include dark mode media query', () => {
@@ -22,8 +23,8 @@ describe('UI Templates', () => {
       expect(SHARED_STYLES).toContain('background: var(--primary)')
     })
 
-    it('should include focus-visible style with primary color', () => {
-      expect(SHARED_STYLES).toContain('outline: 2px solid var(--primary)')
+    it('should include focus-visible style with focus ring variable', () => {
+      expect(SHARED_STYLES).toContain('outline: var(--focus-ring)')
     })
 
     it('should include new utility classes', () => {
@@ -31,6 +32,13 @@ describe('UI Templates', () => {
       expect(SHARED_STYLES).toContain('.code-block')
       expect(SHARED_STYLES).toContain('.footer-links')
       expect(SHARED_STYLES).toContain('.btn-icon')
+      expect(SHARED_STYLES).toContain('.code-group')
+      expect(SHARED_STYLES).toContain('.btn-copy')
+    })
+
+    it('should include typography improvements', () => {
+      expect(SHARED_STYLES).toContain('text-wrap: balance')
+      expect(SHARED_STYLES).toContain('hyphens: auto')
     })
 
     it('should include correct dark mode error badge color', () => {
@@ -64,8 +72,9 @@ describe('UI Templates', () => {
       expect(html).toContain('aria-label="Status: Operational"')
     })
 
-    it('should include dark mode theme-color meta tag', () => {
+    it('should include color scheme meta tags', () => {
       const html = getLandingPageHtml()
+      expect(html).toContain('<meta name="color-scheme" content="light dark">')
       expect(html).toContain(
         '<meta name="theme-color" content="#121212" media="(prefers-color-scheme: dark)">',
       )
@@ -82,7 +91,7 @@ describe('UI Templates', () => {
       const unsafe = '<script>alert(1)</script>'
       const html = getNotFoundPageHtml(unsafe)
       expect(html).toContain('&lt;script&gt;alert(1)&lt;/script&gt;')
-      expect(html).not.toContain('<script>')
+      expect(html).not.toContain('<code aria-label="Requested URL" class="code-block" title="Requested URL"><script>')
     })
 
     it('should use .badge-error class', () => {
@@ -91,15 +100,22 @@ describe('UI Templates', () => {
       expect(html).not.toContain('style="background: #ffebee; color: #c62828;"')
     })
 
-    it('should use .code-block class', () => {
+    it('should use .code-group wrapper and copy button', () => {
       const html = getNotFoundPageHtml('/foo')
+      expect(html).toContain('class="code-group"')
       expect(html).toContain('class="code-block"')
-      expect(html).not.toContain('style="display: block;')
+      expect(html).toContain('class="btn-copy"')
+      expect(html).toContain('aria-label="Copy to clipboard"')
     })
 
     it('should include icons in buttons', () => {
       const html = getNotFoundPageHtml('/foo')
       expect(html).toContain('<svg class="btn-icon"')
+    })
+
+    it('should include copy script', () => {
+      const html = getNotFoundPageHtml('/foo')
+      expect(html).toContain('navigator.clipboard.writeText')
     })
   })
 })

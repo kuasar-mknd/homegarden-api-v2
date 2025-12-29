@@ -18,6 +18,10 @@ export const SHARED_STYLES = `
     --radius-lg: 12px;
     --radius-xl: 16px;
 
+    /* Focus System */
+    --focus-ring: 2px solid var(--primary);
+    --focus-offset: 2px;
+
     accent-color: var(--primary);
   }
   @media (prefers-color-scheme: dark) {
@@ -87,7 +91,7 @@ export const SHARED_STYLES = `
   }
   .skip-link:focus {
     top: 0;
-    outline: 2px solid var(--primary);
+    outline: var(--focus-ring);
     outline-offset: 4px;
   }
   .container {
@@ -100,7 +104,11 @@ export const SHARED_STYLES = `
     width: 90%;
     text-align: center;
   }
-  header h1 { color: var(--primary); margin-bottom: 0.5rem; }
+  header h1 {
+    color: var(--primary);
+    margin-bottom: 0.5rem;
+    text-wrap: balance;
+  }
   .badge {
     display: inline-block;
     background: #e8f5e9;
@@ -163,14 +171,21 @@ export const SHARED_STYLES = `
     transform: scale(0.98);
   }
   .card:focus-visible {
-    outline: 2px solid var(--primary);
+    outline: var(--focus-ring);
     outline-offset: 4px;
     border-color: var(--secondary);
     z-index: 1;
   }
-  .card h2 { margin: 0 0 0.5rem 0; color: var(--primary); font-size: 1.25rem; transition: color 0.2s; }
+  .card h2 {
+    margin: 0 0 0.5rem 0;
+    color: var(--primary);
+    font-size: 1.25rem;
+    transition: color 0.2s;
+    text-wrap: balance;
+  }
   .card:hover h2 { color: var(--secondary); }
   .card p { margin: 0; font-size: 0.9rem; color: var(--card-text); }
+  p { hyphens: auto; }
 
   .btn {
     display: inline-flex;
@@ -198,8 +213,8 @@ export const SHARED_STYLES = `
     box-shadow: inset 0 2px 4px rgba(0,0,0,0.1);
   }
   .btn:focus-visible {
-    outline: 2px solid var(--primary);
-    outline-offset: 2px;
+    outline: var(--focus-ring);
+    outline-offset: var(--focus-offset);
   }
   .btn-icon {
     width: 1.25em;
@@ -275,8 +290,8 @@ export const SHARED_STYLES = `
     color: var(--secondary);
   }
   footer a:focus-visible {
-    outline: 2px solid var(--primary);
-    outline-offset: 2px;
+    outline: var(--focus-ring);
+    outline-offset: var(--focus-offset);
     border-radius: var(--radius-sm);
   }
   .footer-links {
@@ -309,16 +324,46 @@ export const SHARED_STYLES = `
     color: var(--card-text);
     margin-bottom: 2rem;
   }
+  .code-group {
+    position: relative;
+    margin: 1rem 0;
+    text-align: left;
+  }
   .code-block {
     display: block;
     background: #f5f5f5;
-    padding: 0.5rem;
-    border-radius: var(--radius-sm);
-    margin: 1rem 0;
+    padding: 1rem;
+    padding-right: 3rem;
+    border-radius: var(--radius-md);
     word-break: break-all;
     overflow-x: auto;
     user-select: all;
     border: 1px solid var(--card-border);
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+    font-size: 0.9em;
+  }
+  .btn-copy {
+    position: absolute;
+    top: 0.5rem;
+    right: 0.5rem;
+    background: transparent;
+    border: none;
+    color: var(--card-text);
+    cursor: pointer;
+    padding: 0.25rem;
+    border-radius: var(--radius-sm);
+    transition: color 0.2s, background 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .btn-copy:hover {
+    color: var(--primary);
+    background: rgba(0,0,0,0.05);
+  }
+  .btn-copy:focus-visible {
+    outline: var(--focus-ring);
+    outline-offset: 2px;
   }
   @media (prefers-color-scheme: dark) {
     .code-block {
@@ -339,7 +384,7 @@ export const SHARED_STYLES = `
   @media print {
     body { background: white; color: black; display: block; }
     .container { box-shadow: none; border: none; max-width: 100%; width: 100%; padding: 0; }
-    .skip-link, .status-dot, .external-icon { display: none; }
+    .skip-link, .status-dot, .external-icon, .btn-copy { display: none; }
     .grid { display: block; }
     .card { border: 1px solid #000; margin-bottom: 1rem; page-break-inside: avoid; box-shadow: none; }
     a { text-decoration: underline; color: black; }
@@ -352,6 +397,8 @@ export const SHARED_STYLES = `
 const EXTERNAL_LINK_ICON = `<svg class="external-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>`
 const HOME_ICON = `<svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>`
 const DOC_ICON = `<svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>`
+const COPY_ICON = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2 2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>`
+const CHECK_ICON = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"></polyline></svg>`
 
 interface LayoutProps {
   title: string
@@ -374,6 +421,7 @@ export function baseLayout({ title, description, content }: LayoutProps): string
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="description" content="${metaDescription}">
+  <meta name="color-scheme" content="light dark">
   <meta name="theme-color" content="#2e7d32" media="(prefers-color-scheme: light)">
   <meta name="theme-color" content="#121212" media="(prefers-color-scheme: dark)">
 
@@ -411,6 +459,29 @@ export function baseLayout({ title, description, content }: LayoutProps): string
       </div>
     </footer>
   </div>
+  <script>
+    document.addEventListener('click', (e) => {
+      const btn = e.target.closest('.btn-copy');
+      if (!btn || btn.dataset.copying) return;
+
+      const code = btn.previousElementSibling?.textContent;
+      if (code) {
+        btn.dataset.copying = 'true';
+        navigator.clipboard.writeText(code).then(() => {
+          btn.innerHTML = '${CHECK_ICON}';
+          btn.setAttribute('aria-label', 'Copied!');
+          setTimeout(() => {
+            btn.innerHTML = '${COPY_ICON}';
+            btn.setAttribute('aria-label', 'Copy to clipboard');
+            delete btn.dataset.copying;
+          }, 2000);
+        }).catch(err => {
+          console.error('Failed to copy:', err);
+          delete btn.dataset.copying;
+        });
+      }
+    });
+  </script>
 </body>
 </html>
   `
@@ -482,7 +553,10 @@ export function getNotFoundPageHtml(path: string): string {
 
     <main id="main">
       <p>Oops! The page you are looking for does not exist.</p>
-      <code aria-label="Requested URL" class="code-block" title="Requested URL">${safePath}</code>
+      <div class="code-group">
+        <code aria-label="Requested URL" class="code-block" title="Requested URL">${safePath}</code>
+        <button class="btn-copy" aria-label="Copy to clipboard" title="Copy to clipboard">${COPY_ICON}</button>
+      </div>
       <p>Please check the URL or go back to the homepage.</p>
 
       <div class="btn-group">
