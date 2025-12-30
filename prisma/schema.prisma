@@ -222,6 +222,8 @@ model Diagnosis {
   user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([plantId])
+  // Optimization: Composite index for querying diagnoses by plant sorted by date
+  @@index([plantId, createdAt])
   @@index([userId])
   @@index([status])
   // Optimization: Composite index for filtering diagnoses by user and status (e.g., "My Pending Diagnoses")
@@ -286,6 +288,8 @@ model CareSchedule {
   @@index([userId, nextDueDate])
   @@index([gardenId])
   @@index([plantId])
+  // Optimization: Composite index for querying schedules by plant sorted by due date
+  @@index([plantId, nextDueDate])
   @@index([isEnabled])
   // Optimization: Composite index for garden calendar views
   @@index([gardenId, nextDueDate])
