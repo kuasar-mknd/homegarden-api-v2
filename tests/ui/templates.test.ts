@@ -82,7 +82,10 @@ describe('UI Templates', () => {
       const unsafe = '<script>alert(1)</script>'
       const html = getNotFoundPageHtml(unsafe)
       expect(html).toContain('&lt;script&gt;alert(1)&lt;/script&gt;')
-      expect(html).not.toContain('<script>')
+      // We check that the malicious script is NOT present as a raw tag
+      // But we allow our own internal script (checked in other tests)
+      expect(html).not.toContain(`<script>${unsafe}</script>`)
+      expect(html).not.toContain('<script>alert')
     })
 
     it('should use .badge-error class', () => {
