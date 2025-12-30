@@ -21,11 +21,16 @@ export const errorHandler: ErrorHandler = (err, c) => {
     | 404
     | 500
 
+  // In production, mask the error name and message to prevent information leakage
+  const errorName =
+    env.NODE_ENV === 'production' ? 'InternalServerError' : err.name || 'InternalServerError'
+  const errorMessage = env.NODE_ENV === 'production' ? 'An unexpected error occurred' : err.message
+
   return c.json(
     {
       success: false,
-      error: err.name || 'InternalServerError',
-      message: env.NODE_ENV === 'production' ? 'Something went wrong' : err.message,
+      error: errorName,
+      message: errorMessage,
       ...(env.NODE_ENV === 'development' && { stack: err.stack }),
     },
     responseStatus,

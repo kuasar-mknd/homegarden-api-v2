@@ -13,7 +13,10 @@ export class TokenService {
   private readonly refreshExpiresIn: string
 
   constructor() {
-    this.secret = process.env.JWT_SECRET || 'default-secret-key-change-it'
+    if (!process.env.JWT_SECRET) {
+      throw new Error('JWT_SECRET environment variable is not defined')
+    }
+    this.secret = process.env.JWT_SECRET
     this.expiresIn = process.env.JWT_EXPIRES_IN || '1h'
     this.refreshExpiresIn = process.env.JWT_REFRESH_EXPIRES_IN || '7d'
   }
