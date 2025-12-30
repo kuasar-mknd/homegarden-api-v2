@@ -7,8 +7,9 @@ HomeGarden is a robust, Clean Architecture-based REST API for managing gardens a
 *   **Clean Architecture**: Separation of concerns into Domain, Application, and Infrastructure layers.
 *   **Plant Management**: CRUD operations for Gardens and Plants.
 *   **AI Integration**:
-    *   **Identification**: Identify plants from images using Google Gemini Vision (`gemini-2.0-flash`).
-    *   **Diagnosis**: Diagnose plant health issues using Google Gemini Vision (`gemini-2.5-pro-preview-06-05`).
+    *   **Identification**: Identify plants from images using Google Gemini Vision.
+    *   **Diagnosis**: Diagnose plant health issues using Google Gemini Vision.
+    *   (See `docs/AI.md` for specific model configurations and schemas).
 *   **Weather Integration**: Fetch weather data for garden locations via Open-Meteo.
 *   **Authentication**: Secure authentication using Supabase Auth (JWT).
 *   **Type Safety**: End-to-end type safety with TypeScript, Zod, and Prisma.
@@ -46,8 +47,11 @@ HomeGarden is a robust, Clean Architecture-based REST API for managing gardens a
 4.  **Database Setup:**
     Start a Postgres database (e.g., via Docker) and set `DATABASE_URL` in `.env`.
     ```bash
-    # Example using docker run
-    docker run --name homegarden-db -e POSTGRES_PASSWORD=password -e POSTGRES_DB=homegarden -p 5432:5432 -d postgres:15
+    # Example using docker-compose (recommended)
+    docker-compose up -d
+
+    # Or using docker run
+    docker run --name homegarden-db -e POSTGRES_PASSWORD=password -e POSTGRES_DB=homegarden -p 5432:5432 -d postgis/postgis:15-3.3
     ```
     Push the schema to the database:
     ```bash
