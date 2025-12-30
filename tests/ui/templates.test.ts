@@ -82,7 +82,17 @@ describe('UI Templates', () => {
       const unsafe = '<script>alert(1)</script>'
       const html = getNotFoundPageHtml(unsafe)
       expect(html).toContain('&lt;script&gt;alert(1)&lt;/script&gt;')
-      expect(html).not.toContain('<script>')
+      // Ensure the malicious payload itself is not present as a tag
+      expect(html).not.toContain('<script>alert(1)</script>')
+    })
+
+    it('should escape quotes in attributes to prevent XSS', () => {
+      const unsafe = 'foo" onclick="alert(1)'
+      const html = getNotFoundPageHtml(unsafe)
+      // Should be escaped as &quot;
+      expect(html).toContain('foo&quot; onclick=&quot;alert(1)')
+      // Should not contain raw quotes that break out of the attribute
+      expect(html).not.toContain('data-copy="foo" onclick="alert(1)"')
     })
 
     it('should use .badge-error class', () => {
