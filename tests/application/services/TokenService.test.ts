@@ -52,14 +52,23 @@ describe('TokenService', () => {
     expect(decoded.role).toBe(mockPayload.role)
   })
 
-  it('should use default values when env vars are missing', () => {
+  it('should throw an error when JWT_SECRET is missing', () => {
     const originalEnv = { ...process.env }
     delete process.env.JWT_SECRET
+
+    expect(() => new TokenService()).toThrow('JWT_SECRET environment variable is not defined')
+
+    process.env = originalEnv
+  })
+
+  it('should use default values for expiration times when env vars are missing', () => {
+    const originalEnv = { ...process.env }
     delete process.env.JWT_EXPIRES_IN
     delete process.env.JWT_REFRESH_EXPIRES_IN
+    // Ensure JWT_SECRET is present
+    process.env.JWT_SECRET = 'test-secret'
 
     const defaultService = new TokenService()
-    expect((defaultService as any).secret).toBe('default-secret-key-change-it')
     expect((defaultService as any).expiresIn).toBe('1h')
     expect((defaultService as any).refreshExpiresIn).toBe('7d')
 
