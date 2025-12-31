@@ -101,5 +101,36 @@ describe('UI Templates', () => {
       const html = getNotFoundPageHtml('/foo')
       expect(html).toContain('<svg class="btn-icon"')
     })
+
+    it('should include a Go Back button with correct attributes', () => {
+      const html = getNotFoundPageHtml('/test-path')
+
+      // Check for button element
+      expect(html).toContain('<button')
+      expect(html).toContain('class="btn btn-secondary"')
+
+      // Check for history.back logic
+      expect(html).toContain(
+        'onclick="if(history.length>1){history.back()}else{window.location.href=\'/\'}"',
+      )
+
+      // Check for Go Back text
+      expect(html).toContain('Go Back')
+    })
+  })
+
+  describe('Button Styles', () => {
+    it('should have cursor: pointer', () => {
+      expect(SHARED_STYLES).toContain('cursor: pointer')
+    })
+
+    it('should have border: none for base .btn', () => {
+      expect(SHARED_STYLES).toContain('border: none')
+    })
+
+    it('should inherit font properties', () => {
+      expect(SHARED_STYLES).toContain('font-family: inherit')
+      expect(SHARED_STYLES).toContain('font-size: 1rem')
+    })
   })
 })
