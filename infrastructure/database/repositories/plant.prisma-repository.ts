@@ -69,9 +69,22 @@ export class PlantPrismaRepository implements PlantRepository {
   }
 
   async findByUserId(userId: string): Promise<Plant[]> {
+    // Optimization: Application-side join to avoid DB join on Plant table
+    // Fetch garden IDs first (fast, indexed on userId)
+    const gardens = await prisma.garden.findMany({
+      where: { userId },
+      select: { id: true },
+    })
+    const gardenIds = gardens.map((g: any) => g.id)
+
+    if (gardenIds.length === 0) {
+      return []
+    }
+
+    // Fetch plants using IN clause (fast, indexed on [gardenId, createdAt])
     const plants = await prisma.plant.findMany({
       where: {
-        garden: { userId },
+        gardenId: { in: gardenIds },
       },
       orderBy: { createdAt: 'desc' },
     })
