@@ -9,6 +9,7 @@ import { secureHeaders } from 'hono/secure-headers'
 import { env } from './infrastructure/config/env.js'
 import { logger } from './infrastructure/config/logger.js'
 import {
+  aiRateLimitMiddleware,
   errorHandler,
   loggerMiddleware,
   rateLimitMiddleware,
@@ -161,7 +162,7 @@ app.use(
   secureHeaders({
     contentSecurityPolicy: {
       defaultSrc: ["'self'"],
-      scriptSrc: ["'self'", "'unsafe-inline'", 'https://cdn.jsdelivr.net'],
+      scriptSrc: ["'self'", 'https://cdn.jsdelivr.net'],
       styleSrc: ["'self'", "'unsafe-inline'"],
       imgSrc: ["'self'", 'data:', 'https:', 'blob:'],
       connectSrc: ["'self'", 'https://api.open-meteo.com'],
@@ -231,10 +232,12 @@ app.get('/api/v2', (c) => {
 
 // Plant Identification
 app.use('/api/v2/plant-id/*', authMiddleware)
+app.use('/api/v2/plant-id/*', aiRateLimitMiddleware)
 app.route('/api/v2/plant-id', plantIdRoutes)
 
 // Dr. Plant (Diagnosis)
 app.use('/api/v2/dr-plant/*', authMiddleware)
+app.use('/api/v2/dr-plant/*', aiRateLimitMiddleware)
 app.route('/api/v2/dr-plant', drPlantRoutes)
 
 // My Garden
