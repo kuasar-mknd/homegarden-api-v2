@@ -76,7 +76,7 @@ export class CareSchedulePrismaRepository implements CareScheduleRepository {
 
   async findUpcoming(userId: string, days: number): Promise<CareSchedule[]> {
     const today = new Date()
-    const futureDate = new Date()
+    const futureDate = new Date(today) // Optimization: Clone date instead of new Date() + setDate separately
     futureDate.setDate(today.getDate() + days)
 
     const schedules = await prisma.careSchedule.findMany({
@@ -84,11 +84,28 @@ export class CareSchedulePrismaRepository implements CareScheduleRepository {
         userId,
         isEnabled: true,
         nextDueDate: {
-          gte: today, // or lte? Upcoming means between now and future
+          gte: today,
           lte: futureDate,
         },
       },
       orderBy: { nextDueDate: 'asc' },
+      // Optimization: Exclude notes from list
+      select: {
+        id: true,
+        taskType: true,
+        frequency: true,
+        intervalDays: true,
+        nextDueDate: true,
+        lastDoneAt: true,
+        isEnabled: true,
+        weatherAdjust: true,
+        gardenId: true,
+        plantId: true,
+        userId: true,
+        createdAt: true,
+        updatedAt: true,
+        // notes: excluded
+      },
     })
     return schedules.map(this.mapToEntity)
   }
@@ -104,6 +121,23 @@ export class CareSchedulePrismaRepository implements CareScheduleRepository {
         },
       },
       orderBy: { nextDueDate: 'asc' },
+      // Optimization: Exclude notes from list
+      select: {
+        id: true,
+        taskType: true,
+        frequency: true,
+        intervalDays: true,
+        nextDueDate: true,
+        lastDoneAt: true,
+        isEnabled: true,
+        weatherAdjust: true,
+        gardenId: true,
+        plantId: true,
+        userId: true,
+        createdAt: true,
+        updatedAt: true,
+        // notes: excluded
+      },
     })
     return schedules.map(this.mapToEntity)
   }

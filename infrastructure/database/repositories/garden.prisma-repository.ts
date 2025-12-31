@@ -146,7 +146,25 @@ export class GardenPrismaRepository implements GardenRepository {
     if (search) where.name = { contains: search }
 
     const [gardens, total] = await Promise.all([
-      prisma.garden.findMany({ where, skip, take: limit }),
+      prisma.garden.findMany({
+        where,
+        skip,
+        take: limit,
+        // Optimization: Exclude potentially large text fields from list view
+        // The Entity mapper handles undefined fields gracefully
+        select: {
+          id: true,
+          name: true,
+          latitude: true,
+          longitude: true,
+          userId: true,
+          size: true,
+          climate: true,
+          createdAt: true,
+          updatedAt: true,
+          // description: excluded
+        },
+      }),
       prisma.garden.count({ where }),
     ])
 

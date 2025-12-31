@@ -416,8 +416,13 @@ export function baseLayout({ title, description, content }: LayoutProps): string
   `
 }
 
+// Optimization: Cached Landing Page HTML
+let LANDING_PAGE_HTML: string | null = null
+
 export function getLandingPageHtml(): string {
-  return baseLayout({
+  if (LANDING_PAGE_HTML) return LANDING_PAGE_HTML
+
+  LANDING_PAGE_HTML = baseLayout({
     title: 'HomeGarden API v2',
     content: `
     <header>
@@ -457,6 +462,8 @@ export function getLandingPageHtml(): string {
     </main>
     `,
   })
+
+  return LANDING_PAGE_HTML
 }
 
 // Simple HTML escape function to prevent XSS
