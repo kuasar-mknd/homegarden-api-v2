@@ -47,6 +47,21 @@ export class DiagnosisPrismaRepository implements DiagnosisRepository {
         skip,
         take: limit,
         orderBy: { createdAt: 'desc' },
+        // Optimization: Exclude heavy text/json fields from list view
+        select: {
+          id: true,
+          imageUrl: true,
+          status: true,
+          confidence: true,
+          conditionName: true,
+          conditionType: true,
+          severity: true,
+          plantId: true,
+          userId: true,
+          createdAt: true,
+          updatedAt: true,
+          // Excluded: description, symptoms, treatmentSteps, organicTreatment, chemicalTreatment, rawResponse
+        },
       }),
       prisma.diagnosis.count({ where }),
     ])
