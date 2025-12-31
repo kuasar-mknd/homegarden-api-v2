@@ -101,10 +101,16 @@ export const AddPlantInputSchema = z.object({
     description: 'Garden ID to add the plant to',
     example: 'cjld2cjxh0000qzrmn831i7rn',
   }),
-  location: z.string().trim().min(1).max(100).openapi({
-    description: 'Garden Name (Required for identification)',
-    example: 'My Backyard',
-  }),
+  location: z
+    .string()
+    .trim()
+    .min(1)
+    .max(100)
+    .regex(/^[\w\s\-\.',]+$/, 'Garden name contains invalid characters')
+    .openapi({
+      description: 'Garden Name (Required for identification)',
+      example: 'My Backyard',
+    }),
   nickname: z.string().trim().max(50).openapi({
     description: 'Plant nickname/custom name',
     example: 'My Tomato Plant',
