@@ -71,6 +71,13 @@ export const SHARED_STYLES = `
   ::-webkit-scrollbar-thumb:hover {
     background: var(--secondary);
   }
+  h1, h2, h3 {
+    text-wrap: balance;
+  }
+  p {
+    text-wrap: pretty;
+    hyphens: auto;
+  }
   .skip-link {
     position: absolute;
     top: -100px;
@@ -88,7 +95,7 @@ export const SHARED_STYLES = `
   .skip-link:focus {
     top: 0;
     outline: 2px solid var(--primary);
-    outline-offset: 4px;
+    outline-offset: 2px;
   }
   .container {
     background: var(--card-bg);
@@ -111,6 +118,7 @@ export const SHARED_STYLES = `
     font-weight: 600;
     margin-bottom: 2rem;
     cursor: default;
+    user-select: none;
   }
   .badge-error {
     background: #ffebee;
@@ -164,7 +172,7 @@ export const SHARED_STYLES = `
   }
   .card:focus-visible {
     outline: 2px solid var(--primary);
-    outline-offset: 4px;
+    outline-offset: 2px;
     border-color: var(--secondary);
     z-index: 1;
   }
@@ -196,6 +204,7 @@ export const SHARED_STYLES = `
   .btn:active {
     transform: scale(0.98);
     box-shadow: inset 0 2px 4px rgba(0,0,0,0.1);
+    filter: brightness(0.9);
   }
   .btn:focus-visible {
     outline: 2px solid var(--primary);
@@ -326,6 +335,9 @@ export const SHARED_STYLES = `
     }
   }
   @media (prefers-reduced-motion: reduce) {
+    html {
+      scroll-behavior: auto !important;
+    }
     .card, .skip-link, .btn, .card h2, footer a {
       transition: none;
     }
@@ -374,6 +386,7 @@ export function baseLayout({ title, description, content }: LayoutProps): string
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="description" content="${metaDescription}">
+  <meta name="color-scheme" content="light dark">
   <meta name="theme-color" content="#2e7d32" media="(prefers-color-scheme: light)">
   <meta name="theme-color" content="#121212" media="(prefers-color-scheme: dark)">
 

@@ -46,6 +46,33 @@ describe('UI Templates', () => {
     it('should include print styles for expanding URLs', () => {
       expect(SHARED_STYLES).toContain('a[href^="http"]:after { content: " (" attr(href) ")"; }')
     })
+
+    // Palette Improvements Tests
+    it('should include typography improvements', () => {
+      expect(SHARED_STYLES).toContain('text-wrap: balance')
+      expect(SHARED_STYLES).toContain('text-wrap: pretty')
+      expect(SHARED_STYLES).toContain('hyphens: auto')
+    })
+
+    it('should include active state brightness for buttons', () => {
+      expect(SHARED_STYLES).toContain('filter: brightness(0.9)')
+    })
+
+    it('should enforce reduced motion scroll behavior', () => {
+      // We look for the media query content
+      expect(SHARED_STYLES).toContain('scroll-behavior: auto !important')
+    })
+
+    it('should use consistent focus offset', () => {
+      // Checking that we don't have inconsistent offsets if possible, or just checking presence of standard 2px
+      expect(SHARED_STYLES).not.toContain('outline-offset: 4px') // We are moving to 2px
+      expect(SHARED_STYLES).toContain('outline-offset: 2px')
+    })
+
+    it('should disable user selection on badges', () => {
+      expect(SHARED_STYLES).toContain('.badge {')
+      expect(SHARED_STYLES).toContain('user-select: none')
+    })
   })
 
   describe('getLandingPageHtml', () => {
@@ -74,6 +101,11 @@ describe('UI Templates', () => {
     it('should use footer-links class', () => {
       const html = getLandingPageHtml()
       expect(html).toContain('<div class="footer-links">')
+    })
+
+    it('should include color-scheme meta tag', () => {
+      const html = getLandingPageHtml()
+      expect(html).toContain('<meta name="color-scheme" content="light dark">')
     })
   })
 
