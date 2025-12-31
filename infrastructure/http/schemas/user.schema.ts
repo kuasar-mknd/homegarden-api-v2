@@ -21,8 +21,20 @@ export const UserIdPropSchema = z.object({
 
 export const UserPublicProfileSchema = z.object({
   id: z.string().openapi({ example: 'cjld2cjxh0000qzrmn831i7rn' }),
-  firstName: z.string().trim().max(50).openapi({ example: 'John' }),
-  lastName: z.string().trim().max(50).openapi({ example: 'Doe' }),
+  firstName: z
+    .string()
+    .trim()
+    .min(1)
+    .max(50)
+    .regex(/^[\p{L}\s'-]+$/u, 'Name contains invalid characters')
+    .openapi({ example: 'John' }),
+  lastName: z
+    .string()
+    .trim()
+    .min(1)
+    .max(50)
+    .regex(/^[\p{L}\s'-]+$/u, 'Name contains invalid characters')
+    .openapi({ example: 'Doe' }),
   avatarUrl: z
     .string()
     .url()
