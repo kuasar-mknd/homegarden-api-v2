@@ -4,7 +4,7 @@ HomeGarden is a robust, Clean Architecture-based REST API for managing gardens a
 
 ## 🌟 Features
 
-*   **Clean Architecture**: Separation of concerns into Domain, Application, and Infrastructure layers.
+*   **[Clean Architecture](docs/ARCHITECTURE.md)**: Separation of concerns into Domain, Application, and Infrastructure layers.
 *   **Plant Management**: CRUD operations for Gardens and Plants.
 *   **AI Integration**:
     *   **Identification**: Identify plants from images using Google Gemini Vision (`gemini-2.0-flash`).
