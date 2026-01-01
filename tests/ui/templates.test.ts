@@ -14,16 +14,16 @@ describe('UI Templates', () => {
     })
 
     it('should include dark mode media query', () => {
-      expect(SHARED_STYLES).toContain('@media (prefers-color-scheme: dark)')
+      expect(SHARED_STYLES).toContain('@media (prefers-color-scheme:dark)')
     })
 
     it('should include selection style', () => {
       expect(SHARED_STYLES).toContain('::selection')
-      expect(SHARED_STYLES).toContain('background: var(--primary)')
+      expect(SHARED_STYLES).toContain('background:var(--primary)')
     })
 
     it('should include focus-visible style with primary color', () => {
-      expect(SHARED_STYLES).toContain('outline: 2px solid var(--primary)')
+      expect(SHARED_STYLES).toContain('outline:2px solid var(--primary)')
     })
 
     it('should include new utility classes', () => {
@@ -34,17 +34,18 @@ describe('UI Templates', () => {
     })
 
     it('should include correct dark mode error badge color', () => {
-      expect(SHARED_STYLES).toContain('color: #ffcdd2')
+      expect(SHARED_STYLES).toContain('color:#ffcdd2')
     })
 
     it('should use flexbox for buttons', () => {
-      expect(SHARED_STYLES).toContain('display: inline-flex')
-      expect(SHARED_STYLES).toContain('align-items: center')
-      expect(SHARED_STYLES).toContain('gap: 0.5rem')
+      expect(SHARED_STYLES).toContain('display:inline-flex')
+      expect(SHARED_STYLES).toContain('align-items:center')
+      expect(SHARED_STYLES).toContain('gap:0.5rem')
     })
 
     it('should include print styles for expanding URLs', () => {
-      expect(SHARED_STYLES).toContain('a[href^="http"]:after { content: " (" attr(href) ")"; }')
+      // Due to minification, spaces around braces are removed
+      expect(SHARED_STYLES).toContain('a[href^="http"]:after{content:" (" attr(href) ")";}')
     })
   })
 
