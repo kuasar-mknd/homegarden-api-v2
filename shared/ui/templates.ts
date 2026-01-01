@@ -1,5 +1,3 @@
-import { env } from '../../infrastructure/config/env.js'
-
 export const SHARED_STYLES = `
   :root {
     --primary: #2e7d32;
@@ -17,6 +15,10 @@ export const SHARED_STYLES = `
     --radius-md: 8px;
     --radius-lg: 12px;
     --radius-xl: 16px;
+
+    /* Focus States */
+    --focus-ring: 2px solid var(--primary);
+    --focus-offset: 2px;
 
     accent-color: var(--primary);
   }
@@ -57,6 +59,12 @@ export const SHARED_STYLES = `
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
   }
+  h1, h2, h3 {
+    text-wrap: balance;
+  }
+  p {
+    text-wrap: pretty;
+  }
   /* Scrollbar for Webkit */
   ::-webkit-scrollbar {
     width: 8px;
@@ -87,8 +95,8 @@ export const SHARED_STYLES = `
   }
   .skip-link:focus {
     top: 0;
-    outline: 2px solid var(--primary);
-    outline-offset: 4px;
+    outline: var(--focus-ring);
+    outline-offset: var(--focus-offset);
   }
   .container {
     background: var(--card-bg);
@@ -111,6 +119,7 @@ export const SHARED_STYLES = `
     font-weight: 600;
     margin-bottom: 2rem;
     cursor: default;
+    user-select: none;
   }
   .badge-error {
     background: #ffebee;
@@ -163,8 +172,8 @@ export const SHARED_STYLES = `
     transform: scale(0.98);
   }
   .card:focus-visible {
-    outline: 2px solid var(--primary);
-    outline-offset: 4px;
+    outline: var(--focus-ring);
+    outline-offset: var(--focus-offset);
     border-color: var(--secondary);
     z-index: 1;
   }
@@ -188,6 +197,7 @@ export const SHARED_STYLES = `
     box-shadow: 0 2px 4px rgba(0,0,0,0.1);
     min-height: 44px; /* Touch target size */
     box-sizing: border-box;
+    cursor: pointer;
   }
   .btn:hover {
     background: var(--secondary);
@@ -198,8 +208,8 @@ export const SHARED_STYLES = `
     box-shadow: inset 0 2px 4px rgba(0,0,0,0.1);
   }
   .btn:focus-visible {
-    outline: 2px solid var(--primary);
-    outline-offset: 2px;
+    outline: var(--focus-ring);
+    outline-offset: var(--focus-offset);
   }
   .btn-icon {
     width: 1.25em;
@@ -275,8 +285,8 @@ export const SHARED_STYLES = `
     color: var(--secondary);
   }
   footer a:focus-visible {
-    outline: 2px solid var(--primary);
-    outline-offset: 2px;
+    outline: var(--focus-ring);
+    outline-offset: var(--focus-offset);
     border-radius: var(--radius-sm);
   }
   .footer-links {
@@ -326,6 +336,9 @@ export const SHARED_STYLES = `
     }
   }
   @media (prefers-reduced-motion: reduce) {
+    html {
+      scroll-behavior: auto !important;
+    }
     .card, .skip-link, .btn, .card h2, footer a {
       transition: none;
     }
@@ -357,9 +370,10 @@ interface LayoutProps {
   title: string
   description?: string
   content: string
+  environment?: string
 }
 
-export function baseLayout({ title, description, content }: LayoutProps): string {
+export function baseLayout({ title, description, content, environment = 'production' }: LayoutProps): string {
   const metaDescription =
     description ||
     'Smart Plant Management API with AI capabilities. Identify plants, diagnose diseases, and track your garden.'
@@ -369,10 +383,11 @@ export function baseLayout({ title, description, content }: LayoutProps): string
 
   return `
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" dir="ltr">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="format-detection" content="telephone=no">
   <meta name="description" content="${metaDescription}">
   <meta name="theme-color" content="#2e7d32" media="(prefers-color-scheme: light)">
   <meta name="theme-color" content="#121212" media="(prefers-color-scheme: dark)">
@@ -404,7 +419,7 @@ export function baseLayout({ title, description, content }: LayoutProps): string
     ${content}
     <footer class="status" role="contentinfo">
       <div role="status">
-        <span class="status-dot" aria-label="Status: Operational" title="System Operational" role="img"></span> System Operational • ${env.NODE_ENV}
+        <span class="status-dot" aria-label="Status: Operational" title="System Operational" role="img"></span> System Operational • ${escapeHtml(environment)}
       </div>
       <div class="footer-links">
         <a href="https://github.com/homegarden/api" target="_blank" rel="noopener noreferrer" aria-label="View Source on GitHub (opens in a new tab)">View Source on GitHub${EXTERNAL_LINK_ICON}</a>
@@ -416,9 +431,10 @@ export function baseLayout({ title, description, content }: LayoutProps): string
   `
 }
 
-export function getLandingPageHtml(): string {
+export function getLandingPageHtml(environment?: string): string {
   return baseLayout({
     title: 'HomeGarden API v2',
+    environment,
     content: `
     <header>
       <h1>🌱 HomeGarden API</h1>
@@ -459,6 +475,35 @@ export function getLandingPageHtml(): string {
   })
 }
 
+export function getErrorPageHtml(error: Error, isDev: boolean, requestId?: string): string {
+  const message = isDev ? escapeHtml(error.message) : 'An unexpected error occurred. Please try again later.'
+  const stack = isDev && error.stack ? escapeHtml(error.stack) : ''
+  const requestIdBlock = requestId ? `<p style="font-size: 0.85rem; color: var(--card-text);">Request ID: <code>${escapeHtml(requestId)}</code></p>` : ''
+
+  return baseLayout({
+    title: 'Error - HomeGarden API',
+    description: 'An unexpected error occurred.',
+    environment: isDev ? 'development' : 'production',
+    content: `
+    <header>
+      <h1>🚨 Unexpected Error</h1>
+      <div class="badge badge-error" role="status">500 Internal Server Error</div>
+    </header>
+
+    <main id="main">
+      <p class="error-message">${message}</p>
+      ${requestIdBlock}
+      ${stack ? `<pre class="code-block" style="text-align: left; white-space: pre-wrap; font-size: 0.85rem;">${stack}</pre>` : ''}
+
+      <div class="btn-group">
+        <a href="/" class="btn">${HOME_ICON}Return Home</a>
+        <a href="https://github.com/homegarden/api/issues" target="_blank" rel="noopener noreferrer" class="btn btn-secondary">Report Issue${EXTERNAL_LINK_ICON}</a>
+      </div>
+    </main>
+    `,
+  })
+}
+
 // Simple HTML escape function to prevent XSS
 function escapeHtml(unsafe: string): string {
   return unsafe
@@ -469,11 +514,12 @@ function escapeHtml(unsafe: string): string {
     .replace(/'/g, '&#039;')
 }
 
-export function getNotFoundPageHtml(path: string): string {
+export function getNotFoundPageHtml(path: string, environment?: string): string {
   const safePath = escapeHtml(path)
   return baseLayout({
     title: 'Page Not Found - HomeGarden API',
     description: 'The requested page could not be found.',
+    environment,
     content: `
     <header>
       <h1>🌱 404 Not Found</h1>

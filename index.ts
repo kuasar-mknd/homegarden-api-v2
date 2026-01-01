@@ -202,7 +202,7 @@ app.use('*', rateLimitMiddleware)
 // ============================================================
 
 // Landing Page
-const landingPageHtml = getLandingPageHtml()
+const landingPageHtml = getLandingPageHtml(env.NODE_ENV)
 app.get('/', (c) => {
   return c.html(landingPageHtml)
 })
@@ -256,7 +256,7 @@ app.route('/api/v2/care-tracker', careTrackerRoutes)
 app.notFound((c) => {
   const accept = c.req.header('Accept') || ''
   if (accept.includes('text/html')) {
-    return c.html(getNotFoundPageHtml(c.req.path), 404)
+    return c.html(getNotFoundPageHtml(c.req.path, env.NODE_ENV), 404)
   }
   return c.json(
     {

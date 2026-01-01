@@ -1,5 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import {
+  baseLayout,
+  getErrorPageHtml,
   getLandingPageHtml,
   getNotFoundPageHtml,
   SHARED_STYLES,
@@ -11,6 +13,7 @@ describe('UI Templates', () => {
       expect(SHARED_STYLES).toContain('--primary:')
       expect(SHARED_STYLES).toContain('--secondary:')
       expect(SHARED_STYLES).toContain('--error:')
+      expect(SHARED_STYLES).toContain('--focus-ring:')
     })
 
     it('should include dark mode media query', () => {
@@ -22,8 +25,13 @@ describe('UI Templates', () => {
       expect(SHARED_STYLES).toContain('background: var(--primary)')
     })
 
-    it('should include focus-visible style with primary color', () => {
-      expect(SHARED_STYLES).toContain('outline: 2px solid var(--primary)')
+    it('should use focus-ring variable for consistency', () => {
+      expect(SHARED_STYLES).toContain('outline: var(--focus-ring)')
+    })
+
+    it('should include text wrapping improvements', () => {
+      expect(SHARED_STYLES).toContain('text-wrap: balance')
+      expect(SHARED_STYLES).toContain('text-wrap: pretty')
     })
 
     it('should include new utility classes', () => {
@@ -46,13 +54,38 @@ describe('UI Templates', () => {
     it('should include print styles for expanding URLs', () => {
       expect(SHARED_STYLES).toContain('a[href^="http"]:after { content: " (" attr(href) ")"; }')
     })
+
+    it('should disable scroll behavior in reduced motion', () => {
+      expect(SHARED_STYLES).toContain('scroll-behavior: auto !important')
+    })
+
+    it('should have user-select: none for badges', () => {
+      expect(SHARED_STYLES).toContain('user-select: none')
+    })
+  })
+
+  describe('baseLayout', () => {
+    it('should include dir="ltr"', () => {
+      const html = baseLayout({ title: 'Test', content: '' })
+      expect(html).toContain('dir="ltr"')
+    })
+
+    it('should include format-detection meta tag', () => {
+      const html = baseLayout({ title: 'Test', content: '' })
+      expect(html).toContain('<meta name="format-detection" content="telephone=no">')
+    })
+
+    it('should display environment in footer', () => {
+      const html = baseLayout({ title: 'Test', content: '', environment: 'staging' })
+      expect(html).toContain('System Operational • staging')
+    })
   })
 
   describe('getLandingPageHtml', () => {
     it('should return valid HTML string', () => {
       const html = getLandingPageHtml()
       expect(html).toContain('<!DOCTYPE html>')
-      expect(html).toContain('<html lang="en">')
+      expect(html).toContain('<html lang="en" dir="ltr">')
       expect(html).toContain('HomeGarden API')
     })
 
@@ -100,6 +133,34 @@ describe('UI Templates', () => {
     it('should include icons in buttons', () => {
       const html = getNotFoundPageHtml('/foo')
       expect(html).toContain('<svg class="btn-icon"')
+    })
+  })
+
+  describe('getErrorPageHtml', () => {
+    it('should return valid HTML string', () => {
+      const error = new Error('Test error')
+      const html = getErrorPageHtml(error, false)
+      expect(html).toContain('500 Internal Server Error')
+      expect(html).toContain('Error - HomeGarden API')
+    })
+
+    it('should include request ID if provided', () => {
+      const error = new Error('Test error')
+      const html = getErrorPageHtml(error, false, 'req-123')
+      expect(html).toContain('Request ID: <code>req-123</code>')
+    })
+
+    it('should use generic message in non-dev environment', () => {
+      const error = new Error('<script>alert(1)</script>')
+      const html = getErrorPageHtml(error, false)
+      expect(html).toContain('An unexpected error occurred')
+      expect(html).not.toContain('<script>')
+    })
+
+    it('should show error details in dev environment', () => {
+      const error = new Error('<script>alert(1)</script>')
+      const html = getErrorPageHtml(error, true)
+      expect(html).toContain('&lt;script&gt;alert(1)&lt;/script&gt;')
     })
   })
 })
