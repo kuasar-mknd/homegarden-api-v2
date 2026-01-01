@@ -20,7 +20,7 @@ HomeGarden is a robust, Clean Architecture-based REST API for managing gardens a
 
 *   Node.js >= 20.0.0
 *   pnpm (managed via `corepack` or installed globally)
-*   Docker (for local Postgres database)
+*   Docker & Docker Compose (for local Postgres database)
 
 ### Installation
 
@@ -44,10 +44,9 @@ HomeGarden is a robust, Clean Architecture-based REST API for managing gardens a
     *   For AI features, get a key from [Google AI Studio](https://aistudio.google.com/).
 
 4.  **Database Setup:**
-    Start a Postgres database (e.g., via Docker) and set `DATABASE_URL` in `.env`.
+    Start the Postgres database using Docker Compose and set `DATABASE_URL` in `.env`.
     ```bash
-    # Example using docker run
-    docker run --name homegarden-db -e POSTGRES_PASSWORD=password -e POSTGRES_DB=homegarden -p 5432:5432 -d postgres:15
+    docker-compose up -d
     ```
     Push the schema to the database:
     ```bash
