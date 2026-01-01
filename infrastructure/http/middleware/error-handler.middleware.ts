@@ -1,4 +1,5 @@
 import type { ErrorHandler } from 'hono'
+import { getErrorPageHtml } from '../../../shared/ui/templates.js'
 import { env } from '../../config/env.js'
 import { logger } from '../../config/logger.js'
 
@@ -20,6 +21,11 @@ export const errorHandler: ErrorHandler = (err, c) => {
     | 403
     | 404
     | 500
+
+  // Content negotiation: return HTML if requested (e.g., by a browser)
+  if (c.req.header('Accept')?.includes('text/html')) {
+    return c.html(getErrorPageHtml(err instanceof Error ? err : new Error(String(err))), responseStatus)
+  }
 
   return c.json(
     {
