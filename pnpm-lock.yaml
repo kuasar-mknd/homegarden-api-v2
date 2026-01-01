@@ -73,8 +73,8 @@ importers:
         specifier: ^10.1.0
         version: 10.1.0
       '@hono/vite-dev-server':
-        specifier: ^0.23.0
-        version: 0.23.0(hono@4.11.1)
+        specifier: ^0.24.0
+        version: 0.24.0(hono@4.11.1)
       '@types/bcrypt':
         specifier: ^6.0.0
         version: 6.0.0
@@ -453,8 +453,8 @@ packages:
     peerDependencies:
       hono: '*'
 
-  '@hono/vite-dev-server@0.23.0':
-    resolution: {integrity: sha512-tHV86xToed9Up0j/dubQW2PDP4aYNFDSfQrjcV6Ra7bqCGrxhtg/zZBmbgSco3aTxKOEPzDXKK+6seAAfsbIXw==}
+  '@hono/vite-dev-server@0.24.0':
+    resolution: {integrity: sha512-yV+DHE9suDPPvZW/o4VhY2KFl0vrIPvt0zDlj22V6wkTsEKy7TGpAd4tw0swOhN3Zfb7mXch7QAGEtO9c6qrMQ==}
     engines: {node: '>=18.14.1'}
     peerDependencies:
       hono: '*'
@@ -2120,7 +2120,7 @@ snapshots:
     dependencies:
       hono: 4.11.1
 
-  '@hono/vite-dev-server@0.23.0(hono@4.11.1)':
+  '@hono/vite-dev-server@0.24.0(hono@4.11.1)':
     dependencies:
       '@hono/node-server': 1.19.7(hono@4.11.1)
       hono: 4.11.1
