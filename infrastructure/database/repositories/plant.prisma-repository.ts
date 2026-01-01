@@ -73,6 +73,31 @@ export class PlantPrismaRepository implements PlantRepository {
       where: {
         garden: { userId },
       },
+      // Optimization: Exclude heavy text fields (careNotes) for list views
+      select: {
+        id: true,
+        nickname: true,
+        speciesId: true,
+        commonName: true,
+        scientificName: true,
+        family: true,
+        exposure: true,
+        watering: true,
+        soilType: true,
+        flowerColor: true,
+        height: true,
+        plantedDate: true,
+        acquiredDate: true,
+        bloomingSeason: true,
+        plantingSeason: true,
+        imageUrl: true,
+        thumbnailUrl: true,
+        use: true,
+        createdAt: true,
+        updatedAt: true,
+        gardenId: true,
+        // careNotes: false // Implicitly excluded to reduce payload size
+      },
       orderBy: { createdAt: 'desc' },
     })
     return plants.map(this.mapToEntity)

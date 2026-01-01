@@ -42,9 +42,10 @@ export class OpenMeteoAdapter implements WeatherPort {
     latitude: number,
     longitude: number,
   ): Promise<Result<WeatherData, AppError>> {
-    // Optimization: Round to 2 decimal places (~1.1km) to improve cache hit rate for nearby requests
-    const lat = Number(latitude).toFixed(2)
-    const lon = Number(longitude).toFixed(2)
+    // Optimization: Round to 1 decimal place (~11km) to improve cache hit rate for nearby requests
+    // Weather conditions rarely change drastically within 11km, so this significantly increases cache hits.
+    const lat = Number(latitude).toFixed(1)
+    const lon = Number(longitude).toFixed(1)
     const cacheKey = `current:${lat}:${lon}`
 
     const cached = this.getFromCache<WeatherData>(cacheKey)
@@ -84,9 +85,10 @@ export class OpenMeteoAdapter implements WeatherPort {
     latitude: number,
     longitude: number,
   ): Promise<Result<WeatherForecast, AppError>> {
-    // Optimization: Round to 2 decimal places (~1.1km) to improve cache hit rate for nearby requests
-    const lat = Number(latitude).toFixed(2)
-    const lon = Number(longitude).toFixed(2)
+    // Optimization: Round to 1 decimal place (~11km) to improve cache hit rate for nearby requests
+    // Weather conditions rarely change drastically within 11km, so this significantly increases cache hits.
+    const lat = Number(latitude).toFixed(1)
+    const lon = Number(longitude).toFixed(1)
     const cacheKey = `forecast:${lat}:${lon}`
 
     const cached = this.getFromCache<WeatherForecast>(cacheKey)
