@@ -23,7 +23,7 @@ describe('UI Templates', () => {
     })
 
     it('should include focus-visible style with primary color', () => {
-      expect(SHARED_STYLES).toContain('outline: 2px solid var(--primary)')
+      expect(SHARED_STYLES).toContain('outline: var(--focus-ring-width) solid var(--focus-ring-color)')
     })
 
     it('should include new utility classes', () => {
@@ -45,6 +45,17 @@ describe('UI Templates', () => {
 
     it('should include print styles for expanding URLs', () => {
       expect(SHARED_STYLES).toContain('a[href^="http"]:after { content: " (" attr(href) ")"; }')
+    })
+
+    it('should include global box-sizing reset', () => {
+      expect(SHARED_STYLES).toContain('*, *::before, *::after {')
+      expect(SHARED_STYLES).toContain('box-sizing: border-box')
+    })
+
+    it('should include typography enhancements', () => {
+      expect(SHARED_STYLES).toContain('text-wrap: balance')
+      expect(SHARED_STYLES).toContain('text-wrap: pretty')
+      expect(SHARED_STYLES).toContain('hyphens: auto')
     })
   })
 
@@ -75,6 +86,11 @@ describe('UI Templates', () => {
       const html = getLandingPageHtml()
       expect(html).toContain('<div class="footer-links">')
     })
+
+    it('should have tabindex on main element', () => {
+      const html = getLandingPageHtml()
+      expect(html).toContain('<main id="main" tabindex="-1"')
+    })
   })
 
   describe('getNotFoundPageHtml', () => {
@@ -95,6 +111,11 @@ describe('UI Templates', () => {
       const html = getNotFoundPageHtml('/foo')
       expect(html).toContain('class="code-block"')
       expect(html).not.toContain('style="display: block;')
+    })
+
+    it('should have tabindex on code block', () => {
+      const html = getNotFoundPageHtml('/foo')
+      expect(html).toContain('tabindex="0"')
     })
 
     it('should include icons in buttons', () => {
