@@ -2,21 +2,21 @@ name: CI
 
 on:
   push:
-    branches: [ main ]
+    branches: [ main, master, develop ]
   pull_request:
-    branches: [ main ]
+    branches: [ main, master, develop ]
 
 jobs:
-  build-and-test:
+  check:
+    name: Check & Test
     runs-on: ubuntu-latest
 
     services:
       postgres:
         image: postgres:15
         env:
-          POSTGRES_USER: postgres
           POSTGRES_PASSWORD: password
-          POSTGRES_DB: homegarden
+          POSTGRES_DB: homegarden_test
         ports:
           - 5432:5432
         options: >-
@@ -28,33 +28,39 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - uses: pnpm/action-setup@v4
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v3
         with:
           version: 9
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: '20'
           cache: 'pnpm'
 
       - name: Install dependencies
-        run: pnpm install
+        run: pnpm install --frozen-lockfile
 
-      - name: Lint
+      - name: Lint & Format Check
         run: pnpm run ci:check
 
-      - name: Setup Database (and Generate Client)
-        env:
-          DATABASE_URL: postgres://postgres:password@localhost:5432/homegarden
-        run: pnpm db:push
+      - name: Generate Prisma Client
+        run: pnpm run db:generate
 
-      - name: Typecheck
+      - name: Type Check
         run: pnpm build
 
-      - name: Run Tests
+      - name: Setup Test Database
+        run: |
+          pnpm run db:push
         env:
-          DATABASE_URL: postgres://postgres:password@localhost:5432/homegarden
-          SUPABASE_URL: https://dummy.supabase.co
-          SUPABASE_PUBLISHABLE_KEY: dummy-key
+          DATABASE_URL: postgres://postgres:password@localhost:5432/homegarden_test
+
+      - name: Run Tests
         run: pnpm test
+        env:
+          DATABASE_URL: postgres://postgres:password@localhost:5432/homegarden_test
+          SUPABASE_URL: https://example.supabase.co
+          SUPABASE_PUBLISHABLE_KEY: dummy-key
+          JWT_SECRET: test-secret-at-least-32-chars-long-123456
