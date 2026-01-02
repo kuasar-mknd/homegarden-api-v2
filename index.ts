@@ -9,6 +9,7 @@ import { secureHeaders } from 'hono/secure-headers'
 import { env } from './infrastructure/config/env.js'
 import { logger } from './infrastructure/config/logger.js'
 import {
+  aiRateLimitMiddleware,
   errorHandler,
   loggerMiddleware,
   rateLimitMiddleware,
@@ -196,6 +197,10 @@ if (env.NODE_ENV === 'development') {
 
 // Rate Limiting
 app.use('*', rateLimitMiddleware)
+
+// AI Rate Limiting (Stricter limits for expensive endpoints)
+app.use('/api/v2/plant-id/*', aiRateLimitMiddleware)
+app.use('/api/v2/dr-plant/*', aiRateLimitMiddleware)
 
 // ============================================================
 // ROUTES
