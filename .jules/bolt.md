@@ -21,3 +21,7 @@
 ## 2024-05-22 - [Static Response Caching]
 **Learning:** Re-generating static HTML strings on every request adds unnecessary overhead.
 **Action:** Lift static content generation out of the request handler scope into module scope (or use a memoized function) to generate it once at startup.
+
+## 2024-05-23 - [Application-Side Join for One-to-Many]
+**Learning:** Nested `where` clauses in Prisma (e.g., `where: { garden: { userId } }`) can trigger expensive database JOINs that might be less efficient than two simple indexed queries for specific relationship patterns.
+**Action:** For one-to-many relationships where the parent set is small (e.g., User -> Gardens), fetch parent IDs first and use an `IN` clause for the child query (`where: { gardenId: { in: ids } }`). This leverages simple B-Tree indexes and avoids complex join planning overhead.

@@ -16,6 +16,9 @@ vi.mock('../../infrastructure/database/prisma.client.js', () => ({
       count: vi.fn(),
       groupBy: vi.fn(),
     },
+    garden: {
+      findMany: vi.fn(),
+    },
   },
 }))
 
@@ -104,14 +107,20 @@ describe('PlantPrismaRepository Unit Tests', () => {
   })
 
   it('should find plants by user ID', async () => {
+    ;(prisma.garden.findMany as any).mockResolvedValue([{ id: 'garden-123' }])
     ;(prisma.plant.findMany as any).mockResolvedValue([mockPlant])
 
     const result = await repository.findByUserId('user-123')
 
     expect(result).toHaveLength(1)
+    expect(prisma.garden.findMany).toHaveBeenCalledWith(
+      expect.objectContaining({
+        where: { userId: 'user-123' },
+      }),
+    )
     expect(prisma.plant.findMany).toHaveBeenCalledWith(
       expect.objectContaining({
-        where: { garden: { userId: 'user-123' } },
+        where: { gardenId: { in: ['garden-123'] } },
       }),
     )
   })
