@@ -18,7 +18,16 @@ export const SHARED_STYLES = `
     --radius-lg: 12px;
     --radius-xl: 16px;
 
+    /* Focus System */
+    --focus-ring-color: var(--primary);
+    --focus-ring-width: 2px;
+    --focus-offset: 4px;
+
     accent-color: var(--primary);
+    color-scheme: light dark;
+  }
+  *, *::before, *::after {
+    box-sizing: border-box;
   }
   @media (prefers-color-scheme: dark) {
     :root {
@@ -57,6 +66,13 @@ export const SHARED_STYLES = `
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
   }
+  h1, h2, h3, h4, h5, h6 {
+    text-wrap: balance;
+  }
+  p {
+    text-wrap: pretty;
+    hyphens: auto;
+  }
   /* Scrollbar for Webkit */
   ::-webkit-scrollbar {
     width: 8px;
@@ -87,8 +103,8 @@ export const SHARED_STYLES = `
   }
   .skip-link:focus {
     top: 0;
-    outline: 2px solid var(--primary);
-    outline-offset: 4px;
+    outline: var(--focus-ring-width) solid var(--focus-ring-color);
+    outline-offset: var(--focus-offset);
   }
   .container {
     background: var(--card-bg);
@@ -163,8 +179,8 @@ export const SHARED_STYLES = `
     transform: scale(0.98);
   }
   .card:focus-visible {
-    outline: 2px solid var(--primary);
-    outline-offset: 4px;
+    outline: var(--focus-ring-width) solid var(--focus-ring-color);
+    outline-offset: var(--focus-offset);
     border-color: var(--secondary);
     z-index: 1;
   }
@@ -198,7 +214,7 @@ export const SHARED_STYLES = `
     box-shadow: inset 0 2px 4px rgba(0,0,0,0.1);
   }
   .btn:focus-visible {
-    outline: 2px solid var(--primary);
+    outline: var(--focus-ring-width) solid var(--focus-ring-color);
     outline-offset: 2px;
   }
   .btn-icon {
@@ -272,10 +288,11 @@ export const SHARED_STYLES = `
   }
   footer a:hover {
     text-decoration: underline;
+    text-decoration-thickness: 1.5px;
     color: var(--secondary);
   }
   footer a:focus-visible {
-    outline: 2px solid var(--primary);
+    outline: var(--focus-ring-width) solid var(--focus-ring-color);
     outline-offset: 2px;
     border-radius: var(--radius-sm);
   }
@@ -319,6 +336,10 @@ export const SHARED_STYLES = `
     overflow-x: auto;
     user-select: all;
     border: 1px solid var(--card-border);
+  }
+  .code-block:focus-visible {
+    outline: var(--focus-ring-width) solid var(--focus-ring-color);
+    outline-offset: 2px;
   }
   @media (prefers-color-scheme: dark) {
     .code-block {
@@ -425,7 +446,7 @@ export function getLandingPageHtml(): string {
       <div class="badge" role="status">v2.0.0 • AI-Powered</div>
     </header>
 
-    <main id="main">
+    <main id="main" tabindex="-1" style="outline: none;">
       <p>Welcome to the HomeGarden API. Connect your applications to smart plant management services.</p>
 
       <ul class="grid" role="list">
@@ -480,9 +501,9 @@ export function getNotFoundPageHtml(path: string): string {
       <div class="badge badge-error" role="status">Error</div>
     </header>
 
-    <main id="main">
+    <main id="main" tabindex="-1" style="outline: none;">
       <p>Oops! The page you are looking for does not exist.</p>
-      <code aria-label="Requested URL" class="code-block" title="Requested URL">${safePath}</code>
+      <code aria-label="Requested URL" class="code-block" title="Requested URL" tabindex="0">${safePath}</code>
       <p>Please check the URL or go back to the homepage.</p>
 
       <div class="btn-group">
