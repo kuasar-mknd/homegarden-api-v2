@@ -1,4 +1,6 @@
+import type { z } from '@hono/zod-openapi'
 import type { Context } from 'hono'
+import type { LoginSchema, RefreshTokenSchema, RegisterSchema } from '../schemas/auth.schema.js'
 
 export class AuthController {
   /**
@@ -6,6 +8,9 @@ export class AuthController {
    * Register a new user
    */
   register = async (c: Context) => {
+    // Validate input schema
+    const _body = (await c.req.valid('json' as never)) as z.infer<typeof RegisterSchema>
+
     return c.json(
       {
         success: false,
@@ -21,6 +26,9 @@ export class AuthController {
    * Login user
    */
   login = async (c: Context) => {
+    // Validate input schema
+    const _body = (await c.req.valid('json' as never)) as z.infer<typeof LoginSchema>
+
     return c.json(
       {
         success: false,
@@ -36,6 +44,9 @@ export class AuthController {
    * Refresh access token
    */
   refreshToken = async (c: Context) => {
+    // Validate input schema
+    const _body = (await c.req.valid('json' as never)) as z.infer<typeof RefreshTokenSchema>
+
     return c.json(
       {
         success: false,
