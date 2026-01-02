@@ -39,13 +39,20 @@ This document lists all environment variables used by the application, matching 
 | `GOOGLE_AI_API_KEY` | API Key for Google Gemini | Optional |
 | `GEMINI_IDENTIFICATION_MODEL` | Model for plant ID | `gemini-2.0-flash` |
 | `GEMINI_DIAGNOSIS_MODEL` | Model for plant diagnosis | `gemini-2.5-pro-preview-06-05` |
-| `PLANTNET_API_KEY` | API Key for PlantNet (fallback) | Optional |
+
+### Deprecated / Unused Integrations
+
+| Variable | Description | Status |
+|---|---|---|
+| `PLANTNET_API_KEY` | API Key for PlantNet | Defined in config but currently unused in logic. |
 
 ## Weather
 
 | Variable | Description | Default |
 |---|---|---|
 | `WEATHER_API_BASE_URL` | Base URL for Weather API | `https://api.open-meteo.com/v1` |
+
+> Note: The current `OpenMeteoAdapter` hardcodes the base URL to `https://api.open-meteo.com/v1/forecast`, but the env var is available for future configuration.
 
 ## Storage
 

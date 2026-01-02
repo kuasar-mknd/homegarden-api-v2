@@ -39,6 +39,7 @@ export class DiagnosePlantUseCase {
 
       if (!result.success) {
         // Pass through status code if available in the result (casted to any as it's not in the interface yet)
+        // biome-ignore lint/suspicious/noExplicitAny: Temporary cast for status code
         const statusCode = (result as any).statusCode || 500
         return fail(
           new AppError(result.error || 'Diagnosis failed', statusCode, 'DIAGNOSIS_FAILED'),

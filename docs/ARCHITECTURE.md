@@ -34,9 +34,10 @@ To add a new feature (e.g., "Watering Schedule"), follow this flow:
 1.  **Domain**: Define the `WateringSchedule` entity and its repository interface in `domain/`.
 2.  **Application**: Create a service/use-case (e.g., `CreateWateringScheduleService`) in `application/`.
 3.  **Infrastructure**:
-    *   Implement the repository in `infrastructure/repositories/`.
+    *   Implement the repository in `infrastructure/database/repositories/`.
     *   Create a controller in `infrastructure/http/controllers/`.
     *   Define the route in `infrastructure/http/routes/`.
+    *   Register the route in the main `index.ts`.
 4.  **Tests**: Add unit tests for the domain and application logic, and integration tests for the infrastructure.
 
 ## 🔄 Dependency Rule
