@@ -5,6 +5,9 @@ describe('PlantController', () => {
   const controller = new PlantController()
   const mockContext = {
     json: vi.fn().mockImplementation((data, status) => ({ data, status })),
+    req: {
+      valid: vi.fn().mockResolvedValue({}), // Mock successful validation
+    },
   }
 
   it('createPlant should return 501', async () => {
