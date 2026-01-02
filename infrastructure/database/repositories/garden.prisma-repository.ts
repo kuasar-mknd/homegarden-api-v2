@@ -1,4 +1,4 @@
-// import { Prisma } from '@prisma/client'
+import { Prisma } from '@prisma/client'
 import { Garden } from '../../../domain/entities/garden.entity.js'
 import type {
   CreateGardenData,
@@ -93,7 +93,7 @@ export class GardenPrismaRepository implements GardenRepository {
       // Handle date line wrapping (longitude crossing 180/-180)
       const gardens =
         minLon < -180 || maxLon > 180
-          ? await prisma.$queryRaw<Garden[]>`
+          ? await prisma.$queryRaw<Garden[]>(Prisma.sql`
         SELECT
           id, name, latitude, longitude, description, size, climate,
           created_at as "createdAt", updated_at as "updatedAt", user_id as "userId"
@@ -108,8 +108,8 @@ export class GardenPrismaRepository implements GardenRepository {
             ${radiusMeters}::float
           )
         LIMIT ${limit};
-      `
-          : await prisma.$queryRaw<Garden[]>`
+      `)
+          : await prisma.$queryRaw<Garden[]>(Prisma.sql`
         SELECT 
           id, name, latitude, longitude, description, size, climate, 
           created_at as "createdAt", updated_at as "updatedAt", user_id as "userId"
@@ -123,7 +123,7 @@ export class GardenPrismaRepository implements GardenRepository {
             ${radiusMeters}::float
           )
         LIMIT ${limit};
-      `
+      `)
 
       return gardens.map(this.mapToEntity)
     } catch (error) {
