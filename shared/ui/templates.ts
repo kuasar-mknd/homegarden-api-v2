@@ -351,7 +351,8 @@ export const SHARED_STYLES = `
 
 const EXTERNAL_LINK_ICON = `<svg class="external-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>`
 const HOME_ICON = `<svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>`
-const DOC_ICON = `<svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>`
+// const DOC_ICON = `<svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>`
+const BACK_ICON = `<svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5"/><path d="M12 19l-7-7 7-7"/></svg>`
 
 interface LayoutProps {
   title: string
@@ -486,8 +487,41 @@ export function getNotFoundPageHtml(path: string): string {
       <p>Please check the URL or go back to the homepage.</p>
 
       <div class="btn-group">
-        <a href="/" class="btn">${HOME_ICON}Return Home</a>
-        <a href="/ui" class="btn btn-secondary">${DOC_ICON}Read Documentation</a>
+        <button onclick="if(history.length > 1){history.back()}else{window.location.href='/'}" class="btn">
+          ${BACK_ICON} Go Back
+        </button>
+        <a href="/" class="btn btn-secondary">${HOME_ICON}Return Home</a>
+      </div>
+    </main>
+    `,
+  })
+}
+
+export function getErrorPageHtml(statusCode: number, message: string, traceId?: string): string {
+  const isServerErr = statusCode >= 500
+  const title = isServerErr ? 'Something went wrong' : 'Error'
+  const description = isServerErr ? 'We encountered an unexpected error.' : message
+
+  return baseLayout({
+    title: `${statusCode} - ${title}`,
+    description: description,
+    content: `
+    <header>
+      <h1>🌱 ${title}</h1>
+      <div class="badge badge-error" role="status">Error ${statusCode}</div>
+    </header>
+
+    <main id="main">
+      <div class="error-code" aria-hidden="true">${statusCode}</div>
+      <p class="error-message">${escapeHtml(description)}</p>
+
+      ${traceId ? `<p>Trace ID: <code class="code-block">${escapeHtml(traceId)}</code></p>` : ''}
+
+      <div class="btn-group">
+        <button onclick="if(history.length > 1){history.back()}else{window.location.href='/'}" class="btn">
+          ${BACK_ICON} Go Back
+        </button>
+        <a href="/" class="btn btn-secondary">${HOME_ICON}Return Home</a>
       </div>
     </main>
     `,
