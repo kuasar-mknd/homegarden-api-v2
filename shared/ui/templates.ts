@@ -20,6 +20,9 @@ export const SHARED_STYLES = `
 
     accent-color: var(--primary);
   }
+  h1, h2, h3 { text-wrap: balance; }
+  p { text-wrap: pretty; }
+
   @media (prefers-color-scheme: dark) {
     :root {
       --primary: #81c784;
@@ -352,6 +355,7 @@ export const SHARED_STYLES = `
 const EXTERNAL_LINK_ICON = `<svg class="external-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>`
 const HOME_ICON = `<svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>`
 const DOC_ICON = `<svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>`
+const COPY_ICON = `<svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>`
 
 interface LayoutProps {
   title: string
@@ -481,12 +485,35 @@ export function getNotFoundPageHtml(path: string): string {
     </header>
 
     <main id="main">
+      <script>
+        function copyUrl() {
+          const btn = document.getElementById('copy-btn');
+          if (btn.dataset.copying) return;
+
+          const codeText = document.querySelector('.code-block').innerText;
+          navigator.clipboard.writeText(codeText).then(() => {
+            const originalContent = btn.innerHTML;
+            btn.innerHTML = '✅ Copied!';
+            btn.setAttribute('aria-label', 'URL Copied');
+            btn.dataset.copying = 'true';
+
+            setTimeout(() => {
+              btn.innerHTML = originalContent;
+              btn.setAttribute('aria-label', 'Copy URL');
+              delete btn.dataset.copying;
+            }, 2000);
+          }).catch(err => {
+            console.error('Failed to copy:', err);
+          });
+        }
+      </script>
       <p>Oops! The page you are looking for does not exist.</p>
       <code aria-label="Requested URL" class="code-block" title="Requested URL">${safePath}</code>
       <p>Please check the URL or go back to the homepage.</p>
 
       <div class="btn-group">
         <a href="/" class="btn">${HOME_ICON}Return Home</a>
+        <button id="copy-btn" class="btn btn-secondary" onclick="copyUrl()" aria-label="Copy URL">${COPY_ICON}Copy URL</button>
         <a href="/ui" class="btn btn-secondary">${DOC_ICON}Read Documentation</a>
       </div>
     </main>

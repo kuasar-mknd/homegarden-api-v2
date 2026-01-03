@@ -82,7 +82,15 @@ describe('UI Templates', () => {
       const unsafe = '<script>alert(1)</script>'
       const html = getNotFoundPageHtml(unsafe)
       expect(html).toContain('&lt;script&gt;alert(1)&lt;/script&gt;')
-      expect(html).not.toContain('<script>')
+      // Should contain script tag for the copy functionality, but not the unsafe input as script
+      expect(html).toContain('<script>')
+      expect(html).not.toContain(`<script>${unsafe}</script>`)
+    })
+
+    it('should include copy button script', () => {
+      const html = getNotFoundPageHtml('/foo')
+      expect(html).toContain('function copyUrl()')
+      expect(html).toContain('navigator.clipboard.writeText')
     })
 
     it('should use .badge-error class', () => {
