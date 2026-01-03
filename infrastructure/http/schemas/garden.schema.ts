@@ -4,7 +4,7 @@ import { z } from '@hono/zod-openapi'
 // Weather Schemas
 // =============================================================================
 
-export const WeatherConditionSchema = z.string().openapi({
+export const WeatherConditionSchema = z.string().trim().max(50).openapi({
   example: 'Sunny',
   description: 'Textual description of the weather condition',
 })
@@ -15,16 +15,16 @@ export const WeatherDataSchema = z.object({
   windSpeed: z.number().openapi({ example: 12.5, description: 'Wind speed in km/h' }),
   precipitation: z.number().openapi({ example: 0, description: 'Precipitation in mm' }),
   conditions: WeatherConditionSchema,
-  icon: z.string().openapi({ example: 'sunny', description: 'Icon identifier' }),
+  icon: z.string().trim().max(50).openapi({ example: 'sunny', description: 'Icon identifier' }),
 })
 
 export const DailyForecastSchema = z.object({
-  date: z.string().openapi({ example: '2023-10-27', description: 'ISO Date string' }),
+  date: z.string().trim().max(30).openapi({ example: '2023-10-27', description: 'ISO Date string' }),
   maxTemp: z.number().openapi({ example: 25 }),
   minTemp: z.number().openapi({ example: 15 }),
   precipitation: z.number().openapi({ example: 2 }),
   conditions: WeatherConditionSchema,
-  icon: z.string().openapi({ example: 'partly-cloudy' }),
+  icon: z.string().trim().max(50).openapi({ example: 'partly-cloudy' }),
 })
 
 export const WeatherForecastSchema = z.object({
@@ -64,8 +64,8 @@ export const NearbyGardensQuerySchema = z.object({
 })
 
 export const GardenSummarySchema = z.object({
-  id: z.string(),
-  name: z.string(),
+  id: z.string().trim().max(100),
+  name: z.string().trim().max(100),
   latitude: z.number(),
   longitude: z.number(),
   distanceKm: z.number().optional().openapi({ description: 'Distance from query point in km' }),

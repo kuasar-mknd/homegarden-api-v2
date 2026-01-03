@@ -39,12 +39,12 @@ export const IdentifySpeciesInputSchema = z
 // Output Schema Components
 export const SpeciesSuggestionSchema = z.object({
   confidence: z.number().min(0).max(1),
-  commonName: z.string(),
-  scientificName: z.string(),
-  family: z.string(),
-  genus: z.string().optional(),
-  description: z.string().optional(),
-  origin: z.string().optional(),
+  commonName: z.string().trim().max(150),
+  scientificName: z.string().trim().max(150),
+  family: z.string().trim().max(100),
+  genus: z.string().trim().max(100).optional(),
+  description: z.string().trim().max(2000).optional(),
+  origin: z.string().trim().max(100).optional(),
   imageUrl: z.string().url().optional(),
 })
 
@@ -52,7 +52,7 @@ export const IdentifySpeciesDataSchema = z.object({
   success: z.boolean(),
   suggestions: z.array(SpeciesSuggestionSchema),
   processingTimeMs: z.number(),
-  modelUsed: z.string(),
+  modelUsed: z.string().trim().max(100),
 })
 
 // The actual response wrapper
