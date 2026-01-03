@@ -18,7 +18,14 @@ export const SHARED_STYLES = `
     --radius-lg: 12px;
     --radius-xl: 16px;
 
+    /* Focus System */
+    --focus-ring-color: var(--primary);
+    --focus-ring-width: 2px;
+    --focus-offset: 2px;
+    --transition-speed: 0.2s;
+
     accent-color: var(--primary);
+    color-scheme: light dark;
   }
   @media (prefers-color-scheme: dark) {
     :root {
@@ -32,6 +39,9 @@ export const SHARED_STYLES = `
       --status-text: #aaa;
       --error: #ef5350;
     }
+  }
+  *, *::before, *::after {
+    box-sizing: border-box;
   }
   ::selection {
     background: var(--primary);
@@ -57,6 +67,12 @@ export const SHARED_STYLES = `
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
   }
+  h1, h2, h3, h4, h5, h6 {
+    text-wrap: balance;
+  }
+  p {
+    text-wrap: pretty;
+  }
   /* Scrollbar for Webkit */
   ::-webkit-scrollbar {
     width: 8px;
@@ -81,14 +97,14 @@ export const SHARED_STYLES = `
     padding: 0.5rem 1rem;
     border-radius: 0 0 var(--radius-md) var(--radius-md);
     z-index: 100;
-    transition: top 0.3s;
+    transition: top var(--transition-speed);
     text-decoration: none;
     font-weight: 600;
   }
   .skip-link:focus {
     top: 0;
-    outline: 2px solid var(--primary);
-    outline-offset: 4px;
+    outline: var(--focus-ring-width) solid var(--focus-ring-color);
+    outline-offset: var(--focus-offset);
   }
   .container {
     background: var(--card-bg);
@@ -146,13 +162,13 @@ export const SHARED_STYLES = `
     border: 1px solid var(--card-border);
     padding: 1.5rem;
     border-radius: var(--radius-lg);
-    transition: transform 0.2s, box-shadow 0.2s;
+    transition: transform var(--transition-speed), box-shadow var(--transition-speed);
     text-decoration: none;
     color: inherit;
     display: block;
     height: 100%;
-    box-sizing: border-box;
     position: relative; /* Ensure z-index works on focus */
+    cursor: pointer;
   }
   .card:hover {
     transform: translateY(-2px) scale(1.01);
@@ -163,12 +179,13 @@ export const SHARED_STYLES = `
     transform: scale(0.98);
   }
   .card:focus-visible {
-    outline: 2px solid var(--primary);
-    outline-offset: 4px;
+    outline: var(--focus-ring-width) solid var(--focus-ring-color);
+    outline-offset: var(--focus-offset);
     border-color: var(--secondary);
     z-index: 1;
+    transform: translateY(-2px); /* Lift on focus too */
   }
-  .card h2 { margin: 0 0 0.5rem 0; color: var(--primary); font-size: 1.25rem; transition: color 0.2s; }
+  .card h2 { margin: 0 0 0.5rem 0; color: var(--primary); font-size: 1.25rem; transition: color var(--transition-speed); }
   .card:hover h2 { color: var(--secondary); }
   .card p { margin: 0; font-size: 0.9rem; color: var(--card-text); }
 
@@ -184,10 +201,12 @@ export const SHARED_STYLES = `
     text-decoration: none;
     font-weight: 600;
     margin-top: 1rem;
-    transition: background 0.2s, transform 0.1s, box-shadow 0.2s;
+    transition: background var(--transition-speed), transform 0.1s, box-shadow var(--transition-speed);
     box-shadow: 0 2px 4px rgba(0,0,0,0.1);
     min-height: 44px; /* Touch target size */
-    box-sizing: border-box;
+    border: none;
+    font-family: inherit;
+    cursor: pointer;
   }
   .btn:hover {
     background: var(--secondary);
@@ -198,8 +217,8 @@ export const SHARED_STYLES = `
     box-shadow: inset 0 2px 4px rgba(0,0,0,0.1);
   }
   .btn:focus-visible {
-    outline: 2px solid var(--primary);
-    outline-offset: 2px;
+    outline: var(--focus-ring-width) solid var(--focus-ring-color);
+    outline-offset: var(--focus-offset);
   }
   .btn-icon {
     width: 1.25em;
@@ -268,15 +287,16 @@ export const SHARED_STYLES = `
     color: var(--primary);
     text-decoration: none;
     text-underline-offset: 4px;
-    transition: color 0.2s, text-decoration-color 0.2s;
+    text-decoration-thickness: auto;
+    transition: color var(--transition-speed), text-decoration-color var(--transition-speed);
   }
   footer a:hover {
     text-decoration: underline;
     color: var(--secondary);
   }
   footer a:focus-visible {
-    outline: 2px solid var(--primary);
-    outline-offset: 2px;
+    outline: var(--focus-ring-width) solid var(--focus-ring-color);
+    outline-offset: var(--focus-offset);
     border-radius: var(--radius-sm);
   }
   .footer-links {
@@ -319,6 +339,10 @@ export const SHARED_STYLES = `
     overflow-x: auto;
     user-select: all;
     border: 1px solid var(--card-border);
+  }
+  .code-block:focus-visible {
+    outline: var(--focus-ring-width) solid var(--focus-ring-color);
+    outline-offset: var(--focus-offset);
   }
   @media (prefers-color-scheme: dark) {
     .code-block {
@@ -482,7 +506,7 @@ export function getNotFoundPageHtml(path: string): string {
 
     <main id="main">
       <p>Oops! The page you are looking for does not exist.</p>
-      <code aria-label="Requested URL" class="code-block" title="Requested URL">${safePath}</code>
+      <code aria-label="Requested URL" class="code-block" title="Requested URL" tabindex="0">${safePath}</code>
       <p>Please check the URL or go back to the homepage.</p>
 
       <div class="btn-group">

@@ -23,7 +23,9 @@ describe('UI Templates', () => {
     })
 
     it('should include focus-visible style with primary color', () => {
-      expect(SHARED_STYLES).toContain('outline: 2px solid var(--primary)')
+      expect(SHARED_STYLES).toContain(
+        'outline: var(--focus-ring-width) solid var(--focus-ring-color)',
+      )
     })
 
     it('should include new utility classes', () => {
@@ -94,6 +96,7 @@ describe('UI Templates', () => {
     it('should use .code-block class', () => {
       const html = getNotFoundPageHtml('/foo')
       expect(html).toContain('class="code-block"')
+      expect(html).toContain('tabindex="0"')
       expect(html).not.toContain('style="display: block;')
     })
 
