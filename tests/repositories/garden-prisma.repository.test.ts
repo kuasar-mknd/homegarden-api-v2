@@ -81,6 +81,12 @@ describe('GardenPrismaRepository Unit Tests', () => {
 
     expect(result).toHaveLength(1)
     expect(result[0]).toBeInstanceOf(Garden)
+
+    // Verify optimization: excluding description
+    const callArgs = (prisma.garden.findMany as any).mock.calls[0][0]
+    const selectKeys = Object.keys(callArgs?.select || {})
+    expect(selectKeys).not.toContain('description')
+    expect(selectKeys).toContain('id')
   })
 
   it('should update a garden', async () => {
@@ -151,6 +157,13 @@ describe('GardenPrismaRepository Unit Tests', () => {
         where: { userId: 'user-123' },
       }),
     )
+
+    // Verify optimization: excluding description
+    const callArgs = (prisma.garden.findMany as any).mock.calls[0][0]
+    const selectKeys = Object.keys(callArgs?.select || {})
+    expect(selectKeys).not.toContain('description')
+    expect(selectKeys).toContain('id')
+
     expect(result.gardens).toHaveLength(1)
     expect(result.total).toBe(1)
   })

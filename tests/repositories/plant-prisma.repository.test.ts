@@ -16,6 +16,9 @@ vi.mock('../../infrastructure/database/prisma.client.js', () => ({
       count: vi.fn(),
       groupBy: vi.fn(),
     },
+    garden: {
+      findMany: vi.fn(),
+    },
   },
 }))
 
@@ -101,19 +104,52 @@ describe('PlantPrismaRepository Unit Tests', () => {
 
     expect(result).toHaveLength(1)
     expect(result[0].gardenId).toBe(mockPlant.gardenId)
+
+    // Verify optimization: excluding careNotes
+    const callArgs = (prisma.plant.findMany as any).mock.calls[0][0]
+    const selectKeys = Object.keys(callArgs?.select || {})
+    expect(selectKeys).not.toContain('careNotes')
+    expect(selectKeys).toContain('id')
   })
 
   it('should find plants by user ID', async () => {
+    // Mock fetching gardens first
+    ;(prisma.garden.findMany as any).mockResolvedValue([{ id: 'garden-123' }])
     ;(prisma.plant.findMany as any).mockResolvedValue([mockPlant])
 
     const result = await repository.findByUserId('user-123')
 
     expect(result).toHaveLength(1)
+
+    // Check fetching gardens
+    expect(prisma.garden.findMany).toHaveBeenCalledWith({
+      where: { userId: 'user-123' },
+      select: { id: true },
+    })
+
+    // Check fetching plants with application-side join
     expect(prisma.plant.findMany).toHaveBeenCalledWith(
       expect.objectContaining({
-        where: { garden: { userId: 'user-123' } },
+        where: {
+          gardenId: { in: ['garden-123'] },
+        },
       }),
     )
+
+    // Verify optimization: excluding careNotes
+    const callArgs = (prisma.plant.findMany as any).mock.calls[0][0]
+    const selectKeys = Object.keys(callArgs?.select || {})
+    expect(selectKeys).not.toContain('careNotes')
+    expect(selectKeys).toContain('id')
+  })
+
+  it('should return empty array when user has no gardens', async () => {
+    ;(prisma.garden.findMany as any).mockResolvedValue([])
+
+    const result = await repository.findByUserId('user-123')
+
+    expect(result).toHaveLength(0)
+    expect(prisma.plant.findMany).not.toHaveBeenCalled()
   })
 
   it('should update a plant', async () => {
@@ -156,6 +192,12 @@ describe('PlantPrismaRepository Unit Tests', () => {
 
     expect(result.plants).toHaveLength(1)
     expect(result.total).toBe(1)
+
+    // Verify optimization: excluding careNotes
+    const callArgs = (prisma.plant.findMany as any).mock.calls[0][0]
+    const selectKeys = Object.keys(callArgs?.select || {})
+    expect(selectKeys).not.toContain('careNotes')
+    expect(selectKeys).toContain('id')
   })
 
   it('should find all with speciesId filter', async () => {

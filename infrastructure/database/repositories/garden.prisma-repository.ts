@@ -39,6 +39,19 @@ export class GardenPrismaRepository implements GardenRepository {
   async findByUserId(userId: string): Promise<Garden[]> {
     const gardens = await prisma.garden.findMany({
       where: { userId },
+      // Optimization: Exclude description (potentially long text) for list views
+      select: {
+        id: true,
+        name: true,
+        latitude: true,
+        longitude: true,
+        userId: true,
+        size: true,
+        climate: true,
+        createdAt: true,
+        updatedAt: true,
+        // description: excluded
+      },
     })
     return gardens.map((g: any) => this.mapToEntity(g))
   }
@@ -146,7 +159,24 @@ export class GardenPrismaRepository implements GardenRepository {
     if (search) where.name = { contains: search }
 
     const [gardens, total] = await Promise.all([
-      prisma.garden.findMany({ where, skip, take: limit }),
+      prisma.garden.findMany({
+        where,
+        skip,
+        take: limit,
+        // Optimization: Exclude description for list views
+        select: {
+          id: true,
+          name: true,
+          latitude: true,
+          longitude: true,
+          userId: true,
+          size: true,
+          climate: true,
+          createdAt: true,
+          updatedAt: true,
+          // description: excluded
+        },
+      }),
       prisma.garden.count({ where }),
     ])
 

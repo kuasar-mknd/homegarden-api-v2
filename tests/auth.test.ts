@@ -16,6 +16,7 @@ vi.mock('../infrastructure/database/prisma.client.js', () => ({
     },
     garden: {
       findUnique: vi.fn(),
+      findMany: vi.fn().mockResolvedValue([]),
     },
     $disconnect: vi.fn(),
   },

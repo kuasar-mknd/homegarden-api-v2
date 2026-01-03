@@ -64,16 +64,77 @@ export class PlantPrismaRepository implements PlantRepository {
     const plants = await prisma.plant.findMany({
       where: { gardenId },
       orderBy: { createdAt: 'desc' },
+      // Optimization: Exclude careNotes
+      select: {
+        id: true,
+        nickname: true,
+        speciesId: true,
+        commonName: true,
+        scientificName: true,
+        family: true,
+        exposure: true,
+        watering: true,
+        soilType: true,
+        flowerColor: true,
+        height: true,
+        plantedDate: true,
+        acquiredDate: true,
+        bloomingSeason: true,
+        plantingSeason: true,
+        // careNotes: excluded
+        imageUrl: true,
+        thumbnailUrl: true,
+        use: true,
+        gardenId: true,
+        createdAt: true,
+        updatedAt: true,
+      },
     })
     return plants.map(this.mapToEntity)
   }
 
   async findByUserId(userId: string): Promise<Plant[]> {
+    // Optimization: Fetch garden IDs first to avoid nested join in where clause (application-side join)
+    const gardens = await prisma.garden.findMany({
+      where: { userId },
+      select: { id: true },
+    })
+    const gardenIds = gardens.map((g) => g.id)
+
+    if (gardenIds.length === 0) {
+      return []
+    }
+
     const plants = await prisma.plant.findMany({
       where: {
-        garden: { userId },
+        gardenId: { in: gardenIds },
       },
       orderBy: { createdAt: 'desc' },
+      // Optimization: Exclude careNotes (Text)
+      select: {
+        id: true,
+        nickname: true,
+        speciesId: true,
+        commonName: true,
+        scientificName: true,
+        family: true,
+        exposure: true,
+        watering: true,
+        soilType: true,
+        flowerColor: true,
+        height: true,
+        plantedDate: true,
+        acquiredDate: true,
+        bloomingSeason: true,
+        plantingSeason: true,
+        // careNotes: excluded
+        imageUrl: true,
+        thumbnailUrl: true,
+        use: true,
+        gardenId: true,
+        createdAt: true,
+        updatedAt: true,
+      },
     })
     return plants.map(this.mapToEntity)
   }
@@ -117,6 +178,31 @@ export class PlantPrismaRepository implements PlantRepository {
         skip,
         take: limit,
         orderBy: { createdAt: 'desc' },
+        // Optimization: Exclude careNotes
+        select: {
+          id: true,
+          nickname: true,
+          speciesId: true,
+          commonName: true,
+          scientificName: true,
+          family: true,
+          exposure: true,
+          watering: true,
+          soilType: true,
+          flowerColor: true,
+          height: true,
+          plantedDate: true,
+          acquiredDate: true,
+          bloomingSeason: true,
+          plantingSeason: true,
+          // careNotes: excluded
+          imageUrl: true,
+          thumbnailUrl: true,
+          use: true,
+          gardenId: true,
+          createdAt: true,
+          updatedAt: true,
+        },
       }),
       prisma.plant.count({ where }),
     ])

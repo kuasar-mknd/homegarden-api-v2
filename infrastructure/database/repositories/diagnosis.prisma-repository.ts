@@ -47,6 +47,31 @@ export class DiagnosisPrismaRepository implements DiagnosisRepository {
         skip,
         take: limit,
         orderBy: { createdAt: 'desc' },
+        // Optimization: Exclude heavy JSON/Text fields for list views
+        select: {
+          id: true,
+          imageUrl: true,
+          description: true,
+          status: true,
+          confidence: true,
+          conditionName: true,
+          conditionType: true,
+          severity: true,
+          affectedParts: true,
+          causes: true,
+          symptoms: true,
+          treatmentSteps: true,
+          preventionTips: true,
+          recoveryTimeWeeks: true,
+          criticalActions: true,
+          aiModel: true,
+          processingMs: true,
+          plantId: true,
+          userId: true,
+          createdAt: true,
+          updatedAt: true,
+          // Excluded: rawResponse, organicTreatment, chemicalTreatment
+        },
       }),
       prisma.diagnosis.count({ where }),
     ])
@@ -61,6 +86,31 @@ export class DiagnosisPrismaRepository implements DiagnosisRepository {
     const diagnoses = await prisma.diagnosis.findMany({
       where: { plantId },
       orderBy: { createdAt: 'desc' },
+      // Optimization: Exclude heavy JSON/Text fields for list views
+      select: {
+        id: true,
+        imageUrl: true,
+        description: true,
+        status: true,
+        confidence: true,
+        conditionName: true,
+        conditionType: true,
+        severity: true,
+        affectedParts: true,
+        causes: true,
+        symptoms: true,
+        treatmentSteps: true,
+        preventionTips: true,
+        recoveryTimeWeeks: true,
+        criticalActions: true,
+        aiModel: true,
+        processingMs: true,
+        plantId: true,
+        userId: true,
+        createdAt: true,
+        updatedAt: true,
+        // Excluded: rawResponse, organicTreatment, chemicalTreatment
+      },
     })
     return diagnoses.map(this.mapToEntity)
   }

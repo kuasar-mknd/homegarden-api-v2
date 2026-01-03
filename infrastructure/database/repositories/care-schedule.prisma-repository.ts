@@ -40,6 +40,23 @@ export class CareSchedulePrismaRepository implements CareScheduleRepository {
     const schedules = await prisma.careSchedule.findMany({
       where: { userId },
       orderBy: { nextDueDate: 'asc' },
+      // Optimization: Exclude notes
+      select: {
+        id: true,
+        taskType: true,
+        frequency: true,
+        intervalDays: true,
+        nextDueDate: true,
+        lastDoneAt: true,
+        // notes: excluded
+        isEnabled: true,
+        weatherAdjust: true,
+        gardenId: true,
+        plantId: true,
+        userId: true,
+        createdAt: true,
+        updatedAt: true,
+      },
     })
     return schedules.map(this.mapToEntity)
   }
@@ -48,6 +65,23 @@ export class CareSchedulePrismaRepository implements CareScheduleRepository {
     const schedules = await prisma.careSchedule.findMany({
       where: { plantId },
       orderBy: { nextDueDate: 'asc' },
+      // Optimization: Exclude notes
+      select: {
+        id: true,
+        taskType: true,
+        frequency: true,
+        intervalDays: true,
+        nextDueDate: true,
+        lastDoneAt: true,
+        // notes: excluded
+        isEnabled: true,
+        weatherAdjust: true,
+        gardenId: true,
+        plantId: true,
+        userId: true,
+        createdAt: true,
+        updatedAt: true,
+      },
     })
     return schedules.map(this.mapToEntity)
   }
@@ -56,6 +90,23 @@ export class CareSchedulePrismaRepository implements CareScheduleRepository {
     const schedules = await prisma.careSchedule.findMany({
       where: { gardenId },
       orderBy: { nextDueDate: 'asc' },
+      // Optimization: Exclude notes
+      select: {
+        id: true,
+        taskType: true,
+        frequency: true,
+        intervalDays: true,
+        nextDueDate: true,
+        lastDoneAt: true,
+        // notes: excluded
+        isEnabled: true,
+        weatherAdjust: true,
+        gardenId: true,
+        plantId: true,
+        userId: true,
+        createdAt: true,
+        updatedAt: true,
+      },
     })
     return schedules.map(this.mapToEntity)
   }
@@ -89,6 +140,23 @@ export class CareSchedulePrismaRepository implements CareScheduleRepository {
         },
       },
       orderBy: { nextDueDate: 'asc' },
+      // Optimization: Exclude notes
+      select: {
+        id: true,
+        taskType: true,
+        frequency: true,
+        intervalDays: true,
+        nextDueDate: true,
+        lastDoneAt: true,
+        // notes: excluded
+        isEnabled: true,
+        weatherAdjust: true,
+        gardenId: true,
+        plantId: true,
+        userId: true,
+        createdAt: true,
+        updatedAt: true,
+      },
     })
     return schedules.map(this.mapToEntity)
   }
@@ -104,6 +172,23 @@ export class CareSchedulePrismaRepository implements CareScheduleRepository {
         },
       },
       orderBy: { nextDueDate: 'asc' },
+      // Optimization: Exclude notes
+      select: {
+        id: true,
+        taskType: true,
+        frequency: true,
+        intervalDays: true,
+        nextDueDate: true,
+        lastDoneAt: true,
+        // notes: excluded
+        isEnabled: true,
+        weatherAdjust: true,
+        gardenId: true,
+        plantId: true,
+        userId: true,
+        createdAt: true,
+        updatedAt: true,
+      },
     })
     return schedules.map(this.mapToEntity)
   }
