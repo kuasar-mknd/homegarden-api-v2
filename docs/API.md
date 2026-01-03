@@ -1,80 +1,56 @@
-# API Reference
+# API Documentation
 
-The HomeGarden API provides endpoints for plant management, AI identification, weather data, and more.
+The HomeGarden API is fully documented using OpenAPI (Swagger).
 
-## Base URL
+## 📄 Interactive Documentation
 
-`http://localhost:3000/api/v2`
+When the server is running locally, you can access the interactive Swagger UI at:
 
-## Authentication
+**[http://localhost:3000/ui](http://localhost:3000/ui)**
 
-Most endpoints require a Bearer Token (Supabase JWT).
+The raw OpenAPI specification is available at:
 
-```http
-Authorization: Bearer <your-supabase-jwt>
+**[http://localhost:3000/doc](http://localhost:3000/doc)**
+
+## 🚀 Main Endpoints
+
+All API endpoints are prefixed with `/api/v2`.
+
+| Resource | Path | Description |
+|---|---|---|
+| **Auth** | `/api/v2/auth` | Authentication (Login, Register, Refresh Token) |
+| **Users** | `/api/v2/users` | User profile management |
+| **Gardens** | `/api/v2/gardens` | Manage gardens and find nearby gardens |
+| **Plants** | `/api/v2/plants` | Manage plants within gardens |
+| **Plant ID** | `/api/v2/plant-id` | AI-powered plant identification |
+| **Dr. Plant** | `/api/v2/dr-plant` | AI-powered plant disease diagnosis |
+| **Care Tracker** | `/api/v2/care-tracker` | Track plant care tasks (watering, fertilizing) |
+
+## 🔐 Authentication
+
+Most endpoints require authentication. The API uses Bearer tokens (JWT) provided by Supabase.
+
+**Header:**
+```
+Authorization: Bearer <your-jwt-token>
 ```
 
----
+## ⚠️ Error Handling
 
-## 📘 Interactive Documentation (Swagger UI)
-
-The best way to explore the API is via the built-in Swagger UI, which provides interactive documentation, schema definitions, and "Try it out" functionality.
-
-- **Swagger UI**: Visit `/ui` (e.g., `http://localhost:3000/ui`)
-- **OpenAPI Spec**: Visit `/doc` (e.g., `http://localhost:3000/doc`)
-
----
-
-## 🌿 Core Resources
-
-### Gardens
-
-- `GET /gardens/plants` - Retrieves all plants in the authenticated user's garden.
-- `POST /gardens/plants` - Adds a new plant to a specific garden (requires `gardenId` in body).
-- `GET /gardens/nearby` - Finds public gardens within a specific radius (geo-query).
-- `GET /gardens/:gardenId/weather` - Fetches current weather for a garden's location.
-
-### AI Identification
-
-- `POST /plant-id/identify` - Identifies a plant from an image URL.
-- `POST /dr-plant/diagnose` - Diagnoses plant health issues from an image.
-
-### Users
-
-- `GET /users/me` - Get current user profile.
-- `PUT /users/me` - Update user profile (display name, preferences).
-- `GET /users/:id` - Get public profile information for a user.
-
-### Care Tracker
-
-- `GET /plants/:plantId/schedules` - Get care schedules for a plant.
-- `POST /plants/:plantId/schedules` - Create a care schedule.
-- `POST /schedules/:id/logs` - Log a care activity (mark as completed).
-
----
-
-## 📝 Error Format
-
-Errors are returned in a standardized JSON format:
+Errors are returned in a standard JSON format:
 
 ```json
 {
   "success": false,
-  "error": {
-    "code": "VALIDATION_ERROR",
-    "message": "Invalid input data",
-    "details": [
-      {
-        "field": "imageUrl",
-        "message": "Invalid URL format"
-      }
-    ]
-  }
+  "error": "ErrorType",
+  "message": "Human readable error message"
 }
 ```
 
-## 🔌 WebSocket API
-
-Real-time features are available via WebSocket at `ws://localhost:3000`.
-
-See `README.md` for subscription examples.
+Common error codes:
+*   `400 Bad Request`: Invalid input (validation failed).
+*   `401 Unauthorized`: Missing or invalid token.
+*   `403 Forbidden`: Insufficient permissions.
+*   `404 Not Found`: Resource not found.
+*   `429 Too Many Requests`: Rate limit exceeded.
+*   `500 Internal Server Error`: Unexpected server error.
