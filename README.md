@@ -10,7 +10,7 @@ HomeGarden is a robust, Clean Architecture-based REST API for managing gardens a
     *   **Identification**: Identify plants from images using Google Gemini Vision (`gemini-2.0-flash`).
     *   **Diagnosis**: Diagnose plant health issues using Google Gemini Vision (`gemini-2.5-pro-preview-06-05`).
 *   **Weather Integration**: Fetch weather data for garden locations via Open-Meteo.
-*   **Authentication**: Secure authentication using Supabase Auth (JWT).
+*   **Authentication**: Secure authentication using Supabase Auth.
 *   **Type Safety**: End-to-end type safety with TypeScript, Zod, and Prisma.
 *   **Interactive Docs**: OpenAPI (Swagger) documentation available at `/ui`.
 
@@ -84,7 +84,7 @@ The API is documented using Swagger. Once the server is running, visit:
 
 ### Example: Check API Status
 ```bash
-curl http://localhost:3000/health
+curl http://localhost:3000/api/v2
 ```
 
 ### Example: Identify a Plant (requires Auth)
@@ -92,7 +92,7 @@ curl http://localhost:3000/health
 curl -X POST http://localhost:3000/api/v2/plant-id/identify \
   -H "Authorization: Bearer <YOUR_SUPABASE_TOKEN>" \
   -H "Content-Type: application/json" \
-  -d '{"imageUrl": "https://example.com/plant.jpg"}'
+  -d '{"image": "base64_encoded_image_string..."}'
 ```
 
 ## 🔧 Troubleshooting
@@ -100,3 +100,4 @@ curl -X POST http://localhost:3000/api/v2/plant-id/identify \
 *   **`Supabase URL or Publishable Key not configured`**: Ensure `SUPABASE_URL` and `SUPABASE_PUBLISHABLE_KEY` are set in `.env`.
 *   **Database Connection Errors**: Check if your Postgres container is running and accessible. Verify `DATABASE_URL` matches your container settings.
 *   **AI Errors**: Verify `GOOGLE_AI_API_KEY` is valid and has access to the specified models.
+*   **Prisma Client Errors**: Run `pnpm db:generate` to regenerate the Prisma client if you encounter module resolution issues.
