@@ -75,7 +75,8 @@ describe('AuthMiddleware', () => {
   })
 
   it('should sync existing user and call next()', async () => {
-    mockContext.req.header.mockReturnValue('Bearer valid-token')
+    const token = 'Bearer valid-token-' + Math.random()
+    mockContext.req.header.mockReturnValue(token)
     const mockUser = { id: 'auth-id', email: 'test@example.com' }
     mockSupabase.auth.getUser.mockResolvedValue({ data: { user: mockUser }, error: null })
 
@@ -90,7 +91,8 @@ describe('AuthMiddleware', () => {
   })
 
   it('should create and sync new user if not in database', async () => {
-    mockContext.req.header.mockReturnValue('Bearer valid-token')
+    const token = 'Bearer new-token-' + Math.random()
+    mockContext.req.header.mockReturnValue(token)
     const mockUser = {
       id: 'auth-id',
       email: 'new@example.com',
@@ -118,7 +120,8 @@ describe('AuthMiddleware', () => {
   })
 
   it('should handle metadata without full_name', async () => {
-    mockContext.req.header.mockReturnValue('Bearer token')
+    const token = 'Bearer meta-token-' + Math.random()
+    mockContext.req.header.mockReturnValue(token)
     mockSupabase.auth.getUser.mockResolvedValue({
       data: { user: { email: 'test@test.com', user_metadata: { first_name: 'OnlyFirst' } } },
       error: null,
@@ -139,13 +142,20 @@ describe('AuthMiddleware', () => {
   })
 
   it('should return 500 if environment variables are missing', async () => {
-    mockContext.req.header.mockReturnValue('Bearer token')
+    const token = 'Bearer env-token-' + Math.random()
+    mockContext.req.header.mockReturnValue(token)
     // Temporarily break env
     const originalUrl = env.SUPABASE_URL
     ;(env as any).SUPABASE_URL = null
 
+    // We also need to clear the cache or use a unique token to force getSupabase() call
+    // The previous tests might have cached a valid session for 'token'
+    // But since we use Math.random() in other tests, let's ensure this token is unique too
+
     const result = (await authMiddleware(mockContext, mockNext)) as any
 
+    // authMiddleware catches the error and returns 500
+    expect(result).toBeDefined()
     expect(result.status).toBe(500)
     expect(result.data.message).toBe('Authentication service error')
 
@@ -154,7 +164,8 @@ describe('AuthMiddleware', () => {
   })
 
   it('should return 500 if prisma is missing', async () => {
-    mockContext.req.header.mockReturnValue('Bearer token')
+    const token = 'Bearer prisma-token-' + Math.random()
+    mockContext.req.header.mockReturnValue(token)
     mockSupabase.auth.getUser.mockResolvedValue({
       data: { user: { email: 't@t.com' } },
       error: null,
@@ -182,7 +193,8 @@ describe('AuthMiddleware', () => {
     // Configure mockSupabase to throw a string
     mockSupabase.auth.getUser.mockRejectedValue('String Error')
 
-    mockContext.req.header.mockReturnValue('Bearer token')
+    const token = 'Bearer string-error-token-' + Math.random()
+    mockContext.req.header.mockReturnValue(token)
 
     // Re-import to ensure clean state (though might not be strictly necessary if createClient mock persists)
     const { authMiddleware: freshAuthMiddleware } = await import(
