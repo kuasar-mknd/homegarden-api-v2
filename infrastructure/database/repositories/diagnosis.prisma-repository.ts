@@ -11,6 +11,25 @@ import type {
 } from '../../../domain/repositories/diagnosis.repository.js'
 import { prisma } from '../prisma.client.js'
 
+// Optimization: Exclude heavy JSON blobs and text fields from list queries
+const DIAGNOSIS_LIST_SELECT = {
+  id: true,
+  imageUrl: true,
+  description: true,
+  status: true,
+  confidence: true,
+  conditionName: true,
+  conditionType: true,
+  severity: true,
+  affectedParts: true,
+  // Excluded: causes, symptoms, treatmentSteps, preventionTips, organicTreatment, chemicalTreatment, criticalActions, rawResponse, aiModel
+  // to reduce payload size significantly.
+  plantId: true,
+  userId: true,
+  createdAt: true,
+  updatedAt: true,
+}
+
 export class DiagnosisPrismaRepository implements DiagnosisRepository {
   async create(data: CreateDiagnosisData): Promise<Diagnosis> {
     const diagnosis = await prisma.diagnosis.create({
@@ -47,6 +66,7 @@ export class DiagnosisPrismaRepository implements DiagnosisRepository {
         skip,
         take: limit,
         orderBy: { createdAt: 'desc' },
+        select: DIAGNOSIS_LIST_SELECT,
       }),
       prisma.diagnosis.count({ where }),
     ])
@@ -61,6 +81,7 @@ export class DiagnosisPrismaRepository implements DiagnosisRepository {
     const diagnoses = await prisma.diagnosis.findMany({
       where: { plantId },
       orderBy: { createdAt: 'desc' },
+      select: DIAGNOSIS_LIST_SELECT,
     })
     return diagnoses.map(this.mapToEntity)
   }
@@ -88,6 +109,9 @@ export class DiagnosisPrismaRepository implements DiagnosisRepository {
   }
 
   private mapToEntity(prismaDiagnosis: any): Diagnosis {
+    // Note: When using DIAGNOSIS_LIST_SELECT, some fields (causes, symptoms, etc.) will be undefined.
+    // The null coalescing operators (?? [], ?? null) ensure safe fallback to empty arrays/nulls,
+    // producing a valid "Summary" entity for list views.
     const props: DiagnosisProps = {
       id: prismaDiagnosis.id,
       imageUrl: prismaDiagnosis.imageUrl,

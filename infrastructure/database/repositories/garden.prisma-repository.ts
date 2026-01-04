@@ -9,6 +9,20 @@ import type {
 import { logger } from '../../config/logger.js'
 import { prisma } from '../prisma.client.js'
 
+// Optimization: Exclude long description from list views
+const GARDEN_LIST_SELECT = {
+  id: true,
+  name: true,
+  latitude: true,
+  longitude: true,
+  userId: true,
+  size: true,
+  climate: true,
+  createdAt: true,
+  updatedAt: true,
+  // Excluded: description
+}
+
 export class GardenPrismaRepository implements GardenRepository {
   async create(data: CreateGardenData): Promise<Garden> {
     const garden = await prisma.garden.create({
@@ -146,7 +160,12 @@ export class GardenPrismaRepository implements GardenRepository {
     if (search) where.name = { contains: search }
 
     const [gardens, total] = await Promise.all([
-      prisma.garden.findMany({ where, skip, take: limit }),
+      prisma.garden.findMany({
+        where,
+        skip,
+        take: limit,
+        select: GARDEN_LIST_SELECT,
+      }),
       prisma.garden.count({ where }),
     ])
 
@@ -157,6 +176,8 @@ export class GardenPrismaRepository implements GardenRepository {
   }
 
   private mapToEntity(prismaGarden: any): Garden {
+    // Note: description might be undefined if GARDEN_LIST_SELECT is used.
+    // Garden.fromPersistence/GardenProps handles this safely.
     return Garden.fromPersistence({
       id: prismaGarden.id,
       name: prismaGarden.name,

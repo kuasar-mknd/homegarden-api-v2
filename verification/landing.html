@@ -1,6 +1,32 @@
-import { env } from '../../infrastructure/config/env.js'
 
-export const SHARED_STYLES = `
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Smart Plant Management API with AI capabilities. Identify plants, diagnose diseases, and track your garden.">
+  <meta name="theme-color" content="#2e7d32" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#121212" media="(prefers-color-scheme: dark)">
+
+  <meta property="og:site_name" content="HomeGarden API">
+  <meta property="og:title" content="HomeGarden API v2">
+  <meta property="og:description" content="Smart Plant Management API with AI capabilities. Identify plants, diagnose diseases, and track your garden.">
+  <meta property="og:type" content="website">
+  <meta property="og:image" content="https://placehold.co/600x400/2e7d32/ffffff?text=HomeGarden+API">
+  <meta property="og:image:alt" content="HomeGarden API Banner with green branding">
+
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="HomeGarden API v2">
+  <meta name="twitter:description" content="Smart Plant Management API with AI capabilities. Identify plants, diagnose diseases, and track your garden.">
+  <meta name="twitter:image" content="https://placehold.co/600x400/2e7d32/ffffff?text=HomeGarden+API">
+
+  <link rel="canonical" href="/">
+  <title>HomeGarden API v2</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🌱</text></svg>">
+  <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🌱</text></svg>">
+  <link rel="preconnect" href="https://placehold.co">
+  <style>
+
   :root {
     --primary: #2e7d32;
     --secondary: #4caf50;
@@ -347,78 +373,13 @@ export const SHARED_STYLES = `
     header h1 { color: black; }
     .badge { border: 1px solid #ccc; background: none; color: black; }
   }
-`
 
-const EXTERNAL_LINK_ICON = `<svg class="external-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>`
-const HOME_ICON = `<svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>`
-const DOC_ICON = `<svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>`
-
-interface LayoutProps {
-  title: string
-  description?: string
-  content: string
-}
-
-export function baseLayout({ title, description, content }: LayoutProps): string {
-  const metaDescription =
-    description ||
-    'Smart Plant Management API with AI capabilities. Identify plants, diagnose diseases, and track your garden.'
-  const image = 'https://placehold.co/600x400/2e7d32/ffffff?text=HomeGarden+API'
-  const icon =
-    'data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🌱</text></svg>'
-
-  return `
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="${metaDescription}">
-  <meta name="theme-color" content="#2e7d32" media="(prefers-color-scheme: light)">
-  <meta name="theme-color" content="#121212" media="(prefers-color-scheme: dark)">
-
-  <meta property="og:site_name" content="HomeGarden API">
-  <meta property="og:title" content="${title}">
-  <meta property="og:description" content="${metaDescription}">
-  <meta property="og:type" content="website">
-  <meta property="og:image" content="${image}">
-  <meta property="og:image:alt" content="HomeGarden API Banner with green branding">
-
-  <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="${title}">
-  <meta name="twitter:description" content="${metaDescription}">
-  <meta name="twitter:image" content="${image}">
-
-  <link rel="canonical" href="/">
-  <title>${title}</title>
-  <link rel="icon" href="${icon}">
-  <link rel="apple-touch-icon" href="${icon}">
-  <link rel="preconnect" href="https://placehold.co">
-  <style>
-    ${SHARED_STYLES}
   </style>
 </head>
 <body>
   <a href="#main" class="skip-link">Skip to main content</a>
   <div class="container">
-    ${content}
-    <footer class="status" role="contentinfo">
-      <div role="status">
-        <span class="status-dot" aria-label="Status: Operational" title="System Operational" role="img"></span> System Operational • ${env.NODE_ENV}
-      </div>
-      <div class="footer-links">
-        <a href="https://github.com/homegarden/api" target="_blank" rel="noopener noreferrer" aria-label="View Source on GitHub (opens in a new tab)">View Source on GitHub${EXTERNAL_LINK_ICON}</a>
-      </div>
-    </footer>
-  </div>
-</body>
-</html>
-  `
-}
 
-const LANDING_PAGE_HTML = baseLayout({
-  title: 'HomeGarden API v2',
-  content: `
     <header>
       <h1>🌱 HomeGarden API</h1>
       <div class="badge" role="status">v2.0.0 • AI-Powered</div>
@@ -454,45 +415,15 @@ const LANDING_PAGE_HTML = baseLayout({
         </li>
       </ul>
     </main>
-    `,
-})
 
-export function getLandingPageHtml(): string {
-  // Optimization: Return memoized static string to avoid re-rendering on every request
-  return LANDING_PAGE_HTML
-}
-
-// Simple HTML escape function to prevent XSS
-function escapeHtml(unsafe: string): string {
-  return unsafe
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;')
-    .replace(/'/g, '&#039;')
-}
-
-export function getNotFoundPageHtml(path: string): string {
-  const safePath = escapeHtml(path)
-  return baseLayout({
-    title: 'Page Not Found - HomeGarden API',
-    description: 'The requested page could not be found.',
-    content: `
-    <header>
-      <h1>🌱 404 Not Found</h1>
-      <div class="badge badge-error" role="status">Error</div>
-    </header>
-
-    <main id="main">
-      <p>Oops! The page you are looking for does not exist.</p>
-      <code aria-label="Requested URL" class="code-block" title="Requested URL">${safePath}</code>
-      <p>Please check the URL or go back to the homepage.</p>
-
-      <div class="btn-group">
-        <a href="/" class="btn">${HOME_ICON}Return Home</a>
-        <a href="/ui" class="btn btn-secondary">${DOC_ICON}Read Documentation</a>
+    <footer class="status" role="contentinfo">
+      <div role="status">
+        <span class="status-dot" aria-label="Status: Operational" title="System Operational" role="img"></span> System Operational • development
       </div>
-    </main>
-    `,
-  })
-}
+      <div class="footer-links">
+        <a href="https://github.com/homegarden/api" target="_blank" rel="noopener noreferrer" aria-label="View Source on GitHub (opens in a new tab)">View Source on GitHub<svg class="external-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg></a>
+      </div>
+    </footer>
+  </div>
+</body>
+</html>
