@@ -43,6 +43,13 @@ describe('UI Templates', () => {
       expect(SHARED_STYLES).toContain('gap: 0.5rem')
     })
 
+    it('should include button reset styles', () => {
+      expect(SHARED_STYLES).toContain('border: none')
+      expect(SHARED_STYLES).toContain('cursor: pointer')
+      expect(SHARED_STYLES).toContain('font-size: 1rem')
+      expect(SHARED_STYLES).toContain('font-family: inherit')
+    })
+
     it('should include print styles for expanding URLs', () => {
       expect(SHARED_STYLES).toContain('a[href^="http"]:after { content: " (" attr(href) ")"; }')
     })
@@ -100,6 +107,12 @@ describe('UI Templates', () => {
     it('should include icons in buttons', () => {
       const html = getNotFoundPageHtml('/foo')
       expect(html).toContain('<svg class="btn-icon"')
+    })
+
+    it('should include Go Back button with history logic', () => {
+      const html = getNotFoundPageHtml('/foo')
+      expect(html).toContain('Go Back')
+      expect(html).toContain('onclick="history.length > 1 ? history.back() : window.location.href=\'/\'"')
     })
   })
 })
