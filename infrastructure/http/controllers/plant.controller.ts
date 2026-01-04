@@ -6,6 +6,9 @@ export class PlantController {
    * Create a new plant
    */
   createPlant = async (c: Context) => {
+    // Validate input even for unimplemented endpoints
+    await c.req.valid('json' as never)
+
     return c.json(
       {
         success: false,
@@ -36,6 +39,9 @@ export class PlantController {
    * Get plant details
    */
   getPlant = async (c: Context) => {
+    // Validate params even for unimplemented endpoints
+    await c.req.valid('param' as never)
+
     return c.json(
       {
         success: false,
@@ -51,6 +57,10 @@ export class PlantController {
    * Update plant
    */
   updatePlant = async (c: Context) => {
+    // Validate input even for unimplemented endpoints
+    await c.req.valid('param' as never)
+    await c.req.valid('json' as never)
+
     return c.json(
       {
         success: false,
@@ -66,6 +76,9 @@ export class PlantController {
    * Delete plant
    */
   deletePlant = async (c: Context) => {
+    // Validate params even for unimplemented endpoints
+    await c.req.valid('param' as never)
+
     return c.json(
       {
         success: false,

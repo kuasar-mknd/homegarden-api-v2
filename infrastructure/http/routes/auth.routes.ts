@@ -1,5 +1,6 @@
 import { createRoute, OpenAPIHono } from '@hono/zod-openapi'
 import type { AuthController } from '../controllers/auth.controller.js'
+import { LoginSchema, RefreshTokenSchema, RegisterSchema } from '../schemas/auth.schema.js'
 
 export const createAuthRoutes = (controller: AuthController) => {
   const app = new OpenAPIHono()
@@ -15,6 +16,15 @@ export const createAuthRoutes = (controller: AuthController) => {
       tags: ['Auth'],
       summary: 'Register new user',
       description: 'Register a new user (Note: Primary auth is handled by Supabase)',
+      request: {
+        body: {
+          content: {
+            'application/json': {
+              schema: RegisterSchema,
+            },
+          },
+        },
+      },
       responses: {
         501: {
           description: 'Not Implemented',
@@ -32,6 +42,15 @@ export const createAuthRoutes = (controller: AuthController) => {
       tags: ['Auth'],
       summary: 'Login user',
       description: 'Authenticate user (Note: Primary auth is handled by Supabase)',
+      request: {
+        body: {
+          content: {
+            'application/json': {
+              schema: LoginSchema,
+            },
+          },
+        },
+      },
       responses: {
         501: {
           description: 'Not Implemented',
@@ -39,6 +58,32 @@ export const createAuthRoutes = (controller: AuthController) => {
       },
     }),
     controller.login,
+  )
+
+  // POST /refresh-token
+  app.openapi(
+    createRoute({
+      method: 'post',
+      path: '/refresh-token',
+      tags: ['Auth'],
+      summary: 'Refresh access token',
+      description: 'Refresh access token (Note: Primary auth is handled by Supabase)',
+      request: {
+        body: {
+          content: {
+            'application/json': {
+              schema: RefreshTokenSchema,
+            },
+          },
+        },
+      },
+      responses: {
+        501: {
+          description: 'Not Implemented',
+        },
+      },
+    }),
+    controller.refreshToken,
   )
 
   return app
