@@ -16,6 +16,9 @@ vi.mock('../../infrastructure/database/prisma.client.js', () => ({
       count: vi.fn(),
       groupBy: vi.fn(),
     },
+    garden: {
+      findMany: vi.fn(),
+    },
   },
 }))
 

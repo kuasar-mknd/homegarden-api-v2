@@ -19,6 +19,32 @@ const GARDEN_SELECT = {
   },
 }
 
+// Optimization: Explicitly select light-weight fields for list views to avoid fetching large text blobs (careNotes)
+const PLANT_LIST_SELECT = {
+  id: true,
+  nickname: true,
+  speciesId: true,
+  commonName: true,
+  scientificName: true,
+  family: true,
+  exposure: true,
+  watering: true,
+  soilType: true,
+  flowerColor: true,
+  height: true,
+  plantedDate: true,
+  acquiredDate: true,
+  bloomingSeason: true,
+  plantingSeason: true,
+  imageUrl: true,
+  thumbnailUrl: true,
+  use: true,
+  gardenId: true,
+  createdAt: true,
+  updatedAt: true,
+  // careNotes excluded
+}
+
 export class PlantPrismaRepository implements PlantRepository {
   async create(data: CreatePlantData): Promise<Plant> {
     const plant = await prisma.plant.create({
@@ -73,9 +99,11 @@ export class PlantPrismaRepository implements PlantRepository {
       where: {
         garden: { userId },
       },
+      // Optimization: Select specific fields to exclude 'careNotes' (text blob)
+      select: PLANT_LIST_SELECT,
       orderBy: { createdAt: 'desc' },
     })
-    return plants.map(this.mapToEntity)
+    return plants.map((p) => this.mapToEntity(p))
   }
 
   async update(id: string, data: UpdatePlantData): Promise<Plant> {
