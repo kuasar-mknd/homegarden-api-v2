@@ -101,5 +101,12 @@ describe('UI Templates', () => {
       const html = getNotFoundPageHtml('/foo')
       expect(html).toContain('<svg class="btn-icon"')
     })
+
+    it('should include Go Back button with history logic', () => {
+      const html = getNotFoundPageHtml('/foo')
+      expect(html).toContain('Go Back')
+      expect(html).toContain('history.back()')
+      expect(html).toContain('aria-label="Go back to previous page"')
+    })
   })
 })
