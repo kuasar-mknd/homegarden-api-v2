@@ -1,5 +1,6 @@
 import { env } from '../../infrastructure/config/env.js'
 
+// Optimization: Minify styles at runtime to reduce payload size
 export const SHARED_STYLES = `
   :root {
     --primary: #2e7d32;
@@ -348,6 +349,8 @@ export const SHARED_STYLES = `
     .badge { border: 1px solid #ccc; background: none; color: black; }
   }
 `
+  .replace(/\s+/g, ' ')
+  .trim() // Minification
 
 const EXTERNAL_LINK_ICON = `<svg class="external-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>`
 const HOME_ICON = `<svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>`
@@ -416,10 +419,11 @@ export function baseLayout({ title, description, content }: LayoutProps): string
   `
 }
 
-export function getLandingPageHtml(): string {
-  return baseLayout({
-    title: 'HomeGarden API v2',
-    content: `
+// Optimization: Cache the landing page HTML to avoid regeneration
+// This lifts static content generation out of the request handler scope
+const LANDING_PAGE_HTML = baseLayout({
+  title: 'HomeGarden API v2',
+  content: `
     <header>
       <h1>🌱 HomeGarden API</h1>
       <div class="badge" role="status">v2.0.0 • AI-Powered</div>
@@ -456,7 +460,10 @@ export function getLandingPageHtml(): string {
       </ul>
     </main>
     `,
-  })
+})
+
+export function getLandingPageHtml(): string {
+  return LANDING_PAGE_HTML
 }
 
 // Simple HTML escape function to prevent XSS
