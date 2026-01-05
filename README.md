@@ -95,6 +95,12 @@ curl -X POST http://localhost:3000/api/v2/plant-id/identify \
   -d '{"imageUrl": "https://example.com/plant.jpg"}'
 ```
 
+### Example: Get User Profile (requires Auth)
+```bash
+curl -X GET http://localhost:3000/api/v2/users/me \
+  -H "Authorization: Bearer <YOUR_SUPABASE_TOKEN>"
+```
+
 ## 🔧 Troubleshooting
 
 *   **`Supabase URL or Publishable Key not configured`**: Ensure `SUPABASE_URL` and `SUPABASE_PUBLISHABLE_KEY` are set in `.env`.

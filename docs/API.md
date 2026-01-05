@@ -27,6 +27,15 @@ The best way to explore the API is via the built-in Swagger UI, which provides i
 
 ## 🌿 Core Resources
 
+### Auth & Users
+
+- `POST /auth/login` - Login with Supabase (or mock in dev)
+- `POST /auth/register` - Register new user
+- `POST /auth/refresh` - Refresh access token
+- `GET /users/me` - Get current user profile.
+- `PUT /users/me` - Update user profile (display name, preferences).
+- `GET /users/:id` - Get public profile information for a user.
+
 ### Gardens
 
 - `GET /gardens/plants` - Retrieves all plants in the authenticated user's garden.
@@ -38,12 +47,6 @@ The best way to explore the API is via the built-in Swagger UI, which provides i
 
 - `POST /plant-id/identify` - Identifies a plant from an image URL.
 - `POST /dr-plant/diagnose` - Diagnoses plant health issues from an image.
-
-### Users
-
-- `GET /users/me` - Get current user profile.
-- `PUT /users/me` - Update user profile (display name, preferences).
-- `GET /users/:id` - Get public profile information for a user.
 
 ### Care Tracker
 

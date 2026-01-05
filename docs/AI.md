@@ -23,23 +23,55 @@ GOOGLE_AI_API_KEY=your_api_key_here
 
 The application instructs the AI to return structured JSON data.
 
-### Identification Schema
+### Identification Schema (PlantID)
+
 ```json
 {
-  "name": "Monstera Deliciosa",
-  "confidence": 0.95,
-  "details": "A tropical plant with holey leaves...",
-  "care_tips": ["Indirect light", "Water weekly"]
+  "success": true,
+  "suggestions": [
+    {
+      "confidence": 0.95,
+      "commonName": "English Ivy",
+      "scientificName": "Hedera helix",
+      "family": "Araliaceae",
+      "genus": "Hedera",
+      "description": "Evergreen climbing or ground-creeping vine",
+      "origin": "Europe and Western Asia"
+    }
+  ]
 }
 ```
 
-### Diagnosis Schema
+### Diagnosis Schema (Dr. Plant)
+
 ```json
 {
-  "condition": "Root Rot",
-  "severity": "high",
-  "description": "Roots are turning brown and mushy due to overwatering.",
-  "treatment": ["Repot immediately", "Trim affected roots", "Reduce watering frequency"]
+  "success": true,
+  "isHealthy": false,
+  "confidence": 0.87,
+  "condition": {
+    "name": "Powdery Mildew",
+    "type": "DISEASE",
+    "severity": "MODERATE",
+    "scientificName": "Erysiphales"
+  },
+  "affectedParts": ["leaves"],
+  "symptoms": ["White powdery coating on leaves", "Yellowing leaf margins"],
+  "causes": ["High humidity", "Poor air circulation", "Fungal spores"],
+  "treatments": [
+    {
+      "priority": 1,
+      "action": "Remove affected leaves",
+      "instructions": "Carefully prune and dispose of heavily infected leaves. Do not compost.",
+      "frequency": "once"
+    }
+  ],
+  "organicTreatment": "Mix 1 tbsp baking soda...",
+  "chemicalTreatment": "Apply sulfur-based fungicide...",
+  "preventionTips": ["Improve air circulation"],
+  "urgentActions": [],
+  "recoveryTimeWeeks": 3,
+  "notes": "Caught early. Good prognosis with proper treatment."
 }
 ```
 
