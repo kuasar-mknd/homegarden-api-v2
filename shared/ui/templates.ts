@@ -18,6 +18,11 @@ export const SHARED_STYLES = `
     --radius-lg: 12px;
     --radius-xl: 16px;
 
+    /* Focus System */
+    --focus-ring-color: var(--primary);
+    --focus-ring-width: 2px;
+    --focus-offset: 4px;
+
     accent-color: var(--primary);
   }
   @media (prefers-color-scheme: dark) {
@@ -41,6 +46,7 @@ export const SHARED_STYLES = `
     scroll-behavior: smooth;
     scroll-padding-top: 2rem;
     scrollbar-color: var(--card-border) var(--bg);
+    scrollbar-gutter: stable;
   }
   body {
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
@@ -87,8 +93,8 @@ export const SHARED_STYLES = `
   }
   .skip-link:focus {
     top: 0;
-    outline: 2px solid var(--primary);
-    outline-offset: 4px;
+    outline: var(--focus-ring-width) solid var(--focus-ring-color);
+    outline-offset: var(--focus-offset);
   }
   .container {
     background: var(--card-bg);
@@ -99,6 +105,12 @@ export const SHARED_STYLES = `
     max-width: 600px;
     width: 90%;
     text-align: center;
+  }
+  h1, h2, h3, h4, h5, h6 {
+    text-wrap: balance;
+  }
+  p {
+    text-wrap: pretty;
   }
   header h1 { color: var(--primary); margin-bottom: 0.5rem; }
   .badge {
@@ -163,8 +175,8 @@ export const SHARED_STYLES = `
     transform: scale(0.98);
   }
   .card:focus-visible {
-    outline: 2px solid var(--primary);
-    outline-offset: 4px;
+    outline: var(--focus-ring-width) solid var(--focus-ring-color);
+    outline-offset: var(--focus-offset);
     border-color: var(--secondary);
     z-index: 1;
   }
@@ -188,6 +200,8 @@ export const SHARED_STYLES = `
     box-shadow: 0 2px 4px rgba(0,0,0,0.1);
     min-height: 44px; /* Touch target size */
     box-sizing: border-box;
+    cursor: pointer;
+    user-select: none;
   }
   .btn:hover {
     background: var(--secondary);
@@ -196,9 +210,10 @@ export const SHARED_STYLES = `
   .btn:active {
     transform: scale(0.98);
     box-shadow: inset 0 2px 4px rgba(0,0,0,0.1);
+    filter: brightness(0.9);
   }
   .btn:focus-visible {
-    outline: 2px solid var(--primary);
+    outline: var(--focus-ring-width) solid var(--focus-ring-color);
     outline-offset: 2px;
   }
   .btn-icon {
@@ -275,7 +290,7 @@ export const SHARED_STYLES = `
     color: var(--secondary);
   }
   footer a:focus-visible {
-    outline: 2px solid var(--primary);
+    outline: var(--focus-ring-width) solid var(--focus-ring-color);
     outline-offset: 2px;
     border-radius: var(--radius-sm);
   }
@@ -335,11 +350,14 @@ export const SHARED_STYLES = `
     .status-dot {
       animation: none;
     }
+    html {
+      scroll-behavior: auto !important;
+    }
   }
   @media print {
     body { background: white; color: black; display: block; }
     .container { box-shadow: none; border: none; max-width: 100%; width: 100%; padding: 0; }
-    .skip-link, .status-dot, .external-icon { display: none; }
+    .skip-link, .status-dot, .external-icon, .btn, .badge { display: none; }
     .grid { display: block; }
     .card { border: 1px solid #000; margin-bottom: 1rem; page-break-inside: avoid; box-shadow: none; }
     a { text-decoration: underline; color: black; }
@@ -369,13 +387,15 @@ export function baseLayout({ title, description, content }: LayoutProps): string
 
   return `
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" dir="ltr">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <meta name="description" content="${metaDescription}">
   <meta name="theme-color" content="#2e7d32" media="(prefers-color-scheme: light)">
   <meta name="theme-color" content="#121212" media="(prefers-color-scheme: dark)">
+  <meta name="color-scheme" content="light dark">
+  <meta name="format-detection" content="telephone=no">
 
   <meta property="og:site_name" content="HomeGarden API">
   <meta property="og:title" content="${title}">
@@ -394,6 +414,7 @@ export function baseLayout({ title, description, content }: LayoutProps): string
   <link rel="icon" href="${icon}">
   <link rel="apple-touch-icon" href="${icon}">
   <link rel="preconnect" href="https://placehold.co">
+  <link rel="dns-prefetch" href="https://placehold.co">
   <style>
     ${SHARED_STYLES}
   </style>
@@ -482,7 +503,7 @@ export function getNotFoundPageHtml(path: string): string {
 
     <main id="main">
       <p>Oops! The page you are looking for does not exist.</p>
-      <code aria-label="Requested URL" class="code-block" title="Requested URL">${safePath}</code>
+      <code aria-label="Requested URL" class="code-block" title="Requested URL" tabindex="0">${safePath}</code>
       <p>Please check the URL or go back to the homepage.</p>
 
       <div class="btn-group">
