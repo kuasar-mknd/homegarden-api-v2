@@ -1,6 +1,9 @@
 import { env } from '../../infrastructure/config/env.js'
 
-export const SHARED_STYLES = `
+// ⚡ Bolt Optimization: Minified CSS to reduce payload size (x1)
+// We use a regex to strip newlines and excess whitespace at runtime or build time.
+// Since this is a constant, we define it here.
+const RAW_STYLES = `
   :root {
     --primary: #2e7d32;
     --secondary: #4caf50;
@@ -349,9 +352,48 @@ export const SHARED_STYLES = `
   }
 `
 
+export const SHARED_STYLES = RAW_STYLES.replace(/\s+/g, ' ').trim()
+
 const EXTERNAL_LINK_ICON = `<svg class="external-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>`
 const HOME_ICON = `<svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>`
 const DOC_ICON = `<svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>`
+
+// ⚡ Bolt Optimization: Pre-compute static parts (x2)
+const STATIC_HEADER_START = `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">`
+
+// Note: Meta description, title, og:tags are injected here
+
+const STATIC_HEADER_END_STYLE = `
+  <meta name="theme-color" content="#2e7d32" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#121212" media="(prefers-color-scheme: dark)">
+
+  <meta property="og:type" content="website">
+  <meta name="twitter:card" content="summary_large_image">
+
+  <link rel="canonical" href="/">
+  <link rel="preconnect" href="https://placehold.co">
+  <style>${SHARED_STYLES}</style>
+</head>
+<body>
+  <a href="#main" class="skip-link">Skip to main content</a>
+  <div class="container">`
+
+const STATIC_FOOTER = `
+    <footer class="status" role="contentinfo">
+      <div role="status">
+        <span class="status-dot" aria-label="Status: Operational" title="System Operational" role="img"></span> System Operational • ${env.NODE_ENV}
+      </div>
+      <div class="footer-links">
+        <a href="https://github.com/homegarden/api" target="_blank" rel="noopener noreferrer" aria-label="View Source on GitHub (opens in a new tab)">View Source on GitHub${EXTERNAL_LINK_ICON}</a>
+      </div>
+    </footer>
+  </div>
+</body>
+</html>`
 
 interface LayoutProps {
   title: string
@@ -367,59 +409,33 @@ export function baseLayout({ title, description, content }: LayoutProps): string
   const icon =
     'data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🌱</text></svg>'
 
-  return `
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  return (
+    STATIC_HEADER_START +
+    `
   <meta name="description" content="${metaDescription}">
-  <meta name="theme-color" content="#2e7d32" media="(prefers-color-scheme: light)">
-  <meta name="theme-color" content="#121212" media="(prefers-color-scheme: dark)">
-
   <meta property="og:site_name" content="HomeGarden API">
   <meta property="og:title" content="${title}">
   <meta property="og:description" content="${metaDescription}">
-  <meta property="og:type" content="website">
   <meta property="og:image" content="${image}">
   <meta property="og:image:alt" content="HomeGarden API Banner with green branding">
 
-  <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="${title}">
   <meta name="twitter:description" content="${metaDescription}">
   <meta name="twitter:image" content="${image}">
 
-  <link rel="canonical" href="/">
   <title>${title}</title>
   <link rel="icon" href="${icon}">
-  <link rel="apple-touch-icon" href="${icon}">
-  <link rel="preconnect" href="https://placehold.co">
-  <style>
-    ${SHARED_STYLES}
-  </style>
-</head>
-<body>
-  <a href="#main" class="skip-link">Skip to main content</a>
-  <div class="container">
-    ${content}
-    <footer class="status" role="contentinfo">
-      <div role="status">
-        <span class="status-dot" aria-label="Status: Operational" title="System Operational" role="img"></span> System Operational • ${env.NODE_ENV}
-      </div>
-      <div class="footer-links">
-        <a href="https://github.com/homegarden/api" target="_blank" rel="noopener noreferrer" aria-label="View Source on GitHub (opens in a new tab)">View Source on GitHub${EXTERNAL_LINK_ICON}</a>
-      </div>
-    </footer>
-  </div>
-</body>
-</html>
-  `
+  <link rel="apple-touch-icon" href="${icon}">` +
+    STATIC_HEADER_END_STYLE +
+    content +
+    STATIC_FOOTER
+  )
 }
 
-export function getLandingPageHtml(): string {
-  return baseLayout({
-    title: 'HomeGarden API v2',
-    content: `
+// ⚡ Bolt Optimization: Memoize Landing Page (x3)
+const LANDING_PAGE_HTML = baseLayout({
+  title: 'HomeGarden API v2',
+  content: `
     <header>
       <h1>🌱 HomeGarden API</h1>
       <div class="badge" role="status">v2.0.0 • AI-Powered</div>
@@ -456,7 +472,10 @@ export function getLandingPageHtml(): string {
       </ul>
     </main>
     `,
-  })
+})
+
+export function getLandingPageHtml(): string {
+  return LANDING_PAGE_HTML
 }
 
 // Simple HTML escape function to prevent XSS
