@@ -11,7 +11,12 @@ export const rateLimitMiddleware = rateLimiter({
   windowMs: env.RATE_LIMIT_WINDOW_MS,
   limit: env.RATE_LIMIT_MAX,
   standardHeaders: 'draft-6',
-  keyGenerator: (c) => c.req.header('x-forwarded-for') ?? 'unknown',
+  // prioritized IP detection for better security behind proxies (Cloudflare, etc.)
+  keyGenerator: (c) =>
+    c.req.header('cf-connecting-ip') ??
+    c.req.header('x-real-ip') ??
+    c.req.header('x-forwarded-for') ??
+    'unknown',
 })
 
 /**
@@ -23,7 +28,12 @@ export const aiRateLimitMiddleware = rateLimiter({
   windowMs: 60 * 1000, // 1 minute
   limit: 10, // 10 requests per minute
   standardHeaders: 'draft-6',
-  keyGenerator: (c) => c.req.header('x-forwarded-for') ?? 'unknown',
+  // prioritized IP detection for better security behind proxies (Cloudflare, etc.)
+  keyGenerator: (c) =>
+    c.req.header('cf-connecting-ip') ??
+    c.req.header('x-real-ip') ??
+    c.req.header('x-forwarded-for') ??
+    'unknown',
   message: {
     success: false,
     error: 'TOO_MANY_REQUESTS',

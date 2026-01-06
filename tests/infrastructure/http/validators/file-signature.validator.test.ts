@@ -19,10 +19,15 @@ describe('File Signature Validator', () => {
   })
 
   it('should validate HEIC files correctly', () => {
-    // .... ftyp
-    const heicBuffer = Buffer.from('000000006674797000000000', 'hex')
-    // We implemented check for 'ftyp' at offset 4
+    // HEIC structure: size (4 bytes) + ftyp (4 bytes) + brand (4 bytes)
     // 66 74 79 70 is ftyp
+    // 68 65 69 63 is heic (brand)
+    const heicBuffer = Buffer.from('000000186674797068656963', 'hex')
+
+    // Check offsets:
+    // 0-3: size (ignored)
+    // 4-7: ftyp (checked)
+    // 8-11: brand (checked)
     expect(validateImageSignature(heicBuffer, 'image/heic')).toBe(true)
   })
 

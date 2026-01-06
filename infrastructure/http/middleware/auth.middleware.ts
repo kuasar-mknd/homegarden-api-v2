@@ -55,7 +55,7 @@ export const authMiddleware = createMiddleware(async (c, next) => {
     } = await supabase.auth.getUser(token)
 
     if (error || !user || !user.email) {
-      logger.warn({ err: error }, 'Auth failed')
+      logger.warn({ err: error?.message || 'Unknown auth error' }, 'Auth failed')
       return c.json(
         {
           success: false,
