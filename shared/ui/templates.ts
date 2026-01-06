@@ -172,6 +172,22 @@ export const SHARED_STYLES = `
   .card:hover h2 { color: var(--secondary); }
   .card p { margin: 0; font-size: 0.9rem; color: var(--card-text); }
 
+  .card-header {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 0.5rem;
+  }
+  .card-header h2 { margin: 0; }
+  .card-icon {
+    width: 24px;
+    height: 24px;
+    color: var(--primary);
+    flex-shrink: 0;
+    transition: color 0.2s;
+  }
+  .card:hover .card-icon { color: var(--secondary); }
+
   .btn {
     display: inline-flex;
     align-items: center;
@@ -353,6 +369,12 @@ const EXTERNAL_LINK_ICON = `<svg class="external-icon" viewBox="0 0 24 24" fill=
 const HOME_ICON = `<svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>`
 const DOC_ICON = `<svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>`
 
+// Card Icons
+const BOOK_ICON = `<svg class="card-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>`
+const FILE_ICON = `<svg class="card-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>`
+const LEAF_ICON = `<svg class="card-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10Z"/><path d="M2 21c0-3 1.85-5.36 5.08-6C9.5 14.52 12 13 13 12"/></svg>`
+const HEART_ICON = `<svg class="card-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>`
+
 interface LayoutProps {
   title: string
   description?: string
@@ -431,25 +453,37 @@ export function getLandingPageHtml(): string {
       <ul class="grid" role="list">
         <li>
           <a href="/ui" class="card" aria-describedby="desc-ui">
-            <h2>📚 Documentation</h2>
+            <div class="card-header">
+              ${BOOK_ICON}
+              <h2>Documentation</h2>
+            </div>
             <p id="desc-ui">Interactive Swagger UI for API exploration.</p>
           </a>
         </li>
         <li>
           <a href="/doc" class="card" aria-describedby="desc-doc">
-            <h2>🔍 OpenAPI Spec</h2>
+            <div class="card-header">
+              ${FILE_ICON}
+              <h2>OpenAPI Spec</h2>
+            </div>
             <p id="desc-doc">Raw JSON specification for integration.</p>
           </a>
         </li>
         <li>
           <a href="/ui#/PlantID" class="card" aria-describedby="desc-plantid">
-            <h2>🌿 Plant ID</h2>
+            <div class="card-header">
+              ${LEAF_ICON}
+              <h2>Plant ID</h2>
+            </div>
             <p id="desc-plantid">Identify species using AI vision (Docs).</p>
           </a>
         </li>
         <li>
           <a href="/ui#/DrPlant" class="card" aria-describedby="desc-drplant">
-            <h2>🩺 Dr. Plant</h2>
+            <div class="card-header">
+              ${HEART_ICON}
+              <h2>Dr. Plant</h2>
+            </div>
             <p id="desc-drplant">Diagnose diseases and pests (Docs).</p>
           </a>
         </li>

@@ -75,6 +75,13 @@ describe('UI Templates', () => {
       const html = getLandingPageHtml()
       expect(html).toContain('<div class="footer-links">')
     })
+
+    it('should include SVG icons in cards', () => {
+      const html = getLandingPageHtml()
+      expect(html).toContain('<svg class="card-icon"')
+      // Check for specific path parts or class names to ensure icons are there
+      expect(html).toContain('class="card-header"')
+    })
   })
 
   describe('getNotFoundPageHtml', () => {
