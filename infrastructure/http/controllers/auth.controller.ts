@@ -6,6 +6,9 @@ export class AuthController {
    * Register a new user
    */
   register = async (c: Context) => {
+    // Validate request body
+    await c.req.valid('json' as never)
+
     return c.json(
       {
         success: false,
@@ -21,6 +24,9 @@ export class AuthController {
    * Login user
    */
   login = async (c: Context) => {
+    // Validate request body
+    await c.req.valid('json' as never)
+
     return c.json(
       {
         success: false,

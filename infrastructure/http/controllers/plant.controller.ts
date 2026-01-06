@@ -6,6 +6,9 @@ export class PlantController {
    * Create a new plant
    */
   createPlant = async (c: Context) => {
+    // Validate request body
+    await c.req.valid('json' as never)
+
     return c.json(
       {
         success: false,

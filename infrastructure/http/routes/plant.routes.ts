@@ -1,6 +1,7 @@
 import { createRoute, OpenAPIHono, z } from '@hono/zod-openapi'
 import type { PlantController } from '../controllers/plant.controller.js'
 import { authMiddleware } from '../middleware/auth.middleware.js'
+import { CreatePlantSchema } from '../schemas/plant.schema.js'
 
 export const createPlantRoutes = (controller: PlantController) => {
   const app = new OpenAPIHono()
@@ -32,6 +33,15 @@ export const createPlantRoutes = (controller: PlantController) => {
       tags: ['Plants'],
       summary: 'Create plant',
       description: 'Create a new plant',
+      request: {
+        body: {
+          content: {
+            'application/json': {
+              schema: CreatePlantSchema,
+            },
+          },
+        },
+      },
       responses: {
         501: {
           description: 'Not Implemented',

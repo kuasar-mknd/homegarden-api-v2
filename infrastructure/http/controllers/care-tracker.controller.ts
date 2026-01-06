@@ -6,6 +6,9 @@ export class CareTrackerController {
    * Create care schedule
    */
   createSchedule = async (c: Context) => {
+    // Validate request body
+    await c.req.valid('json' as never)
+
     return c.json(
       {
         success: false,
