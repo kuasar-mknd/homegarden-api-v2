@@ -12,6 +12,11 @@ export const SHARED_STYLES = `
     --status-text: #5e5e5e; /* darkened from #888 for accessible contrast */
     --error: #d32f2f;
 
+    /* Focus State System */
+    --focus-ring-color: var(--primary);
+    --focus-ring-width: 2px;
+    --focus-offset: 2px;
+
     /* Radius System */
     --radius-sm: 4px;
     --radius-md: 8px;
@@ -19,6 +24,7 @@ export const SHARED_STYLES = `
     --radius-xl: 16px;
 
     accent-color: var(--primary);
+    color-scheme: light dark;
   }
   @media (prefers-color-scheme: dark) {
     :root {
@@ -87,8 +93,8 @@ export const SHARED_STYLES = `
   }
   .skip-link:focus {
     top: 0;
-    outline: 2px solid var(--primary);
-    outline-offset: 4px;
+    outline: var(--focus-ring-width) solid var(--focus-ring-color);
+    outline-offset: var(--focus-offset);
   }
   .container {
     background: var(--card-bg);
@@ -100,7 +106,8 @@ export const SHARED_STYLES = `
     width: 90%;
     text-align: center;
   }
-  header h1 { color: var(--primary); margin-bottom: 0.5rem; }
+  header h1 { color: var(--primary); margin-bottom: 0.5rem; text-wrap: balance; }
+  p { text-wrap: pretty; }
   .badge {
     display: inline-block;
     background: #e8f5e9;
@@ -111,6 +118,7 @@ export const SHARED_STYLES = `
     font-weight: 600;
     margin-bottom: 2rem;
     cursor: default;
+    user-select: none;
   }
   .badge-error {
     background: #ffebee;
@@ -163,12 +171,13 @@ export const SHARED_STYLES = `
     transform: scale(0.98);
   }
   .card:focus-visible {
-    outline: 2px solid var(--primary);
-    outline-offset: 4px;
+    outline: var(--focus-ring-width) solid var(--focus-ring-color);
+    outline-offset: var(--focus-offset);
     border-color: var(--secondary);
+    border-radius: var(--radius-lg);
     z-index: 1;
   }
-  .card h2 { margin: 0 0 0.5rem 0; color: var(--primary); font-size: 1.25rem; transition: color 0.2s; }
+  .card h2 { margin: 0 0 0.5rem 0; color: var(--primary); font-size: 1.25rem; transition: color 0.2s; text-wrap: balance; }
   .card:hover h2 { color: var(--secondary); }
   .card p { margin: 0; font-size: 0.9rem; color: var(--card-text); }
 
@@ -188,6 +197,8 @@ export const SHARED_STYLES = `
     box-shadow: 0 2px 4px rgba(0,0,0,0.1);
     min-height: 44px; /* Touch target size */
     box-sizing: border-box;
+    user-select: none;
+    cursor: pointer;
   }
   .btn:hover {
     background: var(--secondary);
@@ -196,10 +207,11 @@ export const SHARED_STYLES = `
   .btn:active {
     transform: scale(0.98);
     box-shadow: inset 0 2px 4px rgba(0,0,0,0.1);
+    filter: brightness(0.9);
   }
   .btn:focus-visible {
-    outline: 2px solid var(--primary);
-    outline-offset: 2px;
+    outline: var(--focus-ring-width) solid var(--focus-ring-color);
+    outline-offset: var(--focus-offset);
   }
   .btn-icon {
     width: 1.25em;
@@ -275,8 +287,8 @@ export const SHARED_STYLES = `
     color: var(--secondary);
   }
   footer a:focus-visible {
-    outline: 2px solid var(--primary);
-    outline-offset: 2px;
+    outline: var(--focus-ring-width) solid var(--focus-ring-color);
+    outline-offset: var(--focus-offset);
     border-radius: var(--radius-sm);
   }
   .footer-links {
@@ -326,6 +338,9 @@ export const SHARED_STYLES = `
     }
   }
   @media (prefers-reduced-motion: reduce) {
+    html {
+      scroll-behavior: auto !important;
+    }
     .card, .skip-link, .btn, .card h2, footer a {
       transition: none;
     }
@@ -339,7 +354,7 @@ export const SHARED_STYLES = `
   @media print {
     body { background: white; color: black; display: block; }
     .container { box-shadow: none; border: none; max-width: 100%; width: 100%; padding: 0; }
-    .skip-link, .status-dot, .external-icon { display: none; }
+    .skip-link, .status-dot, .external-icon, .btn, .btn-group { display: none; }
     .grid { display: block; }
     .card { border: 1px solid #000; margin-bottom: 1rem; page-break-inside: avoid; box-shadow: none; }
     a { text-decoration: underline; color: black; }
@@ -369,10 +384,11 @@ export function baseLayout({ title, description, content }: LayoutProps): string
 
   return `
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" dir="ltr">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="format-detection" content="telephone=no">
   <meta name="description" content="${metaDescription}">
   <meta name="theme-color" content="#2e7d32" media="(prefers-color-scheme: light)">
   <meta name="theme-color" content="#121212" media="(prefers-color-scheme: dark)">
@@ -394,6 +410,7 @@ export function baseLayout({ title, description, content }: LayoutProps): string
   <link rel="icon" href="${icon}">
   <link rel="apple-touch-icon" href="${icon}">
   <link rel="preconnect" href="https://placehold.co">
+  <link rel="dns-prefetch" href="https://placehold.co">
   <style>
     ${SHARED_STYLES}
   </style>

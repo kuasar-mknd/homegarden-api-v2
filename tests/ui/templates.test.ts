@@ -23,7 +23,7 @@ describe('UI Templates', () => {
     })
 
     it('should include focus-visible style with primary color', () => {
-      expect(SHARED_STYLES).toContain('outline: 2px solid var(--primary)')
+      expect(SHARED_STYLES).toContain('outline: var(--focus-ring-width) solid var(--focus-ring-color)')
     })
 
     it('should include new utility classes', () => {
@@ -52,8 +52,35 @@ describe('UI Templates', () => {
     it('should return valid HTML string', () => {
       const html = getLandingPageHtml()
       expect(html).toContain('<!DOCTYPE html>')
-      expect(html).toContain('<html lang="en">')
+      expect(html).toContain('<html lang="en" dir="ltr">')
       expect(html).toContain('HomeGarden API')
+    })
+
+    it('should include new meta tags for mobile and detection', () => {
+      const html = getLandingPageHtml()
+      expect(html).toContain('viewport-fit=cover')
+      expect(html).toContain('content="telephone=no"')
+    })
+
+    it('should include dns-prefetch', () => {
+      const html = getLandingPageHtml()
+      expect(html).toContain('<link rel="dns-prefetch" href="https://placehold.co">')
+    })
+
+    it('should include CSS variables for focus ring', () => {
+        expect(SHARED_STYLES).toContain('--focus-ring-color: var(--primary)')
+        expect(SHARED_STYLES).toContain('--focus-ring-width: 2px')
+        expect(SHARED_STYLES).toContain('--focus-offset: 2px')
+    })
+
+    it('should include typography enhancements', () => {
+        expect(SHARED_STYLES).toContain('text-wrap: balance')
+        expect(SHARED_STYLES).toContain('text-wrap: pretty')
+    })
+
+    it('should include accessibility improvements', () => {
+        expect(SHARED_STYLES).toContain('user-select: none') // Buttons
+        expect(SHARED_STYLES).toContain('cursor: pointer') // Buttons
     })
 
     it('should include accessibility attributes', () => {
