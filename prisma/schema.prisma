@@ -224,10 +224,12 @@ model Diagnosis {
   @@index([plantId])
   @@index([userId])
   @@index([status])
-  // Optimization: Composite index for filtering diagnoses by user and status (e.g., "My Pending Diagnoses")
-  @@index([userId, status])
   // Optimization: Composite index for user history sorted by date
   @@index([userId, createdAt])
+  // Optimization: Composite index for filtering diagnoses by user and status sorted by date (Complete optimization)
+  @@index([userId, status, createdAt])
+  // Optimization: Composite index for processing pending diagnoses queue sorted by date
+  @@index([status, createdAt])
   @@map("diagnoses")
 }
 
