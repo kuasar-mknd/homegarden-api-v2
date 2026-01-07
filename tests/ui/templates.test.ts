@@ -11,6 +11,8 @@ describe('UI Templates', () => {
       expect(SHARED_STYLES).toContain('--primary:')
       expect(SHARED_STYLES).toContain('--secondary:')
       expect(SHARED_STYLES).toContain('--error:')
+      expect(SHARED_STYLES).toContain('--transition-speed:')
+      expect(SHARED_STYLES).toContain('--focus-ring-color:')
     })
 
     it('should include dark mode media query', () => {
@@ -22,8 +24,9 @@ describe('UI Templates', () => {
       expect(SHARED_STYLES).toContain('background: var(--primary)')
     })
 
-    it('should include focus-visible style with primary color', () => {
-      expect(SHARED_STYLES).toContain('outline: 2px solid var(--primary)')
+    it('should include focus-visible style with focus ring color', () => {
+      // Updated to check for variable usage
+      expect(SHARED_STYLES).toContain('outline: 2px solid var(--focus-ring-color)')
     })
 
     it('should include new utility classes', () => {
@@ -46,13 +49,26 @@ describe('UI Templates', () => {
     it('should include print styles for expanding URLs', () => {
       expect(SHARED_STYLES).toContain('a[href^="http"]:after { content: " (" attr(href) ")"; }')
     })
+
+    it('should include user-select: none for interactive elements', () => {
+      expect(SHARED_STYLES).toContain('user-select: none')
+    })
+
+    it('should include scrollbar-gutter', () => {
+      expect(SHARED_STYLES).toContain('scrollbar-gutter: stable')
+    })
+
+    it('should include logical properties', () => {
+      expect(SHARED_STYLES).toContain('margin-inline-start')
+      expect(SHARED_STYLES).toContain('padding-inline-start')
+    })
   })
 
   describe('getLandingPageHtml', () => {
     it('should return valid HTML string', () => {
       const html = getLandingPageHtml()
       expect(html).toContain('<!DOCTYPE html>')
-      expect(html).toContain('<html lang="en">')
+      expect(html).toContain('<html lang="en" dir="ltr">')
       expect(html).toContain('HomeGarden API')
     })
 
@@ -71,9 +87,19 @@ describe('UI Templates', () => {
       )
     })
 
+    it('should include viewport-fit=cover', () => {
+      const html = getLandingPageHtml()
+      expect(html).toContain('viewport-fit=cover')
+    })
+
     it('should use footer-links class', () => {
       const html = getLandingPageHtml()
       expect(html).toContain('<div class="footer-links">')
+    })
+
+    it('should have icons with focusable=false', () => {
+      const html = getLandingPageHtml()
+      expect(html).toContain('focusable="false"')
     })
   })
 
@@ -95,6 +121,11 @@ describe('UI Templates', () => {
       const html = getNotFoundPageHtml('/foo')
       expect(html).toContain('class="code-block"')
       expect(html).not.toContain('style="display: block;')
+    })
+
+    it('should have tabindex="0" on code-block', () => {
+      const html = getNotFoundPageHtml('/foo')
+      expect(html).toContain('tabindex="0"')
     })
 
     it('should include icons in buttons', () => {

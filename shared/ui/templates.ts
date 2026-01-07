@@ -18,6 +18,13 @@ export const SHARED_STYLES = `
     --radius-lg: 12px;
     --radius-xl: 16px;
 
+    /* Motion */
+    --transition-speed: 0.2s;
+
+    /* Focus */
+    --focus-ring-color: var(--primary);
+    --focus-ring-offset: 2px;
+
     accent-color: var(--primary);
   }
   @media (prefers-color-scheme: dark) {
@@ -33,6 +40,9 @@ export const SHARED_STYLES = `
       --error: #ef5350;
     }
   }
+  *, *::before, *::after {
+    box-sizing: border-box;
+  }
   ::selection {
     background: var(--primary);
     color: white;
@@ -41,6 +51,7 @@ export const SHARED_STYLES = `
     scroll-behavior: smooth;
     scroll-padding-top: 2rem;
     scrollbar-color: var(--card-border) var(--bg);
+    scrollbar-gutter: stable;
   }
   body {
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
@@ -87,7 +98,7 @@ export const SHARED_STYLES = `
   }
   .skip-link:focus {
     top: 0;
-    outline: 2px solid var(--primary);
+    outline: 2px solid var(--focus-ring-color);
     outline-offset: 4px;
   }
   .container {
@@ -100,17 +111,23 @@ export const SHARED_STYLES = `
     width: 90%;
     text-align: center;
   }
-  header h1 { color: var(--primary); margin-bottom: 0.5rem; }
+  header h1 {
+    color: var(--primary);
+    margin-bottom: 0.5rem;
+    text-wrap: balance;
+  }
   .badge {
     display: inline-block;
     background: #e8f5e9;
     color: #2e7d32;
-    padding: 4px 12px;
+    padding-inline: 12px;
+    padding-block: 4px;
     border-radius: var(--radius-lg);
     font-size: 0.85rem;
     font-weight: 600;
     margin-bottom: 2rem;
     cursor: default;
+    user-select: none;
   }
   .badge-error {
     background: #ffebee;
@@ -146,12 +163,11 @@ export const SHARED_STYLES = `
     border: 1px solid var(--card-border);
     padding: 1.5rem;
     border-radius: var(--radius-lg);
-    transition: transform 0.2s, box-shadow 0.2s;
+    transition: transform var(--transition-speed), box-shadow var(--transition-speed);
     text-decoration: none;
     color: inherit;
     display: block;
     height: 100%;
-    box-sizing: border-box;
     position: relative; /* Ensure z-index works on focus */
   }
   .card:hover {
@@ -163,12 +179,18 @@ export const SHARED_STYLES = `
     transform: scale(0.98);
   }
   .card:focus-visible {
-    outline: 2px solid var(--primary);
+    outline: 2px solid var(--focus-ring-color);
     outline-offset: 4px;
     border-color: var(--secondary);
     z-index: 1;
   }
-  .card h2 { margin: 0 0 0.5rem 0; color: var(--primary); font-size: 1.25rem; transition: color 0.2s; }
+  .card h2 {
+    margin: 0 0 0.5rem 0;
+    color: var(--primary);
+    font-size: 1.25rem;
+    transition: color var(--transition-speed);
+    text-wrap: balance;
+  }
   .card:hover h2 { color: var(--secondary); }
   .card p { margin: 0; font-size: 0.9rem; color: var(--card-text); }
 
@@ -184,10 +206,10 @@ export const SHARED_STYLES = `
     text-decoration: none;
     font-weight: 600;
     margin-top: 1rem;
-    transition: background 0.2s, transform 0.1s, box-shadow 0.2s;
+    transition: background var(--transition-speed), transform 0.1s, box-shadow var(--transition-speed);
     box-shadow: 0 2px 4px rgba(0,0,0,0.1);
     min-height: 44px; /* Touch target size */
-    box-sizing: border-box;
+    user-select: none;
   }
   .btn:hover {
     background: var(--secondary);
@@ -196,9 +218,10 @@ export const SHARED_STYLES = `
   .btn:active {
     transform: scale(0.98);
     box-shadow: inset 0 2px 4px rgba(0,0,0,0.1);
+    filter: brightness(0.9);
   }
   .btn:focus-visible {
-    outline: 2px solid var(--primary);
+    outline: 2px solid var(--focus-ring-color);
     outline-offset: 2px;
   }
   .btn-icon {
@@ -234,7 +257,7 @@ export const SHARED_STYLES = `
   .external-icon {
     display: inline-block;
     vertical-align: middle;
-    margin-left: 4px;
+    margin-inline-start: 4px;
     margin-bottom: 2px;
     width: 0.9em;
     height: 0.9em;
@@ -250,9 +273,9 @@ export const SHARED_STYLES = `
     font-family: monospace;
   }
   blockquote {
-    border-left: 4px solid var(--primary);
+    border-inline-start: 4px solid var(--primary);
     margin: 1rem 0;
-    padding-left: 1rem;
+    padding-inline-start: 1rem;
     color: var(--card-text);
     font-style: italic;
   }
@@ -268,14 +291,14 @@ export const SHARED_STYLES = `
     color: var(--primary);
     text-decoration: none;
     text-underline-offset: 4px;
-    transition: color 0.2s, text-decoration-color 0.2s;
+    transition: color var(--transition-speed), text-decoration-color var(--transition-speed);
   }
   footer a:hover {
     text-decoration: underline;
     color: var(--secondary);
   }
   footer a:focus-visible {
-    outline: 2px solid var(--primary);
+    outline: 2px solid var(--focus-ring-color);
     outline-offset: 2px;
     border-radius: var(--radius-sm);
   }
@@ -294,7 +317,7 @@ export const SHARED_STYLES = `
     height: 8px;
     background-color: var(--secondary);
     border-radius: 50%;
-    margin-right: 6px;
+    margin-inline-end: 6px;
     animation: pulse 2s infinite ease-in-out;
   }
   .error-code {
@@ -316,6 +339,7 @@ export const SHARED_STYLES = `
     border-radius: var(--radius-sm);
     margin: 1rem 0;
     word-break: break-all;
+    overflow-wrap: break-word;
     overflow-x: auto;
     user-select: all;
     border: 1px solid var(--card-border);
@@ -349,9 +373,9 @@ export const SHARED_STYLES = `
   }
 `
 
-const EXTERNAL_LINK_ICON = `<svg class="external-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>`
-const HOME_ICON = `<svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>`
-const DOC_ICON = `<svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>`
+const EXTERNAL_LINK_ICON = `<svg class="external-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>`
+const HOME_ICON = `<svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>`
+const DOC_ICON = `<svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>`
 
 interface LayoutProps {
   title: string
@@ -369,10 +393,10 @@ export function baseLayout({ title, description, content }: LayoutProps): string
 
   return `
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" dir="ltr">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <meta name="description" content="${metaDescription}">
   <meta name="theme-color" content="#2e7d32" media="(prefers-color-scheme: light)">
   <meta name="theme-color" content="#121212" media="(prefers-color-scheme: dark)">
@@ -482,7 +506,7 @@ export function getNotFoundPageHtml(path: string): string {
 
     <main id="main">
       <p>Oops! The page you are looking for does not exist.</p>
-      <code aria-label="Requested URL" class="code-block" title="Requested URL">${safePath}</code>
+      <code aria-label="Requested URL" class="code-block" title="Requested URL" tabindex="0">${safePath}</code>
       <p>Please check the URL or go back to the homepage.</p>
 
       <div class="btn-group">
