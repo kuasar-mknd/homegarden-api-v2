@@ -19,6 +19,41 @@ const GARDEN_SELECT = {
   },
 }
 
+// Optimization: Select only necessary fields for lists, excluding heavy text fields like careNotes
+const PLANT_LIST_SELECT = {
+  id: true,
+  nickname: true,
+  speciesId: true,
+  commonName: true,
+  scientificName: true,
+  family: true,
+  exposure: true,
+  watering: true,
+  soilType: true,
+  flowerColor: true,
+  height: true,
+  plantedDate: true,
+  acquiredDate: true,
+  bloomingSeason: true,
+  plantingSeason: true,
+  // careNotes: false, // Explicitly excluded by omission
+  imageUrl: true,
+  thumbnailUrl: true,
+  use: true,
+  gardenId: true,
+  createdAt: true,
+  updatedAt: true,
+  // When using select, we must explicitly select relation fields if we want them
+  // GARDEN_SELECT has { select: { ... } } structure which fits here
+  garden: GARDEN_SELECT,
+}
+
+// Variant without garden relation for scenarios where we already know the garden
+const PLANT_LIST_SELECT_NO_GARDEN = {
+  ...PLANT_LIST_SELECT,
+  garden: false,
+}
+
 export class PlantPrismaRepository implements PlantRepository {
   async create(data: CreatePlantData): Promise<Plant> {
     const plant = await prisma.plant.create({
@@ -64,8 +99,9 @@ export class PlantPrismaRepository implements PlantRepository {
     const plants = await prisma.plant.findMany({
       where: { gardenId },
       orderBy: { createdAt: 'desc' },
+      select: PLANT_LIST_SELECT_NO_GARDEN,
     })
-    return plants.map(this.mapToEntity)
+    return plants.map((p) => this.mapToEntity(p))
   }
 
   async findByUserId(userId: string): Promise<Plant[]> {
@@ -74,8 +110,9 @@ export class PlantPrismaRepository implements PlantRepository {
         garden: { userId },
       },
       orderBy: { createdAt: 'desc' },
+      select: PLANT_LIST_SELECT,
     })
-    return plants.map(this.mapToEntity)
+    return plants.map((p) => this.mapToEntity(p))
   }
 
   async update(id: string, data: UpdatePlantData): Promise<Plant> {
@@ -117,12 +154,14 @@ export class PlantPrismaRepository implements PlantRepository {
         skip,
         take: limit,
         orderBy: { createdAt: 'desc' },
+        // Use select for list views to optimize payload
+        select: PLANT_LIST_SELECT,
       }),
       prisma.plant.count({ where }),
     ])
 
     return {
-      plants: plants.map(this.mapToEntity),
+      plants: plants.map((p) => this.mapToEntity(p)),
       total,
     }
   }
