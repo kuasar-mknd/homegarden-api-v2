@@ -99,6 +99,12 @@ export const SHARED_STYLES = `
     max-width: 600px;
     width: 90%;
     text-align: center;
+    opacity: 0;
+    animation: fadeIn 0.5s ease-out forwards;
+  }
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
   }
   header h1 { color: var(--primary); margin-bottom: 0.5rem; }
   .badge {
@@ -231,6 +237,49 @@ export const SHARED_STYLES = `
     margin-top: 0;
   }
 
+  /* Copy Button Style */
+  .code-wrapper {
+    position: relative;
+    max-width: 100%;
+    margin: 1rem 0;
+  }
+  .btn-copy {
+    position: absolute;
+    top: 50%;
+    right: 8px;
+    transform: translateY(-50%);
+    background: transparent;
+    border: none;
+    color: var(--status-text);
+    cursor: pointer;
+    padding: 4px;
+    border-radius: var(--radius-sm);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: color 0.2s, background 0.2s;
+  }
+  .btn-copy:hover {
+    color: var(--primary);
+    background: rgba(0,0,0,0.05);
+  }
+  .btn-copy:focus-visible {
+    outline: 2px solid var(--primary);
+    outline-offset: 2px;
+  }
+  .code-block {
+    display: block;
+    background: #f5f5f5;
+    padding: 0.75rem 2.5rem 0.75rem 0.75rem; /* space for button */
+    border-radius: var(--radius-sm);
+    word-break: break-all;
+    overflow-x: auto;
+    user-select: all;
+    border: 1px solid var(--card-border);
+    margin: 0;
+    min-height: 24px;
+  }
+
   .external-icon {
     display: inline-block;
     vertical-align: middle;
@@ -309,25 +358,18 @@ export const SHARED_STYLES = `
     color: var(--card-text);
     margin-bottom: 2rem;
   }
-  .code-block {
-    display: block;
-    background: #f5f5f5;
-    padding: 0.5rem;
-    border-radius: var(--radius-sm);
-    margin: 1rem 0;
-    word-break: break-all;
-    overflow-x: auto;
-    user-select: all;
-    border: 1px solid var(--card-border);
-  }
   @media (prefers-color-scheme: dark) {
     .code-block {
       background: #2d2d2d;
     }
+    .btn-copy:hover {
+      background: rgba(255,255,255,0.1);
+    }
   }
   @media (prefers-reduced-motion: reduce) {
-    .card, .skip-link, .btn, .card h2, footer a {
+    .card, .skip-link, .btn, .card h2, footer a, .container {
       transition: none;
+      animation: none;
     }
     .card:hover {
       transform: none;
@@ -338,20 +380,22 @@ export const SHARED_STYLES = `
   }
   @media print {
     body { background: white; color: black; display: block; }
-    .container { box-shadow: none; border: none; max-width: 100%; width: 100%; padding: 0; }
-    .skip-link, .status-dot, .external-icon { display: none; }
+    .container { box-shadow: none; border: none; max-width: 100%; width: 100%; padding: 0; opacity: 1; animation: none; }
+    .skip-link, .status-dot, .external-icon, .btn-copy { display: none; }
     .grid { display: block; }
     .card { border: 1px solid #000; margin-bottom: 1rem; page-break-inside: avoid; box-shadow: none; }
     a { text-decoration: underline; color: black; }
     a[href^="http"]:after { content: " (" attr(href) ")"; }
     header h1 { color: black; }
     .badge { border: 1px solid #ccc; background: none; color: black; }
+    .code-block { padding: 0.5rem; }
   }
 `
 
 const EXTERNAL_LINK_ICON = `<svg class="external-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>`
 const HOME_ICON = `<svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>`
 const DOC_ICON = `<svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>`
+const COPY_ICON = `<svg class="btn-icon" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>`
 
 interface LayoutProps {
   title: string
@@ -397,6 +441,23 @@ export function baseLayout({ title, description, content }: LayoutProps): string
   <style>
     ${SHARED_STYLES}
   </style>
+  <script>
+    function copyText(text, btn) {
+      if (navigator.clipboard) {
+        navigator.clipboard.writeText(text).then(() => {
+          const original = btn.innerHTML;
+          btn.innerHTML = '<svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>';
+          btn.setAttribute('aria-label', 'Path copied to clipboard');
+          setTimeout(() => {
+            btn.innerHTML = original;
+            btn.setAttribute('aria-label', 'Copy path to clipboard');
+          }, 2000);
+        }).catch(err => {
+          console.error('Failed to copy: ', err);
+        });
+      }
+    }
+  </script>
 </head>
 <body>
   <a href="#main" class="skip-link">Skip to main content</a>
@@ -471,6 +532,11 @@ function escapeHtml(unsafe: string): string {
 
 export function getNotFoundPageHtml(path: string): string {
   const safePath = escapeHtml(path)
+  // Use JSON.stringify to safely quote and escape the string for JS
+  const jsSafePath = JSON.stringify(path)
+  // Escape the JS string for HTML attribute usage (quotes to &quot;)
+  const htmlSafeJsPath = escapeHtml(jsSafePath)
+
   return baseLayout({
     title: 'Page Not Found - HomeGarden API',
     description: 'The requested page could not be found.',
@@ -482,7 +548,14 @@ export function getNotFoundPageHtml(path: string): string {
 
     <main id="main">
       <p>Oops! The page you are looking for does not exist.</p>
-      <code aria-label="Requested URL" class="code-block" title="Requested URL">${safePath}</code>
+
+      <div class="code-wrapper">
+        <code aria-label="Requested URL" class="code-block" title="Requested URL">${safePath}</code>
+        <button class="btn-copy" onclick="copyText(${htmlSafeJsPath}, this)" aria-label="Copy path to clipboard" title="Copy path">
+           ${COPY_ICON}
+        </button>
+      </div>
+
       <p>Please check the URL or go back to the homepage.</p>
 
       <div class="btn-group">

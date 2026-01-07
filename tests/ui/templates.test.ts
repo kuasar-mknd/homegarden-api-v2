@@ -31,6 +31,8 @@ describe('UI Templates', () => {
       expect(SHARED_STYLES).toContain('.code-block')
       expect(SHARED_STYLES).toContain('.footer-links')
       expect(SHARED_STYLES).toContain('.btn-icon')
+      expect(SHARED_STYLES).toContain('.btn-copy')
+      expect(SHARED_STYLES).toContain('.code-wrapper')
     })
 
     it('should include correct dark mode error badge color', () => {
@@ -45,6 +47,11 @@ describe('UI Templates', () => {
 
     it('should include print styles for expanding URLs', () => {
       expect(SHARED_STYLES).toContain('a[href^="http"]:after { content: " (" attr(href) ")"; }')
+    })
+
+    it('should include fadeIn animation', () => {
+      expect(SHARED_STYLES).toContain('@keyframes fadeIn')
+      expect(SHARED_STYLES).toContain('animation: fadeIn 0.5s ease-out forwards')
     })
   })
 
@@ -81,8 +88,10 @@ describe('UI Templates', () => {
     it('should escape unsafe input', () => {
       const unsafe = '<script>alert(1)</script>'
       const html = getNotFoundPageHtml(unsafe)
+      // Verify content is escaped
       expect(html).toContain('&lt;script&gt;alert(1)&lt;/script&gt;')
-      expect(html).not.toContain('<script>')
+      // Verify the specific attack payload is NOT present as raw HTML
+      expect(html).not.toContain('<script>alert(1)</script>')
     })
 
     it('should use .badge-error class', () => {
@@ -100,6 +109,22 @@ describe('UI Templates', () => {
     it('should include icons in buttons', () => {
       const html = getNotFoundPageHtml('/foo')
       expect(html).toContain('<svg class="btn-icon"')
+    })
+
+    it('should include copy functionality', () => {
+      const html = getNotFoundPageHtml('/foo')
+      expect(html).toContain('class="code-wrapper"')
+      expect(html).toContain('class="btn-copy"')
+      expect(html).toContain('onclick="copyText(&quot;/foo&quot;, this)"')
+      expect(html).toContain('copyText') // Check script is present
+    })
+
+    it('should escape quotes in copy handler', () => {
+      const pathWithQuote = "/foo'bar"
+      const html = getNotFoundPageHtml(pathWithQuote)
+      // JSON.stringify("/foo'bar") -> "/foo'bar" (double quoted)
+      // escapeHtml -> &quot;/foo&#039;bar&quot;
+      expect(html).toContain('copyText(&quot;/foo&#039;bar&quot;, this)')
     })
   })
 })
