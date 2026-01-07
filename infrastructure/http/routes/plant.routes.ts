@@ -1,6 +1,11 @@
 import { createRoute, OpenAPIHono, z } from '@hono/zod-openapi'
 import type { PlantController } from '../controllers/plant.controller.js'
 import { authMiddleware } from '../middleware/auth.middleware.js'
+import {
+  CreatePlantSchema,
+  PlantIdParamSchema,
+  UpdatePlantSchema,
+} from '../schemas/plant.schema.js'
 
 export const createPlantRoutes = (controller: PlantController) => {
   const app = new OpenAPIHono()
@@ -32,6 +37,15 @@ export const createPlantRoutes = (controller: PlantController) => {
       tags: ['Plants'],
       summary: 'Create plant',
       description: 'Create a new plant',
+      request: {
+        body: {
+          content: {
+            'application/json': {
+              schema: CreatePlantSchema,
+            },
+          },
+        },
+      },
       responses: {
         501: {
           description: 'Not Implemented',
@@ -50,9 +64,7 @@ export const createPlantRoutes = (controller: PlantController) => {
       summary: 'Get plant',
       description: 'Get plant details by ID',
       request: {
-        params: z.object({
-          id: z.string().openapi({ param: { name: 'id', in: 'path' } }),
-        }),
+        params: PlantIdParamSchema,
       },
       responses: {
         501: {
@@ -61,6 +73,53 @@ export const createPlantRoutes = (controller: PlantController) => {
       },
     }),
     controller.getPlant,
+  )
+
+  // PATCH /:id
+  app.openapi(
+    createRoute({
+      method: 'patch',
+      path: '/{id}',
+      tags: ['Plants'],
+      summary: 'Update plant',
+      description: 'Update a plant',
+      request: {
+        params: PlantIdParamSchema,
+        body: {
+          content: {
+            'application/json': {
+              schema: UpdatePlantSchema,
+            },
+          },
+        },
+      },
+      responses: {
+        501: {
+          description: 'Not Implemented',
+        },
+      },
+    }),
+    controller.updatePlant,
+  )
+
+  // DELETE /:id
+  app.openapi(
+    createRoute({
+      method: 'delete',
+      path: '/{id}',
+      tags: ['Plants'],
+      summary: 'Delete plant',
+      description: 'Delete a plant',
+      request: {
+        params: PlantIdParamSchema,
+      },
+      responses: {
+        501: {
+          description: 'Not Implemented',
+        },
+      },
+    }),
+    controller.deletePlant,
   )
 
   return app

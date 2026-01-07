@@ -6,6 +6,9 @@ export class CareTrackerController {
    * Create care schedule
    */
   createSchedule = async (c: Context) => {
+    // Validation boundary
+    await c.req.valid('json' as never)
+
     return c.json(
       {
         success: false,
@@ -21,6 +24,9 @@ export class CareTrackerController {
    * Get upcoming tasks
    */
   getUpcomingTasks = async (c: Context) => {
+    // Validation boundary
+    await c.req.valid('query' as never)
+
     return c.json(
       {
         success: false,
@@ -36,6 +42,10 @@ export class CareTrackerController {
    * Mark task as complete
    */
   markTaskComplete = async (c: Context) => {
+    // Validation boundary
+    await c.req.valid('param' as never)
+    await c.req.valid('json' as never)
+
     return c.json(
       {
         success: false,
@@ -51,6 +61,9 @@ export class CareTrackerController {
    * Generate smart schedule
    */
   generateSchedule = async (c: Context) => {
+    // Validation boundary
+    await c.req.valid('json' as never)
+
     return c.json(
       {
         success: false,
