@@ -84,7 +84,7 @@ The API is documented using Swagger. Once the server is running, visit:
 
 ### Example: Check API Status
 ```bash
-curl http://localhost:3000/health
+curl http://localhost:3000/
 ```
 
 ### Example: Identify a Plant (requires Auth)
@@ -99,4 +99,6 @@ curl -X POST http://localhost:3000/api/v2/plant-id/identify \
 
 *   **`Supabase URL or Publishable Key not configured`**: Ensure `SUPABASE_URL` and `SUPABASE_PUBLISHABLE_KEY` are set in `.env`.
 *   **Database Connection Errors**: Check if your Postgres container is running and accessible. Verify `DATABASE_URL` matches your container settings.
-*   **AI Errors**: Verify `GOOGLE_AI_API_KEY` is valid and has access to the specified models.
+    *   Command to restart DB: `docker restart homegarden-db`
+*   **AI Errors**: Verify `GOOGLE_AI_API_KEY` is valid and has access to the specified models (`gemini-2.0-flash`).
+*   **Environment Validation**: If the app fails to start, check the console output for specific environment variable errors (e.g., missing `SUPABASE_URL`).

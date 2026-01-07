@@ -14,6 +14,16 @@ Most endpoints require a Bearer Token (Supabase JWT).
 Authorization: Bearer <your-supabase-jwt>
 ```
 
+## Rate Limiting
+
+The API implements rate limiting to prevent abuse.
+
+- **Limit**: 350 requests per 15 minutes (configurable).
+- **Headers**:
+  - `X-RateLimit-Limit`: The maximum number of requests allowed in the window.
+  - `X-RateLimit-Remaining`: The number of requests remaining in the current window.
+  - `X-RateLimit-Reset`: The time at which the current window resets (in UTC epoch seconds).
+
 ---
 
 ## 📘 Interactive Documentation (Swagger UI)
