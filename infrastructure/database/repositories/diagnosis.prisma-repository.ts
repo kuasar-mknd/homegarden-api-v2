@@ -11,6 +11,23 @@ import type {
 } from '../../../domain/repositories/diagnosis.repository.js'
 import { prisma } from '../prisma.client.js'
 
+// Optimization: Select only necessary fields for list view to avoid fetching large JSON blobs and text fields
+const DIAGNOSIS_LIST_SELECT = {
+  id: true,
+  imageUrl: true,
+  status: true,
+  confidence: true,
+  conditionName: true,
+  conditionType: true,
+  severity: true,
+  plantId: true,
+  userId: true,
+  createdAt: true,
+  updatedAt: true,
+  // Explicitly excluding heavy fields:
+  // rawResponse, organicTreatment, chemicalTreatment, description, treatmentSteps, preventionTips, etc.
+}
+
 export class DiagnosisPrismaRepository implements DiagnosisRepository {
   async create(data: CreateDiagnosisData): Promise<Diagnosis> {
     const diagnosis = await prisma.diagnosis.create({
@@ -47,6 +64,7 @@ export class DiagnosisPrismaRepository implements DiagnosisRepository {
         skip,
         take: limit,
         orderBy: { createdAt: 'desc' },
+        select: DIAGNOSIS_LIST_SELECT,
       }),
       prisma.diagnosis.count({ where }),
     ])
@@ -61,6 +79,7 @@ export class DiagnosisPrismaRepository implements DiagnosisRepository {
     const diagnoses = await prisma.diagnosis.findMany({
       where: { plantId },
       orderBy: { createdAt: 'desc' },
+      select: DIAGNOSIS_LIST_SELECT,
     })
     return diagnoses.map(this.mapToEntity)
   }
