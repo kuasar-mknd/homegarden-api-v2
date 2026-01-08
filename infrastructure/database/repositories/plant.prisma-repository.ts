@@ -19,6 +19,28 @@ const GARDEN_SELECT = {
   },
 }
 
+// Optimization: Select only essential fields for list views to reduce payload size
+const PLANT_LIST_SELECT = {
+  id: true,
+  nickname: true,
+  speciesId: true,
+  commonName: true,
+  scientificName: true,
+  family: true,
+  exposure: true,
+  watering: true,
+  height: true,
+  plantedDate: true,
+  acquiredDate: true,
+  imageUrl: true,
+  thumbnailUrl: true,
+  gardenId: true,
+  createdAt: true,
+  updatedAt: true,
+  // Excluded heavy/infrequently used fields:
+  // careNotes, use, soilType, flowerColor, bloomingSeason, plantingSeason
+}
+
 export class PlantPrismaRepository implements PlantRepository {
   async create(data: CreatePlantData): Promise<Plant> {
     const plant = await prisma.plant.create({
@@ -64,8 +86,9 @@ export class PlantPrismaRepository implements PlantRepository {
     const plants = await prisma.plant.findMany({
       where: { gardenId },
       orderBy: { createdAt: 'desc' },
+      select: PLANT_LIST_SELECT,
     })
-    return plants.map(this.mapToEntity)
+    return plants.map((p) => this.mapToEntity(p))
   }
 
   async findByUserId(userId: string): Promise<Plant[]> {
@@ -74,8 +97,9 @@ export class PlantPrismaRepository implements PlantRepository {
         garden: { userId },
       },
       orderBy: { createdAt: 'desc' },
+      select: PLANT_LIST_SELECT,
     })
-    return plants.map(this.mapToEntity)
+    return plants.map((p) => this.mapToEntity(p))
   }
 
   async update(id: string, data: UpdatePlantData): Promise<Plant> {
@@ -117,12 +141,13 @@ export class PlantPrismaRepository implements PlantRepository {
         skip,
         take: limit,
         orderBy: { createdAt: 'desc' },
+        select: PLANT_LIST_SELECT,
       }),
       prisma.plant.count({ where }),
     ])
 
     return {
-      plants: plants.map(this.mapToEntity),
+      plants: plants.map((p) => this.mapToEntity(p)),
       total,
     }
   }
