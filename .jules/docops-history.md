@@ -9,3 +9,4 @@
 | 2025-12-22 | DocOps | README.md, docs/*, .github/workflows/*, .env.example | Complete doc refresh (Architecture, AI, Env, API), robust CI pipeline with Postgres service, Dependabot config |
 | 2025-12-23 | DocOps | README.md, docs/*, .github/workflows/*.yml | Fix CI workflow versions, update API/ENV docs, refine testing instructions. |
 | 2025-12-29 | DocOps | .github/workflows/ci.yml, docs/ENV.md, docs/API.md, .env.example | Fixed CI caching order, updated ENV/API docs to match code, synced .env.example |
+| 2025-12-30 | DocOps | docs/AI.md, README.md, .github/workflows/audit.yml, .github/dependabot.yml, application/use-cases/dr-plant/diagnose-plant.use-case.ts | Updated AI docs with precise schemas, added security audit workflow and dependabot, fixed linting error. |

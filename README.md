@@ -76,6 +76,13 @@ Run tests with coverage:
 pnpm test:coverage
 ```
 
+### Security Checks
+
+Run security audit to identify vulnerabilities in dependencies:
+```bash
+pnpm audit --prod
+```
+
 ## 📖 API Usage
 
 The API is documented using Swagger. Once the server is running, visit:
