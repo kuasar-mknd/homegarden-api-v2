@@ -13,7 +13,12 @@ export class TokenService {
   private readonly refreshExpiresIn: string
 
   constructor() {
-    this.secret = process.env.JWT_SECRET || 'default-secret-key-change-it'
+    this.secret = process.env.JWT_SECRET as string
+
+    if (!this.secret) {
+      throw new Error('JWT_SECRET must be defined')
+    }
+
     this.expiresIn = process.env.JWT_EXPIRES_IN || '1h'
     this.refreshExpiresIn = process.env.JWT_REFRESH_EXPIRES_IN || '7d'
   }
