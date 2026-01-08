@@ -11,6 +11,34 @@ import type {
 } from '../../../domain/repositories/diagnosis.repository.js'
 import { prisma } from '../prisma.client.js'
 
+// Optimization: Exclude heavy text and JSON fields for list views
+const DIAGNOSIS_LIST_SELECT = {
+  id: true,
+  imageUrl: true,
+  description: true,
+  status: true,
+  confidence: true,
+  conditionName: true,
+  conditionType: true,
+  severity: true,
+  affectedParts: true,
+  causes: true,
+  symptoms: true,
+  treatmentSteps: true,
+  preventionTips: true,
+  // organicTreatment: false, // EXCLUDED
+  // chemicalTreatment: false, // EXCLUDED
+  recoveryTimeWeeks: true,
+  criticalActions: true,
+  aiModel: true,
+  // rawResponse: false, // EXCLUDED
+  processingMs: true,
+  plantId: true,
+  userId: true,
+  createdAt: true,
+  updatedAt: true,
+}
+
 export class DiagnosisPrismaRepository implements DiagnosisRepository {
   async create(data: CreateDiagnosisData): Promise<Diagnosis> {
     const diagnosis = await prisma.diagnosis.create({
@@ -47,6 +75,7 @@ export class DiagnosisPrismaRepository implements DiagnosisRepository {
         skip,
         take: limit,
         orderBy: { createdAt: 'desc' },
+        select: DIAGNOSIS_LIST_SELECT,
       }),
       prisma.diagnosis.count({ where }),
     ])
@@ -61,6 +90,7 @@ export class DiagnosisPrismaRepository implements DiagnosisRepository {
     const diagnoses = await prisma.diagnosis.findMany({
       where: { plantId },
       orderBy: { createdAt: 'desc' },
+      select: DIAGNOSIS_LIST_SELECT,
     })
     return diagnoses.map(this.mapToEntity)
   }
@@ -83,6 +113,7 @@ export class DiagnosisPrismaRepository implements DiagnosisRepository {
     const diagnoses = await prisma.diagnosis.findMany({
       where: { status: 'PENDING' },
       orderBy: { createdAt: 'asc' }, // Process oldest first
+      select: DIAGNOSIS_LIST_SELECT,
     })
     return diagnoses.map(this.mapToEntity)
   }
