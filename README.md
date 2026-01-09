@@ -88,15 +88,20 @@ curl http://localhost:3000/health
 ```
 
 ### Example: Identify a Plant (requires Auth)
+
+You can send either an `imageUrl` or `imageBase64`.
+
 ```bash
 curl -X POST http://localhost:3000/api/v2/plant-id/identify \
   -H "Authorization: Bearer <YOUR_SUPABASE_TOKEN>" \
   -H "Content-Type: application/json" \
-  -d '{"imageUrl": "https://example.com/plant.jpg"}'
+  -d '{"imageUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/3/3a/Monstera_deliciosa5.jpg/640px-Monstera_deliciosa5.jpg"}'
 ```
 
 ## 🔧 Troubleshooting
 
 *   **`Supabase URL or Publishable Key not configured`**: Ensure `SUPABASE_URL` and `SUPABASE_PUBLISHABLE_KEY` are set in `.env`.
 *   **Database Connection Errors**: Check if your Postgres container is running and accessible. Verify `DATABASE_URL` matches your container settings.
+    *   Check logs: `docker logs homegarden-db`
 *   **AI Errors**: Verify `GOOGLE_AI_API_KEY` is valid and has access to the specified models.
+*   **Module not found errors**: If you see errors about `@prisma/client`, run `pnpm db:generate` manually.

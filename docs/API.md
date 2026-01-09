@@ -36,20 +36,17 @@ The best way to explore the API is via the built-in Swagger UI, which provides i
 
 ### AI Identification
 
-- `POST /plant-id/identify` - Identifies a plant from an image URL.
-- `POST /dr-plant/diagnose` - Diagnoses plant health issues from an image.
+- `POST /plant-id/identify` - Identifies a plant from an image URL or Base64 data (JSON Body).
+- `POST /dr-plant/diagnose` - Diagnoses plant health issues from an image (Multipart/Form-Data).
 
 ### Users
 
-- `GET /users/me` - Get current user profile.
-- `PUT /users/me` - Update user profile (display name, preferences).
 - `GET /users/:id` - Get public profile information for a user.
 
 ### Care Tracker
 
-- `GET /plants/:plantId/schedules` - Get care schedules for a plant.
-- `POST /plants/:plantId/schedules` - Create a care schedule.
-- `POST /schedules/:id/logs` - Log a care activity (mark as completed).
+- `GET /care-tracker/upcoming` - Get upcoming tasks (501 Not Implemented).
+- `POST /care-tracker/schedules` - Create a care schedule (501 Not Implemented).
 
 ---
 
