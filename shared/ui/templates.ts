@@ -18,6 +18,13 @@ export const SHARED_STYLES = `
     --radius-lg: 12px;
     --radius-xl: 16px;
 
+    /* Shadow System */
+    --shadow-sm: 0 2px 4px rgba(0,0,0,0.1);
+    --shadow-md: 0 4px 8px rgba(0,0,0,0.15);
+
+    /* Text on Primary Background */
+    --on-primary: #ffffff;
+
     accent-color: var(--primary);
   }
   @media (prefers-color-scheme: dark) {
@@ -31,11 +38,16 @@ export const SHARED_STYLES = `
       --card-text: #b0b0b0;
       --status-text: #aaa;
       --error: #ef5350;
+
+      --on-primary: #121212;
     }
   }
   ::selection {
     background: var(--primary);
-    color: white;
+    color: var(--on-primary);
+  }
+  h1, h2, h3 {
+    text-wrap: balance;
   }
   html {
     scroll-behavior: smooth;
@@ -77,7 +89,7 @@ export const SHARED_STYLES = `
     left: 50%;
     transform: translateX(-50%);
     background: var(--primary);
-    color: #fff;
+    color: var(--on-primary);
     padding: 0.5rem 1rem;
     border-radius: 0 0 var(--radius-md) var(--radius-md);
     z-index: 100;
@@ -88,7 +100,7 @@ export const SHARED_STYLES = `
   .skip-link:focus {
     top: 0;
     outline: 2px solid var(--primary);
-    outline-offset: 4px;
+    outline-offset: 2px;
   }
   .container {
     background: var(--card-bg);
@@ -164,7 +176,7 @@ export const SHARED_STYLES = `
   }
   .card:focus-visible {
     outline: 2px solid var(--primary);
-    outline-offset: 4px;
+    outline-offset: 2px;
     border-color: var(--secondary);
     z-index: 1;
   }
@@ -178,20 +190,20 @@ export const SHARED_STYLES = `
     justify-content: center;
     gap: 0.5rem;
     background: var(--primary);
-    color: white;
+    color: var(--on-primary);
     padding: 0.75rem 1.5rem;
     border-radius: var(--radius-md);
     text-decoration: none;
     font-weight: 600;
     margin-top: 1rem;
     transition: background 0.2s, transform 0.1s, box-shadow 0.2s;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    box-shadow: var(--shadow-sm);
     min-height: 44px; /* Touch target size */
     box-sizing: border-box;
   }
   .btn:hover {
     background: var(--secondary);
-    box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+    box-shadow: var(--shadow-md);
   }
   .btn:active {
     transform: scale(0.98);
@@ -238,6 +250,10 @@ export const SHARED_STYLES = `
     margin-bottom: 2px;
     width: 0.9em;
     height: 0.9em;
+    transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+  a:hover .external-icon {
+    transform: translate(2px, -2px);
   }
 
   /* Support for commonly used documentation elements */
@@ -268,16 +284,24 @@ export const SHARED_STYLES = `
     color: var(--primary);
     text-decoration: none;
     text-underline-offset: 4px;
-    transition: color 0.2s, text-decoration-color 0.2s;
+    text-decoration-skip-ink: auto;
+    transition: color 0.2s, text-decoration-color 0.2s, opacity 0.2s;
+    padding: 0.5rem; /* Increase touch target */
+    margin: -0.5rem;
+    border-radius: var(--radius-sm);
+    display: inline-block;
   }
   footer a:hover {
     text-decoration: underline;
     color: var(--secondary);
   }
+  footer a:active {
+    opacity: 0.7;
+  }
   footer a:focus-visible {
     outline: 2px solid var(--primary);
     outline-offset: 2px;
-    border-radius: var(--radius-sm);
+    background: rgba(0,0,0,0.05);
   }
   .footer-links {
     margin-top: 0.5rem;
@@ -349,9 +373,9 @@ export const SHARED_STYLES = `
   }
 `
 
-const EXTERNAL_LINK_ICON = `<svg class="external-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>`
-const HOME_ICON = `<svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>`
-const DOC_ICON = `<svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>`
+const EXTERNAL_LINK_ICON = `<svg class="external-icon" focusable="false" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>`
+const HOME_ICON = `<svg class="btn-icon" focusable="false" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>`
+const DOC_ICON = `<svg class="btn-icon" focusable="false" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>`
 
 interface LayoutProps {
   title: string
