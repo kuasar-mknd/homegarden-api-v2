@@ -9,18 +9,18 @@ import type {
 import { logger } from '../../config/logger.js'
 import { prisma } from '../prisma.client.js'
 
-// Optimization: Select only essential fields for list views
+// Optimization: Exclude description (potential large text) from list views
 const GARDEN_LIST_SELECT = {
   id: true,
   name: true,
   latitude: true,
   longitude: true,
-  userId: true,
-  description: true, // Keep description as it's often short
   size: true,
   climate: true,
+  userId: true,
   createdAt: true,
   updatedAt: true,
+  // description: false, // Excluded
 }
 
 export class GardenPrismaRepository implements GardenRepository {
@@ -78,6 +78,7 @@ export class GardenPrismaRepository implements GardenRepository {
   async findByUserAndName(userId: string, name: string): Promise<Garden | null> {
     const garden = await prisma.garden.findFirst({
       where: { userId, name },
+      select: GARDEN_LIST_SELECT, // Likely checking existence or quick lookup
     })
     return garden ? this.mapToEntity(garden) : null
   }

@@ -12,8 +12,7 @@ import type {
 import { prisma } from '../prisma.client.js'
 
 // Optimization: Select only essential fields for list views to reduce payload size
-// Excluding massive JSON fields like rawResponse to reduce payload.
-// We keep arrays (treatmentSteps, etc.) as they are usually small strings and required by the entity.
+// Excluding heavy text fields (organicTreatment, chemicalTreatment) and JSON (rawResponse)
 const DIAGNOSIS_LIST_SELECT = {
   id: true,
   imageUrl: true,
@@ -23,23 +22,16 @@ const DIAGNOSIS_LIST_SELECT = {
   conditionName: true,
   conditionType: true,
   severity: true,
-  plantId: true,
-  userId: true,
   createdAt: true,
   updatedAt: true,
+  plantId: true,
+  userId: true,
+  // Arrays are relatively small, but could be excluded if lists are very heavy.
+  // Keeping them for now as they might be used in "preview" cards.
   affectedParts: true,
-  recoveryTimeWeeks: true,
   causes: true,
   symptoms: true,
-  treatmentSteps: true,
-  preventionTips: true,
-  organicTreatment: true,
-  chemicalTreatment: true,
-  criticalActions: true,
-  aiModel: true,
-  processingMs: true,
-  // Excluded ONLY the massive raw JSON blob
-  // rawResponse,
+  // Treatment details are excluded
 }
 
 export class DiagnosisPrismaRepository implements DiagnosisRepository {

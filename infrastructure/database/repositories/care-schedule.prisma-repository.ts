@@ -10,6 +10,26 @@ import type {
 } from '../../../domain/repositories/care-schedule.repository.js'
 import { prisma } from '../prisma.client.js'
 
+// Optimization: Select only necessary fields for lists.
+// Notes can be long, but usually they are short.
+// However, if we list 100 schedules, saving small amounts adds up.
+const CARE_SCHEDULE_LIST_SELECT = {
+  id: true,
+  taskType: true,
+  frequency: true,
+  intervalDays: true,
+  nextDueDate: true,
+  lastDoneAt: true,
+  isEnabled: true,
+  weatherAdjust: true,
+  gardenId: true,
+  plantId: true,
+  userId: true,
+  createdAt: true,
+  updatedAt: true,
+  // notes: false, // Exclude notes
+}
+
 export class CareSchedulePrismaRepository implements CareScheduleRepository {
   async create(data: CreateCareScheduleData): Promise<CareSchedule> {
     const schedule = await prisma.careSchedule.create({
@@ -40,6 +60,7 @@ export class CareSchedulePrismaRepository implements CareScheduleRepository {
     const schedules = await prisma.careSchedule.findMany({
       where: { userId },
       orderBy: { nextDueDate: 'asc' },
+      select: CARE_SCHEDULE_LIST_SELECT,
     })
     return schedules.map(this.mapToEntity)
   }
@@ -48,6 +69,7 @@ export class CareSchedulePrismaRepository implements CareScheduleRepository {
     const schedules = await prisma.careSchedule.findMany({
       where: { plantId },
       orderBy: { nextDueDate: 'asc' },
+      select: CARE_SCHEDULE_LIST_SELECT,
     })
     return schedules.map(this.mapToEntity)
   }
@@ -56,6 +78,7 @@ export class CareSchedulePrismaRepository implements CareScheduleRepository {
     const schedules = await prisma.careSchedule.findMany({
       where: { gardenId },
       orderBy: { nextDueDate: 'asc' },
+      select: CARE_SCHEDULE_LIST_SELECT,
     })
     return schedules.map(this.mapToEntity)
   }
@@ -89,6 +112,7 @@ export class CareSchedulePrismaRepository implements CareScheduleRepository {
         },
       },
       orderBy: { nextDueDate: 'asc' },
+      select: CARE_SCHEDULE_LIST_SELECT,
     })
     return schedules.map(this.mapToEntity)
   }
@@ -104,6 +128,7 @@ export class CareSchedulePrismaRepository implements CareScheduleRepository {
         },
       },
       orderBy: { nextDueDate: 'asc' },
+      select: CARE_SCHEDULE_LIST_SELECT,
     })
     return schedules.map(this.mapToEntity)
   }

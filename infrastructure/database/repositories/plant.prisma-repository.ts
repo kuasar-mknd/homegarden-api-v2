@@ -19,10 +19,10 @@ const GARDEN_SELECT = {
   },
 }
 
-// Optimization: Select only necessary fields for list views to reduce payload size
-// Excluding heavy text fields like 'careNotes', 'description', etc.
+// Optimization: Exclude heavy text fields (careNotes) from list views
 const PLANT_LIST_SELECT = {
   id: true,
+  gardenId: true,
   nickname: true,
   speciesId: true,
   commonName: true,
@@ -37,14 +37,12 @@ const PLANT_LIST_SELECT = {
   acquiredDate: true,
   bloomingSeason: true,
   plantingSeason: true,
-  // careNotes: false, // Excluded
-  imageUrl: true, // Needed for thumbnails in list
+  imageUrl: true,
   thumbnailUrl: true,
   use: true,
-  gardenId: true,
   createdAt: true,
   updatedAt: true,
-  // garden: true, // Relations are handled separately or excluded in lists
+  // careNotes: false, // Excluded
 }
 
 export class PlantPrismaRepository implements PlantRepository {
