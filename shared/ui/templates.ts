@@ -35,12 +35,17 @@ export const SHARED_STYLES = `
   }
   ::selection {
     background: var(--primary);
-    color: white;
+    color: var(--bg);
   }
   html {
-    scroll-behavior: smooth;
     scroll-padding-top: 2rem;
     scrollbar-color: var(--card-border) var(--bg);
+    scrollbar-gutter: stable;
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    html {
+      scroll-behavior: smooth;
+    }
   }
   body {
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
@@ -54,6 +59,7 @@ export const SHARED_STYLES = `
     justify-content: center;
     align-items: center;
     min-height: 100vh;
+    text-rendering: optimizeLegibility;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
   }
@@ -100,7 +106,11 @@ export const SHARED_STYLES = `
     width: 90%;
     text-align: center;
   }
-  header h1 { color: var(--primary); margin-bottom: 0.5rem; }
+  header h1 {
+    color: var(--primary);
+    margin-block-end: 0.5rem;
+    text-wrap: balance;
+  }
   .badge {
     display: inline-block;
     background: #e8f5e9;
@@ -109,7 +119,7 @@ export const SHARED_STYLES = `
     border-radius: var(--radius-lg);
     font-size: 0.85rem;
     font-weight: 600;
-    margin-bottom: 2rem;
+    margin-block-end: 2rem;
     cursor: default;
   }
   .badge-error {
@@ -130,7 +140,7 @@ export const SHARED_STYLES = `
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 1.5rem;
-    margin: 2rem 0;
+    margin-block: 2rem;
     list-style: none;
     padding: 0;
   }
@@ -168,7 +178,14 @@ export const SHARED_STYLES = `
     border-color: var(--secondary);
     z-index: 1;
   }
-  .card h2 { margin: 0 0 0.5rem 0; color: var(--primary); font-size: 1.25rem; transition: color 0.2s; }
+  .card h2 {
+    margin: 0;
+    margin-block-end: 0.5rem;
+    color: var(--primary);
+    font-size: 1.25rem;
+    transition: color 0.2s;
+    text-wrap: balance;
+  }
   .card:hover h2 { color: var(--secondary); }
   .card p { margin: 0; font-size: 0.9rem; color: var(--card-text); }
 
@@ -183,7 +200,7 @@ export const SHARED_STYLES = `
     border-radius: var(--radius-md);
     text-decoration: none;
     font-weight: 600;
-    margin-top: 1rem;
+    margin-block-start: 1rem;
     transition: background 0.2s, transform 0.1s, box-shadow 0.2s;
     box-shadow: 0 2px 4px rgba(0,0,0,0.1);
     min-height: 44px; /* Touch target size */
@@ -229,13 +246,14 @@ export const SHARED_STYLES = `
   }
   .btn-group .btn {
     margin-top: 0;
+    margin-block-start: 0;
   }
 
   .external-icon {
     display: inline-block;
     vertical-align: middle;
-    margin-left: 4px;
-    margin-bottom: 2px;
+    margin-inline-start: 4px;
+    margin-block-end: 2px;
     width: 0.9em;
     height: 0.9em;
   }
@@ -250,16 +268,16 @@ export const SHARED_STYLES = `
     font-family: monospace;
   }
   blockquote {
-    border-left: 4px solid var(--primary);
+    border-inline-start: 4px solid var(--primary);
     margin: 1rem 0;
-    padding-left: 1rem;
+    padding-inline-start: 1rem;
     color: var(--card-text);
     font-style: italic;
   }
 
   footer.status {
-    margin-top: 2rem;
-    padding-top: 2rem;
+    margin-block-start: 2rem;
+    padding-block-start: 2rem;
     border-top: 1px solid var(--card-border);
     font-size: 0.85rem;
     color: var(--status-text);
@@ -269,6 +287,8 @@ export const SHARED_STYLES = `
     text-decoration: none;
     text-underline-offset: 4px;
     transition: color 0.2s, text-decoration-color 0.2s;
+    display: inline-block;
+    padding: 0.25rem;
   }
   footer a:hover {
     text-decoration: underline;
@@ -294,7 +314,7 @@ export const SHARED_STYLES = `
     height: 8px;
     background-color: var(--secondary);
     border-radius: 50%;
-    margin-right: 6px;
+    margin-inline-end: 6px;
     animation: pulse 2s infinite ease-in-out;
   }
   .error-code {
@@ -307,7 +327,7 @@ export const SHARED_STYLES = `
   .error-message {
     font-size: 1.2rem;
     color: var(--card-text);
-    margin-bottom: 2rem;
+    margin-block-end: 2rem;
   }
   .code-block {
     display: block;
@@ -372,7 +392,8 @@ export function baseLayout({ title, description, content }: LayoutProps): string
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="format-detection" content="telephone=no">
   <meta name="description" content="${metaDescription}">
   <meta name="theme-color" content="#2e7d32" media="(prefers-color-scheme: light)">
   <meta name="theme-color" content="#121212" media="(prefers-color-scheme: dark)">
@@ -423,7 +444,7 @@ const LANDING_PAGE_HTML = baseLayout({
   content: `
     <header>
       <h1>🌱 HomeGarden API</h1>
-      <div class="badge" role="status">v2.0.0 • AI-Powered</div>
+      <div class="badge">v2.0.0 • AI-Powered</div>
     </header>
 
     <main id="main">
