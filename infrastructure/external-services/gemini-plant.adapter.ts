@@ -505,7 +505,11 @@ export class GeminiPlantAdapter implements AIIdentificationPort, AIDiagnosisPort
       }
 
       // Fetch image from URL and convert to base64
-      const response = await fetch(image, { redirect: 'error' })
+      // Security: Add timeout to prevent hanging connections (DoS)
+      const response = await fetch(image, {
+        redirect: 'error',
+        signal: AbortSignal.timeout(15000), // 15s timeout
+      })
       if (!response.ok) {
         throw new AppError(`Failed to fetch image from URL: ${response.statusText}`, 400)
       }

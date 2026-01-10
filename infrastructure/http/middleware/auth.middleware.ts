@@ -4,12 +4,17 @@ import { env } from '../../config/env.js'
 import { logger } from '../../config/logger.js'
 import { prisma } from '../../database/prisma.client.js'
 
-// Initialize Supabase client
+// Initialize Supabase client singleton to avoid overhead on every request
+const supabaseClient =
+  env.SUPABASE_URL && env.SUPABASE_PUBLISHABLE_KEY
+    ? createClient(env.SUPABASE_URL, env.SUPABASE_PUBLISHABLE_KEY)
+    : null
+
 const getSupabase = () => {
-  if (!env.SUPABASE_URL || !env.SUPABASE_PUBLISHABLE_KEY) {
+  if (!supabaseClient) {
     throw new Error('Supabase URL or Publishable Key not configured')
   }
-  return createClient(env.SUPABASE_URL, env.SUPABASE_PUBLISHABLE_KEY)
+  return supabaseClient
 }
 
 /**
@@ -90,8 +95,8 @@ export const authMiddleware = createMiddleware(async (c, next) => {
         data: {
           email: user.email,
           // We don't store the actual password since auth is handled by Supabase
-          // We use a dummy placeholder or could make it optional in schema
-          password: 'SUPABASE_AUTH_MANAGED',
+          // Security: Use random UUID to prevent any theoretical well-known password attack
+          password: crypto.randomUUID(),
           firstName,
           lastName,
           avatarUrl: metadata.avatar_url,
