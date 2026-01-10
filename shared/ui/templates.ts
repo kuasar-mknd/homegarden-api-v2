@@ -18,6 +18,11 @@ export const SHARED_STYLES = `
     --radius-lg: 12px;
     --radius-xl: 16px;
 
+    /* Focus System */
+    --focus-ring-color: var(--primary);
+    --focus-ring-width: 2px;
+    --focus-offset: 2px;
+
     accent-color: var(--primary);
   }
   @media (prefers-color-scheme: dark) {
@@ -57,6 +62,23 @@ export const SHARED_STYLES = `
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
   }
+  h1, h2, h3 {
+    text-wrap: balance;
+  }
+  p {
+    text-wrap: pretty;
+  }
+  .sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border-width: 0;
+  }
   /* Scrollbar for Webkit */
   ::-webkit-scrollbar {
     width: 8px;
@@ -87,7 +109,7 @@ export const SHARED_STYLES = `
   }
   .skip-link:focus {
     top: 0;
-    outline: 2px solid var(--primary);
+    outline: var(--focus-ring-width) solid var(--focus-ring-color);
     outline-offset: 4px;
   }
   .container {
@@ -153,6 +175,7 @@ export const SHARED_STYLES = `
     height: 100%;
     box-sizing: border-box;
     position: relative; /* Ensure z-index works on focus */
+    cursor: pointer;
   }
   .card:hover {
     transform: translateY(-2px) scale(1.01);
@@ -163,7 +186,7 @@ export const SHARED_STYLES = `
     transform: scale(0.98);
   }
   .card:focus-visible {
-    outline: 2px solid var(--primary);
+    outline: var(--focus-ring-width) solid var(--focus-ring-color);
     outline-offset: 4px;
     border-color: var(--secondary);
     z-index: 1;
@@ -188,6 +211,8 @@ export const SHARED_STYLES = `
     box-shadow: 0 2px 4px rgba(0,0,0,0.1);
     min-height: 44px; /* Touch target size */
     box-sizing: border-box;
+    cursor: pointer;
+    user-select: none;
   }
   .btn:hover {
     background: var(--secondary);
@@ -196,10 +221,11 @@ export const SHARED_STYLES = `
   .btn:active {
     transform: scale(0.98);
     box-shadow: inset 0 2px 4px rgba(0,0,0,0.1);
+    filter: brightness(0.9);
   }
   .btn:focus-visible {
-    outline: 2px solid var(--primary);
-    outline-offset: 2px;
+    outline: var(--focus-ring-width) solid var(--focus-ring-color);
+    outline-offset: var(--focus-offset);
   }
   .btn-icon {
     width: 1.25em;
@@ -275,8 +301,8 @@ export const SHARED_STYLES = `
     color: var(--secondary);
   }
   footer a:focus-visible {
-    outline: 2px solid var(--primary);
-    outline-offset: 2px;
+    outline: var(--focus-ring-width) solid var(--focus-ring-color);
+    outline-offset: var(--focus-offset);
     border-radius: var(--radius-sm);
   }
   .footer-links {
@@ -339,7 +365,7 @@ export const SHARED_STYLES = `
   @media print {
     body { background: white; color: black; display: block; }
     .container { box-shadow: none; border: none; max-width: 100%; width: 100%; padding: 0; }
-    .skip-link, .status-dot, .external-icon { display: none; }
+    .skip-link, .status-dot, .external-icon, .btn, .footer-links { display: none; }
     .grid { display: block; }
     .card { border: 1px solid #000; margin-bottom: 1rem; page-break-inside: avoid; box-shadow: none; }
     a { text-decoration: underline; color: black; }
@@ -369,10 +395,11 @@ export function baseLayout({ title, description, content }: LayoutProps): string
 
   return `
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" dir="ltr">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="format-detection" content="telephone=no">
   <meta name="description" content="${metaDescription}">
   <meta name="theme-color" content="#2e7d32" media="(prefers-color-scheme: light)">
   <meta name="theme-color" content="#121212" media="(prefers-color-scheme: dark)">
@@ -482,7 +509,7 @@ export function getNotFoundPageHtml(path: string): string {
 
     <main id="main">
       <p>Oops! The page you are looking for does not exist.</p>
-      <code aria-label="Requested URL" class="code-block" title="Requested URL">${safePath}</code>
+      <code aria-label="Requested URL" class="code-block" title="Requested URL" tabindex="0">${safePath}</code>
       <p>Please check the URL or go back to the homepage.</p>
 
       <div class="btn-group">
