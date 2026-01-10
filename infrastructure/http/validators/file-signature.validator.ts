@@ -29,9 +29,13 @@ export function validateImageSignature(buffer: Buffer, mimeType: string): boolea
       return signature.startsWith('52494646') && signature.slice(16, 24) === '57454250'
 
     case 'image/heic': {
-      // Let's check for 'ftyp' at offset 4 // But standard HEIC often has 'ftypheic' or 'ftypmsf1' // Simplest check: bytes 4-8 are 'ftyp' and bytes 8-12 contain 'heic' or 'mif1' etc. // followed by 68 65 69 63 (heic) or similar brands // 66 74 79 70 (ftyp) // Common signatures involve 'ftyp' at index 4 // ... ftyp heic ... // HEIC: ftypheic (usually at offset 4)
+      // Common HEIC brands in ftyp box (bytes 8-12): heic, heix, mif1, msf1
       const ftyp = buffer.subarray(4, 8).toString('utf8')
-      return ftyp === 'ftyp'
+      if (ftyp !== 'ftyp') return false
+
+      const brand = buffer.subarray(8, 12).toString('utf8')
+      const validBrands = ['heic', 'heix', 'mif1', 'msf1', 'hevc']
+      return validBrands.includes(brand)
     }
 
     default:
