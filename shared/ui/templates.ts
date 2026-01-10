@@ -401,10 +401,24 @@ interface LayoutProps {
   content: string
 }
 
+// Simple HTML escape function to prevent XSS
+function escapeHtml(unsafe: string): string {
+  return unsafe
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#039;')
+}
+
 export function baseLayout({ title, description, content }: LayoutProps): string {
-  const metaDescription =
+  const safeTitle = escapeHtml(title)
+  const safeDescription = escapeHtml(
     description ||
-    'Smart Plant Management API with AI capabilities. Identify plants, diagnose diseases, and track your garden.'
+      'Smart Plant Management API with AI capabilities. Identify plants, diagnose diseases, and track your garden.',
+  )
+
+  const metaDescription = safeDescription
   const image = 'https://placehold.co/600x400/2e7d32/ffffff?text=HomeGarden+API'
   const icon =
     'data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🌱</text></svg>'
@@ -421,19 +435,19 @@ export function baseLayout({ title, description, content }: LayoutProps): string
   <meta name="theme-color" content="#121212" media="(prefers-color-scheme: dark)">
 
   <meta property="og:site_name" content="HomeGarden API">
-  <meta property="og:title" content="${title}">
+  <meta property="og:title" content="${safeTitle}">
   <meta property="og:description" content="${metaDescription}">
   <meta property="og:type" content="website">
   <meta property="og:image" content="${image}">
   <meta property="og:image:alt" content="HomeGarden API Banner with green branding">
 
   <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="${title}">
+  <meta name="twitter:title" content="${safeTitle}">
   <meta name="twitter:description" content="${metaDescription}">
   <meta name="twitter:image" content="${image}">
 
   <link rel="canonical" href="/">
-  <title>${title}</title>
+  <title>${safeTitle}</title>
   <link rel="icon" href="${icon}">
   <link rel="apple-touch-icon" href="${icon}">
   <link rel="preconnect" href="https://placehold.co">
@@ -504,16 +518,6 @@ const LANDING_PAGE_HTML = baseLayout({
 
 export function getLandingPageHtml(): string {
   return LANDING_PAGE_HTML
-}
-
-// Simple HTML escape function to prevent XSS
-function escapeHtml(unsafe: string): string {
-  return unsafe
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;')
-    .replace(/'/g, '&#039;')
 }
 
 export function getNotFoundPageHtml(path: string): string {
