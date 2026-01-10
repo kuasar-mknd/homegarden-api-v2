@@ -19,7 +19,8 @@ const GARDEN_SELECT = {
   },
 }
 
-// Optimization: Select only essential fields for list views to reduce payload size
+// Optimization: Select only necessary fields for list views to reduce payload size
+// Excluding heavy text fields like 'careNotes', 'description', etc.
 const PLANT_LIST_SELECT = {
   id: true,
   nickname: true,
@@ -29,16 +30,21 @@ const PLANT_LIST_SELECT = {
   family: true,
   exposure: true,
   watering: true,
+  soilType: true,
+  flowerColor: true,
   height: true,
   plantedDate: true,
   acquiredDate: true,
-  imageUrl: true,
+  bloomingSeason: true,
+  plantingSeason: true,
+  // careNotes: false, // Excluded
+  imageUrl: true, // Needed for thumbnails in list
   thumbnailUrl: true,
+  use: true,
   gardenId: true,
   createdAt: true,
   updatedAt: true,
-  // Excluded heavy/infrequently used fields:
-  // careNotes, use, soilType, flowerColor, bloomingSeason, plantingSeason
+  // garden: true, // Relations are handled separately or excluded in lists
 }
 
 export class PlantPrismaRepository implements PlantRepository {
