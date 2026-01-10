@@ -6,6 +6,7 @@ export class CareTrackerController {
    * Create care schedule
    */
   createSchedule = async (c: Context) => {
+    await c.req.valid('json' as never)
     return c.json(
       {
         success: false,
@@ -36,6 +37,7 @@ export class CareTrackerController {
    * Mark task as complete
    */
   markTaskComplete = async (c: Context) => {
+    await c.req.valid('json' as never)
     return c.json(
       {
         success: false,
