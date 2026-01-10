@@ -10,6 +10,7 @@ export const SHARED_STYLES = `
     --card-border: #eee;
     --card-text: #666;
     --status-text: #888;
+    --error: #d32f2f;
   }
   @media (prefers-color-scheme: dark) {
     :root {
@@ -21,6 +22,7 @@ export const SHARED_STYLES = `
       --card-border: #333;
       --card-text: #b0b0b0;
       --status-text: #aaa;
+      --error: #ef5350;
     }
   }
   ::selection {
@@ -29,6 +31,7 @@ export const SHARED_STYLES = `
   }
   html {
     scroll-behavior: smooth;
+    scroll-padding-top: 2rem;
   }
   body {
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
@@ -73,7 +76,7 @@ export const SHARED_STYLES = `
   }
   .skip-link:focus {
     top: 0;
-    outline: 2px solid var(--secondary);
+    outline: 2px solid var(--primary);
   }
   .container {
     background: var(--card-bg);
@@ -96,10 +99,18 @@ export const SHARED_STYLES = `
     font-weight: 600;
     margin-bottom: 2rem;
   }
+  .badge-error {
+    background: #ffebee;
+    color: #c62828;
+  }
   @media (prefers-color-scheme: dark) {
     .badge {
       background: #1b5e20;
       color: #e8f5e9;
+    }
+    .badge-error {
+      background: #3e2723;
+      color: #ef5350;
     }
   }
   .grid {
@@ -135,11 +146,11 @@ export const SHARED_STYLES = `
     transform: scale(0.98);
   }
   .card:focus-visible {
-    outline: 2px solid var(--secondary);
+    outline: 2px solid var(--primary);
     outline-offset: 4px;
     border-color: var(--secondary);
   }
-  .card h2 { margin: 0 0 0.5rem 0; color: var(--primary); font-size: 1.3rem; }
+  .card h2 { margin: 0 0 0.5rem 0; color: var(--primary); font-size: 1.25rem; }
   .card p { margin: 0; font-size: 0.9rem; color: var(--card-text); }
 
   .btn {
@@ -157,7 +168,7 @@ export const SHARED_STYLES = `
     background: var(--secondary);
   }
   .btn:focus-visible {
-    outline: 2px solid var(--secondary);
+    outline: 2px solid var(--primary);
     outline-offset: 2px;
   }
   .btn-secondary {
@@ -203,6 +214,10 @@ export const SHARED_STYLES = `
   footer a:hover {
     text-decoration: underline;
   }
+  .footer-links {
+    margin-top: 0.5rem;
+    opacity: 0.8;
+  }
   @keyframes pulse {
     0% { opacity: 1; transform: scale(1); }
     50% { opacity: 0.7; transform: scale(0.9); }
@@ -216,6 +231,31 @@ export const SHARED_STYLES = `
     border-radius: 50%;
     margin-right: 6px;
     animation: pulse 2s infinite ease-in-out;
+  }
+  .error-code {
+    font-size: 4rem;
+    font-weight: 800;
+    color: var(--secondary);
+    margin: 0;
+    line-height: 1;
+  }
+  .error-message {
+    font-size: 1.2rem;
+    color: var(--card-text);
+    margin-bottom: 2rem;
+  }
+  .code-block {
+    display: block;
+    background: #f5f5f5;
+    padding: 0.5rem;
+    border-radius: 4px;
+    margin: 1rem 0;
+    word-break: break-all;
+  }
+  @media (prefers-color-scheme: dark) {
+    .code-block {
+      background: #2d2d2d;
+    }
   }
   @media (prefers-reduced-motion: reduce) {
     .card, .skip-link, .btn {
@@ -235,6 +275,7 @@ export const SHARED_STYLES = `
     .grid { display: block; }
     .card { border: 1px solid #000; margin-bottom: 1rem; page-break-inside: avoid; box-shadow: none; }
     a { text-decoration: underline; color: black; }
+    a[href^="http"]:after { content: " (" attr(href) ")"; }
     header h1 { color: black; }
     .badge { border: 1px solid #ccc; background: none; color: black; }
   }
@@ -261,13 +302,15 @@ export function baseLayout({ title, description, content }: LayoutProps): string
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="description" content="${metaDescription}">
-  <meta name="theme-color" content="#2e7d32">
+  <meta name="theme-color" content="#2e7d32" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#121212" media="(prefers-color-scheme: dark)">
 
   <meta property="og:site_name" content="HomeGarden API">
   <meta property="og:title" content="${title}">
   <meta property="og:description" content="${metaDescription}">
   <meta property="og:type" content="website">
   <meta property="og:image" content="${image}">
+  <meta property="og:image:alt" content="HomeGarden API Banner with green branding">
 
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="${title}">
@@ -277,6 +320,7 @@ export function baseLayout({ title, description, content }: LayoutProps): string
   <link rel="canonical" href="/">
   <title>${title}</title>
   <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🌱</text></svg>">
+  <link rel="preconnect" href="https://placehold.co">
   <style>
     ${SHARED_STYLES}
   </style>
@@ -289,7 +333,7 @@ export function baseLayout({ title, description, content }: LayoutProps): string
       <div role="status">
         <span class="status-dot" aria-label="Status: Operational" title="System Operational" role="img"></span> System Operational • ${env.NODE_ENV}
       </div>
-      <div style="margin-top: 0.5rem; opacity: 0.8;">
+      <div class="footer-links">
         <a href="https://github.com/homegarden/api" target="_blank" rel="noopener noreferrer" aria-label="View Source on GitHub (opens in a new tab)">View Source on GitHub${EXTERNAL_LINK_ICON}</a>
       </div>
     </footer>
@@ -360,12 +404,12 @@ export function getNotFoundPageHtml(path: string): string {
     content: `
     <header>
       <h1>🌱 404 Not Found</h1>
-      <div class="badge" style="background: #ffebee; color: #c62828;">Error</div>
+      <div class="badge badge-error" role="status">Error</div>
     </header>
 
     <main id="main">
       <p>Oops! The page you are looking for does not exist.</p>
-      <code aria-label="Requested URL" style="display: block; background: #f5f5f5; padding: 0.5rem; border-radius: 4px; margin: 1rem 0; word-break: break-all;">${safePath}</code>
+      <code aria-label="Requested URL" class="code-block">${safePath}</code>
       <p>Please check the URL or go back to the homepage.</p>
 
       <div class="btn-group">
