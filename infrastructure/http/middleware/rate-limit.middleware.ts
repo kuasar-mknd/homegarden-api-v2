@@ -21,5 +21,3 @@ export const rateLimitMiddleware = rateLimiter({
     return ip
   },
 })
-
-
