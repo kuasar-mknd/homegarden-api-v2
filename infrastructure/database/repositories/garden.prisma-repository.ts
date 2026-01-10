@@ -9,6 +9,20 @@ import type {
 import { logger } from '../../config/logger.js'
 import { prisma } from '../prisma.client.js'
 
+// Optimization: Select only essential fields for list views
+const GARDEN_LIST_SELECT = {
+  id: true,
+  name: true,
+  latitude: true,
+  longitude: true,
+  userId: true,
+  description: true, // Keep description as it's often short
+  size: true,
+  climate: true,
+  createdAt: true,
+  updatedAt: true,
+}
+
 export class GardenPrismaRepository implements GardenRepository {
   async create(data: CreateGardenData): Promise<Garden> {
     const garden = await prisma.garden.create({
@@ -39,6 +53,7 @@ export class GardenPrismaRepository implements GardenRepository {
   async findByUserId(userId: string): Promise<Garden[]> {
     const gardens = await prisma.garden.findMany({
       where: { userId },
+      select: GARDEN_LIST_SELECT,
     })
     return gardens.map((g: any) => this.mapToEntity(g))
   }
@@ -146,7 +161,12 @@ export class GardenPrismaRepository implements GardenRepository {
     if (search) where.name = { contains: search }
 
     const [gardens, total] = await Promise.all([
-      prisma.garden.findMany({ where, skip, take: limit }),
+      prisma.garden.findMany({
+        where,
+        skip,
+        take: limit,
+        select: GARDEN_LIST_SELECT,
+      }),
       prisma.garden.count({ where }),
     ])
 

@@ -19,7 +19,7 @@ const GARDEN_SELECT = {
   },
 }
 
-// Optimization: Exclude heavy text fields for list views
+// Optimization: Select only essential fields for list views to reduce payload size
 const PLANT_LIST_SELECT = {
   id: true,
   nickname: true,
@@ -29,20 +29,16 @@ const PLANT_LIST_SELECT = {
   family: true,
   exposure: true,
   watering: true,
-  soilType: true,
-  flowerColor: true,
   height: true,
   plantedDate: true,
   acquiredDate: true,
-  bloomingSeason: true,
-  plantingSeason: true,
-  // careNotes: false, // EXCLUDED
   imageUrl: true,
   thumbnailUrl: true,
-  use: true,
   gardenId: true,
   createdAt: true,
   updatedAt: true,
+  // Excluded heavy/infrequently used fields:
+  // careNotes, use, soilType, flowerColor, bloomingSeason, plantingSeason
 }
 
 export class PlantPrismaRepository implements PlantRepository {
@@ -92,7 +88,7 @@ export class PlantPrismaRepository implements PlantRepository {
       orderBy: { createdAt: 'desc' },
       select: PLANT_LIST_SELECT,
     })
-    return plants.map(this.mapToEntity)
+    return plants.map((p) => this.mapToEntity(p))
   }
 
   async findByUserId(userId: string): Promise<Plant[]> {
@@ -103,7 +99,7 @@ export class PlantPrismaRepository implements PlantRepository {
       orderBy: { createdAt: 'desc' },
       select: PLANT_LIST_SELECT,
     })
-    return plants.map(this.mapToEntity)
+    return plants.map((p) => this.mapToEntity(p))
   }
 
   async update(id: string, data: UpdatePlantData): Promise<Plant> {
@@ -151,7 +147,7 @@ export class PlantPrismaRepository implements PlantRepository {
     ])
 
     return {
-      plants: plants.map(this.mapToEntity),
+      plants: plants.map((p) => this.mapToEntity(p)),
       total,
     }
   }
