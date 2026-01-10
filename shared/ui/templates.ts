@@ -66,7 +66,7 @@ export const SHARED_STYLES = `
     color: var(--text);
     line-height: 1.6;
     margin: 0;
-    padding: 0;
+    padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
     display: flex;
     justify-content: center;
     align-items: center;
@@ -200,6 +200,19 @@ export const SHARED_STYLES = `
   }
   .card:hover h2 { color: var(--secondary); }
   .card p { margin: 0; font-size: 0.9rem; color: var(--card-text); }
+
+  .card-arrow {
+    display: inline-block;
+    opacity: 0;
+    transform: translateX(-4px);
+    transition: all 0.2s ease-out;
+    margin-inline-start: 0.5rem;
+    color: var(--secondary);
+  }
+  .card:hover .card-arrow, .card:focus-visible .card-arrow {
+    opacity: 1;
+    transform: translateX(0);
+  }
 
   .btn {
     display: inline-flex;
@@ -368,10 +381,14 @@ export const SHARED_STYLES = `
     }
   }
   @media (prefers-reduced-motion: reduce) {
-    .card, .skip-link, .btn, .card h2, footer a {
+    .card, .skip-link, .btn, .card h2, footer a, .card-arrow {
       transition: none;
     }
     .card:hover {
+      transform: none;
+    }
+    .card-arrow {
+      opacity: 1;
       transform: none;
     }
     .status-dot {
@@ -411,7 +428,7 @@ export function baseLayout({ title, description, content }: LayoutProps): string
 
   return `
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" dir="ltr">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
@@ -447,7 +464,7 @@ export function baseLayout({ title, description, content }: LayoutProps): string
     ${content}
     <footer class="status" role="contentinfo">
       <div role="status">
-        <span class="status-dot" aria-label="Status: Operational" title="System Operational" role="img"></span> System Operational • ${env.NODE_ENV}
+        <span class="status-dot" aria-hidden="true" title="System Operational"></span> System Operational • ${env.NODE_ENV}
       </div>
       <div class="footer-links">
         <a href="https://github.com/homegarden/api" target="_blank" rel="noopener noreferrer" aria-label="View Source on GitHub (opens in a new tab)">View Source on GitHub${EXTERNAL_LINK_ICON}</a>
@@ -464,36 +481,36 @@ export function baseLayout({ title, description, content }: LayoutProps): string
 const LANDING_PAGE_HTML = baseLayout({
   title: 'HomeGarden API v2',
   content: `
-    <header>
+    <header role="banner">
       <h1>🌱 HomeGarden API</h1>
       <div class="badge">v2.0.0 • AI-Powered</div>
     </header>
 
-    <main id="main">
+    <main id="main" tabindex="-1">
       <p>Welcome to the HomeGarden API. Connect your applications to smart plant management services.</p>
 
       <ul class="grid" role="list">
         <li>
           <a href="/ui" class="card" aria-describedby="desc-ui">
-            <h2>📚 Documentation</h2>
+            <h2>📚 Documentation<span class="card-arrow" aria-hidden="true">→</span></h2>
             <p id="desc-ui">Interactive Swagger UI for API exploration.</p>
           </a>
         </li>
         <li>
           <a href="/doc" class="card" aria-describedby="desc-doc">
-            <h2>🔍 OpenAPI Spec</h2>
+            <h2>🔍 OpenAPI Spec<span class="card-arrow" aria-hidden="true">→</span></h2>
             <p id="desc-doc">Raw JSON specification for integration.</p>
           </a>
         </li>
         <li>
           <a href="/ui#/PlantID" class="card" aria-describedby="desc-plantid">
-            <h2>🌿 Plant ID</h2>
+            <h2>🌿 Plant ID<span class="card-arrow" aria-hidden="true">→</span></h2>
             <p id="desc-plantid">Identify species using AI vision (Docs).</p>
           </a>
         </li>
         <li>
           <a href="/ui#/DrPlant" class="card" aria-describedby="desc-drplant">
-            <h2>🩺 Dr. Plant</h2>
+            <h2>🩺 Dr. Plant<span class="card-arrow" aria-hidden="true">→</span></h2>
             <p id="desc-drplant">Diagnose diseases and pests (Docs).</p>
           </a>
         </li>
@@ -519,15 +536,15 @@ function escapeHtml(unsafe: string): string {
 export function getNotFoundPageHtml(path: string): string {
   const safePath = escapeHtml(path)
   return baseLayout({
-    title: 'Page Not Found - HomeGarden API',
+    title: '404: Page Not Found - HomeGarden API',
     description: 'The requested page could not be found.',
     content: `
-    <header>
+    <header role="banner">
       <h1>🌱 404 Not Found</h1>
       <div class="badge badge-error" role="status">Error</div>
     </header>
 
-    <main id="main">
+    <main id="main" tabindex="-1">
       <p>Oops! The page you are looking for does not exist.</p>
       <code aria-label="Requested URL" class="code-block" title="Requested URL">${safePath}</code>
       <p>Please check the URL or go back to the homepage.</p>

@@ -52,7 +52,7 @@ describe('UI Templates', () => {
     it('should return valid HTML string', () => {
       const html = getLandingPageHtml()
       expect(html).toContain('<!DOCTYPE html>')
-      expect(html).toContain('<html lang="en">')
+      expect(html).toContain('<html lang="en" dir="ltr">')
       expect(html).toContain('HomeGarden API')
     })
 
@@ -61,7 +61,15 @@ describe('UI Templates', () => {
       expect(html).toContain('role="list"')
       expect(html).toContain('role="contentinfo"')
       expect(html).toContain('role="status"')
-      expect(html).toContain('aria-label="Status: Operational"')
+      expect(html).toContain('dir="ltr"')
+      expect(html).toContain('role="banner"')
+      expect(html).toContain('tabindex="-1"')
+    })
+
+    it('should include visual affordances', () => {
+      const html = getLandingPageHtml()
+      expect(html).toContain('class="card-arrow"')
+      expect(html).toContain('aria-hidden="true">→</span>')
     })
 
     it('should include dark mode theme-color meta tag', () => {
@@ -100,6 +108,11 @@ describe('UI Templates', () => {
     it('should include icons in buttons', () => {
       const html = getNotFoundPageHtml('/foo')
       expect(html).toContain('<svg class="btn-icon"')
+    })
+
+    it('should use clear 404 title', () => {
+      const html = getNotFoundPageHtml('/foo')
+      expect(html).toContain('<title>404: Page Not Found')
     })
   })
 })
