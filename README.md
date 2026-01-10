@@ -66,6 +66,8 @@ HomeGarden is a robust, Clean Architecture-based REST API for managing gardens a
 
 ## 🧪 Testing
 
+For detailed testing instructions, see [docs/TESTING.md](docs/TESTING.md).
+
 Run unit and integration tests:
 ```bash
 pnpm test
@@ -84,7 +86,7 @@ The API is documented using Swagger. Once the server is running, visit:
 
 ### Example: Check API Status
 ```bash
-curl http://localhost:3000/health
+curl http://localhost:3000/api/v2
 ```
 
 ### Example: Identify a Plant (requires Auth)
@@ -105,3 +107,4 @@ curl -X POST http://localhost:3000/api/v2/plant-id/identify \
     *   Check logs: `docker logs homegarden-db`
 *   **AI Errors**: Verify `GOOGLE_AI_API_KEY` is valid and has access to the specified models.
 *   **Module not found errors**: If you see errors about `@prisma/client`, run `pnpm db:generate` manually.
+*   **Port in Use**: If port 3000 is occupied, change `PORT` in `.env`.

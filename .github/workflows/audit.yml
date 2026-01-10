@@ -6,7 +6,7 @@ on:
   pull_request:
     branches: [ main ]
   schedule:
-    - cron: '0 0 * * 0' # Weekly on Sundays
+    - cron: '0 0 * * 0' # Weekly on Sunday
 
 jobs:
   audit:
@@ -16,7 +16,9 @@ jobs:
       - uses: pnpm/action-setup@v4
         with:
           version: 9
-      - uses: actions/setup-node@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
         with:
           node-version: 20
           cache: 'pnpm'
@@ -24,5 +26,5 @@ jobs:
       - name: Install dependencies
         run: pnpm install
 
-      - name: Run audit
+      - name: Run Security Audit
         run: pnpm audit --prod
