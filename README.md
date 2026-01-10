@@ -66,6 +66,8 @@ HomeGarden is a robust, Clean Architecture-based REST API for managing gardens a
 
 ## 🧪 Testing
 
+For detailed testing instructions, see [docs/TESTING.md](docs/TESTING.md).
+
 Run unit and integration tests:
 ```bash
 pnpm test
@@ -84,7 +86,7 @@ The API is documented using Swagger. Once the server is running, visit:
 
 ### Example: Check API Status
 ```bash
-curl http://localhost:3000/health
+curl http://localhost:3000/api/v2
 ```
 
 ### Example: Identify a Plant (requires Auth)
@@ -100,3 +102,4 @@ curl -X POST http://localhost:3000/api/v2/plant-id/identify \
 *   **`Supabase URL or Publishable Key not configured`**: Ensure `SUPABASE_URL` and `SUPABASE_PUBLISHABLE_KEY` are set in `.env`.
 *   **Database Connection Errors**: Check if your Postgres container is running and accessible. Verify `DATABASE_URL` matches your container settings.
 *   **AI Errors**: Verify `GOOGLE_AI_API_KEY` is valid and has access to the specified models.
+*   **Port in Use**: If port 3000 is occupied, change `PORT` in `.env`.
