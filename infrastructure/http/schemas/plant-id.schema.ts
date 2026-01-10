@@ -27,7 +27,7 @@ export const IdentifySpeciesInputSchema = z
       .optional()
       .openapi({ description: 'Public URL of the image' }),
     mimeType: z.string().trim().max(50).optional(),
-    organs: z.array(PlantOrganSchema).optional(),
+    organs: z.array(PlantOrganSchema).max(5).optional(),
     maxSuggestions: z.number().min(1).max(10).optional().default(5),
     location: LocationSchema.optional(),
   })

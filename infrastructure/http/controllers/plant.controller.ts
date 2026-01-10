@@ -6,6 +6,7 @@ export class PlantController {
    * Create a new plant
    */
   createPlant = async (c: Context) => {
+    await c.req.valid('json' as never)
     return c.json(
       {
         success: false,
@@ -51,6 +52,7 @@ export class PlantController {
    * Update plant
    */
   updatePlant = async (c: Context) => {
+    await c.req.valid('json' as never)
     return c.json(
       {
         success: false,

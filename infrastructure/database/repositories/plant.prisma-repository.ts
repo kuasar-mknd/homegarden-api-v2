@@ -19,6 +19,32 @@ const GARDEN_SELECT = {
   },
 }
 
+// Optimization: Exclude heavy text fields (careNotes) from list views
+const PLANT_LIST_SELECT = {
+  id: true,
+  gardenId: true,
+  nickname: true,
+  speciesId: true,
+  commonName: true,
+  scientificName: true,
+  family: true,
+  exposure: true,
+  watering: true,
+  soilType: true,
+  flowerColor: true,
+  height: true,
+  plantedDate: true,
+  acquiredDate: true,
+  bloomingSeason: true,
+  plantingSeason: true,
+  imageUrl: true,
+  thumbnailUrl: true,
+  use: true,
+  createdAt: true,
+  updatedAt: true,
+  // careNotes: false, // Excluded
+}
+
 export class PlantPrismaRepository implements PlantRepository {
   async create(data: CreatePlantData): Promise<Plant> {
     const plant = await prisma.plant.create({
@@ -64,8 +90,9 @@ export class PlantPrismaRepository implements PlantRepository {
     const plants = await prisma.plant.findMany({
       where: { gardenId },
       orderBy: { createdAt: 'desc' },
+      select: PLANT_LIST_SELECT,
     })
-    return plants.map(this.mapToEntity)
+    return plants.map((p) => this.mapToEntity(p))
   }
 
   async findByUserId(userId: string): Promise<Plant[]> {
@@ -74,8 +101,9 @@ export class PlantPrismaRepository implements PlantRepository {
         garden: { userId },
       },
       orderBy: { createdAt: 'desc' },
+      select: PLANT_LIST_SELECT,
     })
-    return plants.map(this.mapToEntity)
+    return plants.map((p) => this.mapToEntity(p))
   }
 
   async update(id: string, data: UpdatePlantData): Promise<Plant> {
@@ -117,12 +145,13 @@ export class PlantPrismaRepository implements PlantRepository {
         skip,
         take: limit,
         orderBy: { createdAt: 'desc' },
+        select: PLANT_LIST_SELECT,
       }),
       prisma.plant.count({ where }),
     ])
 
     return {
-      plants: plants.map(this.mapToEntity),
+      plants: plants.map((p) => this.mapToEntity(p)),
       total,
     }
   }

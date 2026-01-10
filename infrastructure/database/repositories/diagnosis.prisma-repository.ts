@@ -11,6 +11,29 @@ import type {
 } from '../../../domain/repositories/diagnosis.repository.js'
 import { prisma } from '../prisma.client.js'
 
+// Optimization: Select only essential fields for list views to reduce payload size
+// Excluding heavy text fields (organicTreatment, chemicalTreatment) and JSON (rawResponse)
+const DIAGNOSIS_LIST_SELECT = {
+  id: true,
+  imageUrl: true,
+  description: true,
+  status: true,
+  confidence: true,
+  conditionName: true,
+  conditionType: true,
+  severity: true,
+  createdAt: true,
+  updatedAt: true,
+  plantId: true,
+  userId: true,
+  // Arrays are relatively small, but could be excluded if lists are very heavy.
+  // Keeping them for now as they might be used in "preview" cards.
+  affectedParts: true,
+  causes: true,
+  symptoms: true,
+  // Treatment details are excluded
+}
+
 export class DiagnosisPrismaRepository implements DiagnosisRepository {
   async create(data: CreateDiagnosisData): Promise<Diagnosis> {
     const diagnosis = await prisma.diagnosis.create({
@@ -47,12 +70,13 @@ export class DiagnosisPrismaRepository implements DiagnosisRepository {
         skip,
         take: limit,
         orderBy: { createdAt: 'desc' },
+        select: DIAGNOSIS_LIST_SELECT,
       }),
       prisma.diagnosis.count({ where }),
     ])
 
     return {
-      diagnoses: diagnoses.map(this.mapToEntity),
+      diagnoses: diagnoses.map((d) => this.mapToEntity(d)),
       total,
     }
   }
@@ -61,8 +85,9 @@ export class DiagnosisPrismaRepository implements DiagnosisRepository {
     const diagnoses = await prisma.diagnosis.findMany({
       where: { plantId },
       orderBy: { createdAt: 'desc' },
+      select: DIAGNOSIS_LIST_SELECT,
     })
-    return diagnoses.map(this.mapToEntity)
+    return diagnoses.map((d) => this.mapToEntity(d))
   }
 
   async update(id: string, data: UpdateDiagnosisData): Promise<Diagnosis> {
@@ -83,6 +108,7 @@ export class DiagnosisPrismaRepository implements DiagnosisRepository {
     const diagnoses = await prisma.diagnosis.findMany({
       where: { status: 'PENDING' },
       orderBy: { createdAt: 'asc' }, // Process oldest first
+      // We need full details for processing, so NO select optimization here
     })
     return diagnoses.map(this.mapToEntity)
   }

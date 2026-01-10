@@ -29,8 +29,8 @@ The HomeGarden API has **98.21% test coverage** with **285 passing tests** acros
 **Run:**
 
 ```bash
-npm test tests/domain
-npm test tests/use-cases
+pnpm test tests/domain
+pnpm test tests/use-cases
 ```
 
 ### 2. Integration Tests
@@ -52,9 +52,9 @@ npm test tests/use-cases
 **Run:**
 
 ```bash
-npm test tests/integration
-npm test tests/adapters
-npm test tests/controllers
+pnpm test tests/integration
+pnpm test tests/adapters
+pnpm test tests/controllers
 ```
 
 ### 3. End-to-End (E2E) Tests
@@ -77,7 +77,7 @@ npm test tests/controllers
 **Run:**
 
 ```bash
-npm run test:e2e
+pnpm run test:e2e
 ```
 
 ---
@@ -87,14 +87,14 @@ npm run test:e2e
 ### All Tests
 
 ```bash
-npm test                    # Run all tests in watch mode
-npm test -- --run           # Run once without watch
+pnpm test                    # Run all tests in watch mode
+pnpm test -- --run           # Run once without watch
 ```
 
 ### With Coverage
 
 ```bash
-npm run test:coverage       # Generate full coverage report
+pnpm run test:coverage       # Generate full coverage report
 ```
 
 Output:
@@ -106,21 +106,21 @@ Output:
 ### E2E Tests Only
 
 ```bash
-npm run test:e2e
+pnpm run test:e2e
 ```
 
 ### Specific Test File
 
 ```bash
-npm test tests/domain/user.entity.test.ts
-npm test tests/e2e/auth.e2e.test.ts
+pnpm test tests/domain/user.entity.test.ts
+pnpm test tests/e2e/auth.e2e.test.ts
 ```
 
 ### Filter by Test Name
 
 ```bash
-npm test -- -t "should create user"
-npm test -- --grep "authentication"
+pnpm test -- -t "should create user"
+pnpm test -- --grep "authentication"
 ```
 
 ---
@@ -437,10 +437,10 @@ Tests run automatically on every push via GitHub Actions:
 ```yaml
 # .github/workflows/ci.yml
 - name: Run tests
-  run: npm test -- --run
+  run: pnpm test -- --run
   
 - name: Run coverage
-  run: npm run test:coverage
+  run: pnpm run test:coverage
 ```
 
 ---
@@ -450,7 +450,7 @@ Tests run automatically on every push via GitHub Actions:
 **Run single test in watch mode:**
 
 ```bash
-npm test tests/domain/user.entity.test.ts
+pnpm test tests/domain/user.entity.test.ts
 ```
 
 **Debug with VSCode:**
@@ -461,7 +461,7 @@ Add to `.vscode/launch.json`:
   "type": "node",
   "request": "launch",
   "name": "Debug Vitest",
-  "runtimeExecutable": "npm",
+  "runtimeExecutable": "pnpm",
   "runtimeArgs": ["run", "test"],
   "console": "integratedTerminal"
 }
@@ -470,7 +470,7 @@ Add to `.vscode/launch.json`:
 **View detailed errors:**
 
 ```bash
-npm test -- --reporter=verbose
+pnpm test -- --reporter=verbose
 ```
 
 ---

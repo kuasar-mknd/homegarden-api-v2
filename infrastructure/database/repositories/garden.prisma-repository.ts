@@ -9,6 +9,20 @@ import type {
 import { logger } from '../../config/logger.js'
 import { prisma } from '../prisma.client.js'
 
+// Optimization: Exclude description (potential large text) from list views
+const GARDEN_LIST_SELECT = {
+  id: true,
+  name: true,
+  latitude: true,
+  longitude: true,
+  size: true,
+  climate: true,
+  userId: true,
+  createdAt: true,
+  updatedAt: true,
+  // description: false, // Excluded
+}
+
 export class GardenPrismaRepository implements GardenRepository {
   async create(data: CreateGardenData): Promise<Garden> {
     const garden = await prisma.garden.create({
@@ -39,6 +53,7 @@ export class GardenPrismaRepository implements GardenRepository {
   async findByUserId(userId: string): Promise<Garden[]> {
     const gardens = await prisma.garden.findMany({
       where: { userId },
+      select: GARDEN_LIST_SELECT,
     })
     return gardens.map((g: any) => this.mapToEntity(g))
   }
@@ -63,6 +78,7 @@ export class GardenPrismaRepository implements GardenRepository {
   async findByUserAndName(userId: string, name: string): Promise<Garden | null> {
     const garden = await prisma.garden.findFirst({
       where: { userId, name },
+      select: GARDEN_LIST_SELECT, // Likely checking existence or quick lookup
     })
     return garden ? this.mapToEntity(garden) : null
   }
@@ -146,7 +162,12 @@ export class GardenPrismaRepository implements GardenRepository {
     if (search) where.name = { contains: search }
 
     const [gardens, total] = await Promise.all([
-      prisma.garden.findMany({ where, skip, take: limit }),
+      prisma.garden.findMany({
+        where,
+        skip,
+        take: limit,
+        select: GARDEN_LIST_SELECT,
+      }),
       prisma.garden.count({ where }),
     ])
 

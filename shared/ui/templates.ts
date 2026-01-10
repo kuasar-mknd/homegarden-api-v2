@@ -18,6 +18,13 @@ export const SHARED_STYLES = `
     --radius-lg: 12px;
     --radius-xl: 16px;
 
+    /* Shadow System */
+    --shadow-sm: 0 2px 4px rgba(0,0,0,0.1);
+    --shadow-md: 0 4px 8px rgba(0,0,0,0.15);
+
+    /* Text on Primary Background */
+    --on-primary: #ffffff;
+
     accent-color: var(--primary);
   }
   @media (prefers-color-scheme: dark) {
@@ -31,16 +38,26 @@ export const SHARED_STYLES = `
       --card-text: #b0b0b0;
       --status-text: #aaa;
       --error: #ef5350;
+
+      --on-primary: #121212;
     }
   }
   ::selection {
     background: var(--primary);
-    color: white;
+    color: var(--on-primary);
+  }
+  h1, h2, h3 {
+    text-wrap: balance;
   }
   html {
-    scroll-behavior: smooth;
     scroll-padding-top: 2rem;
     scrollbar-color: var(--card-border) var(--bg);
+    scrollbar-gutter: stable;
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    html {
+      scroll-behavior: smooth;
+    }
   }
   body {
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
@@ -54,6 +71,7 @@ export const SHARED_STYLES = `
     justify-content: center;
     align-items: center;
     min-height: 100vh;
+    text-rendering: optimizeLegibility;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
   }
@@ -77,7 +95,7 @@ export const SHARED_STYLES = `
     left: 50%;
     transform: translateX(-50%);
     background: var(--primary);
-    color: #fff;
+    color: var(--on-primary);
     padding: 0.5rem 1rem;
     border-radius: 0 0 var(--radius-md) var(--radius-md);
     z-index: 100;
@@ -88,7 +106,7 @@ export const SHARED_STYLES = `
   .skip-link:focus {
     top: 0;
     outline: 2px solid var(--primary);
-    outline-offset: 4px;
+    outline-offset: 2px;
   }
   .container {
     background: var(--card-bg);
@@ -100,7 +118,11 @@ export const SHARED_STYLES = `
     width: 90%;
     text-align: center;
   }
-  header h1 { color: var(--primary); margin-bottom: 0.5rem; }
+  header h1 {
+    color: var(--primary);
+    margin-block-end: 0.5rem;
+    text-wrap: balance;
+  }
   .badge {
     display: inline-block;
     background: #e8f5e9;
@@ -109,7 +131,7 @@ export const SHARED_STYLES = `
     border-radius: var(--radius-lg);
     font-size: 0.85rem;
     font-weight: 600;
-    margin-bottom: 2rem;
+    margin-block-end: 2rem;
     cursor: default;
   }
   .badge-error {
@@ -130,7 +152,7 @@ export const SHARED_STYLES = `
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 1.5rem;
-    margin: 2rem 0;
+    margin-block: 2rem;
     list-style: none;
     padding: 0;
   }
@@ -164,11 +186,18 @@ export const SHARED_STYLES = `
   }
   .card:focus-visible {
     outline: 2px solid var(--primary);
-    outline-offset: 4px;
+    outline-offset: 2px;
     border-color: var(--secondary);
     z-index: 1;
   }
-  .card h2 { margin: 0 0 0.5rem 0; color: var(--primary); font-size: 1.25rem; transition: color 0.2s; }
+  .card h2 {
+    margin: 0;
+    margin-block-end: 0.5rem;
+    color: var(--primary);
+    font-size: 1.25rem;
+    transition: color 0.2s;
+    text-wrap: balance;
+  }
   .card:hover h2 { color: var(--secondary); }
   .card p { margin: 0; font-size: 0.9rem; color: var(--card-text); }
 
@@ -178,20 +207,20 @@ export const SHARED_STYLES = `
     justify-content: center;
     gap: 0.5rem;
     background: var(--primary);
-    color: white;
+    color: var(--on-primary);
     padding: 0.75rem 1.5rem;
     border-radius: var(--radius-md);
     text-decoration: none;
     font-weight: 600;
-    margin-top: 1rem;
+    margin-block-start: 1rem;
     transition: background 0.2s, transform 0.1s, box-shadow 0.2s;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    box-shadow: var(--shadow-sm);
     min-height: 44px; /* Touch target size */
     box-sizing: border-box;
   }
   .btn:hover {
     background: var(--secondary);
-    box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+    box-shadow: var(--shadow-md);
   }
   .btn:active {
     transform: scale(0.98);
@@ -229,15 +258,20 @@ export const SHARED_STYLES = `
   }
   .btn-group .btn {
     margin-top: 0;
+    margin-block-start: 0;
   }
 
   .external-icon {
     display: inline-block;
     vertical-align: middle;
-    margin-left: 4px;
-    margin-bottom: 2px;
+    margin-inline-start: 4px;
+    margin-block-end: 2px;
     width: 0.9em;
     height: 0.9em;
+    transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+  a:hover .external-icon {
+    transform: translate(2px, -2px);
   }
 
   /* Support for commonly used documentation elements */
@@ -250,16 +284,16 @@ export const SHARED_STYLES = `
     font-family: monospace;
   }
   blockquote {
-    border-left: 4px solid var(--primary);
+    border-inline-start: 4px solid var(--primary);
     margin: 1rem 0;
-    padding-left: 1rem;
+    padding-inline-start: 1rem;
     color: var(--card-text);
     font-style: italic;
   }
 
   footer.status {
-    margin-top: 2rem;
-    padding-top: 2rem;
+    margin-block-start: 2rem;
+    padding-block-start: 2rem;
     border-top: 1px solid var(--card-border);
     font-size: 0.85rem;
     color: var(--status-text);
@@ -268,16 +302,24 @@ export const SHARED_STYLES = `
     color: var(--primary);
     text-decoration: none;
     text-underline-offset: 4px;
-    transition: color 0.2s, text-decoration-color 0.2s;
+    text-decoration-skip-ink: auto;
+    transition: color 0.2s, text-decoration-color 0.2s, opacity 0.2s;
+    padding: 0.5rem; /* Increase touch target */
+    margin: -0.5rem;
+    border-radius: var(--radius-sm);
+    display: inline-block;
   }
   footer a:hover {
     text-decoration: underline;
     color: var(--secondary);
   }
+  footer a:active {
+    opacity: 0.7;
+  }
   footer a:focus-visible {
     outline: 2px solid var(--primary);
     outline-offset: 2px;
-    border-radius: var(--radius-sm);
+    background: rgba(0,0,0,0.05);
   }
   .footer-links {
     margin-top: 0.5rem;
@@ -294,7 +336,7 @@ export const SHARED_STYLES = `
     height: 8px;
     background-color: var(--secondary);
     border-radius: 50%;
-    margin-right: 6px;
+    margin-inline-end: 6px;
     animation: pulse 2s infinite ease-in-out;
   }
   .error-code {
@@ -307,7 +349,7 @@ export const SHARED_STYLES = `
   .error-message {
     font-size: 1.2rem;
     color: var(--card-text);
-    margin-bottom: 2rem;
+    margin-block-end: 2rem;
   }
   .code-block {
     display: block;
@@ -349,9 +391,9 @@ export const SHARED_STYLES = `
   }
 `
 
-const EXTERNAL_LINK_ICON = `<svg class="external-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>`
-const HOME_ICON = `<svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>`
-const DOC_ICON = `<svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>`
+const EXTERNAL_LINK_ICON = `<svg class="external-icon" focusable="false" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>`
+const HOME_ICON = `<svg class="btn-icon" focusable="false" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>`
+const DOC_ICON = `<svg class="btn-icon" focusable="false" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>`
 
 interface LayoutProps {
   title: string
@@ -372,7 +414,8 @@ export function baseLayout({ title, description, content }: LayoutProps): string
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="format-detection" content="telephone=no">
   <meta name="description" content="${metaDescription}">
   <meta name="theme-color" content="#2e7d32" media="(prefers-color-scheme: light)">
   <meta name="theme-color" content="#121212" media="(prefers-color-scheme: dark)">
@@ -416,13 +459,14 @@ export function baseLayout({ title, description, content }: LayoutProps): string
   `
 }
 
-export function getLandingPageHtml(): string {
-  return baseLayout({
-    title: 'HomeGarden API v2',
-    content: `
+// Memoize the landing page HTML to avoid string concatenation on every request
+// Optimization: "Static Response Caching"
+const LANDING_PAGE_HTML = baseLayout({
+  title: 'HomeGarden API v2',
+  content: `
     <header>
       <h1>🌱 HomeGarden API</h1>
-      <div class="badge" role="status">v2.0.0 • AI-Powered</div>
+      <div class="badge">v2.0.0 • AI-Powered</div>
     </header>
 
     <main id="main">
@@ -456,7 +500,10 @@ export function getLandingPageHtml(): string {
       </ul>
     </main>
     `,
-  })
+})
+
+export function getLandingPageHtml(): string {
+  return LANDING_PAGE_HTML
 }
 
 // Simple HTML escape function to prevent XSS
