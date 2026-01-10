@@ -1,4 +1,3 @@
-
 import type { MiddlewareHandler } from 'hono'
 import { rateLimiter } from 'hono-rate-limiter'
 
