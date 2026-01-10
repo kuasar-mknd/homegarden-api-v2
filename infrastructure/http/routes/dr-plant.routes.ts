@@ -1,7 +1,7 @@
 import { createRoute, OpenAPIHono } from '@hono/zod-openapi'
 import { bodyLimit } from 'hono/body-limit'
 import type { DrPlantController } from '../controllers/dr-plant.controller.js'
-import { aiRateLimitMiddleware } from '../middleware/rate-limit.middleware.js'
+import { aiRateLimitMiddleware } from '../middleware/ai-rate-limit.middleware.js'
 import { DiagnosePlantResponseSchema, ErrorSchema } from '../schemas/dr-plant.schema.js'
 
 export const createDrPlantRoutes = (controller: DrPlantController) => {

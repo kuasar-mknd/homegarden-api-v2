@@ -25,5 +25,4 @@ export const authRateLimitMiddleware: MiddlewareHandler = rateLimiter({
     message: 'Too many login attempts, please try again later.',
   },
   standardHeaders: true,
-  legacyHeaders: false,
 })

@@ -7,7 +7,7 @@
 import { createRoute, OpenAPIHono } from '@hono/zod-openapi'
 import { bodyLimit } from 'hono/body-limit'
 import type { PlantIdController } from '../controllers/plant-id.controller.js'
-import { aiRateLimitMiddleware } from '../middleware/rate-limit.middleware.js'
+import { aiRateLimitMiddleware } from '../middleware/ai-rate-limit.middleware.js'
 import {
   ErrorSchema,
   IdentifySpeciesInputSchema,

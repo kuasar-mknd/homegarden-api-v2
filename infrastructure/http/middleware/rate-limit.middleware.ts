@@ -22,26 +22,4 @@ export const rateLimitMiddleware = rateLimiter({
   },
 })
 
-/**
- * AI Rate Limiter Middleware
- *
- * Stricter limits for expensive AI endpoints (Gemini).
- */
-export const aiRateLimitMiddleware = rateLimiter({
-  windowMs: 60 * 1000, // 1 minute
-  limit: 10, // 10 requests per minute
-  standardHeaders: 'draft-6',
-  keyGenerator: (c) => {
-    const ip =
-      c.req.header('cf-connecting-ip') ||
-      c.req.header('x-real-ip') ||
-      c.req.header('x-forwarded-for')?.split(',')[0]?.trim() ||
-      'unknown'
-    return ip
-  },
-  message: {
-    success: false,
-    error: 'TOO_MANY_REQUESTS',
-    message: 'AI request limit exceeded. Please try again later.',
-  },
-})
+

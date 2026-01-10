@@ -25,5 +25,4 @@ export const aiRateLimitMiddleware: MiddlewareHandler = rateLimiter({
     message: 'Too many AI requests, please try again later.',
   },
   standardHeaders: true,
-  legacyHeaders: false,
 })
