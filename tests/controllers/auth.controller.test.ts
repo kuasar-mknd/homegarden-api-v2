@@ -5,6 +5,9 @@ describe('AuthController', () => {
   const controller = new AuthController()
   const mockContext = {
     json: vi.fn().mockImplementation((data, status) => ({ data, status })),
+    req: {
+      valid: vi.fn().mockResolvedValue({}),
+    },
   }
 
   it('register should return 501', async () => {

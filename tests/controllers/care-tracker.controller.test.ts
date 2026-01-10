@@ -5,6 +5,9 @@ describe('CareTrackerController', () => {
   const controller = new CareTrackerController()
   const mockContext = {
     json: vi.fn().mockImplementation((data, status) => ({ data, status })),
+    req: {
+      valid: vi.fn().mockResolvedValue({}),
+    },
   }
 
   it('createSchedule should return 501', async () => {
