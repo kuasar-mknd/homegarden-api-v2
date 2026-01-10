@@ -4,15 +4,24 @@
 
 - **Colors:** Uses CSS variables (`--primary`, `--secondary`, `--bg`, `--text`, `--card-bg`) for easy theming and dark mode support.
 - **Radius System:** Uses `--radius-sm` (4px), `--radius-md` (8px), `--radius-lg` (12px), and `--radius-xl` (16px) for consistent corner rounding.
-- **Typography:** Uses system fonts stack for performance and native feel.
-- **Focus States:** `:focus-visible` should mimic `:hover` styles but with an outline for keyboard accessibility.
-- **Responsiveness:** Mobile-first approach where possible, or simple media queries for grid layouts.
-- **Selection:** `::selection` uses brand secondary color and white text for better visibility and branding.
-- **Skip Links:** A "Skip to main content" link is implemented for keyboard navigation, hidden until focused.
-- **Print Styles:** Print media query removes navigation and unnecessary decorations to provide a clean document view.
-- **List Semantics:** Grid layouts of items use `ul` and `li` with `role="list"` to provide structure for screen readers.
-- **Motion:** `prefers-reduced-motion` disables transitions.
-- **Meta:** `theme-color` matches the primary brand color. `og:image` is included for social sharing.
+- **Shadow System:** Uses `--shadow-sm` and `--shadow-md` to standardize depth and elevation.
+- **Typography:**
+    - Uses system fonts stack.
+    - Headings use `text-wrap: balance` for better readability.
+    - Links use `text-decoration-skip-ink: auto` and `text-underline-offset: 4px`.
+- **Contrast & Visibility:**
+    - `--on-primary` ensures text is readable on primary colored backgrounds (white in light mode, dark in dark mode).
+    - `::selection` uses brand colors with high contrast text.
+- **Focus States:** `:focus-visible` uses a consistent 2px outline with 2px offset.
+- **Interactivity:**
+    - Buttons and cards have consistent hover/active states with shadow and scale transitions.
+    - Footer links have increased touch targets (padding) and active states.
+    - Icons are marked `focusable="false"` to prevent focus bugs.
+- **Responsiveness:** Mobile-first approach where possible.
+- **Skip Links:** A "Skip to main content" link is implemented for keyboard navigation.
+- **Print Styles:** Print media query removes navigation and unnecessary decorations.
+- **List Semantics:** Grid layouts of items use `ul` and `li` with `role="list"`.
+- **Motion:** `prefers-reduced-motion` disables transitions. External link icons animate on hover.
 
 ## Rejected Changes
 
