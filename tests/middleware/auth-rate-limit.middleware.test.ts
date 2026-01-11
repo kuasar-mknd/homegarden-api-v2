@@ -26,8 +26,8 @@ describe('Auth Rate Limit Middleware', () => {
     const mockContext = {
       req: {
         header: vi.fn((name) => {
-            if (name === 'x-forwarded-for') return '10.0.0.1, 10.0.0.2'
-            return undefined
+          if (name === 'x-forwarded-for') return '10.0.0.1, 10.0.0.2'
+          return undefined
         }),
       },
     }

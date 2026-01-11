@@ -11,3 +11,4 @@
 | 2025-12-29 | DocOps | .github/workflows/ci.yml, docs/ENV.md, docs/API.md, .env.example | Fixed CI caching order, updated ENV/API docs to match code, synced .env.example |
 | 2025-12-30 | DocOps | docs/*, README.md, .github/workflows/*, .env.example | Synced docs with code (ENV, AI schemas, API endpoints), updated CI workflows (v4 actions, audit), fixed curl examples. |
 | 2025-12-30 | DocOps | README.md, docs/*, .github/workflows/*.yml | Update troubleshooting in README, pnpm fix in TESTING.md, fix CI versions, add audit workflow |
+| 2026-01-11 | DocOps | docs/AI.md, docs/API.md, .env.example, .github/dependabot.yml, tests/middleware/auth-rate-limit.middleware.test.ts | Synced docs with code (AI Schema, API endpoints, ENV), created Dependabot config, fixed linting in tests. |
