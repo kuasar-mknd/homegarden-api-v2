@@ -217,6 +217,7 @@ app.use('*', rateLimitMiddleware)
 // Landing Page
 const landingPageHtml = getLandingPageHtml()
 app.get('/', (c) => {
+  c.header('Cache-Control', 'public, max-age=3600') // Cache for 1 hour
   return c.html(landingPageHtml)
 })
 
