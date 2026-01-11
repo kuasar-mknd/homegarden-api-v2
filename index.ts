@@ -2,6 +2,7 @@ import { fileURLToPath } from 'node:url'
 import { serve } from '@hono/node-server'
 import { swaggerUI } from '@hono/swagger-ui'
 import { OpenAPIHono } from '@hono/zod-openapi'
+import { bodyLimit } from 'hono/body-limit'
 import { compress } from 'hono/compress'
 import { cors } from 'hono/cors'
 import { prettyJSON } from 'hono/pretty-json'
@@ -191,11 +192,14 @@ app.use(
 app.use('*', compress())
 
 // CORS
+// Sentinel: If origin is wildcard '*', credentials cannot be true.
+// We disable credentials in that case to prevent browser errors and security risks.
+const isWildcardOrigin = env.CORS_ORIGINS.includes('*')
 app.use(
   '*',
   cors({
     origin: env.CORS_ORIGINS,
-    credentials: true,
+    credentials: !isWildcardOrigin,
   }),
 )
 
@@ -210,6 +214,30 @@ if (env.NODE_ENV === 'development') {
 // Rate Limiting
 app.use('*', rateLimitMiddleware)
 
+// Body Limits (DoS Protection)
+// Must be applied before routes consume the body
+
+// 1. Large payloads for AI endpoints
+app.use('/api/v2/plant-id/*', bodyLimit({ maxSize: 20 * 1024 * 1024 }))
+app.use('/api/v2/dr-plant/*', bodyLimit({ maxSize: 15 * 1024 * 1024 }))
+
+// 2. Standard limit for everything else
+app.use('*', (c, next) => {
+  const path = c.req.path
+  // Skip if already handled by specific limits above
+  if (path.startsWith('/api/v2/plant-id/') || path.startsWith('/api/v2/dr-plant/')) {
+    return next()
+  }
+  return bodyLimit({
+    maxSize: 100 * 1024, // 100KB
+    onError: (c) =>
+      c.json(
+        { success: false, error: 'PAYLOAD_TOO_LARGE', message: 'Request entity too large' },
+        413,
+      ),
+  })(c, next)
+})
+
 // ============================================================
 // ROUTES
 // ============================================================
@@ -217,6 +245,7 @@ app.use('*', rateLimitMiddleware)
 // Landing Page
 const landingPageHtml = getLandingPageHtml()
 app.get('/', (c) => {
+  c.header('Cache-Control', 'public, max-age=3600') // Cache for 1 hour
   return c.html(landingPageHtml)
 })
 
