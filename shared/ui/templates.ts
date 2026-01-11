@@ -114,9 +114,12 @@ export const SHARED_STYLES = `
     border-radius: var(--radius-xl);
     border: 1px solid var(--card-border);
     box-shadow: 0 4px 20px rgba(0,0,0,0.05);
-    max-width: 600px;
+    max-width: 65ch;
     width: 90%;
     text-align: center;
+  }
+  p {
+    text-wrap: pretty;
   }
   header h1 {
     color: var(--primary);
@@ -223,13 +226,16 @@ export const SHARED_STYLES = `
     color: var(--on-primary);
     padding: 0.75rem 1.5rem;
     border-radius: var(--radius-md);
+    border: 1px solid transparent; /* For High Contrast Mode */
     text-decoration: none;
     font-weight: 600;
     margin-block-start: 1rem;
-    transition: background 0.2s, transform 0.1s, box-shadow 0.2s;
+    transition: background 0.2s, transform 0.1s, box-shadow 0.2s, filter 0.2s;
     box-shadow: var(--shadow-sm);
     min-height: 44px; /* Touch target size */
     box-sizing: border-box;
+    cursor: pointer;
+    user-select: none;
   }
   .btn:hover {
     background: var(--secondary);
@@ -238,6 +244,7 @@ export const SHARED_STYLES = `
   .btn:active {
     transform: scale(0.98);
     box-shadow: inset 0 2px 4px rgba(0,0,0,0.1);
+    filter: brightness(0.9);
   }
   .btn:focus-visible {
     outline: 2px solid var(--primary);
@@ -292,16 +299,19 @@ export const SHARED_STYLES = `
     background-color: var(--card-border);
     border-radius: var(--radius-sm);
     border: 1px solid var(--status-text);
+    border-bottom-width: 2px;
     padding: 2px 4px;
     font-size: 0.85em;
     font-family: monospace;
   }
   blockquote {
     border-inline-start: 4px solid var(--primary);
+    background: rgba(127, 127, 127, 0.1);
     margin: 1rem 0;
-    padding-inline-start: 1rem;
+    padding: 0.5rem 1rem;
     color: var(--card-text);
     font-style: italic;
+    border-radius: 0 var(--radius-md) var(--radius-md) 0;
   }
 
   footer.status {
@@ -324,6 +334,7 @@ export const SHARED_STYLES = `
   }
   footer a:hover {
     text-decoration: underline;
+    text-decoration-thickness: 2px;
     color: var(--secondary);
   }
   footer a:active {
@@ -374,6 +385,11 @@ export const SHARED_STYLES = `
     overflow-x: auto;
     user-select: all;
     border: 1px solid var(--card-border);
+    line-height: 1.5;
+  }
+  .code-block:focus-visible {
+    outline: 2px solid var(--primary);
+    outline-offset: 2px;
   }
   @media (prefers-color-scheme: dark) {
     .code-block {
@@ -400,7 +416,7 @@ export const SHARED_STYLES = `
     .container { box-shadow: none; border: none; max-width: 100%; width: 100%; padding: 0; }
     .skip-link, .status-dot, .external-icon { display: none; }
     .grid { display: block; }
-    .card { border: 1px solid #000; margin-bottom: 1rem; page-break-inside: avoid; box-shadow: none; }
+    .card { border: 1px solid #000; margin-bottom: 1rem; break-inside: avoid; page-break-inside: avoid; box-shadow: none; }
     a { text-decoration: underline; color: black; }
     a[href^="http"]:after { content: " (" attr(href) ")"; }
     header h1 { color: black; }
@@ -551,7 +567,7 @@ export function getNotFoundPageHtml(path: string): string {
 
     <main id="main" tabindex="-1">
       <p>Oops! The page you are looking for does not exist.</p>
-      <code aria-label="Requested URL" class="code-block" title="Requested URL">${safePath}</code>
+      <code aria-label="Requested URL" class="code-block" title="Requested URL" tabindex="0">${safePath}</code>
       <p>Please check the URL or go back to the homepage.</p>
 
       <div class="btn-group">
