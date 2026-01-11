@@ -121,10 +121,17 @@ export const AddPlantInputSchema = z.object({
     description: 'Plant family',
     example: 'Solanaceae',
   }),
-  imageUrl: z.string().trim().url().max(500).optional().openapi({
-    description: 'URL of plant image',
-    example: 'https://example.com/tomato.jpg',
-  }),
+  imageUrl: z
+    .string()
+    .trim()
+    .url()
+    .startsWith('https://', { message: 'Must be a secure HTTPS URL' })
+    .max(500)
+    .optional()
+    .openapi({
+      description: 'URL of plant image (HTTPS required)',
+      example: 'https://example.com/tomato.jpg',
+    }),
   plantedDate: z.string().trim().max(30).optional().openapi({
     description: 'Date when the plant was planted (ISO 8601)',
     example: '2024-01-15',

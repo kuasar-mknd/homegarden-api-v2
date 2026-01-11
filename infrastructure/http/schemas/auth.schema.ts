@@ -2,7 +2,14 @@ import { z } from '@hono/zod-openapi'
 
 export const RegisterInputSchema = z.object({
   email: z.string().trim().email().openapi({ example: 'user@example.com' }),
-  password: z.string().min(8).max(100).openapi({ example: 'SecureP@ss123' }),
+  password: z
+    .string()
+    .min(8)
+    .max(100)
+    .regex(/[A-Z]/, 'Must contain an uppercase letter')
+    .regex(/[a-z]/, 'Must contain a lowercase letter')
+    .regex(/[0-9]/, 'Must contain a number')
+    .openapi({ example: 'SecureP@ss123' }),
   firstName: z.string().trim().min(1).max(50).openapi({ example: 'John' }),
   lastName: z.string().trim().min(1).max(50).openapi({ example: 'Doe' }),
 })

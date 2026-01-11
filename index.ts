@@ -191,11 +191,14 @@ app.use(
 app.use('*', compress())
 
 // CORS
+// Sentinel: If origin is wildcard '*', credentials cannot be true.
+// We disable credentials in that case to prevent browser errors and security risks.
+const isWildcardOrigin = env.CORS_ORIGINS.includes('*')
 app.use(
   '*',
   cors({
     origin: env.CORS_ORIGINS,
-    credentials: true,
+    credentials: !isWildcardOrigin,
   }),
 )
 
