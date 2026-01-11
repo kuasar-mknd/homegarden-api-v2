@@ -42,12 +42,32 @@ export const SHARED_STYLES = `
       --on-primary: #121212;
     }
   }
+  @media (prefers-contrast: more) {
+    :root {
+      --primary: #1b5e20;
+      --secondary: #1b5e20;
+      --text: #000000;
+      --card-border: #000000;
+      --status-text: #000000;
+      --error: #b71c1c;
+    }
+    .card, .btn {
+      border: 2px solid currentColor;
+      box-shadow: none;
+    }
+  }
+  *, *::before, *::after {
+    box-sizing: border-box;
+  }
   ::selection {
     background: var(--primary);
     color: var(--on-primary);
   }
   h1, h2, h3 {
     text-wrap: balance;
+  }
+  p {
+    text-wrap: pretty;
   }
   html {
     scroll-padding-top: 2rem;
@@ -230,6 +250,7 @@ export const SHARED_STYLES = `
     box-shadow: var(--shadow-sm);
     min-height: 44px; /* Touch target size */
     box-sizing: border-box;
+    cursor: pointer;
   }
   .btn:hover {
     background: var(--secondary);
@@ -555,7 +576,7 @@ export function getNotFoundPageHtml(path: string): string {
       <p>Please check the URL or go back to the homepage.</p>
 
       <div class="btn-group">
-        <button onclick="history.back()" class="btn btn-secondary">${BACK_ICON}Go Back</button>
+        <button type="button" onclick="history.back()" class="btn btn-secondary">${BACK_ICON}Go Back</button>
         <a href="/" class="btn">${HOME_ICON}Return Home</a>
         <a href="/ui" class="btn btn-secondary">${DOC_ICON}Read Documentation</a>
       </div>
