@@ -505,9 +505,19 @@ export class GeminiPlantAdapter implements AIIdentificationPort, AIDiagnosisPort
       }
 
       // Fetch image from URL and convert to base64
-      const response = await fetch(image, { redirect: 'error' })
+      const response = await fetch(image, {
+        redirect: 'error',
+        headers: {
+          'User-Agent': 'HomeGarden-API/2.0 (Security-Scan; +https://homegarden.app)',
+        },
+      })
       if (!response.ok) {
         throw new AppError(`Failed to fetch image from URL: ${response.statusText}`, 400)
+      }
+
+      const contentLength = response.headers.get('content-length')
+      if (contentLength && Number.parseInt(contentLength, 10) > 10 * 1024 * 1024) {
+        throw new AppError('Image too large (max 10MB)', 400)
       }
 
       const buffer = await response.arrayBuffer()
