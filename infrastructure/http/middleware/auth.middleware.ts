@@ -90,8 +90,10 @@ export const authMiddleware = createMiddleware(async (c, next) => {
         data: {
           email: user.email,
           // We don't store the actual password since auth is handled by Supabase
-          // We use a dummy placeholder or could make it optional in schema
-          password: 'SUPABASE_AUTH_MANAGED',
+          // We use a random UUID as a placeholder to satisfy the NOT NULL constraint
+          // and ensure it's unguessable and not a static string.
+          // Using globalThis.crypto for Node.js 19+ / Web Crypto compatibility
+          password: globalThis.crypto.randomUUID(),
           firstName,
           lastName,
           avatarUrl: metadata.avatar_url,

@@ -63,9 +63,11 @@ model Garden {
   plants        Plant[]
   careSchedules CareSchedule[]
 
-  @@index([userId])
   @@index([latitude, longitude])
   @@index([name])
+  // Optimization: Composite index for finding a specific garden by user (e.g., uniqueness check)
+  // This composite index also handles filtering by just userId
+  @@index([userId, name])
   @@map("gardens")
 }
 
@@ -224,10 +226,11 @@ model Diagnosis {
   @@index([plantId])
   @@index([userId])
   @@index([status])
-  // Optimization: Composite index for filtering diagnoses by user and status (e.g., "My Pending Diagnoses")
-  @@index([userId, status])
   // Optimization: Composite index for user history sorted by date
   @@index([userId, createdAt])
+  // Optimization: Composite index for "My Pending Diagnoses" sorted by date (covers filter+sort)
+  // This composite index also covers filtering by [userId, status]
+  @@index([userId, status, createdAt])
   @@map("diagnoses")
 }
 

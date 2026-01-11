@@ -27,6 +27,11 @@ The best way to explore the API is via the built-in Swagger UI, which provides i
 
 ## 🌿 Core Resources
 
+### Auth
+
+- `POST /auth/register` - Register a new user (Note: Primary auth is usually handled directly by Supabase client).
+- `POST /auth/login` - Authenticate user (Note: Primary auth is usually handled directly by Supabase client).
+
 ### Gardens
 
 - `GET /gardens/plants` - Retrieves all plants in the authenticated user's garden.
@@ -43,10 +48,14 @@ The best way to explore the API is via the built-in Swagger UI, which provides i
 
 - `GET /users/:id` - Get public profile information for a user.
 
-### Care Tracker
+### Care Tracker (Coming Soon)
 
-- `GET /care-tracker/upcoming` - Get upcoming tasks (501 Not Implemented).
-- `POST /care-tracker/schedules` - Create a care schedule (501 Not Implemented).
+These endpoints currently return `501 Not Implemented`.
+
+- `GET /care-tracker/upcoming` - Get upcoming tasks.
+- `POST /care-tracker/schedules` - Create a care schedule.
+- `POST /care-tracker/schedules/:id/complete` - Mark task as complete.
+- `POST /care-tracker/generate` - Generate smart schedule.
 
 ---
 

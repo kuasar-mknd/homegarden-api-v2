@@ -66,7 +66,7 @@ export const SHARED_STYLES = `
     color: var(--text);
     line-height: 1.6;
     margin: 0;
-    padding: 0;
+    padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
     display: flex;
     justify-content: center;
     align-items: center;
@@ -114,9 +114,12 @@ export const SHARED_STYLES = `
     border-radius: var(--radius-xl);
     border: 1px solid var(--card-border);
     box-shadow: 0 4px 20px rgba(0,0,0,0.05);
-    max-width: 600px;
+    max-width: 65ch;
     width: 90%;
     text-align: center;
+  }
+  p {
+    text-wrap: pretty;
   }
   header h1 {
     color: var(--primary);
@@ -201,6 +204,19 @@ export const SHARED_STYLES = `
   .card:hover h2 { color: var(--secondary); }
   .card p { margin: 0; font-size: 0.9rem; color: var(--card-text); }
 
+  .card-arrow {
+    display: inline-block;
+    opacity: 0;
+    transform: translateX(-4px);
+    transition: all 0.2s ease-out;
+    margin-inline-start: 0.5rem;
+    color: var(--secondary);
+  }
+  .card:hover .card-arrow, .card:focus-visible .card-arrow {
+    opacity: 1;
+    transform: translateX(0);
+  }
+
   .btn {
     display: inline-flex;
     align-items: center;
@@ -210,13 +226,16 @@ export const SHARED_STYLES = `
     color: var(--on-primary);
     padding: 0.75rem 1.5rem;
     border-radius: var(--radius-md);
+    border: 1px solid transparent; /* For High Contrast Mode */
     text-decoration: none;
     font-weight: 600;
     margin-block-start: 1rem;
-    transition: background 0.2s, transform 0.1s, box-shadow 0.2s;
+    transition: background 0.2s, transform 0.1s, box-shadow 0.2s, filter 0.2s;
     box-shadow: var(--shadow-sm);
     min-height: 44px; /* Touch target size */
     box-sizing: border-box;
+    cursor: pointer;
+    user-select: none;
   }
   .btn:hover {
     background: var(--secondary);
@@ -225,6 +244,7 @@ export const SHARED_STYLES = `
   .btn:active {
     transform: scale(0.98);
     box-shadow: inset 0 2px 4px rgba(0,0,0,0.1);
+    filter: brightness(0.9);
   }
   .btn:focus-visible {
     outline: 2px solid var(--primary);
@@ -279,16 +299,19 @@ export const SHARED_STYLES = `
     background-color: var(--card-border);
     border-radius: var(--radius-sm);
     border: 1px solid var(--status-text);
+    border-bottom-width: 2px;
     padding: 2px 4px;
     font-size: 0.85em;
     font-family: monospace;
   }
   blockquote {
     border-inline-start: 4px solid var(--primary);
+    background: rgba(127, 127, 127, 0.1);
     margin: 1rem 0;
-    padding-inline-start: 1rem;
+    padding: 0.5rem 1rem;
     color: var(--card-text);
     font-style: italic;
+    border-radius: 0 var(--radius-md) var(--radius-md) 0;
   }
 
   footer.status {
@@ -311,6 +334,7 @@ export const SHARED_STYLES = `
   }
   footer a:hover {
     text-decoration: underline;
+    text-decoration-thickness: 2px;
     color: var(--secondary);
   }
   footer a:active {
@@ -361,6 +385,11 @@ export const SHARED_STYLES = `
     overflow-x: auto;
     user-select: all;
     border: 1px solid var(--card-border);
+    line-height: 1.5;
+  }
+  .code-block:focus-visible {
+    outline: 2px solid var(--primary);
+    outline-offset: 2px;
   }
   @media (prefers-color-scheme: dark) {
     .code-block {
@@ -368,10 +397,14 @@ export const SHARED_STYLES = `
     }
   }
   @media (prefers-reduced-motion: reduce) {
-    .card, .skip-link, .btn, .card h2, footer a {
+    .card, .skip-link, .btn, .card h2, footer a, .card-arrow {
       transition: none;
     }
     .card:hover {
+      transform: none;
+    }
+    .card-arrow {
+      opacity: 1;
       transform: none;
     }
     .status-dot {
@@ -383,7 +416,7 @@ export const SHARED_STYLES = `
     .container { box-shadow: none; border: none; max-width: 100%; width: 100%; padding: 0; }
     .skip-link, .status-dot, .external-icon { display: none; }
     .grid { display: block; }
-    .card { border: 1px solid #000; margin-bottom: 1rem; page-break-inside: avoid; box-shadow: none; }
+    .card { border: 1px solid #000; margin-bottom: 1rem; break-inside: avoid; page-break-inside: avoid; box-shadow: none; }
     a { text-decoration: underline; color: black; }
     a[href^="http"]:after { content: " (" attr(href) ")"; }
     header h1 { color: black; }
@@ -394,6 +427,7 @@ export const SHARED_STYLES = `
 const EXTERNAL_LINK_ICON = `<svg class="external-icon" focusable="false" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>`
 const HOME_ICON = `<svg class="btn-icon" focusable="false" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>`
 const DOC_ICON = `<svg class="btn-icon" focusable="false" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>`
+const BACK_ICON = `<svg class="btn-icon" focusable="false" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5"/><path d="M12 19l-7-7 7-7"/></svg>`
 
 // Optimization: Pre-compute static HTML parts to reduce string concatenation overhead
 const DEFAULT_DESCRIPTION =
@@ -403,7 +437,7 @@ const STATIC_ICON =
   'data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🌱</text></svg>'
 
 const STATIC_HEAD_START = `<!DOCTYPE html>
-<html lang="en">
+<html lang="en" dir="ltr">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
@@ -421,7 +455,7 @@ const STATIC_STYLE_AND_BODY_START = `
 
 const STATIC_FOOTER = `    <footer class="status" role="contentinfo">
       <div role="status">
-        <span class="status-dot" aria-label="Status: Operational" title="System Operational" role="img"></span> System Operational • ${env.NODE_ENV}
+        <span class="status-dot" aria-hidden="true" title="System Operational"></span> System Operational • ${env.NODE_ENV}
       </div>
       <div class="footer-links">
         <a href="https://github.com/homegarden/api" target="_blank" rel="noopener noreferrer" aria-label="View Source on GitHub (opens in a new tab)">View Source on GitHub${EXTERNAL_LINK_ICON}</a>
@@ -437,31 +471,42 @@ interface LayoutProps {
   content: string
 }
 
+// Simple HTML escape function to prevent XSS
+function escapeHtml(unsafe: string): string {
+  return unsafe
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#039;')
+}
+
 export function baseLayout({ title, description, content }: LayoutProps): string {
-  const metaDescription = description || DEFAULT_DESCRIPTION
+  const safeTitle = escapeHtml(title)
+  const safeDescription = escapeHtml(description || DEFAULT_DESCRIPTION)
 
   // Use array join for better performance than repeated string concatenation
   return [
     STATIC_HEAD_START,
     `
-  <meta name="description" content="${metaDescription}">
+  <meta name="description" content="${safeDescription}">
   <meta name="theme-color" content="#2e7d32" media="(prefers-color-scheme: light)">
   <meta name="theme-color" content="#121212" media="(prefers-color-scheme: dark)">
 
   <meta property="og:site_name" content="HomeGarden API">
-  <meta property="og:title" content="${title}">
-  <meta property="og:description" content="${metaDescription}">
+  <meta property="og:title" content="${safeTitle}">
+  <meta property="og:description" content="${safeDescription}">
   <meta property="og:type" content="website">
   <meta property="og:image" content="${STATIC_IMAGE}">
   <meta property="og:image:alt" content="HomeGarden API Banner with green branding">
 
   <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="${title}">
-  <meta name="twitter:description" content="${metaDescription}">
+  <meta name="twitter:title" content="${safeTitle}">
+  <meta name="twitter:description" content="${safeDescription}">
   <meta name="twitter:image" content="${STATIC_IMAGE}">
 
   <link rel="canonical" href="/">
-  <title>${title}</title>
+  <title>${safeTitle}</title>
   <link rel="icon" href="${STATIC_ICON}">
   <link rel="apple-touch-icon" href="${STATIC_ICON}">`,
     STATIC_STYLE_AND_BODY_START,
@@ -475,36 +520,36 @@ export function baseLayout({ title, description, content }: LayoutProps): string
 const LANDING_PAGE_HTML = baseLayout({
   title: 'HomeGarden API v2',
   content: `
-    <header>
+    <header role="banner">
       <h1>🌱 HomeGarden API</h1>
       <div class="badge">v2.0.0 • AI-Powered</div>
     </header>
 
-    <main id="main">
+    <main id="main" tabindex="-1">
       <p>Welcome to the HomeGarden API. Connect your applications to smart plant management services.</p>
 
       <ul class="grid" role="list">
         <li>
           <a href="/ui" class="card" aria-describedby="desc-ui">
-            <h2>📚 Documentation</h2>
+            <h2>📚 Documentation<span class="card-arrow" aria-hidden="true">→</span></h2>
             <p id="desc-ui">Interactive Swagger UI for API exploration.</p>
           </a>
         </li>
         <li>
           <a href="/doc" class="card" aria-describedby="desc-doc">
-            <h2>🔍 OpenAPI Spec</h2>
+            <h2>🔍 OpenAPI Spec<span class="card-arrow" aria-hidden="true">→</span></h2>
             <p id="desc-doc">Raw JSON specification for integration.</p>
           </a>
         </li>
         <li>
           <a href="/ui#/PlantID" class="card" aria-describedby="desc-plantid">
-            <h2>🌿 Plant ID</h2>
+            <h2>🌿 Plant ID<span class="card-arrow" aria-hidden="true">→</span></h2>
             <p id="desc-plantid">Identify species using AI vision (Docs).</p>
           </a>
         </li>
         <li>
           <a href="/ui#/DrPlant" class="card" aria-describedby="desc-drplant">
-            <h2>🩺 Dr. Plant</h2>
+            <h2>🩺 Dr. Plant<span class="card-arrow" aria-hidden="true">→</span></h2>
             <p id="desc-drplant">Diagnose diseases and pests (Docs).</p>
           </a>
         </li>
@@ -517,33 +562,24 @@ export function getLandingPageHtml(): string {
   return LANDING_PAGE_HTML
 }
 
-// Simple HTML escape function to prevent XSS
-function escapeHtml(unsafe: string): string {
-  return unsafe
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;')
-    .replace(/'/g, '&#039;')
-}
-
 export function getNotFoundPageHtml(path: string): string {
   const safePath = escapeHtml(path)
   return baseLayout({
-    title: 'Page Not Found - HomeGarden API',
+    title: '404: Page Not Found - HomeGarden API',
     description: 'The requested page could not be found.',
     content: `
-    <header>
+    <header role="banner">
       <h1>🌱 404 Not Found</h1>
       <div class="badge badge-error" role="status">Error</div>
     </header>
 
-    <main id="main">
+    <main id="main" tabindex="-1">
       <p>Oops! The page you are looking for does not exist.</p>
-      <code aria-label="Requested URL" class="code-block" title="Requested URL">${safePath}</code>
+      <code aria-label="Requested URL" class="code-block" title="Requested URL" tabindex="0">${safePath}</code>
       <p>Please check the URL or go back to the homepage.</p>
 
       <div class="btn-group">
+        <button onclick="history.back()" class="btn btn-secondary">${BACK_ICON}Go Back</button>
         <a href="/" class="btn">${HOME_ICON}Return Home</a>
         <a href="/ui" class="btn btn-secondary">${DOC_ICON}Read Documentation</a>
       </div>

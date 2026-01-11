@@ -22,6 +22,7 @@ describe('GardenController', () => {
     mockContext = {
       get: vi.fn(),
       set: vi.fn(),
+      header: vi.fn(),
       req: {
         json: vi.fn(),
         valid: vi.fn(),
