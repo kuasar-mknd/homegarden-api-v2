@@ -97,7 +97,7 @@ export const NearbyGardensResponseSchema = z.object({
 // =============================================================================
 
 export const AddPlantInputSchema = z.object({
-  gardenId: z.string().trim().max(100).openapi({
+  gardenId: z.string().trim().uuid().or(z.string().cuid()).openapi({
     description: 'Garden ID to add the plant to',
     example: 'cjld2cjxh0000qzrmn831i7rn',
   }),
