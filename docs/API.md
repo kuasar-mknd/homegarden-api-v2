@@ -39,8 +39,16 @@ The best way to explore the API is via the built-in Swagger UI, which provides i
 - `GET /gardens/nearby` - Finds public gardens within a specific radius (geo-query).
 - `GET /gardens/:gardenId/weather` - Fetches current weather for a garden's location.
 
+### Plants
+
+- `GET /plants` - List all plants for the user (Not Implemented).
+- `POST /plants` - Create a new plant.
+- `GET /plants/:id` - Get plant details (Not Implemented).
+- `PATCH /plants/:id` - Update plant details.
+
 ### AI Identification
 
+- `GET /plant-id/status` - Check Plant ID service availability.
 - `POST /plant-id/identify` - Identifies a plant from an image URL or Base64 data (JSON Body).
 - `POST /dr-plant/diagnose` - Diagnoses plant health issues from an image (Multipart/Form-Data).
 
