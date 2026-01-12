@@ -90,7 +90,8 @@ describe('UI Templates', () => {
       const unsafe = '<script>alert(1)</script>'
       const html = getNotFoundPageHtml(unsafe)
       expect(html).toContain('&lt;script&gt;alert(1)&lt;/script&gt;')
-      expect(html).not.toContain('<script>')
+      // We now have a valid script tag for the copy button, so we verify the unsafe input itself is not raw
+      expect(html).not.toContain(unsafe)
     })
 
     it('should use .badge-error class', () => {
