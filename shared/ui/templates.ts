@@ -301,6 +301,20 @@ export const SHARED_STYLES = `
     margin-block-start: 0;
   }
 
+  .btn-copy {
+    padding: 0.5rem;
+    min-height: auto;
+    background: transparent;
+    color: var(--status-text);
+    box-shadow: none;
+    margin-block-start: 0;
+  }
+  .btn-copy:hover {
+    background: var(--card-border);
+    color: var(--text);
+    box-shadow: none;
+  }
+
   .external-icon {
     display: inline-block;
     vertical-align: middle;
@@ -395,12 +409,19 @@ export const SHARED_STYLES = `
     color: var(--card-text);
     margin-block-end: 2rem;
   }
+  .code-container {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    justify-content: center;
+    margin: 1rem 0;
+  }
   .code-block {
     display: block;
     background: #f5f5f5;
     padding: 0.5rem;
     border-radius: var(--radius-sm);
-    margin: 1rem 0;
+    margin: 0;
     word-break: break-all;
     overflow-x: auto;
     user-select: all;
@@ -415,6 +436,19 @@ export const SHARED_STYLES = `
     .code-block {
       background: #2d2d2d;
     }
+  }
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    .grid > li {
+      animation: fadeIn 0.4s ease-out backwards;
+    }
+    .grid > li:nth-child(1) { animation-delay: 0.1s; }
+    .grid > li:nth-child(2) { animation-delay: 0.2s; }
+    .grid > li:nth-child(3) { animation-delay: 0.3s; }
+    .grid > li:nth-child(4) { animation-delay: 0.4s; }
   }
   @media (prefers-reduced-motion: reduce) {
     .card, .skip-link, .btn, .card h2, footer a, .card-arrow {
@@ -434,7 +468,7 @@ export const SHARED_STYLES = `
   @media print {
     body { background: white; color: black; display: block; }
     .container { box-shadow: none; border: none; max-width: 100%; width: 100%; padding: 0; }
-    .skip-link, .status-dot, .external-icon { display: none; }
+    .skip-link, .status-dot, .external-icon, .btn { display: none; }
     .grid { display: block; }
     .card { border: 1px solid #000; margin-bottom: 1rem; break-inside: avoid; page-break-inside: avoid; box-shadow: none; }
     a { text-decoration: underline; color: black; }
@@ -448,6 +482,8 @@ const EXTERNAL_LINK_ICON = `<svg class="external-icon" focusable="false" viewBox
 const HOME_ICON = `<svg class="btn-icon" focusable="false" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>`
 const DOC_ICON = `<svg class="btn-icon" focusable="false" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>`
 const BACK_ICON = `<svg class="btn-icon" focusable="false" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5"/><path d="M12 19l-7-7 7-7"/></svg>`
+const COPY_ICON = `<svg class="btn-icon" focusable="false" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>`
+const CHECK_ICON = `<svg class="btn-icon" focusable="false" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>`
 
 interface LayoutProps {
   title: string
@@ -476,6 +512,7 @@ export function baseLayout({ title, description, content }: LayoutProps): string
   const image = 'https://placehold.co/600x400/2e7d32/ffffff?text=HomeGarden+API'
   const icon =
     'data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🌱</text></svg>'
+  const year = new Date().getFullYear()
 
   return `
 <!DOCTYPE html>
@@ -519,6 +556,9 @@ export function baseLayout({ title, description, content }: LayoutProps): string
       </div>
       <div class="footer-links">
         <a href="https://github.com/homegarden/api" target="_blank" rel="noopener noreferrer" aria-label="View Source on GitHub (opens in a new tab)">View Source on GitHub${EXTERNAL_LINK_ICON}</a>
+      </div>
+      <div style="margin-top: 0.5rem; font-size: 0.8em; opacity: 0.6;">
+        &copy; ${year} HomeGarden API
       </div>
     </footer>
   </div>
@@ -587,7 +627,12 @@ export function getNotFoundPageHtml(path: string): string {
 
     <main id="main" tabindex="-1">
       <p>Oops! The page you are looking for does not exist.</p>
-      <code aria-label="Requested URL" class="code-block" title="Requested URL" tabindex="0">${safePath}</code>
+      <div class="code-container">
+        <code aria-label="Requested URL" class="code-block" title="Requested URL" tabindex="0">${safePath}</code>
+        <button type="button" class="btn btn-copy" aria-label="Copy URL" onclick="copyToClipboard(this)" data-text="${safePath}">
+          ${COPY_ICON}
+        </button>
+      </div>
       <p>Please check the URL or go back to the homepage.</p>
 
       <div class="btn-group">
@@ -596,6 +641,22 @@ export function getNotFoundPageHtml(path: string): string {
         <a href="/ui" class="btn btn-secondary">${DOC_ICON}Read Documentation</a>
       </div>
     </main>
+    <script>
+      function copyToClipboard(btn) {
+        const text = btn.dataset.text;
+        if (navigator.clipboard) {
+          navigator.clipboard.writeText(text).then(() => {
+            const originalHtml = btn.innerHTML;
+            btn.innerHTML = '${CHECK_ICON}';
+            btn.setAttribute('aria-label', 'Copied!');
+            setTimeout(() => {
+              btn.innerHTML = originalHtml;
+              btn.setAttribute('aria-label', 'Copy URL');
+            }, 2000);
+          }).catch(err => console.error('Failed to copy', err));
+        }
+      }
+    </script>
     `,
   })
 }
