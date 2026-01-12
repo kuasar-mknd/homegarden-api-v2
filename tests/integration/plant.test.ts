@@ -59,8 +59,9 @@ describe('Plant Integration Routes', () => {
   })
 
   it('should create a new plant', async () => {
+    const validGardenId = '00000000-0000-0000-0000-000000000000'
     const payload = {
-      gardenId: 'garden-123',
+      gardenId: validGardenId,
       nickname: 'My Tomato',
       location: 'Backyard',
       commonName: 'Tomato',
@@ -69,7 +70,7 @@ describe('Plant Integration Routes', () => {
 
     // Mock Garden found
     ;(prisma.garden.findFirst as any).mockResolvedValueOnce({
-      id: 'garden-123',
+      id: validGardenId,
       name: 'Route Garden',
       userId: user.id,
     })
@@ -77,7 +78,7 @@ describe('Plant Integration Routes', () => {
     ;(prisma.plant.create as any).mockResolvedValueOnce({
       id: 'plant-123',
       nickname: 'My Tomato',
-      gardenId: 'garden-123',
+      gardenId: validGardenId,
       createdAt: new Date(),
       updatedAt: new Date(),
     })
