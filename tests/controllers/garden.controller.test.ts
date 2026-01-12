@@ -163,6 +163,9 @@ describe('GardenController', () => {
       const result = (await controller.getWeather(mockContext)) as any
       expect(result.status).toBe(200)
       expect(result.data.data.temperature).toBe(20)
+
+      // Verification of the fix:
+      expect(mockContext.header).toHaveBeenCalledWith('Cache-Control', 'public, max-age=1800')
     })
 
     it('should handle use case failure without statusCode (default 500)', async () => {

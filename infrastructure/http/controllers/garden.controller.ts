@@ -56,9 +56,6 @@ export class GardenController {
         )
       }
 
-      // Optimization: Cache public weather data for 30 minutes
-      c.header('Cache-Control', 'public, max-age=1800')
-
       return c.json(
         {
           success: true,
@@ -156,6 +153,10 @@ export class GardenController {
           (result.error as any).statusCode || 500,
         )
       }
+
+      // Optimization: Cache public weather data for 30 minutes
+      // This allows the client/CDN to cache the response, reducing load on our server and the weather API.
+      c.header('Cache-Control', 'public, max-age=1800')
 
       return c.json(
         {
