@@ -46,9 +46,15 @@ HomeGarden is a robust, Clean Architecture-based REST API for managing gardens a
 4.  **Database Setup:**
     Start a Postgres database (e.g., via Docker) and set `DATABASE_URL` in `.env`.
     ```bash
-    # Example using docker run
-    docker run --name homegarden-db -e POSTGRES_PASSWORD=password -e POSTGRES_DB=homegarden -p 5432:5432 -d postgres:15
+    # Recommended: Use docker-compose
+    docker-compose up -d
     ```
+
+    Or manually:
+    ```bash
+    docker run --name homegarden-db -e POSTGRES_PASSWORD=password -e POSTGRES_DB=homegarden -p 5432:5432 -d postgis/postgis:15-3.3
+    ```
+
     Push the schema to the database:
     ```bash
     pnpm db:push
@@ -104,7 +110,7 @@ curl -X POST http://localhost:3000/api/v2/plant-id/identify \
 
 *   **`Supabase URL or Publishable Key not configured`**: Ensure `SUPABASE_URL` and `SUPABASE_PUBLISHABLE_KEY` are set in `.env`.
 *   **Database Connection Errors**: Check if your Postgres container is running and accessible. Verify `DATABASE_URL` matches your container settings.
-    *   Check logs: `docker logs homegarden-db`
+    *   Check logs: `docker-compose logs db` or `docker logs homegarden-db`
 *   **AI Errors**: Verify `GOOGLE_AI_API_KEY` is valid and has access to the specified models.
 *   **Module not found errors**: If you see errors about `@prisma/client`, run `pnpm db:generate` manually.
 *   **Port in Use**: If port 3000 is occupied, change `PORT` in `.env`.

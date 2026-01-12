@@ -177,7 +177,12 @@ describe('GeminiPlantAdapter', () => {
       const [url, options] = mockFetch.mock.calls[0]
       expect(url).toBe('http://example.com/p.png')
       // options might be undefined if not passed, but we expect it to be passed
-      expect(options).toEqual({ redirect: 'error' })
+      expect(options).toEqual({
+        redirect: 'error',
+        headers: {
+          'User-Agent': 'HomeGarden-API/2.0 (Security-Scan; +https://homegarden.app)',
+        },
+      })
       vi.unstubAllGlobals()
     })
 
