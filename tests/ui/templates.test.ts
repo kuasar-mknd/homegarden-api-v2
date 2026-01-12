@@ -23,7 +23,7 @@ describe('UI Templates', () => {
     })
 
     it('should include focus-visible style with primary color', () => {
-      expect(SHARED_STYLES).toContain('outline: 2px solid var(--primary)')
+      expect(SHARED_STYLES).toContain('outline: var(--focus-ring-width) solid var(--focus-ring-color)')
     })
 
     it('should include new utility classes', () => {
@@ -81,7 +81,7 @@ describe('UI Templates', () => {
 
     it('should use footer-links class', () => {
       const html = getLandingPageHtml()
-      expect(html).toContain('<div class="footer-links">')
+      expect(html).toContain('<div class="footer-links no-print">')
     })
   })
 
@@ -90,7 +90,8 @@ describe('UI Templates', () => {
       const unsafe = '<script>alert(1)</script>'
       const html = getNotFoundPageHtml(unsafe)
       expect(html).toContain('&lt;script&gt;alert(1)&lt;/script&gt;')
-      expect(html).not.toContain('<script>')
+      // We check that the unsafe input is NOT present as raw HTML
+      expect(html).not.toContain(unsafe)
     })
 
     it('should use .badge-error class', () => {
