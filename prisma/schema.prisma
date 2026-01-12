@@ -231,6 +231,8 @@ model Diagnosis {
   // Optimization: Composite index for "My Pending Diagnoses" sorted by date (covers filter+sort)
   // This composite index also covers filtering by [userId, status]
   @@index([userId, status, createdAt])
+  // Optimization: Global worker queue - Find pending diagnoses sorted by date
+  @@index([status, createdAt])
   @@map("diagnoses")
 }
 

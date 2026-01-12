@@ -591,11 +591,16 @@ export function getNotFoundPageHtml(path: string): string {
       <p>Please check the URL or go back to the homepage.</p>
 
       <div class="btn-group">
-        <button type="button" onclick="history.back()" class="btn btn-secondary">${BACK_ICON}Go Back</button>
+        <button type="button" id="go-back-btn" class="btn btn-secondary">${BACK_ICON}Go Back</button>
         <a href="/" class="btn">${HOME_ICON}Return Home</a>
         <a href="/ui" class="btn btn-secondary">${DOC_ICON}Read Documentation</a>
       </div>
     </main>
+    <script>
+      document.getElementById('go-back-btn').addEventListener('click', function() {
+        history.back();
+      });
+    </script>
     `,
   })
 }
