@@ -21,3 +21,11 @@
 ## 2024-05-22 - [Static Response Caching]
 **Learning:** Re-generating static HTML strings on every request adds unnecessary overhead.
 **Action:** Lift static content generation out of the request handler scope into module scope (or use a memoized function) to generate it once at startup.
+
+## 2024-05-23 - [Partial Entity Selection]
+**Learning:** Optimizing SQL queries by excluding fields (like `description`) broke the Domain Entity contract, as the entity factory expected these fields or required them to be explicitly handled.
+**Action:** Only optimize field selection if the Repository method explicitly returns a DTO (e.g., `GardenSummary`) or if the Entity is designed to handle partial hydration safely.
+
+## 2024-05-23 - [Static Layout Anti-Pattern]
+**Learning:** Pre-computing HTML layouts (header/footer) to save string concatenation is a micro-optimization that creates security risks (e.g., static CSP nonces) and prevents dynamic content (Auth state).
+**Action:** Avoid caching layout templates unless they are strictly static and have no dependencies on request context.
