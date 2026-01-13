@@ -114,3 +114,4 @@ curl -X POST http://localhost:3000/api/v2/plant-id/identify \
 *   **AI Errors**: Verify `GOOGLE_AI_API_KEY` is valid and has access to the specified models.
 *   **Module not found errors**: If you see errors about `@prisma/client`, run `pnpm db:generate` manually.
 *   **Port in Use**: If port 3000 is occupied, change `PORT` in `.env`.
+*   **Linting/Formatting**: Run `pnpm run ci:check` to check for issues and `pnpm format` to fix formatting.

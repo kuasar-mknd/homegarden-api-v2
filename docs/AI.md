@@ -64,11 +64,18 @@ The application instructs the AI to return structured JSON data.
       "instructions": "Carefully prune and dispose of heavily infected leaves. Do not compost.",
       "frequency": "once",
       "products": ["Neem oil", "Potassium bicarbonate"]
+    },
+    {
+      "priority": 2,
+      "action": "Apply fungicide",
+      "instructions": "Spray neem oil solution on remaining foliage",
+      "frequency": "weekly for 3 weeks",
+      "products": ["Neem oil", "Potassium bicarbonate"]
     }
   ],
   "organicTreatment": "Mix 1 tbsp baking soda + 1 tbsp vegetable oil + 1 gallon water. Spray weekly.",
   "chemicalTreatment": "Apply sulfur-based fungicide according to package instructions.",
-  "preventionTips": ["Improve air circulation"],
+  "preventionTips": ["Improve air circulation", "Avoid overhead watering", "Space plants properly"],
   "urgentActions": [],
   "recoveryTimeWeeks": 3,
   "notes": "Caught early. Good prognosis with proper treatment."
