@@ -32,6 +32,14 @@
 - **List Semantics:** Grid layouts of items use `ul` and `li` with `role="list"`.
 - **Motion:** `prefers-reduced-motion` disables transitions. External link icons animate on hover.
 
+## 2024-05-24 - Interactive Feedback & Security
+
+**Learning:** Inline event handlers (like `onclick`) should be avoided even in simple templates to support strict Content Security Policy (CSP) and separation of concerns.
+**Action:** Use `addEventListener` in a script block for all interactions, even simple history navigation.
+
+**Learning:** Feedback text like "Checked!" can be ambiguous.
+**Action:** Use explicit action verbs ("Copied!") paired with a universally recognized icon (Checkmark) for clarity and delight.
+
 ## Rejected Changes
 
 *(None yet)*
