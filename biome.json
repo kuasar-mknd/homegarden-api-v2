@@ -1,5 +1,5 @@
 {
-  "$schema": "https://biomejs.dev/schemas/2.3.10/schema.json",
+  "$schema": "https://biomejs.dev/schemas/2.3.11/schema.json",
   "vcs": {
     "enabled": true,
     "clientKind": "git",
@@ -7,34 +7,39 @@
   },
   "files": {
     "ignoreUnknown": false,
-    "includes": ["**", "!**/dist", "!**/node_modules", "!**/.gemini"]
+    "includes": ["**", "!node_modules", "!dist", "!coverage", "!.jules/verification"]
   },
   "formatter": {
     "enabled": true,
     "indentStyle": "space",
     "indentWidth": 2,
-    "lineEnding": "lf",
     "lineWidth": 100
   },
   "linter": {
     "enabled": true,
     "rules": {
       "recommended": true,
-      "style": {
-        "noUnusedTemplateLiteral": "off"
+      "correctness": {
+        "noUnusedVariables": "error",
+        "noUnusedImports": "error"
+      },
+      "suspicious": {
+        "noExplicitAny": "warn"
       }
+    }
+  },
+  "javascript": {
+    "formatter": {
+      "quoteStyle": "single",
+      "semicolons": "asNeeded"
     }
   },
   "overrides": [
     {
       "includes": [
         "tests/**",
-        "**/*.controller.ts",
-        "**/*.use-case.test.ts",
         "infrastructure/database/repositories/**",
-        "infrastructure/repositories/**",
-        "prisma/seed.ts",
-        "infrastructure/websocket/**"
+        "infrastructure/external-services/**"
       ],
       "linter": {
         "rules": {
@@ -44,11 +49,5 @@
         }
       }
     }
-  ],
-  "javascript": {
-    "formatter": {
-      "quoteStyle": "single",
-      "semicolons": "asNeeded"
-    }
-  }
+  ]
 }

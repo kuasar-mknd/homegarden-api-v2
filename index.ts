@@ -177,13 +177,11 @@ app.use(
     referrerPolicy: 'strict-origin-when-cross-origin',
     // Permissions Policy to restrict powerful features
     permissionsPolicy: {
-      features: {
-        camera: [],
-        microphone: [],
-        geolocation: [],
-        payment: [],
-        usb: [],
-      },
+      camera: [],
+      microphone: [],
+      geolocation: [],
+      payment: [],
+      usb: [],
     },
   }),
 )

@@ -56,9 +56,9 @@ The best way to explore the API is via the built-in Swagger UI, which provides i
 
 - `GET /users/:id` - Get public profile information for a user.
 
-### Care Tracker (Coming Soon)
+### Care Tracker
 
-These endpoints currently return `501 Not Implemented`.
+These endpoints map to `CareTrackerController` but might return `501 Not Implemented` for specific logic if not fully built.
 
 - `GET /care-tracker/upcoming` - Get upcoming tasks.
 - `POST /care-tracker/schedules` - Create a care schedule.
