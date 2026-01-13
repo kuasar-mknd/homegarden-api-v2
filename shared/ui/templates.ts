@@ -22,6 +22,14 @@ export const SHARED_STYLES = `
     --shadow-sm: 0 2px 4px rgba(0,0,0,0.1);
     --shadow-md: 0 4px 8px rgba(0,0,0,0.15);
 
+    /* Animation System */
+    --transition-speed: 0.2s;
+
+    /* Focus System */
+    --focus-ring-color: var(--primary);
+    --focus-ring-width: 2px;
+    --focus-offset: 2px;
+
     /* Text on Primary Background */
     --on-primary: #ffffff;
 
@@ -95,6 +103,15 @@ export const SHARED_STYLES = `
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
   }
+
+  /* List Polish */
+  ul, ol {
+    padding-inline-start: 1.5rem;
+  }
+  ul ::marker, ol ::marker {
+    color: var(--secondary);
+  }
+
   /* Scrollbar for Webkit */
   ::-webkit-scrollbar {
     width: 8px;
@@ -119,14 +136,14 @@ export const SHARED_STYLES = `
     padding: 0.5rem 1rem;
     border-radius: 0 0 var(--radius-md) var(--radius-md);
     z-index: 100;
-    transition: top 0.3s;
+    transition: top var(--transition-speed);
     text-decoration: none;
     font-weight: 600;
   }
   .skip-link:focus {
     top: 0;
-    outline: 2px solid var(--primary);
-    outline-offset: 2px;
+    outline: var(--focus-ring-width) solid var(--focus-ring-color);
+    outline-offset: var(--focus-offset);
   }
   .container {
     background: var(--card-bg);
@@ -137,9 +154,6 @@ export const SHARED_STYLES = `
     max-width: 65ch;
     width: 90%;
     text-align: center;
-  }
-  p {
-    text-wrap: pretty;
   }
   header h1 {
     color: var(--primary);
@@ -156,6 +170,7 @@ export const SHARED_STYLES = `
     font-weight: 600;
     margin-block-end: 2rem;
     cursor: default;
+    user-select: text; /* Allow selecting version info */
   }
   .badge-error {
     background: #ffebee;
@@ -191,7 +206,7 @@ export const SHARED_STYLES = `
     border: 1px solid var(--card-border);
     padding: 1.5rem;
     border-radius: var(--radius-lg);
-    transition: transform 0.2s, box-shadow 0.2s;
+    transition: transform var(--transition-speed), box-shadow var(--transition-speed);
     text-decoration: none;
     color: inherit;
     display: block;
@@ -208,8 +223,8 @@ export const SHARED_STYLES = `
     transform: scale(0.98);
   }
   .card:focus-visible {
-    outline: 2px solid var(--primary);
-    outline-offset: 2px;
+    outline: var(--focus-ring-width) solid var(--focus-ring-color);
+    outline-offset: var(--focus-offset);
     border-color: var(--secondary);
     z-index: 1;
   }
@@ -218,7 +233,7 @@ export const SHARED_STYLES = `
     margin-block-end: 0.5rem;
     color: var(--primary);
     font-size: 1.25rem;
-    transition: color 0.2s;
+    transition: color var(--transition-speed);
     text-wrap: balance;
   }
   .card:hover h2 { color: var(--secondary); }
@@ -228,7 +243,7 @@ export const SHARED_STYLES = `
     display: inline-block;
     opacity: 0;
     transform: translateX(-4px);
-    transition: all 0.2s ease-out;
+    transition: all var(--transition-speed) ease-out;
     margin-inline-start: 0.5rem;
     color: var(--secondary);
   }
@@ -250,7 +265,7 @@ export const SHARED_STYLES = `
     text-decoration: none;
     font-weight: 600;
     margin-block-start: 1rem;
-    transition: background 0.2s, transform 0.1s, box-shadow 0.2s, filter 0.2s;
+    transition: background var(--transition-speed), transform 0.1s, box-shadow var(--transition-speed), filter var(--transition-speed);
     box-shadow: var(--shadow-sm);
     min-height: 44px; /* Touch target size */
     box-sizing: border-box;
@@ -267,8 +282,8 @@ export const SHARED_STYLES = `
     filter: brightness(0.9);
   }
   .btn:focus-visible {
-    outline: 2px solid var(--primary);
-    outline-offset: 2px;
+    outline: var(--focus-ring-width) solid var(--focus-ring-color);
+    outline-offset: var(--focus-offset);
   }
   .btn-icon {
     width: 1.25em;
@@ -308,7 +323,7 @@ export const SHARED_STYLES = `
     margin-block-end: 2px;
     width: 0.9em;
     height: 0.9em;
-    transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+    transition: transform var(--transition-speed) cubic-bezier(0.34, 1.56, 0.64, 1);
   }
   a:hover .external-icon {
     transform: translate(2px, -2px);
@@ -318,11 +333,12 @@ export const SHARED_STYLES = `
   kbd {
     background-color: var(--card-border);
     border-radius: var(--radius-sm);
-    border: 1px solid var(--status-text);
-    border-bottom-width: 2px;
+    border: 1px solid var(--card-border);
+    border-bottom: 2px solid var(--status-text);
     padding: 2px 4px;
     font-size: 0.85em;
     font-family: monospace;
+    color: var(--text);
   }
   blockquote {
     border-inline-start: 4px solid var(--primary);
@@ -346,7 +362,7 @@ export const SHARED_STYLES = `
     text-decoration: none;
     text-underline-offset: 4px;
     text-decoration-skip-ink: auto;
-    transition: color 0.2s, text-decoration-color 0.2s, opacity 0.2s;
+    transition: color var(--transition-speed), text-decoration-color var(--transition-speed), opacity var(--transition-speed), transform 0.1s;
     padding: 0.5rem; /* Increase touch target */
     margin: -0.5rem;
     border-radius: var(--radius-sm);
@@ -359,11 +375,16 @@ export const SHARED_STYLES = `
   }
   footer a:active {
     opacity: 0.7;
+    transform: scale(0.98);
   }
   footer a:focus-visible {
-    outline: 2px solid var(--primary);
-    outline-offset: 2px;
+    outline: var(--focus-ring-width) solid var(--focus-ring-color);
+    outline-offset: var(--focus-offset);
     background: rgba(0,0,0,0.05);
+  }
+  .copyright {
+    margin-block: 0.5rem;
+    opacity: 0.9;
   }
   .footer-links {
     margin-top: 0.5rem;
@@ -395,21 +416,31 @@ export const SHARED_STYLES = `
     color: var(--card-text);
     margin-block-end: 2rem;
   }
+  .code-wrapper {
+    position: relative;
+    margin: 1rem 0;
+  }
   .code-block {
     display: block;
     background: #f5f5f5;
-    padding: 0.5rem;
+    padding: 1rem;
     border-radius: var(--radius-sm);
-    margin: 1rem 0;
     word-break: break-all;
     overflow-x: auto;
     user-select: all;
     border: 1px solid var(--card-border);
     line-height: 1.5;
+    font-family: monospace;
+    font-size: 0.9em;
   }
   .code-block:focus-visible {
-    outline: 2px solid var(--primary);
-    outline-offset: 2px;
+    outline: var(--focus-ring-width) solid var(--focus-ring-color);
+    outline-offset: var(--focus-offset);
+  }
+  .copy-btn-wrapper {
+    margin-top: 0.5rem;
+    display: flex;
+    justify-content: center;
   }
   @media (prefers-color-scheme: dark) {
     .code-block {
@@ -434,7 +465,7 @@ export const SHARED_STYLES = `
   @media print {
     body { background: white; color: black; display: block; }
     .container { box-shadow: none; border: none; max-width: 100%; width: 100%; padding: 0; }
-    .skip-link, .status-dot, .external-icon { display: none; }
+    .skip-link, .status-dot, .external-icon, .no-print { display: none !important; }
     .grid { display: block; }
     .card { border: 1px solid #000; margin-bottom: 1rem; break-inside: avoid; page-break-inside: avoid; box-shadow: none; }
     a { text-decoration: underline; color: black; }
@@ -448,6 +479,7 @@ const EXTERNAL_LINK_ICON = `<svg class="external-icon" focusable="false" viewBox
 const HOME_ICON = `<svg class="btn-icon" focusable="false" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>`
 const DOC_ICON = `<svg class="btn-icon" focusable="false" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>`
 const BACK_ICON = `<svg class="btn-icon" focusable="false" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5"/><path d="M12 19l-7-7 7-7"/></svg>`
+const COPY_ICON = `<svg class="btn-icon" focusable="false" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>`
 
 interface LayoutProps {
   title: string
@@ -476,6 +508,7 @@ export function baseLayout({ title, description, content }: LayoutProps): string
   const image = 'https://placehold.co/600x400/2e7d32/ffffff?text=HomeGarden+API'
   const icon =
     'data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🌱</text></svg>'
+  const year = new Date().getFullYear()
 
   return `
 <!DOCTYPE html>
@@ -487,6 +520,7 @@ export function baseLayout({ title, description, content }: LayoutProps): string
   <meta name="description" content="${metaDescription}">
   <meta name="theme-color" content="#2e7d32" media="(prefers-color-scheme: light)">
   <meta name="theme-color" content="#121212" media="(prefers-color-scheme: dark)">
+  <meta name="apple-mobile-web-app-title" content="HomeGarden">
 
   <meta property="og:site_name" content="HomeGarden API">
   <meta property="og:title" content="${safeTitle}">
@@ -510,14 +544,17 @@ export function baseLayout({ title, description, content }: LayoutProps): string
   </style>
 </head>
 <body>
-  <a href="#main" class="skip-link">Skip to main content</a>
+  <a href="#main" class="skip-link" title="Jump to the main content area">Skip to main content</a>
   <div class="container">
     ${content}
     <footer class="status" role="contentinfo">
       <div role="status">
         <span class="status-dot" aria-hidden="true" title="System Operational"></span> System Operational • ${env.NODE_ENV}
       </div>
-      <div class="footer-links">
+      <div class="copyright">
+        &copy; ${year} HomeGarden API. All rights reserved.
+      </div>
+      <div class="footer-links no-print">
         <a href="https://github.com/homegarden/api" target="_blank" rel="noopener noreferrer" aria-label="View Source on GitHub (opens in a new tab)">View Source on GitHub${EXTERNAL_LINK_ICON}</a>
       </div>
     </footer>
@@ -587,15 +624,51 @@ export function getNotFoundPageHtml(path: string): string {
 
     <main id="main" tabindex="-1">
       <p>Oops! The page you are looking for does not exist.</p>
-      <code aria-label="Requested URL" class="code-block" title="Requested URL" tabindex="0">${safePath}</code>
+
+      <div class="code-wrapper">
+        <code id="error-path" aria-label="Requested URL" class="code-block" title="Requested URL" tabindex="0">${safePath}</code>
+        <div class="copy-btn-wrapper no-print">
+            <button type="button" class="btn btn-secondary copy-btn" data-clipboard-target="#error-path" aria-label="Copy URL to clipboard">
+            ${COPY_ICON} Copy Path
+            </button>
+        </div>
+      </div>
+
       <p>Please check the URL or go back to the homepage.</p>
 
-      <div class="btn-group">
+      <div class="btn-group no-print">
         <button type="button" onclick="history.back()" class="btn btn-secondary">${BACK_ICON}Go Back</button>
         <a href="/" class="btn">${HOME_ICON}Return Home</a>
         <a href="/ui" class="btn btn-secondary">${DOC_ICON}Read Documentation</a>
       </div>
     </main>
+    <script>
+      (function() {
+        var btns = document.querySelectorAll('.copy-btn');
+        Array.prototype.forEach.call(btns, function(btn) {
+          btn.addEventListener('click', function() {
+            var targetSelector = btn.getAttribute('data-clipboard-target');
+            var target = document.querySelector(targetSelector);
+            if (target) {
+              var text = target.innerText;
+              // Modern API
+              if (navigator.clipboard && navigator.clipboard.writeText) {
+                 navigator.clipboard.writeText(text).then(function() {
+                    var originalHtml = btn.innerHTML;
+                    btn.innerHTML = 'Checked!';
+                    setTimeout(function() { btn.innerHTML = originalHtml; }, 2000);
+                 }).catch(function(err) {
+                    console.error('Failed to copy', err);
+                 });
+              } else {
+                 // Fallback
+                 console.warn('Clipboard API not available');
+              }
+            }
+          });
+        });
+      })();
+    </script>
     `,
   })
 }
