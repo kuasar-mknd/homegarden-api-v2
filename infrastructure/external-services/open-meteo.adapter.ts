@@ -7,7 +7,7 @@ import { AppError } from '../../shared/errors/app-error.js'
 import { fail, ok, type Result } from '../../shared/types/result.type.js'
 import { logger } from '../config/logger.js'
 
-interface OpenMeteoCurrentResponse {
+interface OpenMeteoResponse {
   current: {
     temperature_2m: number
     relative_humidity_2m: number
@@ -15,9 +15,6 @@ interface OpenMeteoCurrentResponse {
     weather_code: number
     wind_speed_10m: number
   }
-}
-
-interface OpenMeteoDailyResponse {
   daily: {
     time: string[]
     temperature_2m_max: number[]
@@ -38,6 +35,9 @@ export class OpenMeteoAdapter implements WeatherPort {
   private readonly cache = new Map<string, CacheEntry<any>>()
   private readonly CACHE_TTL_MS = 30 * 60 * 1000 // 30 minutes
 
+  // Optimization: Request coalescing for simultaneous requests
+  private readonly pendingRequests = new Map<string, Promise<OpenMeteoResponse>>()
+
   async getCurrentWeather(
     latitude: number,
     longitude: number,
@@ -53,14 +53,7 @@ export class OpenMeteoAdapter implements WeatherPort {
     }
 
     try {
-      const url = `${this.baseUrl}?latitude=${latitude}&longitude=${longitude}&current=temperature_2m,relative_humidity_2m,precipitation,weather_code,wind_speed_10m`
-
-      const response = await fetch(url)
-      if (!response.ok) {
-        throw new Error(`OpenMeteo API error: ${response.statusText}`)
-      }
-
-      const data = (await response.json()) as OpenMeteoCurrentResponse
+      const data = await this.fetchFullWeatherData(lat, lon)
       const current = data.current
 
       const weatherData: WeatherData = {
@@ -95,14 +88,7 @@ export class OpenMeteoAdapter implements WeatherPort {
     }
 
     try {
-      const url = `${this.baseUrl}?latitude=${latitude}&longitude=${longitude}&daily=temperature_2m_max,temperature_2m_min,precipitation_sum,weather_code&timezone=auto`
-
-      const response = await fetch(url)
-      if (!response.ok) {
-        throw new Error(`OpenMeteo API error: ${response.statusText}`)
-      }
-
-      const data = (await response.json()) as OpenMeteoDailyResponse
+      const data = await this.fetchFullWeatherData(lat, lon)
       const daily = data.daily
 
       const forecast = daily.time.map((date: string, index: number) => ({
@@ -121,6 +107,38 @@ export class OpenMeteoAdapter implements WeatherPort {
       logger.error({ error, latitude, longitude }, 'Failed to fetch forecast')
       return fail(new AppError('Failed to fetch weather forecast', 503, 'WEATHER_SERVICE_ERROR'))
     }
+  }
+
+  /**
+   * Fetches both current and forecast data in a single request.
+   * Handles request coalescing for concurrent calls.
+   */
+  private async fetchFullWeatherData(lat: string, lon: string): Promise<OpenMeteoResponse> {
+    const key = `${lat}:${lon}`
+
+    const pending = this.pendingRequests.get(key)
+    if (pending) {
+      return pending
+    }
+
+    const fetchPromise = (async () => {
+      try {
+        // Fetch BOTH current and daily in one go
+        const url = `${this.baseUrl}?latitude=${lat}&longitude=${lon}&current=temperature_2m,relative_humidity_2m,precipitation,weather_code,wind_speed_10m&daily=temperature_2m_max,temperature_2m_min,precipitation_sum,weather_code&timezone=auto`
+
+        const response = await fetch(url)
+        if (!response.ok) {
+          throw new Error(`OpenMeteo API error: ${response.statusText}`)
+        }
+
+        return (await response.json()) as OpenMeteoResponse
+      } finally {
+        this.pendingRequests.delete(key)
+      }
+    })()
+
+    this.pendingRequests.set(key, fetchPromise)
+    return fetchPromise
   }
 
   private getFromCache<T>(key: string): T | null {
