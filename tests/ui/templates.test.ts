@@ -23,7 +23,9 @@ describe('UI Templates', () => {
     })
 
     it('should include focus-visible style with primary color', () => {
-      expect(SHARED_STYLES).toContain('outline: var(--focus-ring-width) solid var(--focus-ring-color)')
+      expect(SHARED_STYLES).toContain(
+        'outline: var(--focus-ring-width) solid var(--focus-ring-color)',
+      )
     })
 
     it('should include new utility classes', () => {
@@ -45,6 +47,16 @@ describe('UI Templates', () => {
 
     it('should include print styles for expanding URLs', () => {
       expect(SHARED_STYLES).toContain('a[href^="http"]:after { content: " (" attr(href) ")"; }')
+    })
+
+    it('should include .sr-only utility', () => {
+      expect(SHARED_STYLES).toContain('.sr-only {')
+      expect(SHARED_STYLES).toContain('clip: rect(0, 0, 0, 0);')
+    })
+
+    it('should include .badge-inline utility', () => {
+      expect(SHARED_STYLES).toContain('.badge-inline {')
+      expect(SHARED_STYLES).toContain('vertical-align: middle;')
     })
   })
 
@@ -82,6 +94,26 @@ describe('UI Templates', () => {
     it('should use footer-links class', () => {
       const html = getLandingPageHtml()
       expect(html).toContain('<div class="footer-links no-print">')
+    })
+
+    it('should include og:locale meta tag', () => {
+      const html = getLandingPageHtml()
+      expect(html).toContain('<meta property="og:locale" content="en_US">')
+    })
+
+    it('should include console easter egg', () => {
+      const html = getLandingPageHtml()
+      expect(html).toContain("console.log('%c🌱 HomeGarden API")
+    })
+
+    it('should include inline badges for AI features', () => {
+      const html = getLandingPageHtml()
+      expect(html).toContain('<span class="badge-inline">AI</span>')
+    })
+
+    it('should include sr-only text for external links', () => {
+      const html = getLandingPageHtml()
+      expect(html).toContain('<span class="sr-only"> (opens in a new tab)</span>')
     })
   })
 
