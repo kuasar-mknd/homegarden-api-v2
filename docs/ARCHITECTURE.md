@@ -14,7 +14,7 @@ This is the core of the application. It contains entities, value objects, and do
 
 ### 2. `application/` (Application Business Rules)
 This layer orchestrates the flow of data to and from the domain entities. It implements specific use cases.
-*   **Services/UseCases**: Contains business logic for specific actions (e.g., `CreateGardenService`, `IdentifyPlantService`).
+*   **Use Cases**: Contains business logic for specific actions (e.g., `CreateGardenUseCase`, `IdentifySpeciesUseCase`).
 *   **DTOs**: Data Transfer Objects used to pass data between layers.
 
 ### 3. `infrastructure/` (Frameworks & Drivers)
@@ -32,9 +32,9 @@ Contains shared utilities, types, and constants used across multiple layers (e.g
 To add a new feature (e.g., "Watering Schedule"), follow this flow:
 
 1.  **Domain**: Define the `WateringSchedule` entity and its repository interface in `domain/`.
-2.  **Application**: Create a service/use-case (e.g., `CreateWateringScheduleService`) in `application/`.
+2.  **Application**: Create a use-case (e.g., `CreateWateringScheduleUseCase`) in `application/use-cases/`.
 3.  **Infrastructure**:
-    *   Implement the repository in `infrastructure/repositories/`.
+    *   Implement the repository in `infrastructure/database/repositories/`.
     *   Create a controller in `infrastructure/http/controllers/`.
     *   Define the route in `infrastructure/http/routes/`.
 4.  **Tests**: Add unit tests for the domain and application logic, and integration tests for the infrastructure.
