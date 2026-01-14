@@ -126,6 +126,17 @@ export const SHARED_STYLES = `
   ::-webkit-scrollbar-thumb:hover {
     background: var(--secondary);
   }
+  .sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+  }
   .skip-link {
     position: absolute;
     top: -100px;
@@ -172,12 +183,23 @@ export const SHARED_STYLES = `
     cursor: default;
     user-select: text; /* Allow selecting version info */
   }
+  .badge-inline {
+    display: inline-block;
+    background: #e8f5e9;
+    color: #2e7d32;
+    padding: 2px 8px;
+    border-radius: var(--radius-lg);
+    font-size: 0.75rem;
+    font-weight: 600;
+    vertical-align: middle;
+    margin-inline-start: 0.5rem;
+  }
   .badge-error {
     background: #ffebee;
     color: #c62828;
   }
   @media (prefers-color-scheme: dark) {
-    .badge {
+    .badge, .badge-inline {
       background: #1b5e20;
       color: #e8f5e9;
     }
@@ -277,7 +299,7 @@ export const SHARED_STYLES = `
     box-shadow: var(--shadow-md);
   }
   .btn:active {
-    transform: scale(0.98);
+    transform: scale(0.96);
     box-shadow: inset 0 2px 4px rgba(0,0,0,0.1);
     filter: brightness(0.9);
   }
@@ -403,6 +425,7 @@ export const SHARED_STYLES = `
     border-radius: 50%;
     margin-inline-end: 6px;
     animation: pulse 2s infinite ease-in-out;
+    cursor: help;
   }
   .error-code {
     font-size: 4rem;
@@ -527,6 +550,7 @@ export function baseLayout({ title, description, content }: LayoutProps): string
   <meta property="og:title" content="${safeTitle}">
   <meta property="og:description" content="${metaDescription}">
   <meta property="og:type" content="website">
+  <meta property="og:locale" content="en_US">
   <meta property="og:image" content="${image}">
   <meta property="og:image:alt" content="HomeGarden API Banner with green branding">
 
@@ -556,10 +580,13 @@ export function baseLayout({ title, description, content }: LayoutProps): string
         &copy; ${year} HomeGarden API. All rights reserved.
       </div>
       <div class="footer-links no-print">
-        <a href="https://github.com/homegarden/api" target="_blank" rel="noopener noreferrer" aria-label="View Source on GitHub (opens in a new tab)">View Source on GitHub${EXTERNAL_LINK_ICON}</a>
+        <a href="https://github.com/homegarden/api" target="_blank" rel="noopener noreferrer">View Source on GitHub<span class="sr-only"> (opens in a new tab)</span>${EXTERNAL_LINK_ICON}</a>
       </div>
     </footer>
   </div>
+  <script>
+    console.log('%c🌱 HomeGarden API%c\\n\\nGrowing smart solutions for your plants.\\n\\n', 'font-size: 24px; font-weight: bold; color: #2e7d32;', 'font-size: 14px; color: #555;');
+  </script>
 </body>
 </html>
   `
@@ -593,13 +620,13 @@ const LANDING_PAGE_HTML = baseLayout({
         </li>
         <li>
           <a href="/ui#/PlantID" class="card" aria-describedby="desc-plantid">
-            <h2>🌿 Plant ID<span class="card-arrow" aria-hidden="true">→</span></h2>
+            <h2>🌿 Plant ID<span class="badge-inline">AI</span><span class="card-arrow" aria-hidden="true">→</span></h2>
             <p id="desc-plantid">Identify species using AI vision (Docs).</p>
           </a>
         </li>
         <li>
           <a href="/ui#/DrPlant" class="card" aria-describedby="desc-drplant">
-            <h2>🩺 Dr. Plant<span class="card-arrow" aria-hidden="true">→</span></h2>
+            <h2>🩺 Dr. Plant<span class="badge-inline">AI</span><span class="card-arrow" aria-hidden="true">→</span></h2>
             <p id="desc-drplant">Diagnose diseases and pests (Docs).</p>
           </a>
         </li>
@@ -649,7 +676,11 @@ export function getNotFoundPageHtml(path: string): string {
         var backBtn = document.getElementById('go-back-btn');
         if (backBtn) {
           backBtn.addEventListener('click', function() {
-            history.back();
+            if (window.history.length > 1) {
+              window.history.back();
+            } else {
+              window.location.href = '/';
+            }
           });
         }
 
@@ -669,6 +700,9 @@ export function getNotFoundPageHtml(path: string): string {
                     setTimeout(function() { btn.innerHTML = originalHtml; }, 2000);
                  }).catch(function(err) {
                     console.error('Failed to copy', err);
+                    var originalHtml = btn.innerHTML;
+                    btn.innerHTML = 'Failed!';
+                    setTimeout(function() { btn.innerHTML = originalHtml; }, 2000);
                  });
               } else {
                  // Fallback
