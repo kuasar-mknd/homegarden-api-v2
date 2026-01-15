@@ -22,6 +22,9 @@ export class UserController {
         userId: requestedUserId,
       })
 
+      // Privacy: Do not cache user profiles
+      c.header('Cache-Control', 'no-store')
+
       if (!result.success) {
         return c.json(
           {
