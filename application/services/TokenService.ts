@@ -7,6 +7,9 @@ export interface TokenPayload {
   role: UserRole
 }
 
+/**
+ * @deprecated This service is replaced by Supabase Auth and will be removed in future versions.
+ */
 export class TokenService {
   private readonly secret: string
   private readonly expiresIn: string

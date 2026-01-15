@@ -15,6 +15,7 @@ describe('UserController', () => {
 
     mockContext = {
       get: vi.fn(),
+      header: vi.fn(),
       req: {
         valid: vi.fn(),
       },

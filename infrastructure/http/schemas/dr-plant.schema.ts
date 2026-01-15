@@ -5,6 +5,9 @@ import { z } from '@hono/zod-openapi'
 // =============================================================================
 
 export const DiagnosePlantInputSchema = z.object({
+  // Security Note: z.any() is used here for OpenAPI documentation generation only.
+  // Actual validation is performed in the controller/validator using z.custom<File>()
+  // which checks file type, size, and magic bytes.
   image: z.any().openapi({
     type: 'string',
     format: 'binary',
