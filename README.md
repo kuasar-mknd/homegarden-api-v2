@@ -112,5 +112,10 @@ curl -X POST http://localhost:3000/api/v2/plant-id/identify \
 *   **Database Connection Errors**: Check if your Postgres container is running and accessible. Verify `DATABASE_URL` matches your container settings.
     *   Check logs: `docker-compose logs db` or `docker logs homegarden-db`
 *   **AI Errors**: Verify `GOOGLE_AI_API_KEY` is valid and has access to the specified models.
-*   **Module not found errors**: If you see errors about `@prisma/client`, run `pnpm db:generate` manually.
+*   **Prisma/Database Errors**:
+    *   **Module not found**: If you see errors about `@prisma/client` or `PrismaClient` is not defined, you must run:
+        ```bash
+        pnpm db:generate
+        ```
+    *   **Migration/Schema**: If schema changes aren't reflected, run `pnpm db:push`.
 *   **Port in Use**: If port 3000 is occupied, change `PORT` in `.env`.
