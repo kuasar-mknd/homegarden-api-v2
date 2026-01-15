@@ -5,6 +5,10 @@ import { z } from '@hono/zod-openapi'
 // =============================================================================
 
 export const DiagnosePlantInputSchema = z.object({
+  // Security Note: z.any() is used here because this is a multipart/form-data upload
+  // where the 'image' field is a File object.
+  // STRICT VALIDATION of file type (magic bytes) and content is performed manually
+  // in the DrPlantController (validateImageSignature) to prevent malicious uploads.
   image: z.any().openapi({
     type: 'string',
     format: 'binary',
