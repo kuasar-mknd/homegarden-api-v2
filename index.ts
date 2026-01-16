@@ -179,7 +179,7 @@ app.use(
     permissionsPolicy: {
       camera: [],
       microphone: [],
-      geolocation: [],
+      geolocation: ['self'], // Sentinel: Allow geolocation for 'Nearby Gardens' feature
       payment: [],
       usb: [],
     },

@@ -26,6 +26,7 @@ import type {
   SpeciesSuggestion,
 } from '../../application/ports/ai-identification.port.js'
 import { AppError } from '../../shared/errors/app-error.js'
+import { sanitizePromptInput } from '../../shared/utils/ai-sanitizer.js'
 import { isSafeUrl } from '../../shared/utils/ssrf.validator.js'
 import { env } from '../config/env.js'
 import { logger } from '../config/logger.js'
@@ -311,7 +312,9 @@ export class GeminiPlantAdapter implements AIIdentificationPort, AIDiagnosisPort
       }
 
       if (request.symptomDescription) {
-        prompt += `\n\nUser's symptom description: "${request.symptomDescription}"`
+        // Sentinel: Sanitize input to prevent prompt injection
+        const safeDescription = sanitizePromptInput(request.symptomDescription)
+        prompt += `\n\nUser's symptom description: "${safeDescription}"`
       }
 
       if (request.symptomDuration) {
