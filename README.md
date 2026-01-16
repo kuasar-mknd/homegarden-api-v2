@@ -35,7 +35,12 @@ HomeGarden is a robust, Clean Architecture-based REST API for managing gardens a
     pnpm install
     ```
 
-3.  **Environment Setup:**
+3.  **Generate Prisma Client:**
+    ```bash
+    pnpm db:generate
+    ```
+
+4.  **Environment Setup:**
     Copy `.env.example` to `.env` and fill in the required values.
     ```bash
     cp .env.example .env
@@ -43,7 +48,7 @@ HomeGarden is a robust, Clean Architecture-based REST API for managing gardens a
     *   **Important**: You need a Supabase project for `SUPABASE_URL` and `SUPABASE_PUBLISHABLE_KEY`.
     *   For AI features, get a key from [Google AI Studio](https://aistudio.google.com/).
 
-4.  **Database Setup:**
+5.  **Database Setup:**
     Start a Postgres database (e.g., via Docker) and set `DATABASE_URL` in `.env`.
     ```bash
     # Recommended: Use docker-compose
@@ -64,7 +69,7 @@ HomeGarden is a robust, Clean Architecture-based REST API for managing gardens a
     pnpm db:seed
     ```
 
-5.  **Run the Server:**
+6.  **Run the Server:**
     ```bash
     pnpm dev
     ```
