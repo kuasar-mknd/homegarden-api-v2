@@ -112,6 +112,10 @@ model Plant {
   @@index([gardenId, exposure])
   // Optimization: Filter plants by watering needs in a garden
   @@index([gardenId, watering])
+  // Optimization: Filter plants by species sorted by date (e.g., "Newest tomatoes")
+  @@index([speciesId, createdAt])
+  // Optimization: Global sorted list of plants (e.g., "All New Plants")
+  @@index([createdAt])
   @@map("plants")
 }
 
@@ -231,6 +235,8 @@ model Diagnosis {
   // Optimization: Composite index for "My Pending Diagnoses" sorted by date (covers filter+sort)
   // This composite index also covers filtering by [userId, status]
   @@index([userId, status, createdAt])
+  // Optimization: Worker queue - finding all PENDING diagnoses sorted by age (FIFO)
+  @@index([status, createdAt])
   @@map("diagnoses")
 }
 

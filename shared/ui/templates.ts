@@ -490,12 +490,23 @@ interface LayoutProps {
 
 // Simple HTML escape function to prevent XSS
 function escapeHtml(unsafe: string): string {
-  return unsafe
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;')
-    .replace(/'/g, '&#039;')
+  // Optimization: Single-pass replacement for performance
+  return unsafe.replace(/[&<>"']/g, (m) => {
+    switch (m) {
+      case '&':
+        return '&amp;'
+      case '<':
+        return '&lt;'
+      case '>':
+        return '&gt;'
+      case '"':
+        return '&quot;'
+      case "'":
+        return '&#039;'
+      default:
+        return m
+    }
+  })
 }
 
 export function baseLayout({ title, description, content }: LayoutProps): string {
