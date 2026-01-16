@@ -13,3 +13,4 @@
 | 2025-12-30 | DocOps | README.md, docs/*, .github/workflows/*.yml | Update troubleshooting in README, pnpm fix in TESTING.md, fix CI versions, add audit workflow |
 | 2026-01-11 | DocOps | docs/AI.md, docs/API.md, .env.example, .github/dependabot.yml, tests/middleware/auth-rate-limit.middleware.test.ts | Synced docs with code (AI Schema, API endpoints, ENV), created Dependabot config, fixed linting in tests. |
 | 2026-01-15 | DocOps | .github/dependabot.yml, README.md, docs/API.md | Created Dependabot config, added docker-compose docs, updated API endpoints. |
+| 2026-01-16 | DocOps | README.md, docs/API.md, .github/workflows/*.yml | Fix CI workflow versions (v6->v4), update API status, add db:generate to README. |
