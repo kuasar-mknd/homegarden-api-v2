@@ -7,20 +7,26 @@ export interface TokenPayload {
   role: UserRole
 }
 
+export interface TokenServiceConfig {
+  secret: string
+  expiresIn?: string
+  refreshExpiresIn?: string
+}
+
 export class TokenService {
   private readonly secret: string
   private readonly expiresIn: string
   private readonly refreshExpiresIn: string
 
-  constructor() {
-    this.secret = process.env.JWT_SECRET as string
+  constructor(config: TokenServiceConfig) {
+    this.secret = config.secret
 
     if (!this.secret) {
       throw new Error('JWT_SECRET must be defined')
     }
 
-    this.expiresIn = process.env.JWT_EXPIRES_IN || '1h'
-    this.refreshExpiresIn = process.env.JWT_REFRESH_EXPIRES_IN || '7d'
+    this.expiresIn = config.expiresIn || '1h'
+    this.refreshExpiresIn = config.refreshExpiresIn || '7d'
   }
 
   generateAccessToken(payload: TokenPayload): string {

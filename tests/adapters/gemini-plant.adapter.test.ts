@@ -182,6 +182,7 @@ describe('GeminiPlantAdapter', () => {
         headers: {
           'User-Agent': 'HomeGarden-API/2.0 (Security-Scan; +https://homegarden.app)',
         },
+        signal: expect.any(AbortSignal),
       })
       vi.unstubAllGlobals()
     })
