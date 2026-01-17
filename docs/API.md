@@ -42,9 +42,9 @@ The best way to explore the API is via the built-in Swagger UI, which provides i
 ### Plants
 
 - `GET /plants` - List all plants for the user (Not Implemented).
-- `POST /plants` - Create a new plant.
+- `POST /plants` - Create a new plant (Not Implemented).
 - `GET /plants/:id` - Get plant details (Not Implemented).
-- `PATCH /plants/:id` - Update plant details.
+- `PATCH /plants/:id` - Update plant details (Not Implemented).
 
 ### AI Identification
 
