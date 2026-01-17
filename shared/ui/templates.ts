@@ -403,6 +403,7 @@ export const SHARED_STYLES = `
     border-radius: 50%;
     margin-inline-end: 6px;
     animation: pulse 2s infinite ease-in-out;
+    cursor: help;
   }
   .error-code {
     font-size: 4rem;
@@ -535,6 +536,7 @@ export function baseLayout({ title, description, content }: LayoutProps): string
   <meta name="twitter:description" content="${metaDescription}">
   <meta name="twitter:image" content="${image}">
 
+  <meta property="og:locale" content="en_US">
   <link rel="canonical" href="/">
   <title>${safeTitle}</title>
   <link rel="icon" href="${icon}">
@@ -647,28 +649,43 @@ export function getNotFoundPageHtml(path: string): string {
       (function() {
         // Handle Go Back
         var backBtn = document.getElementById('go-back-btn');
-        if (backBtn) {
+        if (backBtn && window.history.length > 1) {
           backBtn.addEventListener('click', function() {
             history.back();
           });
+        } else if (backBtn) {
+           backBtn.style.display = 'none';
         }
 
         // Handle Copy
         var btns = document.querySelectorAll('.copy-btn');
         Array.prototype.forEach.call(btns, function(btn) {
           btn.addEventListener('click', function() {
+            if (btn.hasAttribute('data-copying')) return;
+
             var targetSelector = btn.getAttribute('data-clipboard-target');
             var target = document.querySelector(targetSelector);
             if (target) {
               var text = target.innerText;
               // Modern API
               if (navigator.clipboard && navigator.clipboard.writeText) {
+                 btn.setAttribute('data-copying', 'true');
+                 var originalHtml = btn.innerHTML;
+                 var originalLabel = btn.getAttribute('aria-label');
+
                  navigator.clipboard.writeText(text).then(function() {
-                    var originalHtml = btn.innerHTML;
                     btn.innerHTML = '${CHECK_ICON} Copied!';
-                    setTimeout(function() { btn.innerHTML = originalHtml; }, 2000);
+                    btn.setAttribute('aria-label', 'Copied successfully');
+
+                    setTimeout(function() {
+                       btn.innerHTML = originalHtml;
+                       if (originalLabel) btn.setAttribute('aria-label', originalLabel);
+                       else btn.removeAttribute('aria-label');
+                       btn.removeAttribute('data-copying');
+                    }, 2000);
                  }).catch(function(err) {
                     console.error('Failed to copy', err);
+                    btn.removeAttribute('data-copying');
                  });
               } else {
                  // Fallback

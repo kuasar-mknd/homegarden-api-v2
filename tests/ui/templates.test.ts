@@ -23,7 +23,9 @@ describe('UI Templates', () => {
     })
 
     it('should include focus-visible style with primary color', () => {
-      expect(SHARED_STYLES).toContain('outline: var(--focus-ring-width) solid var(--focus-ring-color)')
+      expect(SHARED_STYLES).toContain(
+        'outline: var(--focus-ring-width) solid var(--focus-ring-color)',
+      )
     })
 
     it('should include new utility classes', () => {
@@ -45,6 +47,11 @@ describe('UI Templates', () => {
 
     it('should include print styles for expanding URLs', () => {
       expect(SHARED_STYLES).toContain('a[href^="http"]:after { content: " (" attr(href) ")"; }')
+    })
+
+    it('should include cursor: help for .status-dot', () => {
+      expect(SHARED_STYLES).toContain('.status-dot {')
+      expect(SHARED_STYLES).toContain('cursor: help;')
     })
   })
 
@@ -83,6 +90,11 @@ describe('UI Templates', () => {
       const html = getLandingPageHtml()
       expect(html).toContain('<div class="footer-links no-print">')
     })
+
+    it('should include og:locale meta tag', () => {
+      const html = getLandingPageHtml()
+      expect(html).toContain('<meta property="og:locale" content="en_US">')
+    })
   })
 
   describe('getNotFoundPageHtml', () => {
@@ -114,6 +126,17 @@ describe('UI Templates', () => {
     it('should use clear 404 title', () => {
       const html = getNotFoundPageHtml('/foo')
       expect(html).toContain('<title>404: Page Not Found')
+    })
+
+    it('should include improved copy button logic', () => {
+      const html = getNotFoundPageHtml('/foo')
+      expect(html).toContain("if (btn.hasAttribute('data-copying')) return;")
+      expect(html).toContain("btn.setAttribute('aria-label', 'Copied successfully');")
+    })
+
+    it('should include smart go back button logic', () => {
+      const html = getNotFoundPageHtml('/foo')
+      expect(html).toContain('if (backBtn && window.history.length > 1)')
     })
   })
 })
