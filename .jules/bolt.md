@@ -29,3 +29,7 @@
 ## 2024-05-23 - [Static Layout Anti-Pattern]
 **Learning:** Pre-computing HTML layouts (header/footer) to save string concatenation is a micro-optimization that creates security risks (e.g., static CSP nonces) and prevents dynamic content (Auth state).
 **Action:** Avoid caching layout templates unless they are strictly static and have no dependencies on request context.
+
+## 2024-05-24 - [Optimizing Auth Middleware Queries]
+**Learning:** Selecting only necessary fields (e.g., excluding `password` and `preferences`) in authentication middleware improves performance and security (by not loading sensitive hash into memory).
+**Action:** Use specific `select` clauses in Prisma queries instead of fetching all fields, but be careful with type inference when mixing `findUnique` (partial) and `create` (full) return types.
