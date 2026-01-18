@@ -41,10 +41,13 @@ The best way to explore the API is via the built-in Swagger UI, which provides i
 
 ### Plants
 
-- `GET /plants` - List all plants for the user (Not Implemented).
+These endpoints currently return `501 Not Implemented`.
+
+- `GET /plants` - List all plants for the user.
 - `POST /plants` - Create a new plant.
-- `GET /plants/:id` - Get plant details (Not Implemented).
+- `GET /plants/:id` - Get plant details.
 - `PATCH /plants/:id` - Update plant details.
+- `DELETE /plants/:id` - Delete plant.
 
 ### AI Identification
 
