@@ -648,6 +648,10 @@ export function getNotFoundPageHtml(path: string): string {
         // Handle Go Back
         var backBtn = document.getElementById('go-back-btn');
         if (backBtn) {
+          // Hide button if there is no history to go back to
+          if (history.length <= 1) {
+            backBtn.style.display = 'none';
+          }
           backBtn.addEventListener('click', function() {
             history.back();
           });
@@ -665,8 +669,18 @@ export function getNotFoundPageHtml(path: string): string {
               if (navigator.clipboard && navigator.clipboard.writeText) {
                  navigator.clipboard.writeText(text).then(function() {
                     var originalHtml = btn.innerHTML;
+                    var originalLabel = btn.getAttribute('aria-label');
+
+                    // Accessible feedback
+                    btn.setAttribute('aria-label', 'Copied successfully');
                     btn.innerHTML = '${CHECK_ICON} Copied!';
-                    setTimeout(function() { btn.innerHTML = originalHtml; }, 2000);
+
+                    setTimeout(function() {
+                      btn.innerHTML = originalHtml;
+                      if (originalLabel) {
+                        btn.setAttribute('aria-label', originalLabel);
+                      }
+                    }, 2000);
                  }).catch(function(err) {
                     console.error('Failed to copy', err);
                  });
