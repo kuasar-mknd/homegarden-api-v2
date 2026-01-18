@@ -5,11 +5,17 @@ import { logger } from '../../config/logger.js'
 import { prisma } from '../../database/prisma.client.js'
 
 // Initialize Supabase client
+// Sentinel: Lazy Singleton to prevent connection exhaustion
+let supabaseInstance: ReturnType<typeof createClient> | null = null
+
 const getSupabase = () => {
+  if (supabaseInstance) return supabaseInstance
+
   if (!env.SUPABASE_URL || !env.SUPABASE_PUBLISHABLE_KEY) {
     throw new Error('Supabase URL or Publishable Key not configured')
   }
-  return createClient(env.SUPABASE_URL, env.SUPABASE_PUBLISHABLE_KEY)
+  supabaseInstance = createClient(env.SUPABASE_URL, env.SUPABASE_PUBLISHABLE_KEY)
+  return supabaseInstance
 }
 
 /**
@@ -104,7 +110,11 @@ export const authMiddleware = createMiddleware(async (c, next) => {
     }
 
     // 3. Attach user to context
-    c.set('user', localUser)
+    // Sentinel: Strip sensitive fields (password) before setting to context
+    // to prevent accidental leakage in logs or responses
+    const { password: _password, ...safeUser } = localUser
+
+    c.set('user', safeUser)
     c.set('userId', localUser.id)
 
     return await next()
