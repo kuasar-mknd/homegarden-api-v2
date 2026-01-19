@@ -23,7 +23,9 @@ describe('UI Templates', () => {
     })
 
     it('should include focus-visible style with primary color', () => {
-      expect(SHARED_STYLES).toContain('outline: var(--focus-ring-width) solid var(--focus-ring-color)')
+      expect(SHARED_STYLES).toContain(
+        'outline: var(--focus-ring-width) solid var(--focus-ring-color)',
+      )
     })
 
     it('should include new utility classes', () => {
@@ -114,6 +116,13 @@ describe('UI Templates', () => {
     it('should use clear 404 title', () => {
       const html = getNotFoundPageHtml('/foo')
       expect(html).toContain('<title>404: Page Not Found')
+    })
+
+    it('should correctly handle paths with special replacement patterns', () => {
+      const path = '/foo$$bar'
+      const html = getNotFoundPageHtml(path)
+      expect(html).toContain('/foo$$bar')
+      expect(html).not.toContain('{{PATH}}')
     })
   })
 })
