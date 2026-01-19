@@ -42,17 +42,23 @@ HomeGarden is a robust, Clean Architecture-based REST API for managing gardens a
     ```
     *   **Important**: You need a Supabase project for `SUPABASE_URL` and `SUPABASE_PUBLISHABLE_KEY`.
     *   For AI features, get a key from [Google AI Studio](https://aistudio.google.com/).
+    *   The `DATABASE_URL` is pre-configured for the provided Docker setup.
 
 4.  **Database Setup:**
-    Start a Postgres database (e.g., via Docker) and set `DATABASE_URL` in `.env`.
+    Start a Postgres database using Docker.
     ```bash
     # Recommended: Use docker-compose
     docker-compose up -d
     ```
 
-    Or manually:
+    Or manually (matching the default `.env` config):
     ```bash
-    docker run --name homegarden-db -e POSTGRES_PASSWORD=password -e POSTGRES_DB=homegarden -p 5432:5432 -d postgis/postgis:15-3.3
+    docker run --name homegarden-db \
+      -e POSTGRES_USER=user \
+      -e POSTGRES_PASSWORD=password \
+      -e POSTGRES_DB=homegarden \
+      -p 5432:5432 \
+      -d postgis/postgis:15-3.3
     ```
 
     Push the schema to the database:

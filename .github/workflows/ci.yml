@@ -26,25 +26,25 @@ jobs:
           --health-retries 5
 
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v4
 
       - uses: pnpm/action-setup@v4
         with:
           version: 9
 
       - name: Setup Node.js
-        uses: actions/setup-node@v6
+        uses: actions/setup-node@v4
         with:
           node-version: 20
           cache: "pnpm"
 
       - name: Install dependencies
-        run: pnpm install
+        run: pnpm install --frozen-lockfile
 
       - name: Lint
         run: pnpm run ci:check
 
-      - name: Setup Database (and Generate Client)
+      - name: Setup Database (Schema Check)
         env:
           DATABASE_URL: postgres://postgres:password@localhost:5432/homegarden
         run: pnpm db:push
