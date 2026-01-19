@@ -403,6 +403,7 @@ export const SHARED_STYLES = `
     border-radius: 50%;
     margin-inline-end: 6px;
     animation: pulse 2s infinite ease-in-out;
+    cursor: help;
   }
   .error-code {
     font-size: 4rem;
@@ -526,6 +527,7 @@ export function baseLayout({ title, description, content }: LayoutProps): string
   <meta property="og:site_name" content="HomeGarden API">
   <meta property="og:title" content="${safeTitle}">
   <meta property="og:description" content="${metaDescription}">
+  <meta property="og:locale" content="en_US">
   <meta property="og:type" content="website">
   <meta property="og:image" content="${image}">
   <meta property="og:image:alt" content="HomeGarden API Banner with green branding">
@@ -560,6 +562,9 @@ export function baseLayout({ title, description, content }: LayoutProps): string
       </div>
     </footer>
   </div>
+  <script>
+    console.log('%c🌱 HomeGarden API%c\\n\\nGrowing smart solutions for your plants.\\n', 'font-size: 24px; color: #2e7d32; font-weight: bold;', 'font-size: 14px; color: #4caf50;');
+  </script>
 </body>
 </html>
   `
@@ -648,9 +653,8 @@ export function getNotFoundPageHtml(path: string): string {
         // Handle Go Back
         var backBtn = document.getElementById('go-back-btn');
         if (backBtn) {
-          backBtn.addEventListener('click', function() {
-            history.back();
-          });
+          if (history.length <= 1) backBtn.style.display = 'none';
+          else backBtn.addEventListener('click', function() { history.back(); });
         }
 
         // Handle Copy
@@ -665,8 +669,13 @@ export function getNotFoundPageHtml(path: string): string {
               if (navigator.clipboard && navigator.clipboard.writeText) {
                  navigator.clipboard.writeText(text).then(function() {
                     var originalHtml = btn.innerHTML;
+                    var originalLabel = btn.getAttribute('aria-label');
                     btn.innerHTML = '${CHECK_ICON} Copied!';
-                    setTimeout(function() { btn.innerHTML = originalHtml; }, 2000);
+                    btn.setAttribute('aria-label', 'Copied successfully');
+                    setTimeout(function() {
+                      btn.innerHTML = originalHtml;
+                      btn.setAttribute('aria-label', originalLabel);
+                    }, 2000);
                  }).catch(function(err) {
                     console.error('Failed to copy', err);
                  });

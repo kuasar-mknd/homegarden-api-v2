@@ -40,6 +40,14 @@
 **Learning:** Feedback text like "Checked!" can be ambiguous.
 **Action:** Use explicit action verbs ("Copied!") paired with a universally recognized icon (Checkmark) for clarity and delight.
 
+## 2026-02-12 - Micro-UX & History State
+
+**Learning:** "Go Back" buttons that depend on browser history can be a dead end if the user opened the link in a new tab (`history.length <= 1`).
+**Action:** Conditionally hide history-dependent navigation elements using `if (history.length <= 1) element.style.display = 'none';` to prevent user frustration.
+
+**Learning:** Accessible status indicators can be subtle but informative.
+**Action:** Adding `cursor: help` and a `title` attribute to a status dot provides a standard, native way to expose its meaning without cluttering the UI.
+
 ## Rejected Changes
 
 *(None yet)*
