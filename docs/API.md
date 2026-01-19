@@ -29,22 +29,27 @@ The best way to explore the API is via the built-in Swagger UI, which provides i
 
 ### Auth
 
-- `POST /auth/register` - Register a new user (Note: Primary auth is usually handled directly by Supabase client).
-- `POST /auth/login` - Authenticate user (Note: Primary auth is usually handled directly by Supabase client).
+Authentication is primarily handled directly by the Supabase Client on the frontend.
+The following endpoints exist but currently return `501 Not Implemented` as the logic is delegated to Supabase:
+- `POST /auth/register`
+- `POST /auth/login`
+- `POST /auth/refresh-token`
 
-### Gardens
+### Gardens & Plants
 
-- `GET /gardens/plants` - Retrieves all plants in the authenticated user's garden.
+- `GET /gardens/plants` - Retrieves all plants for the authenticated user (across all gardens).
 - `POST /gardens/plants` - Adds a new plant to a specific garden (requires `gardenId` in body).
 - `GET /gardens/nearby` - Finds public gardens within a specific radius (geo-query).
 - `GET /gardens/:gardenId/weather` - Fetches current weather for a garden's location.
 
-### Plants
+### Plants (Legacy / Planned)
 
-- `GET /plants` - List all plants for the user (Not Implemented).
-- `POST /plants` - Create a new plant.
-- `GET /plants/:id` - Get plant details (Not Implemented).
-- `PATCH /plants/:id` - Update plant details.
+These endpoints are placeholders and currently return `501 Not Implemented`. Use `/gardens/plants` for plant management.
+- `GET /plants`
+- `POST /plants`
+- `GET /plants/:id`
+- `PATCH /plants/:id`
+- `DELETE /plants/:id`
 
 ### AI Identification
 
@@ -74,16 +79,15 @@ Errors are returned in a standardized JSON format:
 ```json
 {
   "success": false,
-  "error": {
-    "code": "VALIDATION_ERROR",
-    "message": "Invalid input data",
-    "details": [
-      {
-        "field": "imageUrl",
-        "message": "Invalid URL format"
-      }
-    ]
-  }
+  "error": "VALIDATION_ERROR",
+  "message": "Invalid input data",
+  "details": [
+    {
+      "code": "invalid_string",
+      "path": ["imageUrl"],
+      "message": "Invalid URL"
+    }
+  ]
 }
 ```
 
