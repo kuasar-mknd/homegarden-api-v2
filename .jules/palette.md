@@ -40,6 +40,14 @@
 **Learning:** Feedback text like "Checked!" can be ambiguous.
 **Action:** Use explicit action verbs ("Copied!") paired with a universally recognized icon (Checkmark) for clarity and delight.
 
+## 2024-05-27 - Micro-UX and A11y Polish
+
+**Learning:** Decorative emojis in headings can be read aloud by screen readers (e.g., "Seedling HomeGarden API").
+**Action:** Wrap decorative emojis in `<span aria-hidden="true">` to preserve visual delight while reducing auditory noise.
+
+**Learning:** A "Go Back" button that does nothing (when history is empty) is frustrating.
+**Action:** Hide the button dynamically if `window.history.length <= 1`.
+
 ## Rejected Changes
 
 *(None yet)*
