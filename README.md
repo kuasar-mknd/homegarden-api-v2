@@ -2,10 +2,12 @@
 
 HomeGarden is a robust, Clean Architecture-based REST API for managing gardens and plants, powered by AI for identification and diagnosis. It uses Hono, Prisma, and Supabase to provide a scalable and type-safe backend.
 
+![CI](https://github.com/homegarden/api/actions/workflows/ci.yml/badge.svg)
+
 ## 🌟 Features
 
 *   **Clean Architecture**: Separation of concerns into Domain, Application, and Infrastructure layers.
-*   **Plant Management**: CRUD operations for Gardens and Plants.
+*   **Garden Management**: Create gardens, add plants, and view your collection.
 *   **AI Integration**:
     *   **Identification**: Identify plants from images using Google Gemini Vision (`gemini-2.0-flash`).
     *   **Diagnosis**: Diagnose plant health issues using Google Gemini Vision (`gemini-2.5-pro-preview-06-05`).

@@ -1,45 +1,59 @@
 # Architecture
 
-This project follows **Clean Architecture** principles to ensure separation of concerns, testability, and maintainability.
+HomeGarden follows **Clean Architecture** principles to ensure separation of concerns, testability, and maintainability.
 
-## 🏗 Directory Structure
+## Layers
 
-The codebase is organized into four main layers:
+The codebase is organized into three main concentric layers:
 
-### 1. `domain/` (Enterprise Business Rules)
-This is the core of the application. It contains entities, value objects, and domain events that are independent of any external frameworks or tools.
-*   **Entities**: Core business objects (e.g., `User`, `Garden`, `Plant`) with behavior and validation logic.
-*   **Value Objects**: Immutable objects defined by their attributes (e.g., `Email`, `Coordinates`).
-*   **Repositories (Interfaces)**: Defines how data should be accessed, but not how it is implemented.
+### 1. Domain (`src/domain`)
+**Enterprise Business Rules**. This layer contains the core business logic and entities. It is completely independent of frameworks, databases, or external agencies.
 
-### 2. `application/` (Application Business Rules)
-This layer orchestrates the flow of data to and from the domain entities. It implements specific use cases.
-*   **Services/UseCases**: Contains business logic for specific actions (e.g., `CreateGardenService`, `IdentifyPlantService`).
-*   **DTOs**: Data Transfer Objects used to pass data between layers.
+*   **Entities**: Core data structures (e.g., `Plant`, `User`, `Garden`).
+*   **Repositories (Interfaces)**: Contracts for data access (e.g., `IGardenRepository`).
+*   **Services (Interfaces)**: Contracts for external services (e.g., `AIPlantService`).
+*   **Errors**: Domain-specific error classes.
 
-### 3. `infrastructure/` (Frameworks & Drivers)
-This layer contains implementations of interfaces defined in the domain and application layers. It deals with external details like databases, web frameworks, and third-party APIs.
-*   **Http**: Hono server setup, controllers, middleware, and routes.
-*   **Database**: Prisma client and repository implementations.
-*   **Config**: Environment variables, logger configuration.
-*   **Adapters**: External service integrations (e.g., `GeminiAdapter`, `OpenMeteoAdapter`).
+### 2. Application (`src/application`)
+**Application Business Rules**. This layer orchestrates the flow of data to and from the entities.
 
-### 4. `shared/`
-Contains shared utilities, types, and constants used across multiple layers (e.g., `Result` type, helper functions).
+*   **Use Cases**: Specific user actions (e.g., `AddPlantUseCase`, `DiagnosePlantUseCase`). Each use case typically has a single `execute` method.
+*   **DTOs**: Data Transfer Objects used for input/output boundaries.
 
-## 🧩 Adding New Features
+### 3. Infrastructure (`src/infrastructure`)
+**Frameworks & Drivers**. This layer contains details such as the database, web framework, and external API adapters.
 
-To add a new feature (e.g., "Watering Schedule"), follow this flow:
+*   **HTTP**: Hono controllers, routes, and middleware.
+*   **Database**: Prisma repositories implementing domain interfaces.
+*   **External Services**: Adapters for Google Gemini, Open-Meteo, etc.
+*   **Config**: Environment variables, logger, etc.
 
-1.  **Domain**: Define the `WateringSchedule` entity and its repository interface in `domain/`.
-2.  **Application**: Create a service/use-case (e.g., `CreateWateringScheduleService`) in `application/`.
+## Folder Structure
+
+```
+src/
+├── domain/           # Entities, Interface definitions
+├── application/      # Use Cases
+├── infrastructure/   # Implementation details (Hono, Prisma, Adapters)
+│   ├── config/
+│   ├── database/
+│   ├── external-services/
+│   └── http/
+│       ├── controllers/
+│       ├── middleware/
+│       └── routes/
+├── shared/           # Shared utilities and UI templates
+└── index.ts          # Entry point (Dependency Injection & Server setup)
+```
+
+## Adding New Features
+
+To add a new feature (e.g., "Water Plant"):
+
+1.  **Domain**: Define the behavior in an Entity (if needed) or update a Repository interface.
+2.  **Application**: Create a `WaterPlantUseCase` that implements the business logic.
 3.  **Infrastructure**:
-    *   Implement the repository in `infrastructure/repositories/`.
-    *   Create a controller in `infrastructure/http/controllers/`.
-    *   Define the route in `infrastructure/http/routes/`.
-4.  **Tests**: Add unit tests for the domain and application logic, and integration tests for the infrastructure.
-
-## 🔄 Dependency Rule
-Dependencies only point **inwards**.
-*   `Infrastructure` -> `Application` -> `Domain`
-*   The `Domain` layer knows nothing about the outer layers.
+    *   Implement the persistence logic in a Prisma Repository.
+    *   Create a `WaterPlantController` to handle the HTTP request.
+    *   Define the route in `routes/` and bind it to the controller.
+    *   Inject dependencies in `index.ts`.

@@ -1,84 +1,52 @@
 # AI Integration
 
-HomeGarden leverages Google Gemini Vision models to provide advanced plant identification and health diagnosis capabilities.
+HomeGarden uses Google Gemini for its core AI features: **Plant Identification** and **Dr. Plant (Diagnosis)**.
 
-## 🤖 Models Configured
+## Models
 
-The specific models are configurable via environment variables to allow for easy upgrades or testing different model versions.
+Configuration is handled via environment variables, allowing flexibility to switch models without code changes.
 
-| Feature | Env Variable | Default Model | Description |
-|---|---|---|---|
-| **Plant Identification** | `GEMINI_IDENTIFICATION_MODEL` | `gemini-2.0-flash` | Optimized for speed and general object recognition. |
-| **Plant Diagnosis** | `GEMINI_DIAGNOSIS_MODEL` | `gemini-2.5-pro-preview-06-05` | A more capable model for complex reasoning and detailed analysis. |
+| Feature | Default Model | Env Variable |
+|---|---|---|
+| **Identification** | `gemini-2.0-flash` | `GEMINI_IDENTIFICATION_MODEL` |
+| **Diagnosis** | `gemini-2.5-pro-preview-06-05` | `GEMINI_DIAGNOSIS_MODEL` |
 
-## 🔑 Configuration
+## Adapter Architecture
 
-To enable AI features, you must provide a Google AI API key:
+The AI integration is managed by the `GeminiPlantAdapter` (Infrastructure Layer), which implements the `AIPlantService` interface (Domain Layer). This ensures that the domain logic is decoupled from the specific AI provider.
 
-```bash
-GOOGLE_AI_API_KEY=your_api_key_here
-```
+### JSON Schemas
 
-## 📋 JSON Schemas
+The application enforces structured JSON output from the LLM to ensure reliable parsing.
 
-The application instructs the AI to return structured JSON data.
-
-### Identification Schema
+**Identification Output:**
 ```json
 {
-  "success": true,
-  "suggestions": [
-    {
-      "confidence": 0.95,
-      "commonName": "English Ivy",
-      "scientificName": "Hedera helix",
-      "family": "Araliaceae",
-      "genus": "Hedera",
-      "description": "Evergreen climbing or ground-creeping vine",
-      "origin": "Europe and Western Asia",
-      "imageUrl": "https://..."
-    }
-  ]
+  "commonName": "Monstera",
+  "scientificName": "Monstera deliciosa",
+  "family": "Araceae",
+  "confidence": 0.95,
+  "description": "A popular tropical houseplant..."
 }
 ```
 
-### Diagnosis Schema
+**Diagnosis Output:**
 ```json
 {
-  "success": true,
-  "isHealthy": false,
-  "confidence": 0.87,
-  "condition": {
-    "name": "Powdery Mildew",
-    "type": "DISEASE",
-    "severity": "MODERATE",
-    "scientificName": "Erysiphales"
-  },
-  "affectedParts": ["leaves"],
-  "symptoms": ["White powdery coating on leaves", "Yellowing leaf margins"],
-  "causes": ["High humidity", "Poor air circulation", "Fungal spores"],
-  "treatments": [
-    {
-      "priority": 1,
-      "action": "Remove affected leaves",
-      "instructions": "Carefully prune and dispose of heavily infected leaves. Do not compost.",
-      "frequency": "once",
-      "products": ["Neem oil", "Potassium bicarbonate"]
-    }
-  ],
-  "organicTreatment": "Mix 1 tbsp baking soda + 1 tbsp vegetable oil + 1 gallon water. Spray weekly.",
-  "chemicalTreatment": "Apply sulfur-based fungicide according to package instructions.",
-  "preventionTips": ["Improve air circulation"],
-  "urgentActions": [],
-  "recoveryTimeWeeks": 3,
-  "notes": "Caught early. Good prognosis with proper treatment."
+  "healthy": false,
+  "disease": "Root Rot",
+  "confidence": 0.85,
+  "symptoms": ["yellow leaves", "mushy roots"],
+  "treatment": "Reduce watering, repot in well-draining soil.",
+  "prevention": "Ensure pot has drainage holes."
 }
 ```
 
-## 💰 Cost Control Strategy
+## Cost Control & Rate Limiting
 
-To manage costs and latency:
+To prevent excessive costs and abuse, AI endpoints have specific protections:
 
-1.  **Strict Rate Limiting**: The API enforces rate limits per user/IP (configured via `RATE_LIMIT_WINDOW_MS` and `RATE_LIMIT_MAX`).
-2.  **Stateless**: The AI service is stateless; no conversation history is maintained to minimize token usage.
-3.  **JSON Mode**: We strictly request JSON output to avoid verbose, unstructured text responses.
+1.  **Rate Limiting**: AI endpoints are subject to a stricter rate limit than the rest of the API.
+2.  **Caching**: Diagnosis results for the same image (hash) or plant ID are cached where possible (implementation dependent).
+3.  **Payload Size**: Image uploads are limited to avoid processing unnecessarily large files.
+4.  **Token Limits**: Prompts are optimized to use the minimum necessary context window.
