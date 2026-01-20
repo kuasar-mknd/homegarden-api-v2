@@ -46,6 +46,14 @@ describe('UI Templates', () => {
     it('should include print styles for expanding URLs', () => {
       expect(SHARED_STYLES).toContain('a[href^="http"]:after { content: " (" attr(href) ")"; }')
     })
+
+    it('should include cursor help for status dot', () => {
+      // We check if the style block contains the class definition and the cursor property
+      // Note: Since SHARED_STYLES is a large string, we just check for presence of the property near the class if possible,
+      // or just check for the property generally if the class is unique enough.
+      // But verifying exact structure via regex is better.
+      expect(SHARED_STYLES).toMatch(/\.status-dot\s*\{[^}]*cursor:\s*help/s)
+    })
   })
 
   describe('getLandingPageHtml', () => {
@@ -77,6 +85,17 @@ describe('UI Templates', () => {
       expect(html).toContain(
         '<meta name="theme-color" content="#121212" media="(prefers-color-scheme: dark)">',
       )
+    })
+
+    it('should include og:locale meta tag', () => {
+      const html = getLandingPageHtml()
+      expect(html).toContain('<meta property="og:locale" content="en_US">')
+    })
+
+    it('should wrap decorative emojis in aria-hidden spans', () => {
+      const html = getLandingPageHtml()
+      expect(html).toContain('<span aria-hidden="true">🌱</span>')
+      expect(html).toContain('<span aria-hidden="true">🌿</span>')
     })
 
     it('should use footer-links class', () => {
@@ -114,6 +133,17 @@ describe('UI Templates', () => {
     it('should use clear 404 title', () => {
       const html = getNotFoundPageHtml('/foo')
       expect(html).toContain('<title>404: Page Not Found')
+    })
+
+    it('should include history check for back button', () => {
+      const html = getNotFoundPageHtml('/foo')
+      expect(html).toContain('if (window.history.length <= 1)')
+      expect(html).toContain("backBtn.style.display = 'none'")
+    })
+
+    it('should update aria-label on copy success', () => {
+      const html = getNotFoundPageHtml('/foo')
+      expect(html).toContain("btn.setAttribute('aria-label', 'Copied successfully')")
     })
   })
 })
