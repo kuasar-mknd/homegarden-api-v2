@@ -49,8 +49,14 @@ The best way to explore the API is via the built-in Swagger UI, which provides i
 ### AI Identification
 
 - `GET /plant-id/status` - Check Plant ID service availability.
-- `POST /plant-id/identify` - Identifies a plant from an image URL or Base64 data (JSON Body).
-- `POST /dr-plant/diagnose` - Diagnoses plant health issues from an image (Multipart/Form-Data).
+- `POST /plant-id/identify` - Identifies a plant from an image URL or Base64 data.
+  - **Body**: JSON
+  - **Payload**: `{ "imageUrl": "...", "imageBase64": "..." }`
+- `POST /dr-plant/diagnose` - Diagnoses plant health issues from an image.
+  - **Content-Type**: `multipart/form-data`
+  - **Fields**:
+    - `image`: File (Required)
+    - `symptoms`: String (Optional, list of symptoms)
 
 ### Users
 
@@ -91,4 +97,37 @@ Errors are returned in a standardized JSON format:
 
 Real-time features are available via WebSocket at `ws://localhost:3000`.
 
-See `README.md` for subscription examples.
+### Channels
+
+#### Weather
+Request real-time weather updates.
+
+**Request:**
+```json
+{
+  "channel": "weather",
+  "type": "GET_WEATHER",
+  "payload": {
+    "latitude": 52.52,
+    "longitude": 13.41
+  }
+}
+```
+
+**Response:**
+```json
+{
+  "type": "WEATHER_UPDATE",
+  "channel": "weather",
+  "payload": { ... }
+}
+```
+
+#### Care Reminders (Coming Soon)
+Subscribe to care reminders.
+```json
+{
+  "channel": "care-reminders",
+  "type": "SUBSCRIBE"
+}
+```
