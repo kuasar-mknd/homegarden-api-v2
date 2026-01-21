@@ -4,7 +4,7 @@ This project follows **Clean Architecture** principles to ensure separation of c
 
 ## 🏗 Directory Structure
 
-The codebase is organized into four main layers:
+The codebase is organized into main layers:
 
 ### 1. `domain/` (Enterprise Business Rules)
 This is the core of the application. It contains entities, value objects, and domain events that are independent of any external frameworks or tools.
@@ -26,6 +26,12 @@ This layer contains implementations of interfaces defined in the domain and appl
 
 ### 4. `shared/`
 Contains shared utilities, types, and constants used across multiple layers (e.g., `Result` type, helper functions).
+
+### 5. `tests/`
+Contains all testing logic, mirroring the structure where possible.
+*   **e2e/**: End-to-End tests (integration level).
+*   **unit/**: Unit tests for specific logic.
+*   **setup.ts**: Global test configuration.
 
 ## 🧩 Adding New Features
 

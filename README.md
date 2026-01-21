@@ -106,6 +106,35 @@ curl -X POST http://localhost:3000/api/v2/plant-id/identify \
   -d '{"imageUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/3/3a/Monstera_deliciosa5.jpg/640px-Monstera_deliciosa5.jpg"}'
 ```
 
+### Example: Diagnose a Plant (Dr. Plant)
+
+This endpoint uses `multipart/form-data` to upload an image file.
+
+```bash
+curl -X POST http://localhost:3000/api/v2/dr-plant/diagnose \
+  -H "Authorization: Bearer <YOUR_SUPABASE_TOKEN>" \
+  -F "image=@/path/to/sick_plant.jpg" \
+  -F "symptoms=Yellowing leaves with spots"
+```
+
+## 🔌 WebSocket Usage
+
+Real-time features like weather updates are available via WebSocket.
+
+**Connect**: `ws://localhost:3000`
+
+**Example: Get Weather**
+```json
+{
+  "channel": "weather",
+  "type": "GET_WEATHER",
+  "payload": {
+    "latitude": 40.71,
+    "longitude": -74.01
+  }
+}
+```
+
 ## 🔧 Troubleshooting
 
 *   **`Supabase URL or Publishable Key not configured`**: Ensure `SUPABASE_URL` and `SUPABASE_PUBLISHABLE_KEY` are set in `.env`.
@@ -114,3 +143,4 @@ curl -X POST http://localhost:3000/api/v2/plant-id/identify \
 *   **AI Errors**: Verify `GOOGLE_AI_API_KEY` is valid and has access to the specified models.
 *   **Module not found errors**: If you see errors about `@prisma/client`, run `pnpm db:generate` manually.
 *   **Port in Use**: If port 3000 is occupied, change `PORT` in `.env`.
+*   **Rate Limit Exceeded**: If you receive `429 Too Many Requests`, wait a few minutes before trying again. The default limit is 350 requests per 15 minutes.
