@@ -489,13 +489,16 @@ interface LayoutProps {
 }
 
 // Simple HTML escape function to prevent XSS
+const ESCAPE_MAP: Record<string, string> = {
+  '&': '&amp;',
+  '<': '&lt;',
+  '>': '&gt;',
+  '"': '&quot;',
+  "'": '&#039;',
+}
+const ESCAPE_REGEX = /[&<>"']/g
 function escapeHtml(unsafe: string): string {
-  return unsafe
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;')
-    .replace(/'/g, '&#039;')
+  return unsafe.replace(ESCAPE_REGEX, (match) => ESCAPE_MAP[match])
 }
 
 export function baseLayout({ title, description, content }: LayoutProps): string {
