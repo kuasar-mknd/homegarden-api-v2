@@ -645,15 +645,20 @@ export function getNotFoundPageHtml(path: string): string {
     </main>
     <script>
       (function() {
-        // Handle Go Back
+        // Handle Go Back - Smart Navigation
+        // 🎨 Palette: Hide button if no history, to avoid confusion
         var backBtn = document.getElementById('go-back-btn');
         if (backBtn) {
-          backBtn.addEventListener('click', function() {
-            history.back();
-          });
+          if (history.length <= 1) {
+            backBtn.style.display = 'none';
+          } else {
+            backBtn.addEventListener('click', function() {
+              history.back();
+            });
+          }
         }
 
-        // Handle Copy
+        // Handle Copy with Accessible Feedback
         var btns = document.querySelectorAll('.copy-btn');
         Array.prototype.forEach.call(btns, function(btn) {
           btn.addEventListener('click', function() {
@@ -665,8 +670,15 @@ export function getNotFoundPageHtml(path: string): string {
               if (navigator.clipboard && navigator.clipboard.writeText) {
                  navigator.clipboard.writeText(text).then(function() {
                     var originalHtml = btn.innerHTML;
+                    var originalLabel = btn.getAttribute('aria-label');
+
                     btn.innerHTML = '${CHECK_ICON} Copied!';
-                    setTimeout(function() { btn.innerHTML = originalHtml; }, 2000);
+                    btn.setAttribute('aria-label', 'Copied successfully');
+
+                    setTimeout(function() {
+                      btn.innerHTML = originalHtml;
+                      btn.setAttribute('aria-label', originalLabel);
+                    }, 2000);
                  }).catch(function(err) {
                     console.error('Failed to copy', err);
                  });
