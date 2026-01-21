@@ -115,5 +115,16 @@ describe('UI Templates', () => {
       const html = getNotFoundPageHtml('/foo')
       expect(html).toContain('<title>404: Page Not Found')
     })
+
+    it('should include smart go-back logic', () => {
+        const html = getNotFoundPageHtml('/foo')
+        expect(html).toContain('if (history.length <= 1) {')
+        expect(html).toContain("backBtn.style.display = 'none';")
+    })
+
+    it('should include accessible copy feedback logic', () => {
+        const html = getNotFoundPageHtml('/foo')
+        expect(html).toContain("btn.setAttribute('aria-label', 'Copied successfully');")
+    })
   })
 })
