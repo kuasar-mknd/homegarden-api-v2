@@ -17,12 +17,20 @@ import { URL } from 'node:url'
 // 192.168.0.0/16
 // 127.0.0.0/8 (Loopback)
 // 169.254.0.0/16 (Link-local)
+// 100.64.0.0/10 (Carrier Grade NAT)
+// 198.18.0.0/15 (Benchmarking)
+// 224.0.0.0/4 (Multicast)
+// 240.0.0.0/4 (Reserved)
 const PRIVATE_IPV4_RANGES = [
   { start: 0x0a000000, end: 0x0affffff }, // 10.0.0.0/8
   { start: 0xac100000, end: 0xac1fffff }, // 172.16.0.0/12
   { start: 0xc0a80000, end: 0xc0a8ffff }, // 192.168.0.0/16
   { start: 0x7f000000, end: 0x7fffffff }, // 127.0.0.0/8
   { start: 0xa9fe0000, end: 0xa9feffff }, // 169.254.0.0/16
+  { start: 0x64400000, end: 0x647fffff }, // 100.64.0.0/10
+  { start: 0xc6120000, end: 0xc613ffff }, // 198.18.0.0/15
+  { start: 0xe0000000, end: 0xefffffff }, // 224.0.0.0/4
+  { start: 0xf0000000, end: 0xffffffff }, // 240.0.0.0/4
 ]
 
 // Helper to convert IPv4 string to number
@@ -35,6 +43,15 @@ function ipV4ToNumber(ip: string): number | null {
 
 /**
  * Checks if a URL is safe to fetch (not pointing to internal network)
+ *
+ * @param urlString The URL to validate
+ * @returns true if the URL is safe, false otherwise
+ *
+ * @note This validation is subject to DNS Rebinding attacks because the DNS resolution
+ * happens here, but the subsequent fetch() will resolve the domain again.
+ * A sophisticated attacker could serve a public IP during this check and a private IP
+ * during the fetch. To mitigate this fully, one would need to use a custom HTTP Agent
+ * that pins the IP address, or route traffic through a forward proxy.
  */
 export async function isSafeUrl(urlString: string): Promise<boolean> {
   try {
