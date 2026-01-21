@@ -89,6 +89,24 @@ describe('AuthMiddleware', () => {
     expect(mockNext).toHaveBeenCalled()
   })
 
+  it('should strip password from user object in context', async () => {
+    mockContext.req.header.mockReturnValue('Bearer valid-token')
+    const mockUser = { id: 'auth-id', email: 'test@example.com' }
+    mockSupabase.auth.getUser.mockResolvedValue({ data: { user: mockUser }, error: null })
+
+    const dbUser = { id: 'db-id', email: 'test@example.com', password: 'secret-uuid' }
+    vi.mocked(prisma.user.findUnique).mockResolvedValue(dbUser as any)
+
+    await authMiddleware(mockContext, mockNext)
+
+    const { password: _, ...safeUser } = dbUser
+    expect(mockContext.set).toHaveBeenCalledWith('user', safeUser)
+    expect(mockContext.set).toHaveBeenCalledWith('userId', dbUser.id)
+    // Verify that the call with the password does NOT happen
+    expect(mockContext.set).not.toHaveBeenCalledWith('user', expect.objectContaining({ password: 'secret-uuid' }))
+    expect(mockNext).toHaveBeenCalled()
+  })
+
   it('should create and sync new user if not in database', async () => {
     mockContext.req.header.mockReturnValue('Bearer valid-token')
     const mockUser = {

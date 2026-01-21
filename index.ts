@@ -169,6 +169,8 @@ app.use(
       imgSrc: ["'self'", 'data:', 'https:', 'blob:'],
       connectSrc: ["'self'", 'https://api.open-meteo.com'],
       fontSrc: ["'self'", 'https:', 'data:'],
+      objectSrc: ["'none'"], // Sentinel: Block object/embed/applet
+      baseUri: ["'self'"], // Sentinel: Restrict base URI
     },
     xFrameOptions: 'DENY',
     // xXssProtection is deprecated and can introduce XS-Leaks, so we remove it.

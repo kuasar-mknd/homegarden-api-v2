@@ -13,6 +13,11 @@ export const rateLimitMiddleware = rateLimiter({
   standardHeaders: 'draft-6',
   keyGenerator: (c) => {
     // Prioritize Cloudflare / Real IP headers
+    // Sentinel: WARNING - This logic relies on 'x-forwarded-for' which can be spoofed if the server
+    // is not behind a trusted proxy that strips or validates this header.
+    // In a direct-to-internet deployment, an attacker could rotate 'x-forwarded-for' to bypass limits.
+    // For robust security, ensure this API is behind a reverse proxy (Nginx, Cloudflare) that
+    // overwrites 'x-forwarded-for' with the real IP.
     const ip =
       c.req.header('cf-connecting-ip') ||
       c.req.header('x-real-ip') ||
