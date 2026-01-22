@@ -23,7 +23,9 @@ describe('UI Templates', () => {
     })
 
     it('should include focus-visible style with primary color', () => {
-      expect(SHARED_STYLES).toContain('outline: var(--focus-ring-width) solid var(--focus-ring-color)')
+      expect(SHARED_STYLES).toContain(
+        'outline: var(--focus-ring-width) solid var(--focus-ring-color)',
+      )
     })
 
     it('should include new utility classes', () => {
@@ -114,6 +116,18 @@ describe('UI Templates', () => {
     it('should use clear 404 title', () => {
       const html = getNotFoundPageHtml('/foo')
       expect(html).toContain('<title>404: Page Not Found')
+    })
+
+    it('should include client-side logic to hide back button if no history', () => {
+      const html = getNotFoundPageHtml('/foo')
+      expect(html).toContain('if (window.history.length > 1)')
+      expect(html).toContain("backBtn.style.display = 'none'")
+    })
+
+    it('should include accessibility updates for copy button', () => {
+      const html = getNotFoundPageHtml('/foo')
+      expect(html).toContain("btn.setAttribute('aria-label', 'Copied successfully')")
+      expect(html).toContain("if (originalLabel) btn.setAttribute('aria-label', originalLabel)")
     })
   })
 })
