@@ -52,7 +52,7 @@ HomeGarden is a robust, Clean Architecture-based REST API for managing gardens a
 
     Or manually:
     ```bash
-    docker run --name homegarden-db -e POSTGRES_PASSWORD=password -e POSTGRES_DB=homegarden -p 5432:5432 -d postgis/postgis:15-3.3
+    docker run --name homegarden-db -e POSTGRES_USER=postgres -e POSTGRES_PASSWORD=password -e POSTGRES_DB=homegarden -p 5432:5432 -d postgis/postgis:15-3.3
     ```
 
     Push the schema to the database:
