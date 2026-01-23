@@ -16,6 +16,9 @@ export class UserController {
         return c.json({ success: false, error: 'UNAUTHORIZED' }, 401)
       }
 
+      // Sentinel: Prevent caching of user profile data (even if public, for privacy)
+      c.header('Cache-Control', 'no-store')
+
       const { id: requestedUserId } = c.req.valid('param' as never) as { id: string }
 
       const result = await this.getUserPublicProfileUseCase.execute({
