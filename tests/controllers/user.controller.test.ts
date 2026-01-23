@@ -19,6 +19,7 @@ describe('UserController', () => {
         valid: vi.fn(),
       },
       json: vi.fn().mockImplementation((data, status) => ({ data, status })),
+      header: vi.fn(),
     }
   })
 

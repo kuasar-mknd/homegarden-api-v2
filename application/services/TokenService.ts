@@ -1,5 +1,6 @@
 import jwt from 'jsonwebtoken'
 import type { UserRole } from '../../domain/entities/user.entity.js'
+import { env } from '../../infrastructure/config/env.js'
 
 export interface TokenPayload {
   id: string
@@ -13,14 +14,13 @@ export class TokenService {
   private readonly refreshExpiresIn: string
 
   constructor() {
-    this.secret = process.env.JWT_SECRET as string
-
-    if (!this.secret) {
+    if (!env.JWT_SECRET) {
       throw new Error('JWT_SECRET must be defined')
     }
+    this.secret = env.JWT_SECRET
 
-    this.expiresIn = process.env.JWT_EXPIRES_IN || '1h'
-    this.refreshExpiresIn = process.env.JWT_REFRESH_EXPIRES_IN || '7d'
+    this.expiresIn = env.JWT_EXPIRES_IN
+    this.refreshExpiresIn = env.JWT_REFRESH_EXPIRES_IN
   }
 
   generateAccessToken(payload: TokenPayload): string {

@@ -1,22 +1,27 @@
 import jwt from 'jsonwebtoken'
-import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
+import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { type TokenPayload, TokenService } from '../../../application/services/TokenService'
+import { env } from '../../../infrastructure/config/env.js'
+
+vi.mock('../../../infrastructure/config/env.js', () => ({
+  env: {
+    JWT_SECRET: 'test-secret',
+    JWT_EXPIRES_IN: '1h',
+    JWT_REFRESH_EXPIRES_IN: '7d',
+  },
+}))
 
 describe('TokenService', () => {
   let tokenService: TokenService
-  const originalEnv = process.env
 
   beforeEach(() => {
-    vi.resetModules() // clears the cache
-    process.env = { ...originalEnv } // reset env vars
-    process.env.JWT_SECRET = 'test-secret'
-    process.env.JWT_EXPIRES_IN = '1h'
-    process.env.JWT_REFRESH_EXPIRES_IN = '7d'
-    tokenService = new TokenService()
-  })
+    vi.clearAllMocks()
+    // Reset env mock
+    env.JWT_SECRET = 'test-secret'
+    env.JWT_EXPIRES_IN = '1h'
+    env.JWT_REFRESH_EXPIRES_IN = '7d'
 
-  afterEach(() => {
-    process.env = originalEnv
+    tokenService = new TokenService()
   })
 
   const mockPayload: TokenPayload = {
@@ -53,14 +58,9 @@ describe('TokenService', () => {
   })
 
   it('should throw if JWT_SECRET is missing', () => {
-    const originalEnv = { ...process.env }
-    delete process.env.JWT_SECRET
-    delete process.env.JWT_EXPIRES_IN
-    delete process.env.JWT_REFRESH_EXPIRES_IN
-
+    // @ts-expect-error - testing missing secret
+    env.JWT_SECRET = undefined
     expect(() => new TokenService()).toThrow('JWT_SECRET must be defined')
-
-    process.env = originalEnv
   })
 
   it('should throw an error for invalid token', () => {
