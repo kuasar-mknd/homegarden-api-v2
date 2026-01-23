@@ -5,11 +5,17 @@ import { logger } from '../../config/logger.js'
 import { prisma } from '../../database/prisma.client.js'
 
 // Initialize Supabase client
+// Optimization: Singleton pattern to avoid re-initializing Supabase client on every request
+let supabaseInstance: ReturnType<typeof createClient> | null = null
+
 const getSupabase = () => {
   if (!env.SUPABASE_URL || !env.SUPABASE_PUBLISHABLE_KEY) {
     throw new Error('Supabase URL or Publishable Key not configured')
   }
-  return createClient(env.SUPABASE_URL, env.SUPABASE_PUBLISHABLE_KEY)
+  if (!supabaseInstance) {
+    supabaseInstance = createClient(env.SUPABASE_URL, env.SUPABASE_PUBLISHABLE_KEY)
+  }
+  return supabaseInstance
 }
 
 /**
