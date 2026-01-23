@@ -523,6 +523,7 @@ export function baseLayout({ title, description, content }: LayoutProps): string
   <meta name="theme-color" content="#121212" media="(prefers-color-scheme: dark)">
   <meta name="apple-mobile-web-app-title" content="HomeGarden">
 
+  <meta property="og:locale" content="en_US">
   <meta property="og:site_name" content="HomeGarden API">
   <meta property="og:title" content="${safeTitle}">
   <meta property="og:description" content="${metaDescription}">
@@ -571,7 +572,7 @@ const LANDING_PAGE_HTML = baseLayout({
   title: 'HomeGarden API v2',
   content: `
     <header role="banner">
-      <h1>🌱 HomeGarden API</h1>
+      <h1><span aria-hidden="true">🌱</span> HomeGarden API</h1>
       <div class="badge">v2.0.0 • AI-Powered</div>
     </header>
 
@@ -581,25 +582,25 @@ const LANDING_PAGE_HTML = baseLayout({
       <ul class="grid" role="list">
         <li>
           <a href="/ui" class="card" aria-describedby="desc-ui">
-            <h2>📚 Documentation<span class="card-arrow" aria-hidden="true">→</span></h2>
+            <h2><span aria-hidden="true">📚</span> Documentation<span class="card-arrow" aria-hidden="true">→</span></h2>
             <p id="desc-ui">Interactive Swagger UI for API exploration.</p>
           </a>
         </li>
         <li>
           <a href="/doc" class="card" aria-describedby="desc-doc">
-            <h2>🔍 OpenAPI Spec<span class="card-arrow" aria-hidden="true">→</span></h2>
+            <h2><span aria-hidden="true">🔍</span> OpenAPI Spec<span class="card-arrow" aria-hidden="true">→</span></h2>
             <p id="desc-doc">Raw JSON specification for integration.</p>
           </a>
         </li>
         <li>
           <a href="/ui#/PlantID" class="card" aria-describedby="desc-plantid">
-            <h2>🌿 Plant ID<span class="card-arrow" aria-hidden="true">→</span></h2>
+            <h2><span aria-hidden="true">🌿</span> Plant ID<span class="card-arrow" aria-hidden="true">→</span></h2>
             <p id="desc-plantid">Identify species using AI vision (Docs).</p>
           </a>
         </li>
         <li>
           <a href="/ui#/DrPlant" class="card" aria-describedby="desc-drplant">
-            <h2>🩺 Dr. Plant<span class="card-arrow" aria-hidden="true">→</span></h2>
+            <h2><span aria-hidden="true">🩺</span> Dr. Plant<span class="card-arrow" aria-hidden="true">→</span></h2>
             <p id="desc-drplant">Diagnose diseases and pests (Docs).</p>
           </a>
         </li>
@@ -619,7 +620,7 @@ export function getNotFoundPageHtml(path: string): string {
     description: 'The requested page could not be found.',
     content: `
     <header role="banner">
-      <h1>🌱 404 Not Found</h1>
+      <h1><span aria-hidden="true">🌱</span> 404 Not Found</h1>
       <div class="badge badge-error" role="status">Error</div>
     </header>
 
@@ -648,8 +649,15 @@ export function getNotFoundPageHtml(path: string): string {
         // Handle Go Back
         var backBtn = document.getElementById('go-back-btn');
         if (backBtn) {
+          if (history.length <= 1) {
+            backBtn.style.display = 'none';
+          }
           backBtn.addEventListener('click', function() {
-            history.back();
+            if (history.length > 1) {
+              history.back();
+            } else {
+              window.location.href = '/';
+            }
           });
         }
 

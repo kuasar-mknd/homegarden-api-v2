@@ -40,6 +40,14 @@
 **Learning:** Feedback text like "Checked!" can be ambiguous.
 **Action:** Use explicit action verbs ("Copied!") paired with a universally recognized icon (Checkmark) for clarity and delight.
 
+## 2026-01-23 - Accessibility & Interaction Polish
+
+**Learning:** Decorative emojis in headings are announced by screen readers (e.g., "Seedling HomeGarden API"), creating noise.
+**Action:** Wrap decorative emojis in `<span aria-hidden="true">` to preserve visual delight while improving auditory experience.
+
+**Learning:** "Go Back" buttons on 404 pages can be frustrating if there is no history.
+**Action:** Hide the button if `history.length <= 1` to prevent dead clicks.
+
 ## Rejected Changes
 
 *(None yet)*

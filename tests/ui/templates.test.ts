@@ -79,6 +79,22 @@ describe('UI Templates', () => {
       )
     })
 
+    it('should include og:locale meta tag', () => {
+      const html = getLandingPageHtml()
+      expect(html).toContain('<meta property="og:locale" content="en_US">')
+    })
+
+    it('should hide decorative emojis from screen readers', () => {
+      const html = getLandingPageHtml()
+      // Header emoji
+      expect(html).toContain('<h1><span aria-hidden="true">🌱</span> HomeGarden API</h1>')
+      // List emojis
+      expect(html).toContain('<h2><span aria-hidden="true">📚</span> Documentation')
+      expect(html).toContain('<h2><span aria-hidden="true">🔍</span> OpenAPI Spec')
+      expect(html).toContain('<h2><span aria-hidden="true">🌿</span> Plant ID')
+      expect(html).toContain('<h2><span aria-hidden="true">🩺</span> Dr. Plant')
+    })
+
     it('should use footer-links class', () => {
       const html = getLandingPageHtml()
       expect(html).toContain('<div class="footer-links no-print">')
@@ -114,6 +130,17 @@ describe('UI Templates', () => {
     it('should use clear 404 title', () => {
       const html = getNotFoundPageHtml('/foo')
       expect(html).toContain('<title>404: Page Not Found')
+    })
+
+    it('should hide decorative emojis from screen readers', () => {
+      const html = getNotFoundPageHtml('/foo')
+      expect(html).toContain('<h1><span aria-hidden="true">🌱</span> 404 Not Found</h1>')
+    })
+
+    it('should include history check in script', () => {
+      const html = getNotFoundPageHtml('/foo')
+      expect(html).toContain('if (history.length <= 1) {')
+      expect(html).toContain("backBtn.style.display = 'none';")
     })
   })
 })
