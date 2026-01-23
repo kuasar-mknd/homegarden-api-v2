@@ -5,7 +5,9 @@ HomeGarden is a robust, Clean Architecture-based REST API for managing gardens a
 ## 🌟 Features
 
 *   **Clean Architecture**: Separation of concerns into Domain, Application, and Infrastructure layers.
-*   **Plant Management**: CRUD operations for Gardens and Plants.
+*   **Plant Management**:
+    *   **Gardens**: Add plants to gardens, find nearby gardens, and check weather.
+    *   **Plants**: Core plant tracking features (V2 Plants API is currently planned/placeholder).
 *   **AI Integration**:
     *   **Identification**: Identify plants from images using Google Gemini Vision (`gemini-2.0-flash`).
     *   **Diagnosis**: Diagnose plant health issues using Google Gemini Vision (`gemini-2.5-pro-preview-06-05`).
@@ -33,6 +35,8 @@ HomeGarden is a robust, Clean Architecture-based REST API for managing gardens a
 2.  **Install dependencies:**
     ```bash
     pnpm install
+    # Generate Prisma Client
+    pnpm db:generate
     ```
 
 3.  **Environment Setup:**
@@ -55,7 +59,7 @@ HomeGarden is a robust, Clean Architecture-based REST API for managing gardens a
     docker run --name homegarden-db -e POSTGRES_PASSWORD=password -e POSTGRES_DB=homegarden -p 5432:5432 -d postgis/postgis:15-3.3
     ```
 
-    Push the schema to the database:
+    Push the schema to the database (also generates client):
     ```bash
     pnpm db:push
     ```
