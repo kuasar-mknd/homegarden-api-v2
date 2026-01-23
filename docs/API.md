@@ -29,22 +29,28 @@ The best way to explore the API is via the built-in Swagger UI, which provides i
 
 ### Auth
 
-- `POST /auth/register` - Register a new user (Note: Primary auth is usually handled directly by Supabase client).
-- `POST /auth/login` - Authenticate user (Note: Primary auth is usually handled directly by Supabase client).
+*Endpoints return 501 Not Implemented. Authentication is handled directly by the Supabase Client.*
+
+- `POST /auth/register` - Register a new user (Placeholder).
+- `POST /auth/login` - Authenticate user (Placeholder).
 
 ### Gardens
 
+**Active Endpoints for Plant Management**
+
 - `GET /gardens/plants` - Retrieves all plants in the authenticated user's garden.
-- `POST /gardens/plants` - Adds a new plant to a specific garden (requires `gardenId` in body).
+- `POST /gardens/plants` - Adds a new plant to the user's garden.
 - `GET /gardens/nearby` - Finds public gardens within a specific radius (geo-query).
 - `GET /gardens/:gardenId/weather` - Fetches current weather for a garden's location.
 
-### Plants
+### Plants (V2 Planned)
 
-- `GET /plants` - List all plants for the user (Not Implemented).
-- `POST /plants` - Create a new plant.
-- `GET /plants/:id` - Get plant details (Not Implemented).
-- `PATCH /plants/:id` - Update plant details.
+*These endpoints currently return 501 Not Implemented. Use the Gardens API above for plant management.*
+
+- `GET /plants` - List all plants for the user (Planned).
+- `POST /plants` - Create a new plant (Planned).
+- `GET /plants/:id` - Get plant details (Planned).
+- `PATCH /plants/:id` - Update plant details (Planned).
 
 ### AI Identification
 
