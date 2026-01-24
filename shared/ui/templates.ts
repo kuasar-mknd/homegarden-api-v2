@@ -403,6 +403,7 @@ export const SHARED_STYLES = `
     border-radius: 50%;
     margin-inline-end: 6px;
     animation: pulse 2s infinite ease-in-out;
+    cursor: help;
   }
   .error-code {
     font-size: 4rem;
@@ -523,6 +524,7 @@ export function baseLayout({ title, description, content }: LayoutProps): string
   <meta name="theme-color" content="#121212" media="(prefers-color-scheme: dark)">
   <meta name="apple-mobile-web-app-title" content="HomeGarden">
 
+  <meta property="og:locale" content="en_US">
   <meta property="og:site_name" content="HomeGarden API">
   <meta property="og:title" content="${safeTitle}">
   <meta property="og:description" content="${metaDescription}">
@@ -646,28 +648,42 @@ export function getNotFoundPageHtml(path: string): string {
     <script>
       (function() {
         // Handle Go Back
-        var backBtn = document.getElementById('go-back-btn');
+        const backBtn = document.getElementById('go-back-btn');
         if (backBtn) {
-          backBtn.addEventListener('click', function() {
+          if (history.length <= 1) {
+            backBtn.style.display = 'none';
+          }
+          backBtn.addEventListener('click', () => {
             history.back();
           });
         }
 
         // Handle Copy
-        var btns = document.querySelectorAll('.copy-btn');
-        Array.prototype.forEach.call(btns, function(btn) {
-          btn.addEventListener('click', function() {
-            var targetSelector = btn.getAttribute('data-clipboard-target');
-            var target = document.querySelector(targetSelector);
+        const btns = document.querySelectorAll('.copy-btn');
+        btns.forEach(btn => {
+          const originalHtml = btn.innerHTML;
+          const originalLabel = btn.getAttribute('aria-label');
+          let timeoutId;
+
+          btn.addEventListener('click', () => {
+            const targetSelector = btn.getAttribute('data-clipboard-target');
+            const target = document.querySelector(targetSelector);
             if (target) {
-              var text = target.innerText;
+              const text = target.innerText;
               // Modern API
               if (navigator.clipboard && navigator.clipboard.writeText) {
-                 navigator.clipboard.writeText(text).then(function() {
-                    var originalHtml = btn.innerHTML;
+                 navigator.clipboard.writeText(text).then(() => {
+                    if (timeoutId) clearTimeout(timeoutId);
+
                     btn.innerHTML = '${CHECK_ICON} Copied!';
-                    setTimeout(function() { btn.innerHTML = originalHtml; }, 2000);
-                 }).catch(function(err) {
+                    btn.setAttribute('aria-label', 'Copied successfully');
+
+                    timeoutId = setTimeout(() => {
+                      btn.innerHTML = originalHtml;
+                      if (originalLabel) btn.setAttribute('aria-label', originalLabel);
+                      timeoutId = null;
+                    }, 2000);
+                 }).catch(err => {
                     console.error('Failed to copy', err);
                  });
               } else {
