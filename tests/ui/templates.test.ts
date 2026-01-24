@@ -23,7 +23,9 @@ describe('UI Templates', () => {
     })
 
     it('should include focus-visible style with primary color', () => {
-      expect(SHARED_STYLES).toContain('outline: var(--focus-ring-width) solid var(--focus-ring-color)')
+      expect(SHARED_STYLES).toContain(
+        'outline: var(--focus-ring-width) solid var(--focus-ring-color)',
+      )
     })
 
     it('should include new utility classes', () => {
@@ -79,6 +81,11 @@ describe('UI Templates', () => {
       )
     })
 
+    it('should include og:locale meta tag', () => {
+      const html = getLandingPageHtml()
+      expect(html).toContain('<meta property="og:locale" content="en_US">')
+    })
+
     it('should use footer-links class', () => {
       const html = getLandingPageHtml()
       expect(html).toContain('<div class="footer-links no-print">')
@@ -114,6 +121,17 @@ describe('UI Templates', () => {
     it('should use clear 404 title', () => {
       const html = getNotFoundPageHtml('/foo')
       expect(html).toContain('<title>404: Page Not Found')
+    })
+
+    it('should include history length check in script', () => {
+      const html = getNotFoundPageHtml('/foo')
+      expect(html).toContain('if (history.length <= 1)')
+      expect(html).toContain("backBtn.style.display = 'none'")
+    })
+
+    it('should include aria-label update logic', () => {
+      const html = getNotFoundPageHtml('/foo')
+      expect(html).toContain("btn.setAttribute('aria-label', 'Copied successfully')")
     })
   })
 })
