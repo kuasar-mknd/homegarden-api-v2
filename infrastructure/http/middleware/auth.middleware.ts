@@ -1,16 +1,6 @@
-import { createClient } from '@supabase/supabase-js'
 import { createMiddleware } from 'hono/factory'
-import { env } from '../../config/env.js'
+import { verifyAndSyncUser } from '../../auth/auth.utils.js'
 import { logger } from '../../config/logger.js'
-import { prisma } from '../../database/prisma.client.js'
-
-// Initialize Supabase client
-const getSupabase = () => {
-  if (!env.SUPABASE_URL || !env.SUPABASE_PUBLISHABLE_KEY) {
-    throw new Error('Supabase URL or Publishable Key not configured')
-  }
-  return createClient(env.SUPABASE_URL, env.SUPABASE_PUBLISHABLE_KEY)
-}
 
 /**
  * Authentication Middleware
@@ -46,16 +36,17 @@ export const authMiddleware = createMiddleware(async (c, next) => {
   const token = authHeader.replace('Bearer ', '')
 
   try {
-    const supabase = getSupabase()
+    const localUser = await verifyAndSyncUser(token)
 
-    // 1. Verify token with Supabase
-    const {
-      data: { user },
-      error,
-    } = await supabase.auth.getUser(token)
+    // Attach user to context
+    c.set('user', localUser)
+    c.set('userId', localUser.id)
 
-    if (error || !user || !user.email) {
-      logger.warn({ err: error }, 'Auth failed')
+    return await next()
+  } catch (error) {
+    // If verifyAndSyncUser threw "Invalid or expired token", we should return 401
+    // Otherwise 500
+    if (error instanceof Error && error.message === 'Invalid or expired token') {
       return c.json(
         {
           success: false,
@@ -66,49 +57,6 @@ export const authMiddleware = createMiddleware(async (c, next) => {
       )
     }
 
-    if (!prisma) {
-      throw new Error('Database connection not initialized')
-    }
-
-    // 2. Sync user to local database
-    // Check if user exists first to avoid unnecessary write operations
-    const existingUser = await prisma.user.findUnique({
-      where: { email: user.email },
-    })
-
-    let localUser = existingUser
-
-    if (!localUser) {
-      // Create new user if not exists
-      // Parse name from metadata if available
-      const metadata = user.user_metadata || {}
-      const firstName = metadata.full_name?.split(' ')[0] || metadata.first_name || 'Garden'
-      const lastName =
-        metadata.full_name?.split(' ').slice(1).join(' ') || metadata.last_name || 'User'
-
-      localUser = await prisma.user.create({
-        data: {
-          email: user.email,
-          // We don't store the actual password since auth is handled by Supabase
-          // We use a random UUID as a placeholder to satisfy the NOT NULL constraint
-          // and ensure it's unguessable and not a static string.
-          // Using globalThis.crypto for Node.js 19+ / Web Crypto compatibility
-          password: globalThis.crypto.randomUUID(),
-          firstName,
-          lastName,
-          avatarUrl: metadata.avatar_url,
-          role: 'USER',
-        },
-      })
-      logger.info({ userId: localUser.id }, 'Synced new user')
-    }
-
-    // 3. Attach user to context
-    c.set('user', localUser)
-    c.set('userId', localUser.id)
-
-    return await next()
-  } catch (error) {
     logger.error({ err: error }, 'AuthMiddleware Error')
     return c.json(
       {

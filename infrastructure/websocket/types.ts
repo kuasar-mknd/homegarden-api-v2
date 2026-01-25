@@ -1,3 +1,10 @@
+import type { WebSocket } from 'ws'
+import type { User } from '../../domain/entities/user.entity.js'
+
+export interface AuthenticatedWebSocket extends WebSocket {
+  user: User
+}
+
 export interface WSMessage {
   type: string
   channel?: string
