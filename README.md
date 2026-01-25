@@ -84,6 +84,11 @@ Run tests with coverage:
 pnpm test:coverage
 ```
 
+Run linting and type checks (CI pipeline):
+```bash
+pnpm run ci:check
+```
+
 ## 📖 API Usage
 
 The API is documented using Swagger. Once the server is running, visit:
