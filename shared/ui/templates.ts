@@ -163,7 +163,7 @@ export const SHARED_STYLES = `
   .badge {
     display: inline-block;
     background: #e8f5e9;
-    color: #2e7d32;
+    color: #1b5e20;
     padding: 4px 12px;
     border-radius: var(--radius-lg);
     font-size: 0.85rem;
@@ -403,6 +403,7 @@ export const SHARED_STYLES = `
     border-radius: 50%;
     margin-inline-end: 6px;
     animation: pulse 2s infinite ease-in-out;
+    cursor: help;
   }
   .error-code {
     font-size: 4rem;
@@ -524,6 +525,7 @@ export function baseLayout({ title, description, content }: LayoutProps): string
   <meta name="apple-mobile-web-app-title" content="HomeGarden">
 
   <meta property="og:site_name" content="HomeGarden API">
+  <meta property="og:locale" content="en_US">
   <meta property="og:title" content="${safeTitle}">
   <meta property="og:description" content="${metaDescription}">
   <meta property="og:type" content="website">
@@ -648,6 +650,9 @@ export function getNotFoundPageHtml(path: string): string {
         // Handle Go Back
         var backBtn = document.getElementById('go-back-btn');
         if (backBtn) {
+          if (history.length <= 1) {
+            backBtn.style.display = 'none';
+          }
           backBtn.addEventListener('click', function() {
             history.back();
           });
