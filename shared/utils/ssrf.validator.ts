@@ -23,6 +23,10 @@ const PRIVATE_IPV4_RANGES = [
   { start: 0xc0a80000, end: 0xc0a8ffff }, // 192.168.0.0/16
   { start: 0x7f000000, end: 0x7fffffff }, // 127.0.0.0/8
   { start: 0xa9fe0000, end: 0xa9feffff }, // 169.254.0.0/16
+  { start: 0x64400000, end: 0x647fffff }, // 100.64.0.0/10 (CGNAT)
+  { start: 0xc6120000, end: 0xc613ffff }, // 198.18.0.0/15 (Benchmarking)
+  { start: 0xe0000000, end: 0xefffffff }, // 224.0.0.0/4 (Multicast)
+  { start: 0xf0000000, end: 0xffffffff }, // 240.0.0.0/4 (Reserved)
 ]
 
 // Helper to convert IPv4 string to number
