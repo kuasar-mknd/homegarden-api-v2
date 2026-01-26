@@ -612,12 +612,11 @@ export function getLandingPageHtml(): string {
   return LANDING_PAGE_HTML
 }
 
-export function getNotFoundPageHtml(path: string): string {
-  const safePath = escapeHtml(path)
-  return baseLayout({
-    title: '404: Page Not Found - HomeGarden API',
-    description: 'The requested page could not be found.',
-    content: `
+// Optimization: "Static Response Caching" for 404 page
+const NOT_FOUND_PAGE_TEMPLATE = baseLayout({
+  title: '404: Page Not Found - HomeGarden API',
+  description: 'The requested page could not be found.',
+  content: `
     <header role="banner">
       <h1>🌱 404 Not Found</h1>
       <div class="badge badge-error" role="status">Error</div>
@@ -627,7 +626,7 @@ export function getNotFoundPageHtml(path: string): string {
       <p>Oops! The page you are looking for does not exist.</p>
 
       <div class="code-wrapper">
-        <code id="error-path" aria-label="Requested URL" class="code-block" title="Requested URL" tabindex="0">${safePath}</code>
+        <code id="error-path" aria-label="Requested URL" class="code-block" title="Requested URL" tabindex="0">{{PATH}}</code>
         <div class="copy-btn-wrapper no-print">
             <button type="button" class="btn btn-secondary copy-btn" data-clipboard-target="#error-path" aria-label="Copy URL to clipboard">
             ${COPY_ICON} Copy Path
@@ -680,5 +679,10 @@ export function getNotFoundPageHtml(path: string): string {
       })();
     </script>
     `,
-  })
+})
+
+export function getNotFoundPageHtml(path: string): string {
+  const safePath = escapeHtml(path)
+  // Use callback to avoid replacement pattern issues (e.g. $&)
+  return NOT_FOUND_PAGE_TEMPLATE.replace('{{PATH}}', () => safePath)
 }
