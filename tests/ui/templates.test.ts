@@ -23,7 +23,9 @@ describe('UI Templates', () => {
     })
 
     it('should include focus-visible style with primary color', () => {
-      expect(SHARED_STYLES).toContain('outline: var(--focus-ring-width) solid var(--focus-ring-color)')
+      expect(SHARED_STYLES).toContain(
+        'outline: var(--focus-ring-width) solid var(--focus-ring-color)',
+      )
     })
 
     it('should include new utility classes', () => {
@@ -114,6 +116,24 @@ describe('UI Templates', () => {
     it('should use clear 404 title', () => {
       const html = getNotFoundPageHtml('/foo')
       expect(html).toContain('<title>404: Page Not Found')
+    })
+
+    it('should handle special replacement patterns in path correctly', () => {
+      // If we used .replace(pattern, value) without a callback, '$&' would insert the pattern again
+      const weirdPath = '/test/$&/weird'
+      const html = getNotFoundPageHtml(weirdPath)
+
+      // Should contain the escaped path EXACTLY as input, not repeating the placeholder
+      expect(html).toContain('/test/$&amp;/weird')
+
+      // If the bug existed, we might see {{PATH}} or double replacement
+      expect(html).not.toContain('{{PATH}}')
+    })
+
+    it('should handle paths with dollar signs properly', () => {
+      const dollarPath = '/$$$'
+      const html = getNotFoundPageHtml(dollarPath)
+      expect(html).toContain('/$$$')
     })
   })
 })
