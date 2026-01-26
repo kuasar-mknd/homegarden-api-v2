@@ -13,7 +13,7 @@ The specific models are configurable via environment variables to allow for easy
 
 ## 🔑 Configuration
 
-To enable AI features, you must provide a Google AI API key:
+To enable AI features, you must provide a Google AI API key. The application will start without it, but AI endpoints will return errors or be disabled.
 
 ```bash
 GOOGLE_AI_API_KEY=your_api_key_here

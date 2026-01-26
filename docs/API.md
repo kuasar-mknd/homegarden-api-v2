@@ -41,9 +41,11 @@ The best way to explore the API is via the built-in Swagger UI, which provides i
 
 ### Plants
 
-- `GET /plants` - List all plants for the user (Not Implemented).
+All endpoints currently return `501 Not Implemented`.
+
+- `GET /plants` - List all plants for the user.
 - `POST /plants` - Create a new plant.
-- `GET /plants/:id` - Get plant details (Not Implemented).
+- `GET /plants/:id` - Get plant details.
 - `PATCH /plants/:id` - Update plant details.
 
 ### AI Identification
@@ -58,7 +60,7 @@ The best way to explore the API is via the built-in Swagger UI, which provides i
 
 ### Care Tracker (Coming Soon)
 
-These endpoints currently return `501 Not Implemented`.
+All endpoints currently return `501 Not Implemented`.
 
 - `GET /care-tracker/upcoming` - Get upcoming tasks.
 - `POST /care-tracker/schedules` - Create a care schedule.
