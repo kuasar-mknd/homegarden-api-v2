@@ -37,6 +37,15 @@ describe('UI Templates', () => {
       expect(SHARED_STYLES).toContain('color: #ffcdd2')
     })
 
+    it('should include UX improvements', () => {
+      // Contrast improvement
+      expect(SHARED_STYLES).toContain('color: #1b5e20')
+      // Help cursor on status dot
+      expect(SHARED_STYLES).toContain('cursor: help')
+      // Print styles
+      expect(SHARED_STYLES).toContain('break-inside: avoid')
+    })
+
     it('should use flexbox for buttons', () => {
       expect(SHARED_STYLES).toContain('display: inline-flex')
       expect(SHARED_STYLES).toContain('align-items: center')
@@ -54,6 +63,18 @@ describe('UI Templates', () => {
       expect(html).toContain('<!DOCTYPE html>')
       expect(html).toContain('<html lang="en" dir="ltr">')
       expect(html).toContain('HomeGarden API')
+    })
+
+    it('should include og:locale', () => {
+      const html = getLandingPageHtml()
+      expect(html).toContain('<meta property="og:locale" content="en_US">')
+    })
+
+    it('should wrap emojis for accessibility', () => {
+      const html = getLandingPageHtml()
+      expect(html).toContain('<span role="img" aria-label="Sprout">🌱</span>')
+      expect(html).toContain('<span role="img" aria-label="Books">📚</span>')
+      expect(html).toContain('<span role="img" aria-label="Magnifying glass">🔍</span>')
     })
 
     it('should include accessibility attributes', () => {
@@ -114,6 +135,17 @@ describe('UI Templates', () => {
     it('should use clear 404 title', () => {
       const html = getNotFoundPageHtml('/foo')
       expect(html).toContain('<title>404: Page Not Found')
+    })
+
+    it('should include aria-live on copy button', () => {
+      const html = getNotFoundPageHtml('/foo')
+      expect(html).toContain('aria-live="polite"')
+    })
+
+    it('should verify history length in script', () => {
+      const html = getNotFoundPageHtml('/foo')
+      expect(html).toContain('if (history.length <= 1)')
+      expect(html).toContain("backBtn.style.display = 'none'")
     })
   })
 })

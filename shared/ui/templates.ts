@@ -163,7 +163,7 @@ export const SHARED_STYLES = `
   .badge {
     display: inline-block;
     background: #e8f5e9;
-    color: #2e7d32;
+    color: #1b5e20;
     padding: 4px 12px;
     border-radius: var(--radius-lg);
     font-size: 0.85rem;
@@ -403,6 +403,7 @@ export const SHARED_STYLES = `
     border-radius: 50%;
     margin-inline-end: 6px;
     animation: pulse 2s infinite ease-in-out;
+    cursor: help;
   }
   .error-code {
     font-size: 4rem;
@@ -526,6 +527,7 @@ export function baseLayout({ title, description, content }: LayoutProps): string
   <meta property="og:site_name" content="HomeGarden API">
   <meta property="og:title" content="${safeTitle}">
   <meta property="og:description" content="${metaDescription}">
+  <meta property="og:locale" content="en_US">
   <meta property="og:type" content="website">
   <meta property="og:image" content="${image}">
   <meta property="og:image:alt" content="HomeGarden API Banner with green branding">
@@ -571,7 +573,7 @@ const LANDING_PAGE_HTML = baseLayout({
   title: 'HomeGarden API v2',
   content: `
     <header role="banner">
-      <h1>🌱 HomeGarden API</h1>
+      <h1><span role="img" aria-label="Sprout">🌱</span> HomeGarden API</h1>
       <div class="badge">v2.0.0 • AI-Powered</div>
     </header>
 
@@ -581,25 +583,25 @@ const LANDING_PAGE_HTML = baseLayout({
       <ul class="grid" role="list">
         <li>
           <a href="/ui" class="card" aria-describedby="desc-ui">
-            <h2>📚 Documentation<span class="card-arrow" aria-hidden="true">→</span></h2>
+            <h2><span role="img" aria-label="Books">📚</span> Documentation<span class="card-arrow" aria-hidden="true">→</span></h2>
             <p id="desc-ui">Interactive Swagger UI for API exploration.</p>
           </a>
         </li>
         <li>
           <a href="/doc" class="card" aria-describedby="desc-doc">
-            <h2>🔍 OpenAPI Spec<span class="card-arrow" aria-hidden="true">→</span></h2>
+            <h2><span role="img" aria-label="Magnifying glass">🔍</span> OpenAPI Spec<span class="card-arrow" aria-hidden="true">→</span></h2>
             <p id="desc-doc">Raw JSON specification for integration.</p>
           </a>
         </li>
         <li>
           <a href="/ui#/PlantID" class="card" aria-describedby="desc-plantid">
-            <h2>🌿 Plant ID<span class="card-arrow" aria-hidden="true">→</span></h2>
+            <h2><span role="img" aria-label="Herb">🌿</span> Plant ID<span class="card-arrow" aria-hidden="true">→</span></h2>
             <p id="desc-plantid">Identify species using AI vision (Docs).</p>
           </a>
         </li>
         <li>
           <a href="/ui#/DrPlant" class="card" aria-describedby="desc-drplant">
-            <h2>🩺 Dr. Plant<span class="card-arrow" aria-hidden="true">→</span></h2>
+            <h2><span role="img" aria-label="Stethoscope">🩺</span> Dr. Plant<span class="card-arrow" aria-hidden="true">→</span></h2>
             <p id="desc-drplant">Diagnose diseases and pests (Docs).</p>
           </a>
         </li>
@@ -619,7 +621,7 @@ export function getNotFoundPageHtml(path: string): string {
     description: 'The requested page could not be found.',
     content: `
     <header role="banner">
-      <h1>🌱 404 Not Found</h1>
+      <h1><span role="img" aria-label="Sprout">🌱</span> 404 Not Found</h1>
       <div class="badge badge-error" role="status">Error</div>
     </header>
 
@@ -629,7 +631,7 @@ export function getNotFoundPageHtml(path: string): string {
       <div class="code-wrapper">
         <code id="error-path" aria-label="Requested URL" class="code-block" title="Requested URL" tabindex="0">${safePath}</code>
         <div class="copy-btn-wrapper no-print">
-            <button type="button" class="btn btn-secondary copy-btn" data-clipboard-target="#error-path" aria-label="Copy URL to clipboard">
+            <button type="button" class="btn btn-secondary copy-btn" data-clipboard-target="#error-path" aria-label="Copy URL to clipboard" aria-live="polite">
             ${COPY_ICON} Copy Path
             </button>
         </div>
@@ -648,6 +650,9 @@ export function getNotFoundPageHtml(path: string): string {
         // Handle Go Back
         var backBtn = document.getElementById('go-back-btn');
         if (backBtn) {
+          if (history.length <= 1) {
+            backBtn.style.display = 'none';
+          }
           backBtn.addEventListener('click', function() {
             history.back();
           });

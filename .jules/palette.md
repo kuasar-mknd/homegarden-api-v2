@@ -40,6 +40,10 @@
 **Learning:** Feedback text like "Checked!" can be ambiguous.
 **Action:** Use explicit action verbs ("Copied!") paired with a universally recognized icon (Checkmark) for clarity and delight.
 
+## 2025-02-19 - Accessible Emojis in Raw Strings
+**Learning:** In raw HTML templates (non-React), emojis in headers act as text content, which can be confusing for screen readers.
+**Action:** Always wrap decorative emojis in `<span role="img" aria-label="...">` to provide context or hide them if truly decorative.
+
 ## Rejected Changes
 
 *(None yet)*
