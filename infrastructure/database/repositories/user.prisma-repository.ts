@@ -15,6 +15,8 @@ export class UserPrismaRepository implements UserRepository {
         firstName: data.firstName,
         lastName: data.lastName,
         role: data.role ?? 'USER',
+        avatarUrl: data.avatarUrl ?? null,
+        birthDate: data.birthDate ?? null,
       },
     })
     return this.mapToEntity(user)
@@ -38,8 +40,12 @@ export class UserPrismaRepository implements UserRepository {
     const user = await prisma.user.update({
       where: { id },
       data: {
-        ...data,
-      } as any, // Simple cast for now
+        ...(data.email !== undefined ? { email: data.email } : {}),
+        ...(data.firstName !== undefined ? { firstName: data.firstName } : {}),
+        ...(data.lastName !== undefined ? { lastName: data.lastName } : {}),
+        ...(data.birthDate !== undefined ? { birthDate: data.birthDate } : {}),
+        ...(data.avatarUrl !== undefined ? { avatarUrl: data.avatarUrl } : {}),
+      },
     })
     return this.mapToEntity(user)
   }
