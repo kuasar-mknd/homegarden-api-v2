@@ -5,14 +5,19 @@ HomeGarden is a robust, Clean Architecture-based REST API for managing gardens a
 ## 🌟 Features
 
 *   **Clean Architecture**: Separation of concerns into Domain, Application, and Infrastructure layers.
-*   **Plant Management**: CRUD operations for Gardens and Plants.
+*   **Plant Management**:
+    *   **Gardens**: Create gardens, find nearby gardens (geospatial), and manage plants within them.
+    *   **My Plants**: Track plant details (nickname, species, location).
 *   **AI Integration**:
     *   **Identification**: Identify plants from images using Google Gemini Vision (`gemini-2.0-flash`).
     *   **Diagnosis**: Diagnose plant health issues using Google Gemini Vision (`gemini-2.5-pro-preview-06-05`).
 *   **Weather Integration**: Fetch weather data for garden locations via Open-Meteo.
 *   **Authentication**: Secure authentication using Supabase Auth (JWT).
+    *   *Note: Native auth endpoints (`/auth/login`) are placeholders. Use Supabase Client SDKs.*
 *   **Type Safety**: End-to-end type safety with TypeScript, Zod, and Prisma.
 *   **Interactive Docs**: OpenAPI (Swagger) documentation available at `/ui`.
+*   **Coming Soon**:
+    *   **Care Tracker**: Schedule watering and fertilization tasks.
 
 ## 🛠️ Local Setup
 
@@ -30,12 +35,17 @@ HomeGarden is a robust, Clean Architecture-based REST API for managing gardens a
     cd homegarden-api
     ```
 
-2.  **Install dependencies:**
+2.  **Enable pnpm (if not installed):**
+    ```bash
+    corepack enable
+    ```
+
+3.  **Install dependencies:**
     ```bash
     pnpm install
     ```
 
-3.  **Environment Setup:**
+4.  **Environment Setup:**
     Copy `.env.example` to `.env` and fill in the required values.
     ```bash
     cp .env.example .env
@@ -43,7 +53,7 @@ HomeGarden is a robust, Clean Architecture-based REST API for managing gardens a
     *   **Important**: You need a Supabase project for `SUPABASE_URL` and `SUPABASE_PUBLISHABLE_KEY`.
     *   For AI features, get a key from [Google AI Studio](https://aistudio.google.com/).
 
-4.  **Database Setup:**
+5.  **Database Setup:**
     Start a Postgres database (e.g., via Docker) and set `DATABASE_URL` in `.env`.
     ```bash
     # Recommended: Use docker-compose
@@ -64,7 +74,7 @@ HomeGarden is a robust, Clean Architecture-based REST API for managing gardens a
     pnpm db:seed
     ```
 
-5.  **Run the Server:**
+6.  **Run the Server:**
     ```bash
     pnpm dev
     ```

@@ -20,7 +20,7 @@ This layer orchestrates the flow of data to and from the domain entities. It imp
 ### 3. `infrastructure/` (Frameworks & Drivers)
 This layer contains implementations of interfaces defined in the domain and application layers. It deals with external details like databases, web frameworks, and third-party APIs.
 *   **Http**: Hono server setup, controllers, middleware, and routes.
-*   **Database**: Prisma client and repository implementations.
+*   **Database**: Prisma client and repository implementations (`infrastructure/database/repositories/`).
 *   **Config**: Environment variables, logger configuration.
 *   **Adapters**: External service integrations (e.g., `GeminiAdapter`, `OpenMeteoAdapter`).
 
@@ -34,9 +34,10 @@ To add a new feature (e.g., "Watering Schedule"), follow this flow:
 1.  **Domain**: Define the `WateringSchedule` entity and its repository interface in `domain/`.
 2.  **Application**: Create a service/use-case (e.g., `CreateWateringScheduleService`) in `application/`.
 3.  **Infrastructure**:
-    *   Implement the repository in `infrastructure/repositories/`.
+    *   Implement the repository in `infrastructure/database/repositories/`.
     *   Create a controller in `infrastructure/http/controllers/`.
     *   Define the route in `infrastructure/http/routes/`.
+    *   Mount the route in `index.ts` (or the main application file).
 4.  **Tests**: Add unit tests for the domain and application logic, and integration tests for the infrastructure.
 
 ## 🔄 Dependency Rule
