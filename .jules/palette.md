@@ -40,6 +40,14 @@
 **Learning:** Feedback text like "Checked!" can be ambiguous.
 **Action:** Use explicit action verbs ("Copied!") paired with a universally recognized icon (Checkmark) for clarity and delight.
 
+## 2026-01-27 - AAA Contrast & History Patterns
+
+**Learning:** Checking `history.length <= 1` is critical for preventing "dead" Go Back buttons on 404 pages.
+**Action:** Always conditionally hide back buttons in error templates based on history state.
+
+**Learning:** Darkening standard grey text (`#5e5e5e`) to `#505050` is necessary to hit AAA contrast (7:1) on light backgrounds.
+**Action:** Use `#505050` for status text in the future.
+
 ## Rejected Changes
 
 *(None yet)*

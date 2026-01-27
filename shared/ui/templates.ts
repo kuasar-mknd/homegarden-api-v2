@@ -9,7 +9,7 @@ export const SHARED_STYLES = `
     --card-bg: #ffffff;
     --card-border: #eee;
     --card-text: #666;
-    --status-text: #5e5e5e; /* darkened from #888 for accessible contrast */
+    --status-text: #505050; /* darkened from #888 for accessible contrast */
     --error: #d32f2f;
 
     /* Radius System */
@@ -163,7 +163,7 @@ export const SHARED_STYLES = `
   .badge {
     display: inline-block;
     background: #e8f5e9;
-    color: #2e7d32;
+    color: #1b5e20;
     padding: 4px 12px;
     border-radius: var(--radius-lg);
     font-size: 0.85rem;
@@ -403,6 +403,7 @@ export const SHARED_STYLES = `
     border-radius: 50%;
     margin-inline-end: 6px;
     animation: pulse 2s infinite ease-in-out;
+    cursor: help;
   }
   .error-code {
     font-size: 4rem;
@@ -526,6 +527,7 @@ export function baseLayout({ title, description, content }: LayoutProps): string
   <meta property="og:site_name" content="HomeGarden API">
   <meta property="og:title" content="${safeTitle}">
   <meta property="og:description" content="${metaDescription}">
+  <meta property="og:locale" content="en_US">
   <meta property="og:type" content="website">
   <meta property="og:image" content="${image}">
   <meta property="og:image:alt" content="HomeGarden API Banner with green branding">
@@ -629,7 +631,7 @@ export function getNotFoundPageHtml(path: string): string {
       <div class="code-wrapper">
         <code id="error-path" aria-label="Requested URL" class="code-block" title="Requested URL" tabindex="0">${safePath}</code>
         <div class="copy-btn-wrapper no-print">
-            <button type="button" class="btn btn-secondary copy-btn" data-clipboard-target="#error-path" aria-label="Copy URL to clipboard">
+            <button type="button" class="btn btn-secondary copy-btn" data-clipboard-target="#error-path" aria-label="Copy URL to clipboard" aria-live="polite">
             ${COPY_ICON} Copy Path
             </button>
         </div>
@@ -648,9 +650,13 @@ export function getNotFoundPageHtml(path: string): string {
         // Handle Go Back
         var backBtn = document.getElementById('go-back-btn');
         if (backBtn) {
-          backBtn.addEventListener('click', function() {
-            history.back();
-          });
+          if (window.history.length <= 1) {
+            backBtn.style.display = 'none';
+          } else {
+            backBtn.addEventListener('click', function() {
+              history.back();
+            });
+          }
         }
 
         // Handle Copy
