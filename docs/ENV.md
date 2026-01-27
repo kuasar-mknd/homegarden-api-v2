@@ -22,7 +22,7 @@ This document lists all environment variables used by the application, matching 
 |---|---|---|
 | `SUPABASE_URL` | URL of your Supabase project | **Yes** |
 | `SUPABASE_PUBLISHABLE_KEY` | Public API key for Supabase | **Yes** |
-| `SUPABASE_SECRET_KEY` | Service role key (optional, for admin tasks) | No |
+| `SUPABASE_SECRET_KEY` | Service role key (for admin/script tasks) | No |
 
 ## JWT (Fallback/Legacy)
 
@@ -39,7 +39,7 @@ This document lists all environment variables used by the application, matching 
 | `GOOGLE_AI_API_KEY` | API Key for Google Gemini | Optional |
 | `GEMINI_IDENTIFICATION_MODEL` | Model for plant ID | `gemini-2.0-flash` |
 | `GEMINI_DIAGNOSIS_MODEL` | Model for plant diagnosis | `gemini-2.5-pro-preview-06-05` |
-| `PLANTNET_API_KEY` | API Key for PlantNet (fallback) | Optional |
+| `PLANTNET_API_KEY` | API Key for PlantNet (Reserved/Fallback) | Optional |
 
 ## Weather
 

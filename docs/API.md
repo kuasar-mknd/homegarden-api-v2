@@ -25,45 +25,64 @@ The best way to explore the API is via the built-in Swagger UI, which provides i
 
 ---
 
-## 🌿 Core Resources
+## ✅ Implemented Endpoints
 
-### Auth
+### 🏡 Gardens & My Plants
 
-- `POST /auth/register` - Register a new user (Note: Primary auth is usually handled directly by Supabase client).
-- `POST /auth/login` - Authenticate user (Note: Primary auth is usually handled directly by Supabase client).
+Manage your personal garden and find public gardens.
 
-### Gardens
+- `GET /gardens/plants`
+  - **Description**: Retrieve all plants in the authenticated user's garden.
+- `POST /gardens/plants`
+  - **Description**: Add a new plant to your garden.
+  - **Body**: `{ "nickname": "Spikey", "species": "Cactus", ... }`
+- `GET /gardens/nearby`
+  - **Description**: Find public gardens within a specific radius (geo-query).
+  - **Query**: `lat`, `lng`, `radius`
+- `GET /gardens/:gardenId/weather`
+  - **Description**: Fetches current weather and forecast for a garden's location.
 
-- `GET /gardens/plants` - Retrieves all plants in the authenticated user's garden.
-- `POST /gardens/plants` - Adds a new plant to a specific garden (requires `gardenId` in body).
-- `GET /gardens/nearby` - Finds public gardens within a specific radius (geo-query).
-- `GET /gardens/:gardenId/weather` - Fetches current weather for a garden's location.
+### 🤖 AI Services
 
-### Plants
+- `POST /plant-id/identify`
+  - **Description**: Identifies a plant from an image URL or Base64 data.
+  - **Body**: `{ "imageUrl": "..." }` or `{ "imageBase64": "..." }`
+- `GET /plant-id/status`
+  - **Description**: Check Plant ID service availability.
+- `POST /dr-plant/diagnose`
+  - **Description**: Diagnoses plant health issues from an image.
+  - **Format**: Multipart/Form-Data (file upload).
 
-- `GET /plants` - List all plants for the user (Not Implemented).
-- `POST /plants` - Create a new plant.
-- `GET /plants/:id` - Get plant details (Not Implemented).
-- `PATCH /plants/:id` - Update plant details.
+### 👤 Users
 
-### AI Identification
+- `GET /users/:id`
+  - **Description**: Get public profile information for a user.
 
-- `GET /plant-id/status` - Check Plant ID service availability.
-- `POST /plant-id/identify` - Identifies a plant from an image URL or Base64 data (JSON Body).
-- `POST /dr-plant/diagnose` - Diagnoses plant health issues from an image (Multipart/Form-Data).
+---
 
-### Users
+## 🚧 Not Implemented / Coming Soon
 
-- `GET /users/:id` - Get public profile information for a user.
+The following endpoints are defined but currently return `501 Not Implemented`.
 
-### Care Tracker (Coming Soon)
+### Auth (Native)
+*Use Supabase Client SDKs for authentication.*
+- `POST /auth/register`
+- `POST /auth/login`
+- `POST /auth/refresh-token`
 
-These endpoints currently return `501 Not Implemented`.
+### Plants (Root Resource)
+*Use `/gardens/plants` for managing your plants.*
+- `GET /plants`
+- `POST /plants`
+- `GET /plants/:id`
+- `PATCH /plants/:id`
+- `DELETE /plants/:id`
 
-- `GET /care-tracker/upcoming` - Get upcoming tasks.
-- `POST /care-tracker/schedules` - Create a care schedule.
-- `POST /care-tracker/schedules/:id/complete` - Mark task as complete.
-- `POST /care-tracker/generate` - Generate smart schedule.
+### Care Tracker
+- `GET /care-tracker/upcoming`
+- `POST /care-tracker/schedules`
+- `POST /care-tracker/schedules/:id/complete`
+- `POST /care-tracker/generate`
 
 ---
 
@@ -86,9 +105,3 @@ Errors are returned in a standardized JSON format:
   }
 }
 ```
-
-## 🔌 WebSocket API
-
-Real-time features are available via WebSocket at `ws://localhost:3000`.
-
-See `README.md` for subscription examples.
