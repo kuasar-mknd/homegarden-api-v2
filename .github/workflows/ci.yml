@@ -47,7 +47,9 @@ jobs:
       - name: Setup Database (and Generate Client)
         env:
           DATABASE_URL: postgres://postgres:password@localhost:5432/homegarden
-        run: pnpm db:push
+        run: |
+          pnpm db:push
+          pnpm db:generate
 
       - name: Typecheck
         run: pnpm build
