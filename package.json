@@ -42,20 +42,27 @@
     "@hono/swagger-ui": "^0.5.3",
     "@hono/zod-openapi": "^1.2.0",
     "@hono/zod-validator": "^0.7.6",
-    "@prisma/adapter-pg": "^7.2.0",
-    "@prisma/client": "^7.2.0",
+    "@prisma/adapter-pg": "^7.3.0",
+    "@prisma/client": "^7.3.0",
     "@supabase/supabase-js": "^2.90.1",
     "@types/pg": "^8.16.0",
     "bcrypt": "^6.0.0",
     "dotenv": "^17.2.3",
-    "hono": "^4.11.3",
+    "hono": "^4.11.7",
     "hono-rate-limiter": "^0.5.3",
     "jsonwebtoken": "^9.0.3",
     "pg": "^8.16.3",
     "pino": "^10.1.1",
-    "prisma": "^7.2.0",
+    "prisma": "^7.3.0",
     "ws": "^8.19.0",
     "zod": "^4.3.5"
+  },
+  "pnpm": {
+    "overrides": {
+      "h3": ">=1.15.5",
+      "lodash": ">=4.17.23",
+      "hono": "^4.11.7"
+    }
   },
   "devDependencies": {
     "@biomejs/biome": "^2.3.11",
