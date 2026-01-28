@@ -19,7 +19,12 @@ HomeGarden is a robust, Clean Architecture-based REST API for managing gardens a
 ### Prerequisites
 
 *   Node.js >= 20.0.0
-*   pnpm (managed via `corepack` or installed globally)
+*   **pnpm** (Required package manager)
+    ```bash
+    # Enable via corepack (recommended)
+    corepack enable
+    corepack prepare pnpm@latest --activate
+    ```
 *   Docker (for local Postgres database)
 
 ### Installation
@@ -111,6 +116,8 @@ curl -X POST http://localhost:3000/api/v2/plant-id/identify \
 *   **`Supabase URL or Publishable Key not configured`**: Ensure `SUPABASE_URL` and `SUPABASE_PUBLISHABLE_KEY` are set in `.env`.
 *   **Database Connection Errors**: Check if your Postgres container is running and accessible. Verify `DATABASE_URL` matches your container settings.
     *   Check logs: `docker-compose logs db` or `docker logs homegarden-db`
+    *   Ensure the database is reachable: `pnpm db:push`
 *   **AI Errors**: Verify `GOOGLE_AI_API_KEY` is valid and has access to the specified models.
 *   **Module not found errors**: If you see errors about `@prisma/client`, run `pnpm db:generate` manually.
 *   **Port in Use**: If port 3000 is occupied, change `PORT` in `.env`.
+*   **CI/Lint Errors**: Ensure you are using the correct Node and pnpm versions (`node -v`, `pnpm -v`).

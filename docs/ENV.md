@@ -36,7 +36,7 @@ This document lists all environment variables used by the application, matching 
 
 | Variable | Description | Default |
 |---|---|---|
-| `GOOGLE_AI_API_KEY` | API Key for Google Gemini | Optional |
+| `GOOGLE_AI_API_KEY` | API Key for Google Gemini (Required for AI features) | Optional |
 | `GEMINI_IDENTIFICATION_MODEL` | Model for plant ID | `gemini-2.0-flash` |
 | `GEMINI_DIAGNOSIS_MODEL` | Model for plant diagnosis | `gemini-2.5-pro-preview-06-05` |
 | `PLANTNET_API_KEY` | API Key for PlantNet (fallback) | Optional |
