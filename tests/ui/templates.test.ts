@@ -23,7 +23,9 @@ describe('UI Templates', () => {
     })
 
     it('should include focus-visible style with primary color', () => {
-      expect(SHARED_STYLES).toContain('outline: var(--focus-ring-width) solid var(--focus-ring-color)')
+      expect(SHARED_STYLES).toContain(
+        'outline: var(--focus-ring-width) solid var(--focus-ring-color)',
+      )
     })
 
     it('should include new utility classes', () => {
@@ -45,6 +47,16 @@ describe('UI Templates', () => {
 
     it('should include print styles for expanding URLs', () => {
       expect(SHARED_STYLES).toContain('a[href^="http"]:after { content: " (" attr(href) ")"; }')
+    })
+
+    it('should use high contrast color for badge', () => {
+      expect(SHARED_STYLES).toContain('.badge {')
+      expect(SHARED_STYLES).toContain('color: #1b5e20')
+    })
+
+    it('should indicate help cursor for status dot', () => {
+      expect(SHARED_STYLES).toContain('.status-dot {')
+      expect(SHARED_STYLES).toContain('cursor: help')
     })
   })
 
@@ -83,6 +95,10 @@ describe('UI Templates', () => {
       const html = getLandingPageHtml()
       expect(html).toContain('<div class="footer-links no-print">')
     })
+
+    it('should include og:locale meta tag', () => {
+      expect(getLandingPageHtml()).toContain('<meta property="og:locale" content="en_US">')
+    })
   })
 
   describe('getNotFoundPageHtml', () => {
@@ -114,6 +130,11 @@ describe('UI Templates', () => {
     it('should use clear 404 title', () => {
       const html = getNotFoundPageHtml('/foo')
       expect(html).toContain('<title>404: Page Not Found')
+    })
+
+    it('should include history check for back button', () => {
+      const html = getNotFoundPageHtml('/foo')
+      expect(html).toContain('if (history.length > 1)')
     })
   })
 })
