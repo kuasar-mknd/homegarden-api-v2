@@ -7,6 +7,10 @@ import {
 import { AppError } from '../../shared/errors/app-error.js'
 import { fail, ok } from '../../shared/types/result.type.js'
 
+vi.mock('../../infrastructure/http/validators/file-signature.validator.js', () => ({
+  validateImageSignature: vi.fn().mockReturnValue(true),
+}))
+
 describe('PlantIdController', () => {
   let controller: PlantIdController
   let mockUseCase: IdentifySpeciesUseCase

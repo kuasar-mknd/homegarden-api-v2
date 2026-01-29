@@ -56,6 +56,9 @@ export class GardenController {
         )
       }
 
+      // Prevent caching of sensitive user data
+      c.header('Cache-Control', 'no-store')
+
       return c.json(
         {
           success: true,
@@ -104,6 +107,9 @@ export class GardenController {
           500,
         )
       }
+
+      // Prevent caching of sensitive user data
+      c.header('Cache-Control', 'no-store')
 
       return c.json(
         {

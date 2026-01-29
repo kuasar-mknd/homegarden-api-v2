@@ -5,6 +5,10 @@ import { fail, ok } from '../../../shared/types/result.type.js'
 import { createPlantIdController } from '../controllers/plant-id.controller.js'
 import { createPlantIdRoutes } from './plant-id.routes.js'
 
+vi.mock('../validators/file-signature.validator.js', () => ({
+  validateImageSignature: vi.fn().mockReturnValue(true),
+}))
+
 describe('PlantIdRoutes', () => {
   let app: OpenAPIHono
   // biome-ignore lint/suspicious/noExplicitAny: mock use case
