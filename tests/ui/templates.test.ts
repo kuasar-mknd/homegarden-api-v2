@@ -134,7 +134,7 @@ describe('UI Templates', () => {
 
     it('should hide back button if no history', () => {
       const html = getNotFoundPageHtml('/foo')
-      expect(html).toContain("if (history.length <= 1) {")
+      expect(html).toContain('if (history.length <= 1) {')
       expect(html).toContain("backBtn.style.display = 'none'")
     })
   })
