@@ -36,6 +36,8 @@ The best way to explore the API is via the built-in Swagger UI, which provides i
 
 ### Gardens
 
+The primary way to manage plants is through the Garden endpoints.
+
 - `GET /gardens/plants` - Retrieves all plants in the authenticated user's garden.
 - `POST /gardens/plants` - Adds a new plant to a specific garden (requires `gardenId` in body).
 - `GET /gardens/nearby` - Finds public gardens within a specific radius (geo-query).
@@ -43,7 +45,7 @@ The best way to explore the API is via the built-in Swagger UI, which provides i
 
 ### Plants
 
-*Direct plant management endpoints are partially implemented; use Garden endpoints for main flows.*
+*Direct plant management endpoints (`/plants`) are currently placeholders returning `501 Not Implemented`. Please use the Garden endpoints above.*
 
 - `GET /plants` - List all plants for the user (501 Not Implemented).
 - `POST /plants` - Create a new plant (501 Not Implemented).
@@ -54,8 +56,12 @@ The best way to explore the API is via the built-in Swagger UI, which provides i
 ### AI Identification
 
 - `GET /plant-id/status` - Check Plant ID service availability.
-- `POST /plant-id/identify` - Identifies a plant from an image URL or Base64 data (JSON Body).
-- `POST /dr-plant/diagnose` - Diagnoses plant health issues from an image (Multipart/Form-Data).
+- `POST /plant-id/identify` - Identifies a plant.
+  - **Content-Type**: `application/json`
+  - **Body**: `{ "imageUrl": "..." }` or `{ "imageBase64": "..." }`
+- `POST /dr-plant/diagnose` - Diagnoses plant health issues.
+  - **Content-Type**: `multipart/form-data`
+  - **Fields**: `image` (File, required), `symptoms` (Text, optional)
 
 ### Users
 

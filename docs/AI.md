@@ -19,11 +19,23 @@ To enable AI features, you must provide a Google AI API key:
 GOOGLE_AI_API_KEY=your_api_key_here
 ```
 
-## 📋 JSON Schemas
+## 📨 Input Formats
+
+The AI endpoints accept different input formats optimized for their use cases:
+
+### Plant Identification (`/plant-id/identify`)
+*   **Format**: `application/json`
+*   **Payload**: Requires either `imageUrl` (publicly accessible URL) or `imageBase64` (base64 encoded image string).
+
+### Plant Diagnosis (`/dr-plant/diagnose`)
+*   **Format**: `multipart/form-data`
+*   **Payload**: Requires an `image` file upload. Optionally accepts `symptoms` (text) to provide context to the AI.
+
+## 📋 Output Schemas (AI Response)
 
 The application instructs the AI to return structured JSON data.
 
-### Identification Schema
+### Identification Response
 ```json
 {
   "success": true,
@@ -42,7 +54,7 @@ The application instructs the AI to return structured JSON data.
 }
 ```
 
-### Diagnosis Schema
+### Diagnosis Response
 ```json
 {
   "success": true,

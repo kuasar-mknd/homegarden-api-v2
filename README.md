@@ -5,7 +5,7 @@ HomeGarden is a robust, Clean Architecture-based REST API for managing gardens a
 ## 🌟 Features
 
 *   **Clean Architecture**: Separation of concerns into Domain, Application, and Infrastructure layers.
-*   **Plant Management**: CRUD operations for Gardens and Plants.
+*   **Garden Management**: Create gardens, find nearby public gardens, and manage plants within them.
 *   **AI Integration**:
     *   **Identification**: Identify plants from images using Google Gemini Vision (`gemini-2.0-flash`).
     *   **Diagnosis**: Diagnose plant health issues using Google Gemini Vision (`gemini-2.5-pro-preview-06-05`).
@@ -13,6 +13,10 @@ HomeGarden is a robust, Clean Architecture-based REST API for managing gardens a
 *   **Authentication**: Secure authentication using Supabase Auth (JWT).
 *   **Type Safety**: End-to-end type safety with TypeScript, Zod, and Prisma.
 *   **Interactive Docs**: OpenAPI (Swagger) documentation available at `/ui`.
+
+**Planned Features:**
+*   **Care Tracker**: Scheduling and tracking for watering, fertilizing, etc. (Currently 501 Not Implemented).
+*   **Direct Plant Management**: Standalone plant endpoints (`/plants`) are currently placeholders; use `/gardens/plants`.
 
 ## 🛠️ Local Setup
 
@@ -109,6 +113,17 @@ curl -X POST http://localhost:3000/api/v2/plant-id/identify \
   -H "Authorization: Bearer <YOUR_SUPABASE_TOKEN>" \
   -H "Content-Type: application/json" \
   -d '{"imageUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/3/3a/Monstera_deliciosa5.jpg/640px-Monstera_deliciosa5.jpg"}'
+```
+
+### Example: Diagnose a Plant (requires Auth)
+
+This endpoint uses `multipart/form-data` to upload an image file.
+
+```bash
+curl -X POST http://localhost:3000/api/v2/dr-plant/diagnose \
+  -H "Authorization: Bearer <YOUR_SUPABASE_TOKEN>" \
+  -F "image=@/path/to/sick_plant.jpg" \
+  -F "symptoms=Leaves are turning yellow"
 ```
 
 ## 🔧 Troubleshooting
