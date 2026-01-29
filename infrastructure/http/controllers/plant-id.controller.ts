@@ -15,6 +15,7 @@ import type {
 import { isOk } from '../../../shared/types/result.type.js'
 import { logger } from '../../config/logger.js'
 import type { IdentifySpeciesInputSchema } from '../schemas/plant-id.schema.js'
+import { validateImageSignature } from '../validators/file-signature.validator.js'
 
 // ============================================================
 // CONTROLLER
@@ -38,6 +39,23 @@ export class PlantIdController {
       const validatedData = (await c.req.valid('json' as never)) as z.infer<
         typeof IdentifySpeciesInputSchema
       >
+
+      // Security Check: Validate image signature for Base64 inputs
+      if (validatedData.imageBase64) {
+        const buffer = Buffer.from(validatedData.imageBase64, 'base64')
+        const mimeType = validatedData.mimeType || 'image/jpeg'
+
+        if (!validateImageSignature(buffer, mimeType)) {
+          return c.json(
+            {
+              success: false,
+              error: 'INVALID_FILE_SIGNATURE',
+              message: `File content does not match mime type: ${mimeType}`,
+            },
+            400,
+          )
+        }
+      }
 
       // Build use case input
       const input: IdentifySpeciesInput = {}

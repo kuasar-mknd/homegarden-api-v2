@@ -33,6 +33,9 @@ export class UserController {
         )
       }
 
+      // Prevent caching of profile data
+      c.header('Cache-Control', 'no-store')
+
       return c.json(
         {
           success: true,
