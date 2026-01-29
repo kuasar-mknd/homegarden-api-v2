@@ -48,6 +48,15 @@ describe('UI Templates', () => {
     it('should include print styles for expanding URLs', () => {
       expect(SHARED_STYLES).toContain('a[href^="http"]:after { content: " (" attr(href) ")"; }')
     })
+
+    it('should use improved badge contrast', () => {
+      expect(SHARED_STYLES).toContain('color: #1b5e20')
+    })
+
+    it('should show help cursor for status dot', () => {
+      expect(SHARED_STYLES).toContain('.status-dot {')
+      expect(SHARED_STYLES).toContain('cursor: help')
+    })
   })
 
   describe('getLandingPageHtml', () => {
@@ -85,6 +94,11 @@ describe('UI Templates', () => {
       const html = getLandingPageHtml()
       expect(html).toContain('<div class="footer-links no-print">')
     })
+
+    it('should include og:locale meta tag', () => {
+      const html = getLandingPageHtml()
+      expect(html).toContain('<meta property="og:locale" content="en_US">')
+    })
   })
 
   describe('getNotFoundPageHtml', () => {
@@ -116,6 +130,12 @@ describe('UI Templates', () => {
     it('should use clear 404 title', () => {
       const html = getNotFoundPageHtml('/foo')
       expect(html).toContain('<title>404: Page Not Found')
+    })
+
+    it('should hide back button if no history', () => {
+      const html = getNotFoundPageHtml('/foo')
+      expect(html).toContain('if (history.length <= 1) {')
+      expect(html).toContain("backBtn.style.display = 'none'")
     })
   })
 })

@@ -40,6 +40,11 @@
 **Learning:** Feedback text like "Checked!" can be ambiguous.
 **Action:** Use explicit action verbs ("Copied!") paired with a universally recognized icon (Checkmark) for clarity and delight.
 
+## 2026-06-15 - Navigation State Logic
+
+**Learning:** "Go Back" buttons can be dead ends when users arrive directly (e.g., from email/bookmark), creating frustration.
+**Action:** Check `history.length <= 1` to conditionally hide navigation controls that depend on browser history.
+
 ## Rejected Changes
 
 *(None yet)*
