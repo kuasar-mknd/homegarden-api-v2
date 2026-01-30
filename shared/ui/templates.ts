@@ -163,7 +163,7 @@ export const SHARED_STYLES = `
   .badge {
     display: inline-block;
     background: #e8f5e9;
-    color: #2e7d32;
+    color: #1b5e20;
     padding: 4px 12px;
     border-radius: var(--radius-lg);
     font-size: 0.85rem;
@@ -523,6 +523,7 @@ export function baseLayout({ title, description, content }: LayoutProps): string
   <meta name="theme-color" content="#121212" media="(prefers-color-scheme: dark)">
   <meta name="apple-mobile-web-app-title" content="HomeGarden">
 
+  <meta property="og:locale" content="en_US">
   <meta property="og:site_name" content="HomeGarden API">
   <meta property="og:title" content="${safeTitle}">
   <meta property="og:description" content="${metaDescription}">
@@ -627,9 +628,9 @@ export function getNotFoundPageHtml(path: string): string {
       <p>Oops! The page you are looking for does not exist.</p>
 
       <div class="code-wrapper">
-        <code id="error-path" aria-label="Requested URL" class="code-block" title="Requested URL" tabindex="0">${safePath}</code>
+        <code id="error-path" aria-label="Requested URL" class="code-block" title="Requested URL" tabindex="0" autofocus>${safePath}</code>
         <div class="copy-btn-wrapper no-print">
-            <button type="button" class="btn btn-secondary copy-btn" data-clipboard-target="#error-path" aria-label="Copy URL to clipboard">
+            <button type="button" class="btn btn-secondary copy-btn" data-clipboard-target="#error-path" aria-label="Copy URL to clipboard" aria-live="polite">
             ${COPY_ICON} Copy Path
             </button>
         </div>
@@ -648,9 +649,13 @@ export function getNotFoundPageHtml(path: string): string {
         // Handle Go Back
         var backBtn = document.getElementById('go-back-btn');
         if (backBtn) {
-          backBtn.addEventListener('click', function() {
-            history.back();
-          });
+          if (history.length > 1) {
+            backBtn.addEventListener('click', function() {
+              history.back();
+            });
+          } else {
+            backBtn.style.display = 'none';
+          }
         }
 
         // Handle Copy

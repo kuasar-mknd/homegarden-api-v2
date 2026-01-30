@@ -43,3 +43,14 @@
 ## Rejected Changes
 
 *(None yet)*
+
+## 2025-02-17 - Navigation & Accessibility Polish
+
+**Learning:** "Go Back" buttons that rely solely on `history.back()` can be dead ends when users open links in new tabs.
+**Action:** Conditionally hide back buttons when `history.length <= 1` or provide a fallback destination.
+
+**Learning:** Color contrast for badges needs to account for the background. Darker greens (like `#1b5e20`) ensure AA compliance on light backgrounds better than mid-tones.
+**Action:** Default to higher contrast text colors for status indicators.
+
+**Learning:** Interactive feedback (like "Copied!") is good, but `aria-live="polite"` ensures screen reader users also get the update.
+**Action:** Always pair visual status updates with `aria-live` regions.

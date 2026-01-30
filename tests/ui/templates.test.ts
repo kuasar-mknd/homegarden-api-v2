@@ -13,6 +13,11 @@ describe('UI Templates', () => {
       expect(SHARED_STYLES).toContain('--error:')
     })
 
+    it('should use accessible contrast color for badge', () => {
+      expect(SHARED_STYLES).toContain('.badge {')
+      expect(SHARED_STYLES).toContain('color: #1b5e20')
+    })
+
     it('should include dark mode media query', () => {
       expect(SHARED_STYLES).toContain('@media (prefers-color-scheme: dark)')
     })
@@ -81,6 +86,11 @@ describe('UI Templates', () => {
       )
     })
 
+    it('should include og:locale meta tag', () => {
+      const html = getLandingPageHtml()
+      expect(html).toContain('<meta property="og:locale" content="en_US">')
+    })
+
     it('should use footer-links class', () => {
       const html = getLandingPageHtml()
       expect(html).toContain('<div class="footer-links no-print">')
@@ -116,6 +126,23 @@ describe('UI Templates', () => {
     it('should use clear 404 title', () => {
       const html = getNotFoundPageHtml('/foo')
       expect(html).toContain('<title>404: Page Not Found')
+    })
+
+    it('should have autofocus on error path for immediate visibility', () => {
+      const html = getNotFoundPageHtml('/foo')
+      expect(html).toContain('autofocus')
+      expect(html).toContain('tabindex="0"')
+    })
+
+    it('should have polite live region for copy button feedback', () => {
+      const html = getNotFoundPageHtml('/foo')
+      expect(html).toContain('aria-live="polite"')
+    })
+
+    it('should check history length before showing back button', () => {
+      const html = getNotFoundPageHtml('/foo')
+      expect(html).toContain('if (history.length > 1)')
+      expect(html).toContain("backBtn.style.display = 'none'")
     })
   })
 })
