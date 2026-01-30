@@ -27,11 +27,6 @@ const envSchema = z.object({
   SUPABASE_PUBLISHABLE_KEY: z.string().min(1),
   SUPABASE_SECRET_KEY: z.string().min(1).optional(),
 
-  // JWT (fallback)
-  JWT_SECRET: z.string().min(32).optional(),
-  JWT_EXPIRES_IN: z.string().default('1h'),
-  JWT_REFRESH_EXPIRES_IN: z.string().default('7d'),
-
   // Google Gemini AI
   GOOGLE_AI_API_KEY: z.string().optional(),
   GEMINI_IDENTIFICATION_MODEL: z.string().default('gemini-2.0-flash'),
