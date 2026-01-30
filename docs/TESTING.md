@@ -1,16 +1,16 @@
 # Testing Documentation
 
-The HomeGarden API has **98.21% test coverage** with **285 passing tests** across unit, integration, and end-to-end test suites.
+The HomeGarden API has **~91% test coverage** with **368 passing tests** across unit, integration, and end-to-end test suites.
 
 ## 📊 Coverage Report
 
 | Metric | Coverage |
 |--------|----------|
-| **Lines** | 98.21% |
-| **Statements** | 97.40% |
-| **Functions** | 97.08% |
-| **Branches** | 88.71% |
-| **Total Tests** | 285 |
+| **Lines** | 91.62% |
+| **Statements** | 90.93% |
+| **Functions** | 84.00% |
+| **Branches** | 87.46% |
+| **Total Tests** | 368 |
 
 ## 🧪 Test Types
 

@@ -29,7 +29,7 @@ The best way to explore the API is via the built-in Swagger UI, which provides i
 
 ### Auth
 
-*Endpoints are currently placeholders (501 Not Implemented). Client-side authentication via Supabase SDK is recommended.*
+*Endpoints are currently placeholders (501 Not Implemented) reserved for future custom auth flows. Client-side authentication via Supabase SDK is recommended.*
 
 - `POST /auth/register` - Register a new user.
 - `POST /auth/login` - Authenticate user.
@@ -43,7 +43,7 @@ The best way to explore the API is via the built-in Swagger UI, which provides i
 
 ### Plants
 
-*Direct plant management endpoints are partially implemented; use Garden endpoints for main flows.*
+*Note: Direct plant management endpoints are currently placeholders (501 Not Implemented). Please use the Garden-centric endpoints (e.g., `/gardens/plants`) for all current plant operations.*
 
 - `GET /plants` - List all plants for the user (501 Not Implemented).
 - `POST /plants` - Create a new plant (501 Not Implemented).
@@ -52,6 +52,8 @@ The best way to explore the API is via the built-in Swagger UI, which provides i
 - `DELETE /plants/:id` - Delete a plant (501 Not Implemented).
 
 ### AI Identification
+
+*See [AI.md](AI.md) for detailed model information and configuration.*
 
 - `GET /plant-id/status` - Check Plant ID service availability.
 - `POST /plant-id/identify` - Identifies a plant from an image URL or Base64 data (JSON Body).
@@ -63,7 +65,7 @@ The best way to explore the API is via the built-in Swagger UI, which provides i
 
 ### Care Tracker (Coming Soon)
 
-*These endpoints currently return `501 Not Implemented`.*
+*These endpoints are reserved for future Care Tracker features and currently return `501 Not Implemented`.*
 
 - `GET /care-tracker/upcoming` - Get upcoming tasks.
 - `POST /care-tracker/schedules` - Create a care schedule.
