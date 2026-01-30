@@ -46,12 +46,34 @@ describe('Rate Limit Middleware', () => {
     const config = (rateLimitMiddleware as any).config
     const mockContext = {
       req: {
-        header: vi.fn().mockReturnValue('192.168.1.1'),
+        header: vi.fn((name) => {
+          if (name === 'x-forwarded-for') return '192.168.1.1'
+          return undefined
+        }),
       },
     }
 
     const key = config.keyGenerator(mockContext)
     expect(key).toBe('192.168.1.1')
+  })
+
+  it('should use last IP when multiple IPs in x-forwarded-for header', async () => {
+    const { rateLimitMiddleware } = await import(
+      '../../infrastructure/http/middleware/rate-limit.middleware.js'
+    )
+
+    const config = (rateLimitMiddleware as any).config
+    const mockContext = {
+      req: {
+        header: vi.fn((name) => {
+          if (name === 'x-forwarded-for') return '1.2.3.4, 5.6.7.8'
+          return undefined
+        }),
+      },
+    }
+
+    const key = config.keyGenerator(mockContext)
+    expect(key).toBe('5.6.7.8')
   })
 
   it('should fallback to unknown when no x-forwarded-for header', async () => {
