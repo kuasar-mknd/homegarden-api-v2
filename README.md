@@ -1,16 +1,18 @@
 # HomeGarden API
 
+[![CI](https://github.com/your-username/homegarden-api/actions/workflows/ci.yml/badge.svg)](https://github.com/your-username/homegarden-api/actions/workflows/ci.yml)
+
 HomeGarden is a robust, Clean Architecture-based REST API for managing gardens and plants, powered by AI for identification and diagnosis. It uses Hono, Prisma, and Supabase to provide a scalable and type-safe backend.
 
 ## 🌟 Features
 
 *   **Clean Architecture**: Separation of concerns into Domain, Application, and Infrastructure layers.
-*   **Plant Management**: CRUD operations for Gardens and Plants.
+*   **Plant Management**: CRUD operations for Gardens and Plants (Garden-centric).
 *   **AI Integration**:
     *   **Identification**: Identify plants from images using Google Gemini Vision (`gemini-2.0-flash`).
     *   **Diagnosis**: Diagnose plant health issues using Google Gemini Vision (`gemini-2.5-pro-preview-06-05`).
 *   **Weather Integration**: Fetch weather data for garden locations via Open-Meteo.
-*   **Authentication**: Secure authentication using Supabase Auth (JWT).
+*   **Authentication**: Secure authentication integrated via Supabase Auth (JWT).
 *   **Type Safety**: End-to-end type safety with TypeScript, Zod, and Prisma.
 *   **Interactive Docs**: OpenAPI (Swagger) documentation available at `/ui`.
 
