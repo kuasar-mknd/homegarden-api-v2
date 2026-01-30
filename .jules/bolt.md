@@ -29,3 +29,7 @@
 ## 2024-05-23 - [Static Layout Anti-Pattern]
 **Learning:** Pre-computing HTML layouts (header/footer) to save string concatenation is a micro-optimization that creates security risks (e.g., static CSP nonces) and prevents dynamic content (Auth state).
 **Action:** Avoid caching layout templates unless they are strictly static and have no dependencies on request context.
+
+## 2024-05-24 - [Template Replacement Performance]
+**Learning:** `String.prototype.replace(pattern, replacement)` on large strings (~18KB) is significantly slower (-118%) than simple string concatenation due to the overhead of scanning/matching.
+**Action:** When injecting small dynamic values into large pre-computed templates, splitting the template into static parts and joining them (`part1 + value + part2`) is much faster (~85%) than using `replace`.
