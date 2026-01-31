@@ -9,3 +9,8 @@
 **Vulnerability:** The rate limiter used `x-forwarded-for` directly without parsing. An attacker could potentially bypass rate limits by appending fake IPs or spoofing the header if not properly sanitized by a proxy.
 **Learning:** Relying on raw `x-forwarded-for` is risky.
 **Prevention:** Prioritize `cf-connecting-ip` or `x-real-ip` when available. When using `x-forwarded-for`, be aware of the trust model (e.g., standard proxy chains) and ideally configure trusted proxies.
+
+## 2025-05-24 - Context Data Leakage & Input Validation
+**Vulnerability:** The `user` object in the request context (`c.get('user')`) included the `password` field (even if a placeholder). This increases the risk of accidental exposure in responses. Also, `IdentifySpeciesUseCase` lacked file signature validation, relying only on user-provided MIME types.
+**Learning:** Context objects are often treated as "safe" and dumped into logs or responses. Explicitly sanitizing them at the middleware level is a crucial defense-in-depth measure. Relying on MIME types for file validation is insufficient; magic bytes must be checked.
+**Prevention:** Use "Safe" types for context objects (e.g., `SafeUser`). Implement strict file signature validation for all uploads.

@@ -33,6 +33,9 @@ export class UserController {
         )
       }
 
+      // Sentinel: Prevent caching of user profile data
+      c.header('Cache-Control', 'no-store, private')
+
       return c.json(
         {
           success: true,
