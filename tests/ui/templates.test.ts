@@ -48,6 +48,10 @@ describe('UI Templates', () => {
     it('should include print styles for expanding URLs', () => {
       expect(SHARED_STYLES).toContain('a[href^="http"]:after { content: " (" attr(href) ")"; }')
     })
+
+    it('should include cursor: help for status dot', () => {
+      expect(SHARED_STYLES).toContain('cursor: help')
+    })
   })
 
   describe('getLandingPageHtml', () => {
@@ -85,6 +89,16 @@ describe('UI Templates', () => {
       const html = getLandingPageHtml()
       expect(html).toContain('<div class="footer-links no-print">')
     })
+
+    it('should include og:locale', () => {
+      const html = getLandingPageHtml()
+      expect(html).toContain('<meta property="og:locale" content="en_US">')
+    })
+
+    it('should include accessible emoji wrapper', () => {
+      const html = getLandingPageHtml()
+      expect(html).toContain('<span role="img" aria-label="Seedling">🌱</span>')
+    })
   })
 
   describe('getNotFoundPageHtml', () => {
@@ -116,6 +130,16 @@ describe('UI Templates', () => {
     it('should use clear 404 title', () => {
       const html = getNotFoundPageHtml('/foo')
       expect(html).toContain('<title>404: Page Not Found')
+    })
+
+    it('should include accessible emoji wrapper', () => {
+      const html = getNotFoundPageHtml('/foo')
+      expect(html).toContain('<span role="img" aria-label="Seedling">🌱</span>')
+    })
+
+    it('should include history check for go back button', () => {
+      const html = getNotFoundPageHtml('/foo')
+      expect(html).toContain('if (window.history.length <= 1)')
     })
   })
 })

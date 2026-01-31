@@ -40,6 +40,11 @@
 **Learning:** Feedback text like "Checked!" can be ambiguous.
 **Action:** Use explicit action verbs ("Copied!") paired with a universally recognized icon (Checkmark) for clarity and delight.
 
+## 2026-01-31 - Navigation Usability
+
+**Learning:** "Go Back" buttons relying on `history.back()` create a dead interaction for users who open pages in new tabs (history length <= 1).
+**Action:** Always conditionally hide or disable history-dependent navigation controls using `window.history.length` checks.
+
 ## Rejected Changes
 
 *(None yet)*
