@@ -19,7 +19,7 @@ HomeGarden is a robust, Clean Architecture-based REST API for managing gardens a
 ### Prerequisites
 
 *   Node.js >= 20.0.0
-*   **pnpm** (Required package manager)
+*   **pnpm** (STRICTLY REQUIRED - do not use npm or yarn)
     ```bash
     # Enable via corepack (recommended)
     corepack enable
@@ -113,11 +113,12 @@ curl -X POST http://localhost:3000/api/v2/plant-id/identify \
 
 ## 🔧 Troubleshooting
 
+*   **Environment Validation Failed**: Check the console output. The application validates all environment variables on startup.
 *   **`Supabase URL or Publishable Key not configured`**: Ensure `SUPABASE_URL` and `SUPABASE_PUBLISHABLE_KEY` are set in `.env`.
 *   **Database Connection Errors**: Check if your Postgres container is running and accessible. Verify `DATABASE_URL` matches your container settings.
     *   Check logs: `docker-compose logs db` or `docker logs homegarden-db`
     *   Ensure the database is reachable: `pnpm db:push`
-*   **AI Errors**: Verify `GOOGLE_AI_API_KEY` is valid and has access to the specified models.
-*   **Module not found errors**: If you see errors about `@prisma/client`, run `pnpm db:generate` manually.
+*   **AI Errors**: Verify `GOOGLE_AI_API_KEY` is valid and has access to the specified models (default: `gemini-2.0-flash`).
+*   **Module not found errors**: If you see errors about `@prisma/client` or type errors, run `pnpm db:generate` manually to regenerate the Prisma client.
 *   **Port in Use**: If port 3000 is occupied, change `PORT` in `.env`.
 *   **CI/Lint Errors**: Ensure you are using the correct Node and pnpm versions (`node -v`, `pnpm -v`).
