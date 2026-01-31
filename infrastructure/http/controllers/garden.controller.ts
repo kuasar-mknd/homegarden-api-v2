@@ -105,6 +105,9 @@ export class GardenController {
         )
       }
 
+      // Sentinel: Prevent caching of user's personal plants
+      c.header('Cache-Control', 'no-store, private')
+
       return c.json(
         {
           success: true,

@@ -24,7 +24,7 @@ describe('IdentifySpeciesUseCase', () => {
 
   it('should identify a plant successfully', async () => {
     const input: IdentifySpeciesInput = {
-      imageBase64: 'fake-base64',
+      imageBase64: '/9j/AAA=',
       mimeType: 'image/jpeg',
       maxSuggestions: 3,
       organs: ['leaf'],
@@ -62,7 +62,7 @@ describe('IdentifySpeciesUseCase', () => {
       expect(output.modelUsed).toBe('gemini-pro-vision')
     }
     expect(mockAiIdentification.identifySpecies).toHaveBeenCalledWith({
-      image: 'fake-base64',
+      image: '/9j/AAA=',
       isUrl: false,
       mimeType: 'image/jpeg',
       maxSuggestions: 3,
@@ -107,7 +107,7 @@ describe('IdentifySpeciesUseCase', () => {
   })
 
   it('should handle AI service failure', async () => {
-    const input: IdentifySpeciesInput = { imageBase64: 'data' }
+    const input: IdentifySpeciesInput = { imageBase64: '/9j/AAA=' }
 
     vi.mocked(mockAiIdentification.identifySpecies).mockResolvedValue({
       success: false,
@@ -126,7 +126,7 @@ describe('IdentifySpeciesUseCase', () => {
   })
 
   it('should handle AI service failure without error message', async () => {
-    const input: IdentifySpeciesInput = { imageBase64: 'data' }
+    const input: IdentifySpeciesInput = { imageBase64: '/9j/AAA=' }
     vi.mocked(mockAiIdentification.identifySpecies).mockResolvedValue({
       success: false,
     } as any)
@@ -140,7 +140,7 @@ describe('IdentifySpeciesUseCase', () => {
   })
 
   it('should identify a plant successfully with sparse suggestion', async () => {
-    const input: IdentifySpeciesInput = { imageBase64: 'data' }
+    const input: IdentifySpeciesInput = { imageBase64: '/9j/AAA=' }
     const mockResult: IdentifySpeciesResult = {
       success: true,
       suggestions: [
@@ -166,7 +166,7 @@ describe('IdentifySpeciesUseCase', () => {
   })
 
   it('should handle unexpected exceptions', async () => {
-    const input: IdentifySpeciesInput = { imageBase64: 'data' }
+    const input: IdentifySpeciesInput = { imageBase64: '/9j/AAA=' }
 
     vi.mocked(mockAiIdentification.identifySpecies).mockRejectedValue(new Error('Unexpected crash'))
 
@@ -180,7 +180,7 @@ describe('IdentifySpeciesUseCase', () => {
   })
 
   it('should handle unknown error types', async () => {
-    const input: IdentifySpeciesInput = { imageBase64: 'data' }
+    const input: IdentifySpeciesInput = { imageBase64: '/9j/AAA=' }
 
     vi.mocked(mockAiIdentification.identifySpecies).mockRejectedValue('something weird')
 

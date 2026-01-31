@@ -104,8 +104,10 @@ export const authMiddleware = createMiddleware(async (c, next) => {
     }
 
     // 3. Attach user to context
-    c.set('user', localUser)
-    c.set('userId', localUser.id)
+    // Sentinel: Strip password from user object before attaching to context to prevent leaks
+    const { password: _password, ...safeUser } = localUser
+    c.set('user', safeUser)
+    c.set('userId', safeUser.id)
 
     return await next()
   } catch (error) {

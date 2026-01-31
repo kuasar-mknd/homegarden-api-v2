@@ -8,6 +8,7 @@
 import { logger } from '../../../infrastructure/config/logger.js'
 import { AppError } from '../../../shared/errors/app-error.js'
 import { fail, ok, type Result } from '../../../shared/types/result.type.js'
+import { validateImageSignature } from '../../../shared/utils/image-validation.js'
 import type {
   AIIdentificationPort,
   IdentifySpeciesRequest,
@@ -94,6 +95,16 @@ export class IdentifySpeciesUseCase {
     // Validate input
     if (!input.imageBase64 && !input.imageUrl) {
       return fail(new AppError('Either imageBase64 or imageUrl is required', 400, 'MISSING_IMAGE'))
+    }
+
+    if (input.imageBase64 && !validateImageSignature(input.imageBase64)) {
+      return fail(
+        new AppError(
+          'Invalid image format. Supported formats: JPEG, PNG, GIF, WEBP',
+          400,
+          'INVALID_IMAGE_FORMAT',
+        ),
+      )
     }
 
     // Build the request - only add optional properties if they have values
