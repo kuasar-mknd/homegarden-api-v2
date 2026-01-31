@@ -4,7 +4,7 @@ This document lists all environment variables used by the application, matching 
 
 ## Application
 
-| Variable | Description | Default |
+| Variable | Description | Default / Required |
 |---|---|---|
 | `NODE_ENV` | Environment mode (`development`, `production`, `test`) | `development` |
 | `PORT` | Port for the HTTP server | `3000` |
@@ -12,21 +12,21 @@ This document lists all environment variables used by the application, matching 
 
 ## Database
 
-| Variable | Description | Default |
+| Variable | Description | Default / Required |
 |---|---|---|
 | `DATABASE_URL` | PostgreSQL connection string | `postgresql://localhost:5432/homegarden` |
 
 ## Authentication (Supabase)
 
-| Variable | Description | Required? |
+| Variable | Description | Default / Required |
 |---|---|---|
-| `SUPABASE_URL` | URL of your Supabase project | **Yes** |
-| `SUPABASE_PUBLISHABLE_KEY` | Public API key for Supabase | **Yes** |
-| `SUPABASE_SECRET_KEY` | Service role key (optional, for admin tasks) | No |
+| `SUPABASE_URL` | URL of your Supabase project | **Required** |
+| `SUPABASE_PUBLISHABLE_KEY` | Public API key for Supabase | **Required** |
+| `SUPABASE_SECRET_KEY` | Service role key (for admin tasks) | Optional |
 
 ## JWT (Fallback/Legacy)
 
-| Variable | Description | Default |
+| Variable | Description | Default / Required |
 |---|---|---|
 | `JWT_SECRET` | Secret for signing tokens (min 32 chars) | Optional |
 | `JWT_EXPIRES_IN` | Token expiration time | `1h` |
@@ -34,7 +34,7 @@ This document lists all environment variables used by the application, matching 
 
 ## AI & Integrations
 
-| Variable | Description | Default |
+| Variable | Description | Default / Required |
 |---|---|---|
 | `GOOGLE_AI_API_KEY` | API Key for Google Gemini (Required for AI features) | Optional |
 | `GEMINI_IDENTIFICATION_MODEL` | Model for plant ID | `gemini-2.0-flash` |
@@ -43,19 +43,19 @@ This document lists all environment variables used by the application, matching 
 
 ## Weather
 
-| Variable | Description | Default |
+| Variable | Description | Default / Required |
 |---|---|---|
 | `WEATHER_API_BASE_URL` | Base URL for Weather API | `https://api.open-meteo.com/v1` |
 
 ## Storage
 
-| Variable | Description | Default |
+| Variable | Description | Default / Required |
 |---|---|---|
 | `STORAGE_BUCKET` | Bucket name for file storage | Optional |
 
 ## Security
 
-| Variable | Description | Default |
+| Variable | Description | Default / Required |
 |---|---|---|
 | `RATE_LIMIT_WINDOW_MS` | Window for rate limiting in ms | `900000` (15m) |
 | `RATE_LIMIT_MAX` | Max requests per window | `350` |

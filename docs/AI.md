@@ -5,6 +5,7 @@ HomeGarden leverages Google Gemini Vision models to provide advanced plant ident
 ## 🤖 Models Configured
 
 The specific models are configurable via environment variables to allow for easy upgrades or testing different model versions.
+Check `infrastructure/config/env.ts` for the current default values and validation rules.
 
 | Feature | Env Variable | Default Model | Description |
 |---|---|---|---|

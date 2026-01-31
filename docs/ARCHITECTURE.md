@@ -27,6 +27,12 @@ This layer contains implementations of interfaces defined in the domain and appl
 ### 4. `shared/`
 Contains shared utilities, types, and constants used across multiple layers (e.g., `Result` type, helper functions).
 
+### 5. `tests/`
+Contains the test suite, mirroring the architecture:
+*   `unit/`: Tests for Domain and Application layers (fast, mocked dependencies).
+*   `integration/`: Tests for Infrastructure layer (requires DB/External services).
+*   `e2e/`: End-to-end tests for the entire API.
+
 ## 🧩 Adding New Features
 
 To add a new feature (e.g., "Watering Schedule"), follow this flow:
