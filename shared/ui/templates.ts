@@ -403,6 +403,7 @@ export const SHARED_STYLES = `
     border-radius: 50%;
     margin-inline-end: 6px;
     animation: pulse 2s infinite ease-in-out;
+    cursor: help;
   }
   .error-code {
     font-size: 4rem;
@@ -527,6 +528,7 @@ export function baseLayout({ title, description, content }: LayoutProps): string
   <meta property="og:title" content="${safeTitle}">
   <meta property="og:description" content="${metaDescription}">
   <meta property="og:type" content="website">
+  <meta property="og:locale" content="en_US">
   <meta property="og:image" content="${image}">
   <meta property="og:image:alt" content="HomeGarden API Banner with green branding">
 
@@ -571,7 +573,7 @@ const LANDING_PAGE_HTML = baseLayout({
   title: 'HomeGarden API v2',
   content: `
     <header role="banner">
-      <h1>🌱 HomeGarden API</h1>
+      <h1><span role="img" aria-label="Seedling">🌱</span> HomeGarden API</h1>
       <div class="badge">v2.0.0 • AI-Powered</div>
     </header>
 
@@ -619,7 +621,7 @@ export function getNotFoundPageHtml(path: string): string {
     description: 'The requested page could not be found.',
     content: `
     <header role="banner">
-      <h1>🌱 404 Not Found</h1>
+      <h1><span role="img" aria-label="Seedling">🌱</span> 404 Not Found</h1>
       <div class="badge badge-error" role="status">Error</div>
     </header>
 
@@ -648,6 +650,9 @@ export function getNotFoundPageHtml(path: string): string {
         // Handle Go Back
         var backBtn = document.getElementById('go-back-btn');
         if (backBtn) {
+          if (window.history.length <= 1) {
+             backBtn.style.display = 'none';
+          }
           backBtn.addEventListener('click', function() {
             history.back();
           });
