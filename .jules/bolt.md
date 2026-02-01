@@ -29,3 +29,7 @@
 ## 2024-05-23 - [Static Layout Anti-Pattern]
 **Learning:** Pre-computing HTML layouts (header/footer) to save string concatenation is a micro-optimization that creates security risks (e.g., static CSP nonces) and prevents dynamic content (Auth state).
 **Action:** Avoid caching layout templates unless they are strictly static and have no dependencies on request context.
+
+## 2024-06-18 - [External Request Safety]
+**Learning:** External API adapters (OpenMeteo, Gemini) were missing timeouts, relying on default fetch behavior (no timeout in Node), which poses a resource exhaustion risk.
+**Action:** Always attach `signal: AbortSignal.timeout(ms)` to `fetch` calls in adapters.
