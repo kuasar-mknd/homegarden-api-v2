@@ -510,6 +510,7 @@ export class GeminiPlantAdapter implements AIIdentificationPort, AIDiagnosisPort
         headers: {
           'User-Agent': 'HomeGarden-API/2.0 (Security-Scan; +https://homegarden.app)',
         },
+        signal: AbortSignal.timeout(10000),
       })
       if (!response.ok) {
         throw new AppError(`Failed to fetch image from URL: ${response.statusText}`, 400)
