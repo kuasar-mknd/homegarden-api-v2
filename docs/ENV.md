@@ -24,7 +24,9 @@ This document lists all environment variables used by the application, matching 
 | `SUPABASE_PUBLISHABLE_KEY` | Public API key for Supabase | **Yes** |
 | `SUPABASE_SECRET_KEY` | Service role key (optional, for admin tasks) | No |
 
-## JWT (Fallback/Legacy)
+## JWT (Legacy/Fallback)
+
+*Note: Primary authentication is handled via Supabase. These variables are for the deprecated local `TokenService` used for testing or fallback.*
 
 | Variable | Description | Default |
 |---|---|---|
