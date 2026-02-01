@@ -9,3 +9,8 @@
 **Vulnerability:** The rate limiter used `x-forwarded-for` directly without parsing. An attacker could potentially bypass rate limits by appending fake IPs or spoofing the header if not properly sanitized by a proxy.
 **Learning:** Relying on raw `x-forwarded-for` is risky.
 **Prevention:** Prioritize `cf-connecting-ip` or `x-real-ip` when available. When using `x-forwarded-for`, be aware of the trust model (e.g., standard proxy chains) and ideally configure trusted proxies.
+
+## 2025-05-23 - Unbounded Stream Reading & Context Leaks
+**Vulnerability:** `GeminiPlantAdapter` read image streams into memory using `arrayBuffer()` without size checks, relying solely on `Content-Length`. Auth middleware exposed internal password fields in the request context.
+**Learning:** Web-standard `fetch` APIs in Node.js do not enforce body size limits by default. `Content-Length` is untrustworthy. Passing full DB entities in context violates Least Privilege.
+**Prevention:** Use a custom stream reader with byte counting to enforce limits. Always strip sensitive fields (destructure) before attaching objects to shared context.

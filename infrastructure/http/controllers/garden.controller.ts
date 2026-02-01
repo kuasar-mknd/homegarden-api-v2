@@ -56,6 +56,9 @@ export class GardenController {
         )
       }
 
+      // Security: Prevent caching of sensitive plant data
+      c.header('Cache-Control', 'no-store, private')
+
       return c.json(
         {
           success: true,
@@ -104,6 +107,9 @@ export class GardenController {
           500,
         )
       }
+
+      // Security: Prevent caching of sensitive plant data
+      c.header('Cache-Control', 'no-store, private')
 
       return c.json(
         {
@@ -212,6 +218,9 @@ export class GardenController {
           result.error.statusCode as any,
         )
       }
+
+      // Security: Prevent caching of sensitive location data
+      c.header('Cache-Control', 'no-store, private')
 
       return c.json(
         {

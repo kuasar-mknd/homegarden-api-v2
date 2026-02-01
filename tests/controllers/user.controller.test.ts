@@ -19,6 +19,7 @@ describe('UserController', () => {
         valid: vi.fn(),
       },
       json: vi.fn().mockImplementation((data, status) => ({ data, status })),
+      header: vi.fn(),
     }
   })
 
@@ -32,6 +33,7 @@ describe('UserController', () => {
     expect(result.status).toBe(200)
     expect(result.data.success).toBe(true)
     expect(result.data.data.firstName).toBe('John')
+    expect(mockContext.header).toHaveBeenCalledWith('Cache-Control', 'no-store, private')
   })
 
   it('should return 401 if unauthorized', async () => {

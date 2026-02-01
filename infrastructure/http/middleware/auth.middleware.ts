@@ -103,8 +103,11 @@ export const authMiddleware = createMiddleware(async (c, next) => {
       logger.info({ userId: localUser.id }, 'Synced new user')
     }
 
-    // 3. Attach user to context
-    c.set('user', localUser)
+    // 3. Attach user to context (strip sensitive fields)
+    const { password: _, ...safeUser } = localUser
+
+    // biome-ignore lint/suspicious/noExplicitAny: Hono context type flexibility
+    c.set('user', safeUser as any)
     c.set('userId', localUser.id)
 
     return await next()
