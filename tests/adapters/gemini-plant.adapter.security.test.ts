@@ -34,7 +34,7 @@ describe('GeminiPlantAdapter Security', () => {
     adapter = new GeminiPlantAdapter('test-key')
 
     mockGenerateContent.mockResolvedValue({
-        response: { text: () => JSON.stringify({ success: true, suggestions: [] }) }
+      response: { text: () => JSON.stringify({ success: true, suggestions: [] }) },
     })
   })
 
@@ -42,36 +42,36 @@ describe('GeminiPlantAdapter Security', () => {
     vi.spyOn(ssrfValidator, 'isSafeUrl').mockResolvedValue(true)
 
     const largeStream = new ReadableStream({
-        start(controller) {
-            for (let i = 0; i < 11; i++) {
-                controller.enqueue(new Uint8Array(1024 * 1024));
-            }
-            controller.close();
+      start(controller) {
+        for (let i = 0; i < 11; i++) {
+          controller.enqueue(new Uint8Array(1024 * 1024))
         }
-    });
+        controller.close()
+      },
+    })
 
     const mockResponse = {
       ok: true,
       headers: {
-          get: (name: string) => name === 'content-type' ? 'image/jpeg' : null
+        get: (name: string) => (name === 'content-type' ? 'image/jpeg' : null),
       },
       body: largeStream,
       arrayBuffer: async () => {
-         return new ArrayBuffer(11 * 1024 * 1024);
-      }
-    };
+        return new ArrayBuffer(11 * 1024 * 1024)
+      },
+    }
 
-    const mockFetch = vi.fn().mockResolvedValue(mockResponse);
-    vi.stubGlobal('fetch', mockFetch);
+    const mockFetch = vi.fn().mockResolvedValue(mockResponse)
+    vi.stubGlobal('fetch', mockFetch)
 
     const result = await adapter.identifySpecies({
-        image: 'http://example.com/large.jpg',
-        isUrl: true
-    });
+      image: 'http://example.com/large.jpg',
+      isUrl: true,
+    })
 
-    expect(result.success).toBe(false);
-    expect(result.error).toMatch(/Image too large/i);
+    expect(result.success).toBe(false)
+    expect(result.error).toMatch(/Image too large/i)
 
-    vi.unstubAllGlobals();
+    vi.unstubAllGlobals()
   })
 })

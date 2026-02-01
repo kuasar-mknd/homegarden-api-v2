@@ -59,7 +59,7 @@ describe('AuthMiddleware Security', () => {
     const dbUser = {
       id: 'db-id',
       email: 'test@example.com',
-      password: 'secret-uuid-placeholder'
+      password: 'secret-uuid-placeholder',
     }
     vi.mocked(prisma.user.findUnique).mockResolvedValue(dbUser as any)
 
@@ -69,7 +69,9 @@ describe('AuthMiddleware Security', () => {
     expect(mockContext.set).toHaveBeenCalledWith('user', expect.anything())
 
     // Get the user object passed to context
-    const userSetOnContext = mockContext.set.mock.calls.find((call: any[]) => call[0] === 'user')?.[1]
+    const userSetOnContext = mockContext.set.mock.calls.find(
+      (call: any[]) => call[0] === 'user',
+    )?.[1]
 
     // Security assertion: Password should be stripped
     // Currently this test is EXPECTED TO FAIL until we fix the middleware
