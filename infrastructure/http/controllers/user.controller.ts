@@ -33,6 +33,9 @@ export class UserController {
         )
       }
 
+      // Security: Prevent caching of sensitive user data
+      c.header('Cache-Control', 'no-store, private')
+
       return c.json(
         {
           success: true,

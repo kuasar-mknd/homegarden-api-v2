@@ -57,6 +57,7 @@ describe('GardenController', () => {
       expect(result.status).toBe(201)
       expect(result.data.success).toBe(true)
       expect(result.data.data.plant.nickname).toBe('Fern')
+      expect(mockContext.header).toHaveBeenCalledWith('Cache-Control', 'no-store, private')
       expect(mockAddPlant.execute).toHaveBeenCalledWith({
         userId: 'u1',
         nickname: 'Fern',
@@ -115,6 +116,7 @@ describe('GardenController', () => {
 
       expect(result.status).toBe(200)
       expect(result.data.data).toHaveLength(1)
+      expect(mockContext.header).toHaveBeenCalledWith('Cache-Control', 'no-store, private')
     })
 
     it('should handle use case failure', async () => {
@@ -210,6 +212,7 @@ describe('GardenController', () => {
       const result = (await controller.getNearby(mockContext)) as any
       expect(result.status).toBe(200)
       expect(result.data.data).toHaveLength(1)
+      expect(mockContext.header).toHaveBeenCalledWith('Cache-Control', 'no-store, private')
     })
 
     it('should return 401 if unauthorized in getNearby', async () => {

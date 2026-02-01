@@ -520,7 +520,7 @@ export class GeminiPlantAdapter implements AIIdentificationPort, AIDiagnosisPort
         throw new AppError('Image too large (max 10MB)', 400)
       }
 
-      const buffer = await response.arrayBuffer()
+      const buffer = await this.readStreamWithLimit(response, 10 * 1024 * 1024)
       const base64 = Buffer.from(buffer).toString('base64')
       const contentType = response.headers.get('content-type') ?? 'image/jpeg'
 
@@ -539,6 +539,43 @@ export class GeminiPlantAdapter implements AIIdentificationPort, AIDiagnosisPort
         mimeType: mimeType ?? 'image/jpeg',
       },
     }
+  }
+
+  /**
+   * Read stream with size limit to prevent DoS
+   */
+  private async readStreamWithLimit(response: Response, limit: number): Promise<Buffer> {
+    if (!response.body) {
+      const buffer = await response.arrayBuffer()
+      if (buffer.byteLength > limit) {
+        throw new AppError('Image too large (max 10MB)', 400)
+      }
+      return Buffer.from(buffer)
+    }
+
+    const reader = response.body.getReader()
+    const chunks: Uint8Array[] = []
+    let receivedLength = 0
+
+    try {
+      while (true) {
+        const { done, value } = await reader.read()
+        if (done) break
+
+        if (value) {
+          receivedLength += value.length
+          if (receivedLength > limit) {
+            await reader.cancel()
+            throw new AppError('Image too large (max 10MB)', 400)
+          }
+          chunks.push(value)
+        }
+      }
+    } finally {
+      reader.releaseLock()
+    }
+
+    return Buffer.concat(chunks)
   }
 
   /**
