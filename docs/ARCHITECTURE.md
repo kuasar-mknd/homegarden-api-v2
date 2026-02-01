@@ -4,6 +4,18 @@ This project follows **Clean Architecture** principles to ensure separation of c
 
 ## 🏗 Directory Structure
 
+```
+src/
+├── domain/           # Enterprise Business Rules (Entities, Repository Interfaces)
+├── application/      # Application Business Rules (Use Cases, DTOs, Ports)
+├── infrastructure/   # Frameworks & Drivers (HTTP, Database, External APIs)
+└── shared/           # Shared Kernel (Types, Utilities, UI Templates)
+tests/
+├── unit/             # (Co-located or mirrored in tests/domain, tests/application)
+├── integration/      # Database and API integration tests
+└── e2e/              # End-to-end user flows
+```
+
 The codebase is organized into four main layers:
 
 ### 1. `domain/` (Enterprise Business Rules)
