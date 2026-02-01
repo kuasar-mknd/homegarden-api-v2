@@ -40,6 +40,14 @@
 **Learning:** Feedback text like "Checked!" can be ambiguous.
 **Action:** Use explicit action verbs ("Copied!") paired with a universally recognized icon (Checkmark) for clarity and delight.
 
+## 2026-02-01 - 404 UX & Accessibility
+
+**Learning:** `history.back()` can be a dead interaction if the user arrived via a direct link (new tab).
+**Action:** Check `history.length > 1` before showing "Go Back" buttons, or hide them entirely if not applicable.
+
+**Learning:** Visual text updates (like "Copied!") are not always sufficient for screen readers.
+**Action:** Explicitly update `aria-label` temporarily to announce status changes, then revert it.
+
 ## Rejected Changes
 
 *(None yet)*

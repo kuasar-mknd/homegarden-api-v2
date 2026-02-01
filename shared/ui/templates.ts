@@ -163,7 +163,7 @@ export const SHARED_STYLES = `
   .badge {
     display: inline-block;
     background: #e8f5e9;
-    color: #2e7d32;
+    color: #1b5e20;
     padding: 4px 12px;
     border-radius: var(--radius-lg);
     font-size: 0.85rem;
@@ -402,6 +402,7 @@ export const SHARED_STYLES = `
     background-color: var(--secondary);
     border-radius: 50%;
     margin-inline-end: 6px;
+    cursor: help;
     animation: pulse 2s infinite ease-in-out;
   }
   .error-code {
@@ -525,6 +526,7 @@ export function baseLayout({ title, description, content }: LayoutProps): string
 
   <meta property="og:site_name" content="HomeGarden API">
   <meta property="og:title" content="${safeTitle}">
+  <meta property="og:locale" content="en_US">
   <meta property="og:description" content="${metaDescription}">
   <meta property="og:type" content="website">
   <meta property="og:image" content="${image}">
@@ -638,7 +640,7 @@ export function getNotFoundPageHtml(path: string): string {
       <p>Please check the URL or go back to the homepage.</p>
 
       <div class="btn-group no-print">
-        <button type="button" id="go-back-btn" class="btn btn-secondary">${BACK_ICON}Go Back</button>
+        <button type="button" id="go-back-btn" class="btn btn-secondary" style="display: none">${BACK_ICON}Go Back</button>
         <a href="/" class="btn">${HOME_ICON}Return Home</a>
         <a href="/ui" class="btn btn-secondary">${DOC_ICON}Read Documentation</a>
       </div>
@@ -647,10 +649,17 @@ export function getNotFoundPageHtml(path: string): string {
       (function() {
         // Handle Go Back
         var backBtn = document.getElementById('go-back-btn');
-        if (backBtn) {
+        if (backBtn && history.length > 1) {
+          backBtn.style.display = '';
           backBtn.addEventListener('click', function() {
             history.back();
           });
+        }
+
+        // Focus Error Path
+        var errorPath = document.getElementById('error-path');
+        if (errorPath) {
+          errorPath.focus();
         }
 
         // Handle Copy
@@ -665,8 +674,17 @@ export function getNotFoundPageHtml(path: string): string {
               if (navigator.clipboard && navigator.clipboard.writeText) {
                  navigator.clipboard.writeText(text).then(function() {
                     var originalHtml = btn.innerHTML;
+                    var originalLabel = btn.getAttribute('aria-label');
                     btn.innerHTML = '${CHECK_ICON} Copied!';
-                    setTimeout(function() { btn.innerHTML = originalHtml; }, 2000);
+                    btn.setAttribute('aria-label', 'Copied!');
+                    setTimeout(function() {
+                      btn.innerHTML = originalHtml;
+                      if (originalLabel) {
+                        btn.setAttribute('aria-label', originalLabel);
+                      } else {
+                        btn.removeAttribute('aria-label');
+                      }
+                    }, 2000);
                  }).catch(function(err) {
                     console.error('Failed to copy', err);
                  });
