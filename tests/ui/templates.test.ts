@@ -48,6 +48,14 @@ describe('UI Templates', () => {
     it('should include print styles for expanding URLs', () => {
       expect(SHARED_STYLES).toContain('a[href^="http"]:after { content: " (" attr(href) ")"; }')
     })
+
+    it('should include high contrast badge color', () => {
+      expect(SHARED_STYLES).toContain('color: #1b5e20')
+    })
+
+    it('should include cursor help for status dot', () => {
+      expect(SHARED_STYLES).toContain('cursor: help')
+    })
   })
 
   describe('getLandingPageHtml', () => {
@@ -85,6 +93,11 @@ describe('UI Templates', () => {
       const html = getLandingPageHtml()
       expect(html).toContain('<div class="footer-links no-print">')
     })
+
+    it('should include og:locale meta tag', () => {
+      const html = getLandingPageHtml()
+      expect(html).toContain('<meta property="og:locale" content="en_US">')
+    })
   })
 
   describe('getNotFoundPageHtml', () => {
@@ -116,6 +129,21 @@ describe('UI Templates', () => {
     it('should use clear 404 title', () => {
       const html = getNotFoundPageHtml('/foo')
       expect(html).toContain('<title>404: Page Not Found')
+    })
+
+    it('should include history check for back button', () => {
+      const html = getNotFoundPageHtml('/foo')
+      expect(html).toContain('if (backBtn && history.length > 1)')
+    })
+
+    it('should include focus logic for error path', () => {
+      const html = getNotFoundPageHtml('/foo')
+      expect(html).toContain('errorPath.focus()')
+    })
+
+    it('should include accessible copy feedback', () => {
+      const html = getNotFoundPageHtml('/foo')
+      expect(html).toContain("btn.setAttribute('aria-label', 'Copied!')")
     })
   })
 })
