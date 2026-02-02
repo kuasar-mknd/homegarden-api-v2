@@ -550,7 +550,7 @@ export function baseLayout({ title, description, content }: LayoutProps): string
     ${content}
     <footer class="status" role="contentinfo">
       <div role="status">
-        <span class="status-dot" aria-hidden="true" title="System Operational"></span> System Operational • ${env.NODE_ENV}
+        <span class="status-dot" aria-hidden="true" title="System Operational"></span> System Operational • <span title="Current Environment">${env.NODE_ENV}</span>
       </div>
       <div class="copyright">
         &copy; ${year} HomeGarden API. All rights reserved.
@@ -629,7 +629,7 @@ export function getNotFoundPageHtml(path: string): string {
       <div class="code-wrapper">
         <code id="error-path" aria-label="Requested URL" class="code-block" title="Requested URL" tabindex="0">${safePath}</code>
         <div class="copy-btn-wrapper no-print">
-            <button type="button" class="btn btn-secondary copy-btn" data-clipboard-target="#error-path" aria-label="Copy URL to clipboard">
+            <button type="button" class="btn btn-secondary copy-btn" data-clipboard-target="#error-path" aria-label="Copy URL to clipboard" aria-live="polite">
             ${COPY_ICON} Copy Path
             </button>
         </div>
@@ -638,16 +638,17 @@ export function getNotFoundPageHtml(path: string): string {
       <p>Please check the URL or go back to the homepage.</p>
 
       <div class="btn-group no-print">
-        <button type="button" id="go-back-btn" class="btn btn-secondary">${BACK_ICON}Go Back</button>
+        <button type="button" id="go-back-btn" class="btn btn-secondary" aria-label="Go back to previous page" style="display: none;">${BACK_ICON}Go Back</button>
         <a href="/" class="btn">${HOME_ICON}Return Home</a>
         <a href="/ui" class="btn btn-secondary">${DOC_ICON}Read Documentation</a>
       </div>
     </main>
     <script>
       (function() {
-        // Handle Go Back
+        // Handle Go Back - only show if there is history
         var backBtn = document.getElementById('go-back-btn');
-        if (backBtn) {
+        if (backBtn && window.history.length > 1) {
+          backBtn.style.display = ''; // Restore display from CSS class
           backBtn.addEventListener('click', function() {
             history.back();
           });
@@ -659,21 +660,48 @@ export function getNotFoundPageHtml(path: string): string {
           btn.addEventListener('click', function() {
             var targetSelector = btn.getAttribute('data-clipboard-target');
             var target = document.querySelector(targetSelector);
-            if (target) {
-              var text = target.innerText;
-              // Modern API
-              if (navigator.clipboard && navigator.clipboard.writeText) {
-                 navigator.clipboard.writeText(text).then(function() {
-                    var originalHtml = btn.innerHTML;
-                    btn.innerHTML = '${CHECK_ICON} Copied!';
-                    setTimeout(function() { btn.innerHTML = originalHtml; }, 2000);
-                 }).catch(function(err) {
-                    console.error('Failed to copy', err);
-                 });
-              } else {
-                 // Fallback
-                 console.warn('Clipboard API not available');
-              }
+            if (!target) return;
+
+            var text = target.innerText;
+
+            var showSuccess = function() {
+                if (btn.getAttribute('data-state') === 'copied') return;
+
+                var originalHtml = btn.innerHTML;
+                var originalLabel = btn.getAttribute('aria-label');
+
+                btn.setAttribute('data-state', 'copied');
+                btn.innerHTML = '${CHECK_ICON} Copied!';
+                btn.setAttribute('aria-label', 'Path copied to clipboard');
+
+                setTimeout(function() {
+                    btn.innerHTML = originalHtml;
+                    btn.setAttribute('aria-label', originalLabel);
+                    btn.removeAttribute('data-state');
+                }, 2000);
+            };
+
+            // Modern API
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+               navigator.clipboard.writeText(text).then(showSuccess).catch(function(err) {
+                  console.error('Failed to copy', err);
+               });
+            } else {
+               // Fallback for non-secure contexts
+               try {
+                   var textarea = document.createElement('textarea');
+                   textarea.value = text;
+                   textarea.style.position = 'fixed'; // Avoid scrolling
+                   textarea.style.opacity = '0';
+                   document.body.appendChild(textarea);
+                   textarea.focus();
+                   textarea.select();
+                   var success = document.execCommand('copy');
+                   document.body.removeChild(textarea);
+                   if (success) showSuccess();
+               } catch (e) {
+                   console.warn('Copy failed', e);
+               }
             }
           });
         });
