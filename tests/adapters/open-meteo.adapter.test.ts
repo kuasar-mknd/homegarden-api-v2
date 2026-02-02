@@ -29,6 +29,11 @@ describe('OpenMeteoAdapter', () => {
 
       const result = await adapter.getCurrentWeather(48.8, 2.3)
 
+      expect(fetch).toHaveBeenCalledWith(
+        expect.stringContaining('latitude=48.8'),
+        expect.objectContaining({ signal: expect.any(AbortSignal) }),
+      )
+
       expect(result.success).toBe(true)
       if (result.success) {
         expect(result.data.temperature).toBe(20.5)

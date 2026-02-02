@@ -79,12 +79,13 @@ describe('AuthMiddleware', () => {
     const mockUser = { id: 'auth-id', email: 'test@example.com' }
     mockSupabase.auth.getUser.mockResolvedValue({ data: { user: mockUser }, error: null })
 
-    const dbUser = { id: 'db-id', email: 'test@example.com' }
+    const dbUser = { id: 'db-id', email: 'test@example.com', password: 'secret-hash' }
     vi.mocked(prisma.user.findUnique).mockResolvedValue(dbUser as any)
 
     await authMiddleware(mockContext, mockNext)
 
-    expect(mockContext.set).toHaveBeenCalledWith('user', dbUser)
+    const { password, ...expectedSafeUser } = dbUser
+    expect(mockContext.set).toHaveBeenCalledWith('user', expectedSafeUser)
     expect(mockContext.set).toHaveBeenCalledWith('userId', dbUser.id)
     expect(mockNext).toHaveBeenCalled()
   })

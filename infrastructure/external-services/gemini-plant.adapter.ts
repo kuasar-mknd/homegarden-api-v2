@@ -204,7 +204,13 @@ export class GeminiPlantAdapter implements AIIdentificationPort, AIDiagnosisPort
       prompt += `\n\nPlease identify this plant and return ${request.maxSuggestions ?? 5} suggestions.`
 
       // Call Gemini
-      const result = await this.identificationModel.generateContent([prompt, imagePart])
+      // Sentinel: Enforce 30s timeout
+      const result = await Promise.race([
+        this.identificationModel.generateContent([prompt, imagePart]),
+        new Promise<never>((_, reject) =>
+          setTimeout(() => reject(new Error('AI identification timed out')), 30000),
+        ),
+      ])
       const response = result.response
       const text = response.text()
 
@@ -340,7 +346,13 @@ export class GeminiPlantAdapter implements AIIdentificationPort, AIDiagnosisPort
       prompt += '\n\nPlease analyze this plant and provide a diagnosis.'
 
       // Call Gemini
-      const apiResult = await this.diagnosisModel.generateContent([prompt, imagePart])
+      // Sentinel: Enforce 30s timeout
+      const apiResult = await Promise.race([
+        this.diagnosisModel.generateContent([prompt, imagePart]),
+        new Promise<never>((_, reject) =>
+          setTimeout(() => reject(new Error('AI diagnosis timed out')), 30000),
+        ),
+      ])
       const response = apiResult.response
       const text = response.text()
 
@@ -507,6 +519,7 @@ export class GeminiPlantAdapter implements AIIdentificationPort, AIDiagnosisPort
       // Fetch image from URL and convert to base64
       const response = await fetch(image, {
         redirect: 'error',
+        signal: AbortSignal.timeout(10000),
         headers: {
           'User-Agent': 'HomeGarden-API/2.0 (Security-Scan; +https://homegarden.app)',
         },
