@@ -5,6 +5,7 @@ import { OpenAPIHono } from '@hono/zod-openapi'
 import { bodyLimit } from 'hono/body-limit'
 import { compress } from 'hono/compress'
 import { cors } from 'hono/cors'
+import { etag } from 'hono/etag'
 import { prettyJSON } from 'hono/pretty-json'
 import { secureHeaders } from 'hono/secure-headers'
 import { env } from './infrastructure/config/env.js'
@@ -188,6 +189,9 @@ app.use(
 
 // Compression
 app.use('*', compress())
+
+// ETag
+app.use('*', etag())
 
 // CORS
 // Sentinel: If origin is wildcard '*', credentials cannot be true.
