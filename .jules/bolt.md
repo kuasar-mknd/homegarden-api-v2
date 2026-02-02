@@ -29,3 +29,7 @@
 ## 2024-05-23 - [Static Layout Anti-Pattern]
 **Learning:** Pre-computing HTML layouts (header/footer) to save string concatenation is a micro-optimization that creates security risks (e.g., static CSP nonces) and prevents dynamic content (Auth state).
 **Action:** Avoid caching layout templates unless they are strictly static and have no dependencies on request context.
+
+## 2024-05-27 - [Prisma findUnique Overhead]
+**Learning:** `findUnique` fetches all columns by default, including potentially large columns (e.g., JSON blobs) that are mapped away in the domain layer.
+**Action:** Explicitly use `select` in `findUnique` when large columns are present but unused by the Domain Entity, ensuring all required fields are still selected.
