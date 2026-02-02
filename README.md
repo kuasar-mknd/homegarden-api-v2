@@ -91,6 +91,8 @@ pnpm test:coverage
 
 ## 📖 API Usage
 
+For a detailed list of endpoints and their implementation status, see [docs/API.md](docs/API.md).
+
 The API is documented using Swagger. Once the server is running, visit:
 *   **Swagger UI**: [http://localhost:3000/ui](http://localhost:3000/ui)
 *   **OpenAPI Spec**: [http://localhost:3000/doc](http://localhost:3000/doc)

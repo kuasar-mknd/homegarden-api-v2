@@ -36,14 +36,14 @@ The best way to explore the API is via the built-in Swagger UI, which provides i
 
 ### Gardens
 
-- `GET /gardens/plants` - Retrieves all plants in the authenticated user's garden.
+- `GET /gardens/plants` - Retrieves all plants belonging to the authenticated user across all their gardens.
 - `POST /gardens/plants` - Adds a new plant to a specific garden (requires `gardenId` in body).
 - `GET /gardens/nearby` - Finds public gardens within a specific radius (geo-query).
 - `GET /gardens/:gardenId/weather` - Fetches current weather for a garden's location.
 
 ### Plants
 
-*Direct plant management endpoints are partially implemented; use Garden endpoints for main flows.*
+*Direct plant management endpoints are currently placeholders (501 Not Implemented); use Garden endpoints for main flows.*
 
 - `GET /plants` - List all plants for the user (501 Not Implemented).
 - `POST /plants` - Create a new plant (501 Not Implemented).
