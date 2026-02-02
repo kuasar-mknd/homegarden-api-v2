@@ -40,6 +40,17 @@
 **Learning:** Feedback text like "Checked!" can be ambiguous.
 **Action:** Use explicit action verbs ("Copied!") paired with a universally recognized icon (Checkmark) for clarity and delight.
 
+## 2026-02-02 - Robustness & State Feedback
+
+**Learning:** `navigator.clipboard` is often restricted to secure contexts (HTTPS/localhost). Users in other environments (e.g., some internal networks) were left with no feedback.
+**Action:** Always implement a fallback (like `execCommand` with a hidden textarea) for core utilities to ensure functionality across all contexts.
+
+**Learning:** The "Go Back" button is a source of frustration when opening pages in new tabs, as `history.back()` does nothing.
+**Action:** Conditionally show history-dependent controls by checking `window.history.length > 1`.
+
+**Learning:** Visual-only status indicators (like dots) need explicit text alternatives.
+**Action:** Use `aria-hidden="true"` on the visual element and provide context via `title` or dedicated `sr-only` text for screen readers.
+
 ## Rejected Changes
 
 *(None yet)*

@@ -85,6 +85,11 @@ describe('UI Templates', () => {
       const html = getLandingPageHtml()
       expect(html).toContain('<div class="footer-links no-print">')
     })
+
+    it('should have accessible environment info in footer', () => {
+      const html = getLandingPageHtml()
+      expect(html).toContain('title="Current Environment"')
+    })
   })
 
   describe('getNotFoundPageHtml', () => {
@@ -116,6 +121,18 @@ describe('UI Templates', () => {
     it('should use clear 404 title', () => {
       const html = getNotFoundPageHtml('/foo')
       expect(html).toContain('<title>404: Page Not Found')
+    })
+
+    it('should include accessible copy button attributes', () => {
+      const html = getNotFoundPageHtml('/foo')
+      expect(html).toContain('aria-live="polite"')
+      expect(html).toContain('aria-label="Copy URL to clipboard"')
+    })
+
+    it('should include history check for back button', () => {
+      const html = getNotFoundPageHtml('/foo')
+      expect(html).toContain('window.history.length > 1')
+      expect(html).toContain('style="display: none;"')
     })
   })
 })
