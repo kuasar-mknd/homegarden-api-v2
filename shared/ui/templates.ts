@@ -665,13 +665,19 @@ export function getNotFoundPageHtml(path: string): string {
             var text = target.innerText;
 
             var showSuccess = function() {
+                if (btn.getAttribute('data-state') === 'copied') return;
+
                 var originalHtml = btn.innerHTML;
                 var originalLabel = btn.getAttribute('aria-label');
+
+                btn.setAttribute('data-state', 'copied');
                 btn.innerHTML = '${CHECK_ICON} Copied!';
                 btn.setAttribute('aria-label', 'Path copied to clipboard');
+
                 setTimeout(function() {
                     btn.innerHTML = originalHtml;
                     btn.setAttribute('aria-label', originalLabel);
+                    btn.removeAttribute('data-state');
                 }, 2000);
             };
 
