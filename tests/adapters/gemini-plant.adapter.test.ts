@@ -162,8 +162,16 @@ describe('GeminiPlantAdapter', () => {
       // Mock fetch
       const mockFetch = vi.fn().mockResolvedValue({
         ok: true,
-        arrayBuffer: () => Promise.resolve(new ArrayBuffer(8)),
         headers: { get: () => 'image/png' },
+        body: {
+          getReader: () => ({
+            read: vi.fn()
+              .mockResolvedValueOnce({ done: false, value: new Uint8Array([1, 2, 3, 4, 5, 6, 7, 8]) })
+              .mockResolvedValueOnce({ done: true }),
+            releaseLock: vi.fn(),
+            cancel: vi.fn(),
+          }),
+        },
       })
       vi.stubGlobal('fetch', mockFetch)
 
@@ -177,12 +185,13 @@ describe('GeminiPlantAdapter', () => {
       const [url, options] = mockFetch.mock.calls[0]
       expect(url).toBe('http://example.com/p.png')
       // options might be undefined if not passed, but we expect it to be passed
-      expect(options).toEqual({
+      expect(options).toEqual(expect.objectContaining({
         redirect: 'error',
         headers: {
           'User-Agent': 'HomeGarden-API/2.0 (Security-Scan; +https://homegarden.app)',
         },
-      })
+        signal: expect.any(AbortSignal),
+      }))
       vi.unstubAllGlobals()
     })
 
@@ -613,8 +622,16 @@ describe('GeminiPlantAdapter', () => {
       vi.spyOn(ssrfValidator, 'isSafeUrl').mockResolvedValue(true)
       const mockFetch = vi.fn().mockResolvedValue({
         ok: true,
-        arrayBuffer: () => Promise.resolve(new ArrayBuffer(8)),
         headers: { get: () => null },
+        body: {
+          getReader: () => ({
+            read: vi.fn()
+              .mockResolvedValueOnce({ done: false, value: new Uint8Array([1]) })
+              .mockResolvedValueOnce({ done: true }),
+            releaseLock: vi.fn(),
+            cancel: vi.fn(),
+          }),
+        },
       })
       vi.stubGlobal('fetch', mockFetch)
       const part = await (adapter as any).buildImagePart('http://test.com', true)
