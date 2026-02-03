@@ -19,7 +19,7 @@ HomeGarden is a robust, Clean Architecture-based REST API for managing gardens a
 ### Prerequisites
 
 *   Node.js >= 20.0.0
-*   **pnpm** (Required package manager)
+*   **pnpm** (v10+ Required)
     ```bash
     # Enable via corepack (recommended)
     corepack enable
