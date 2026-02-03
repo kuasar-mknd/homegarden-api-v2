@@ -499,7 +499,7 @@ const ESCAPE_REGEX = /[&<>"']/g
 
 // Simple HTML escape function to prevent XSS
 function escapeHtml(unsafe: string): string {
-  return unsafe.replace(ESCAPE_REGEX, (match) => ESCAPE_MAP[match])
+  return unsafe.replace(ESCAPE_REGEX, (match) => ESCAPE_MAP[match] ?? match)
 }
 
 export function baseLayout({ title, description, content }: LayoutProps): string {
