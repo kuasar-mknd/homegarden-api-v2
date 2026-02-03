@@ -1,4 +1,5 @@
 import { createMiddleware } from 'hono/factory'
+import { getClientIp } from '../../../shared/utils/ip.js'
 import { logger } from '../../config/logger.js'
 
 /**
@@ -33,7 +34,7 @@ export const loggerMiddleware = createMiddleware(async (c, next) => {
     status,
     durationMs,
     requestId,
-    ip: c.req.header('x-forwarded-for') || c.req.header('cf-connecting-ip'),
+    ip: getClientIp(c),
   }
 
   if (status >= 500) {

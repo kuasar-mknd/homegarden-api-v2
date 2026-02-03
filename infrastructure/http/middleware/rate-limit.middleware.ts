@@ -1,4 +1,5 @@
 import { rateLimiter } from 'hono-rate-limiter'
+import { getClientIp } from '../../../shared/utils/ip.js'
 import { env } from '../../config/env.js'
 
 /**
@@ -11,13 +12,5 @@ export const rateLimitMiddleware = rateLimiter({
   windowMs: env.RATE_LIMIT_WINDOW_MS,
   limit: env.RATE_LIMIT_MAX,
   standardHeaders: 'draft-6',
-  keyGenerator: (c) => {
-    // Prioritize Cloudflare / Real IP headers
-    const ip =
-      c.req.header('cf-connecting-ip') ||
-      c.req.header('x-real-ip') ||
-      c.req.header('x-forwarded-for')?.split(',')[0]?.trim() ||
-      'unknown'
-    return ip
-  },
+  keyGenerator: (c) => getClientIp(c),
 })

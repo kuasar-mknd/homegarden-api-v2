@@ -1,5 +1,6 @@
 import type { MiddlewareHandler } from 'hono'
 import { rateLimiter } from 'hono-rate-limiter'
+import { getClientIp } from '../../../shared/utils/ip.js'
 
 /**
  * Auth Rate Limit Middleware
@@ -10,16 +11,7 @@ import { rateLimiter } from 'hono-rate-limiter'
 export const authRateLimitMiddleware: MiddlewareHandler = rateLimiter({
   windowMs: 60 * 1000, // 1 minute
   limit: 5, // 5 requests per minute
-  keyGenerator: (c) => {
-    // Prioritize Cloudflare / Proxy headers, fall back to IP
-    // Fix: Parse x-forwarded-for to prevent spoofing (take first IP)
-    const ip =
-      c.req.header('cf-connecting-ip') ||
-      c.req.header('x-real-ip') ||
-      c.req.header('x-forwarded-for')?.split(',')[0]?.trim() ||
-      'unknown'
-    return ip
-  },
+  keyGenerator: (c) => getClientIp(c),
   message: {
     success: false,
     error: 'TOO_MANY_REQUESTS',
