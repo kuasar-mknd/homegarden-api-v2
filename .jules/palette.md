@@ -40,6 +40,14 @@
 **Learning:** Feedback text like "Checked!" can be ambiguous.
 **Action:** Use explicit action verbs ("Copied!") paired with a universally recognized icon (Checkmark) for clarity and delight.
 
+## 2024-05-25 - Navigation & Async Feedback
+
+**Learning:** "Go Back" buttons that rely on `history.back()` can be dead ends if the user landed directly on the page (history length <= 1).
+**Action:** Conditionally hide or disable these buttons using `window.history.length` checks to prevent user frustration.
+
+**Learning:** Async operations like clipboard copying need immediate visual feedback to prevent race conditions (double clicking).
+**Action:** Disable the trigger button immediately upon click and re-enable it only after the operation completes (success or failure).
+
 ## Rejected Changes
 
 *(None yet)*
