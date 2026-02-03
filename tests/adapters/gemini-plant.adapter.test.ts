@@ -165,8 +165,12 @@ describe('GeminiPlantAdapter', () => {
         headers: { get: () => 'image/png' },
         body: {
           getReader: () => ({
-            read: vi.fn()
-              .mockResolvedValueOnce({ done: false, value: new Uint8Array([1, 2, 3, 4, 5, 6, 7, 8]) })
+            read: vi
+              .fn()
+              .mockResolvedValueOnce({
+                done: false,
+                value: new Uint8Array([1, 2, 3, 4, 5, 6, 7, 8]),
+              })
               .mockResolvedValueOnce({ done: true }),
             releaseLock: vi.fn(),
             cancel: vi.fn(),
@@ -185,13 +189,15 @@ describe('GeminiPlantAdapter', () => {
       const [url, options] = mockFetch.mock.calls[0]
       expect(url).toBe('http://example.com/p.png')
       // options might be undefined if not passed, but we expect it to be passed
-      expect(options).toEqual(expect.objectContaining({
-        redirect: 'error',
-        headers: {
-          'User-Agent': 'HomeGarden-API/2.0 (Security-Scan; +https://homegarden.app)',
-        },
-        signal: expect.any(AbortSignal),
-      }))
+      expect(options).toEqual(
+        expect.objectContaining({
+          redirect: 'error',
+          headers: {
+            'User-Agent': 'HomeGarden-API/2.0 (Security-Scan; +https://homegarden.app)',
+          },
+          signal: expect.any(AbortSignal),
+        }),
+      )
       vi.unstubAllGlobals()
     })
 
@@ -625,7 +631,8 @@ describe('GeminiPlantAdapter', () => {
         headers: { get: () => null },
         body: {
           getReader: () => ({
-            read: vi.fn()
+            read: vi
+              .fn()
               .mockResolvedValueOnce({ done: false, value: new Uint8Array([1]) })
               .mockResolvedValueOnce({ done: true }),
             releaseLock: vi.fn(),

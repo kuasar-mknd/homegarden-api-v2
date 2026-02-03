@@ -1,6 +1,6 @@
 import { createMiddleware } from 'hono/factory'
-import { logger } from '../../config/logger.js'
 import { getClientIp } from '../../../shared/utils/ip.js'
+import { logger } from '../../config/logger.js'
 
 /**
  * Structured Request Logger Middleware

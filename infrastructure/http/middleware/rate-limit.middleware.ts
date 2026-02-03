@@ -1,6 +1,6 @@
 import { rateLimiter } from 'hono-rate-limiter'
-import { env } from '../../config/env.js'
 import { getClientIp } from '../../../shared/utils/ip.js'
+import { env } from '../../config/env.js'
 
 /**
  * Global Rate Limiter Middleware
