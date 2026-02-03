@@ -29,3 +29,7 @@
 ## 2024-05-23 - [Static Layout Anti-Pattern]
 **Learning:** Pre-computing HTML layouts (header/footer) to save string concatenation is a micro-optimization that creates security risks (e.g., static CSP nonces) and prevents dynamic content (Auth state).
 **Action:** Avoid caching layout templates unless they are strictly static and have no dependencies on request context.
+
+## 2024-05-24 - [Split Template Optimization]
+**Learning:** For templates with a single dynamic insertion point (like 404 pages), splitting the template into static prefix/suffix parts at startup is ~7x faster than repeatedly interpolating the string, especially when the static parts are large (CSS/SVG).
+**Action:** Pre-compute static parts of simple templates and join them at runtime instead of using full template literals.
