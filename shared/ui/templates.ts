@@ -526,6 +526,7 @@ export function baseLayout({ title, description, content }: LayoutProps): string
   <meta property="og:site_name" content="HomeGarden API">
   <meta property="og:title" content="${safeTitle}">
   <meta property="og:description" content="${metaDescription}">
+  <meta property="og:locale" content="en_US">
   <meta property="og:type" content="website">
   <meta property="og:image" content="${image}">
   <meta property="og:image:alt" content="HomeGarden API Banner with green branding">
@@ -648,9 +649,13 @@ export function getNotFoundPageHtml(path: string): string {
         // Handle Go Back
         var backBtn = document.getElementById('go-back-btn');
         if (backBtn) {
-          backBtn.addEventListener('click', function() {
-            history.back();
-          });
+          if (window.history.length > 1) {
+            backBtn.addEventListener('click', function() {
+              history.back();
+            });
+          } else {
+            backBtn.style.display = 'none';
+          }
         }
 
         // Handle Copy
@@ -663,12 +668,17 @@ export function getNotFoundPageHtml(path: string): string {
               var text = target.innerText;
               // Modern API
               if (navigator.clipboard && navigator.clipboard.writeText) {
+                 btn.disabled = true;
+                 var originalHtml = btn.innerHTML;
                  navigator.clipboard.writeText(text).then(function() {
-                    var originalHtml = btn.innerHTML;
                     btn.innerHTML = '${CHECK_ICON} Copied!';
-                    setTimeout(function() { btn.innerHTML = originalHtml; }, 2000);
+                    setTimeout(function() {
+                      btn.innerHTML = originalHtml;
+                      btn.disabled = false;
+                    }, 2000);
                  }).catch(function(err) {
                     console.error('Failed to copy', err);
+                    btn.disabled = false;
                  });
               } else {
                  // Fallback
