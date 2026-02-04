@@ -29,15 +29,15 @@ The best way to explore the API is via the built-in Swagger UI, which provides i
 
 ### Auth
 
-*Endpoints are currently placeholders (501 Not Implemented). Client-side authentication via Supabase SDK is recommended.*
+*Endpoints are currently placeholders. Client-side authentication via Supabase SDK is recommended.*
 
-- `POST /auth/register` - Register a new user.
-- `POST /auth/login` - Authenticate user.
+- `POST /auth/register` - Register a new user (501 Not Implemented).
+- `POST /auth/login` - Authenticate user (501 Not Implemented).
 
 ### Gardens
 
 - `GET /gardens/plants` - Retrieves all plants in the authenticated user's garden.
-- `POST /gardens/plants` - Adds a new plant to a specific garden (requires `gardenId` in body).
+- `POST /gardens/plants` - Adds a new plant to a specific garden (requires `gardenId` and `location` in body).
 - `GET /gardens/nearby` - Finds public gardens within a specific radius (geo-query).
 - `GET /gardens/:gardenId/weather` - Fetches current weather for a garden's location.
 
@@ -65,10 +65,10 @@ The best way to explore the API is via the built-in Swagger UI, which provides i
 
 *These endpoints currently return `501 Not Implemented`.*
 
-- `GET /care-tracker/upcoming` - Get upcoming tasks.
-- `POST /care-tracker/schedules` - Create a care schedule.
-- `POST /care-tracker/schedules/:id/complete` - Mark task as complete.
-- `POST /care-tracker/generate` - Generate smart schedule.
+- `GET /care-tracker/upcoming` - Get upcoming tasks (501 Not Implemented).
+- `POST /care-tracker/schedules` - Create a care schedule (501 Not Implemented).
+- `POST /care-tracker/schedules/:id/complete` - Mark task as complete (501 Not Implemented).
+- `POST /care-tracker/generate` - Generate smart schedule (501 Not Implemented).
 
 ---
 

@@ -19,9 +19,21 @@ To enable AI features, you must provide a Google AI API key:
 GOOGLE_AI_API_KEY=your_api_key_here
 ```
 
-## 📋 JSON Schemas
+## 📋 System Prompts & Schemas
 
-The application instructs the AI to return structured JSON data.
+The application uses specific system prompts to instruct the AI to return structured JSON data.
+
+### Identification Prompt
+
+> You are an expert botanist AI specialized in plant identification. Analyze the provided plant image and identify the species.
+> IMPORTANT: You MUST respond with ONLY valid JSON, no markdown, no code blocks.
+
+### Diagnosis Prompt
+
+> You are DrPlant, an expert plant pathologist AI. Analyze the provided plant image to diagnose health issues.
+> IMPORTANT: You MUST respond with ONLY valid JSON, no markdown, no code blocks.
+
+### JSON Schemas
 
 ### Identification Schema
 ```json
