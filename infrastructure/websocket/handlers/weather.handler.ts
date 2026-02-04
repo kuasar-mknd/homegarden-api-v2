@@ -1,12 +1,11 @@
-import type { WebSocket } from 'ws'
 import { logger } from '../../config/logger.js'
 import { OpenMeteoAdapter } from '../../external-services/open-meteo.adapter.js'
-import type { WSMessage } from '../types.js'
+import type { AuthenticatedWebSocket, WSMessage } from '../types.js'
 
 // In a real app, this should be injected or singleton
 const weatherAdapter = new OpenMeteoAdapter()
 
-export async function handleWeatherMessage(ws: WebSocket, message: WSMessage) {
+export async function handleWeatherMessage(ws: AuthenticatedWebSocket, message: WSMessage) {
   try {
     switch (message.type) {
       case 'SUBSCRIBE':
