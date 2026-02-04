@@ -523,6 +523,7 @@ export function baseLayout({ title, description, content }: LayoutProps): string
   <meta name="theme-color" content="#121212" media="(prefers-color-scheme: dark)">
   <meta name="apple-mobile-web-app-title" content="HomeGarden">
 
+  <meta property="og:locale" content="en_US">
   <meta property="og:site_name" content="HomeGarden API">
   <meta property="og:title" content="${safeTitle}">
   <meta property="og:description" content="${metaDescription}">
@@ -648,27 +649,37 @@ export function getNotFoundPageHtml(path: string): string {
         // Handle Go Back
         var backBtn = document.getElementById('go-back-btn');
         if (backBtn) {
-          backBtn.addEventListener('click', function() {
-            history.back();
-          });
+          if (window.history.length <= 1) {
+            backBtn.style.display = 'none';
+          } else {
+            backBtn.addEventListener('click', function() {
+              history.back();
+            });
+          }
         }
 
         // Handle Copy
         var btns = document.querySelectorAll('.copy-btn');
         Array.prototype.forEach.call(btns, function(btn) {
           btn.addEventListener('click', function() {
+            if (btn.disabled) return;
             var targetSelector = btn.getAttribute('data-clipboard-target');
             var target = document.querySelector(targetSelector);
             if (target) {
               var text = target.innerText;
               // Modern API
               if (navigator.clipboard && navigator.clipboard.writeText) {
+                 btn.disabled = true;
+                 var originalHtml = btn.innerHTML;
                  navigator.clipboard.writeText(text).then(function() {
-                    var originalHtml = btn.innerHTML;
                     btn.innerHTML = '${CHECK_ICON} Copied!';
-                    setTimeout(function() { btn.innerHTML = originalHtml; }, 2000);
+                    setTimeout(function() {
+                      btn.innerHTML = originalHtml;
+                      btn.disabled = false;
+                    }, 2000);
                  }).catch(function(err) {
                     console.error('Failed to copy', err);
+                    btn.disabled = false;
                  });
               } else {
                  // Fallback

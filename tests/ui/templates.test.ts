@@ -85,6 +85,11 @@ describe('UI Templates', () => {
       const html = getLandingPageHtml()
       expect(html).toContain('<div class="footer-links no-print">')
     })
+
+    it('should include og:locale meta tag', () => {
+      const html = getLandingPageHtml()
+      expect(html).toContain('<meta property="og:locale" content="en_US">')
+    })
   })
 
   describe('getNotFoundPageHtml', () => {
@@ -116,6 +121,19 @@ describe('UI Templates', () => {
     it('should use clear 404 title', () => {
       const html = getNotFoundPageHtml('/foo')
       expect(html).toContain('<title>404: Page Not Found')
+    })
+
+    it('should include smart Go Back logic', () => {
+      const html = getNotFoundPageHtml('/foo')
+      expect(html).toContain('window.history.length <= 1')
+      expect(html).toContain("backBtn.style.display = 'none'")
+    })
+
+    it('should include race-condition safe copy logic', () => {
+      const html = getNotFoundPageHtml('/foo')
+      expect(html).toContain('if (btn.disabled) return;')
+      expect(html).toContain('btn.disabled = true;')
+      expect(html).toContain('btn.disabled = false;')
     })
   })
 })
