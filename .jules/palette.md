@@ -40,6 +40,14 @@
 **Learning:** Feedback text like "Checked!" can be ambiguous.
 **Action:** Use explicit action verbs ("Copied!") paired with a universally recognized icon (Checkmark) for clarity and delight.
 
+## 2026-02-14 - Interaction Polishing
+
+**Learning:** Buttons that provide temporary textual feedback (like "Copied!") can become "stuck" if clicked rapidly before the reset timeout fires, leading to race conditions.
+**Action:** Always disable the button during the feedback state to prevent re-triggering and ensure the reset logic runs cleanly.
+
+**Learning:** "Go Back" buttons that rely on `history.back()` are frustrating dead-ends when users land directly on a page (history length <= 1).
+**Action:** Conditionally hide navigation buttons using `window.history.length` to only show them when they are functional.
+
 ## Rejected Changes
 
 *(None yet)*
