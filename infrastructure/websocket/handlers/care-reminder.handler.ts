@@ -1,8 +1,7 @@
-import type { WebSocket } from 'ws'
 import { logger } from '../../config/logger.js'
-import type { WSMessage } from '../types.js'
+import type { AuthenticatedWebSocket, WSMessage } from '../types.js'
 
-export async function handleCareReminderMessage(ws: WebSocket, message: WSMessage) {
+export async function handleCareReminderMessage(ws: AuthenticatedWebSocket, message: WSMessage) {
   try {
     switch (message.type) {
       case 'SUBSCRIBE':
@@ -10,15 +9,15 @@ export async function handleCareReminderMessage(ws: WebSocket, message: WSMessag
           JSON.stringify({
             type: 'SUBSCRIBED',
             channel: 'care-reminders',
-            payload: { userId: message.payload?.userId },
+            payload: { userId: ws.user.id },
           }),
         )
         // Check for any pending reminders immediately
-        await checkReminders(ws, message.payload?.userId)
+        await checkReminders(ws, ws.user.id)
         break
 
       case 'CHECK_REMINDERS':
-        await checkReminders(ws, message.payload?.userId)
+        await checkReminders(ws, ws.user.id)
         break
 
       default:
@@ -36,15 +35,9 @@ export async function handleCareReminderMessage(ws: WebSocket, message: WSMessag
   }
 }
 
-async function checkReminders(ws: WebSocket, userId?: string) {
+async function checkReminders(ws: AuthenticatedWebSocket, userId: string) {
   if (!userId) {
-    ws.send(
-      JSON.stringify({
-        type: 'ERROR',
-        channel: 'care-reminders',
-        payload: { message: 'Missing user ID' },
-      }),
-    )
+    // Should not happen with authenticated socket
     return
   }
 
