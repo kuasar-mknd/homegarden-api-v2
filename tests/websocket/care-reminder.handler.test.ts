@@ -21,9 +21,7 @@ describe('Care Reminder WebSocket Handler', () => {
     }))
 
     // Import after mocks are set
-    const module = await import(
-      '../../infrastructure/websocket/handlers/care-reminder.handler.js'
-    )
+    const module = await import('../../infrastructure/websocket/handlers/care-reminder.handler.js')
     handleCareReminderMessage = module.handleCareReminderMessage
 
     mockWs = {
