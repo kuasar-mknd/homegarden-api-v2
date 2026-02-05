@@ -9,10 +9,12 @@ describe('TokenService', () => {
   beforeEach(() => {
     vi.resetModules() // clears the cache
     process.env = { ...originalEnv } // reset env vars
-    process.env.JWT_SECRET = 'test-secret'
-    process.env.JWT_EXPIRES_IN = '1h'
-    process.env.JWT_REFRESH_EXPIRES_IN = '7d'
-    tokenService = new TokenService()
+    // No longer relying on process.env in TokenService, but we pass config directly
+    tokenService = new TokenService({
+      secret: 'test-secret',
+      expiresIn: '1h',
+      refreshExpiresIn: '7d',
+    })
   })
 
   afterEach(() => {
@@ -53,14 +55,7 @@ describe('TokenService', () => {
   })
 
   it('should throw if JWT_SECRET is missing', () => {
-    const originalEnv = { ...process.env }
-    delete process.env.JWT_SECRET
-    delete process.env.JWT_EXPIRES_IN
-    delete process.env.JWT_REFRESH_EXPIRES_IN
-
-    expect(() => new TokenService()).toThrow('JWT_SECRET must be defined')
-
-    process.env = originalEnv
+    expect(() => new TokenService({ secret: '' })).toThrow('JWT_SECRET must be defined')
   })
 
   it('should throw an error for invalid token', () => {
