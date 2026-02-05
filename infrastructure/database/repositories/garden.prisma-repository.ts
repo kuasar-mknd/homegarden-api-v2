@@ -106,6 +106,7 @@ export class GardenPrismaRepository implements GardenRepository {
       // Use Prisma's raw query for PostGIS optimization
       // Optimization: Filter by Bounding Box first to use standard B-Tree indexes
       // before running expensive ST_DWithin on the reduced set.
+      // TODO: Future optimization - Introduce a GardenSummary DTO and exclude 'description' here
       // Handle date line wrapping (longitude crossing 180/-180)
       const gardens =
         minLon < -180 || maxLon > 180
