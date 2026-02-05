@@ -29,3 +29,7 @@
 ## 2024-05-23 - [Static Layout Anti-Pattern]
 **Learning:** Pre-computing HTML layouts (header/footer) to save string concatenation is a micro-optimization that creates security risks (e.g., static CSP nonces) and prevents dynamic content (Auth state).
 **Action:** Avoid caching layout templates unless they are strictly static and have no dependencies on request context.
+
+## 2024-05-24 - [String Replacement Safety]
+**Learning:** Using `string.replace(pattern, replacement)` where `replacement` is dynamic content (e.g., URL path) is unsafe because special patterns like `$&` in the replacement string are interpreted by the engine.
+**Action:** Always use the callback form `.replace(pattern, () => replacement)` when substituting dynamic content into templates to ensure literal insertion.
