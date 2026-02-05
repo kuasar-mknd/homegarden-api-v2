@@ -117,5 +117,12 @@ describe('UI Templates', () => {
       const html = getNotFoundPageHtml('/foo')
       expect(html).toContain('<title>404: Page Not Found')
     })
+
+    it('should correctly handle paths with special replacement patterns', () => {
+      const path = '/foo$$bar'
+      const html = getNotFoundPageHtml(path)
+      expect(html).toContain('/foo$$bar')
+      expect(html).not.toContain('{{PATH}}')
+    })
   })
 })
