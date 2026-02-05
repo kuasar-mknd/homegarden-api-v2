@@ -62,11 +62,13 @@ export class GardenPrismaRepository implements GardenRepository {
     const garden = await prisma.garden.update({
       where: { id },
       data: {
-        ...data,
-        description: data.description === undefined ? undefined : data.description,
-        size: data.size === undefined ? undefined : data.size,
-        climate: data.climate === undefined ? undefined : data.climate,
-      } as any, // Bypass strict optional type check for now if persisted, or refine logic
+        ...(data.name !== undefined ? { name: data.name } : {}),
+        ...(data.latitude !== undefined ? { latitude: data.latitude } : {}),
+        ...(data.longitude !== undefined ? { longitude: data.longitude } : {}),
+        ...(data.description !== undefined ? { description: data.description } : {}),
+        ...(data.size !== undefined ? { size: data.size } : {}),
+        ...(data.climate !== undefined ? { climate: data.climate } : {}),
+      },
     })
     return this.mapToEntity(garden)
   }
