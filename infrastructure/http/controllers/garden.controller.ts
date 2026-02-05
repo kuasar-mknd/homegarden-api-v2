@@ -105,6 +105,8 @@ export class GardenController {
         )
       }
 
+      c.header('Cache-Control', 'no-store')
+
       return c.json(
         {
           success: true,

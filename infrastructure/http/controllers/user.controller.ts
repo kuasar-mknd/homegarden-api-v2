@@ -33,6 +33,8 @@ export class UserController {
         )
       }
 
+      c.header('Cache-Control', 'no-store')
+
       return c.json(
         {
           success: true,
