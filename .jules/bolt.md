@@ -29,3 +29,11 @@
 ## 2024-05-23 - [Static Layout Anti-Pattern]
 **Learning:** Pre-computing HTML layouts (header/footer) to save string concatenation is a micro-optimization that creates security risks (e.g., static CSP nonces) and prevents dynamic content (Auth state).
 **Action:** Avoid caching layout templates unless they are strictly static and have no dependencies on request context.
+
+## 2024-05-24 - [Repository Partial Select Safety]
+**Learning:** Optimizing Repository fetch methods (like `findById`) with `select` is safe ONLY if the Domain Entity Mapper does not rely on the excluded fields.
+**Action:** Verified that `UserPrismaRepository` maps to `User` entity which strictly excludes `password` and `preferences`, making the `select` optimization safe and effective.
+
+## 2024-05-24 - [Public Search Caching]
+**Learning:** Geospatial search endpoints (`getNearby`) are prime candidates for `Cache-Control` headers when the results are location-based and not user-specific.
+**Action:** Added `Cache-Control: public, max-age=300` to `GardenController.getNearby` to offload expensive PostGIS queries.
