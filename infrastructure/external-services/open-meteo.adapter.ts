@@ -53,7 +53,8 @@ export class OpenMeteoAdapter implements WeatherPort {
     }
 
     try {
-      const url = `${this.baseUrl}?latitude=${latitude}&longitude=${longitude}&current=temperature_2m,relative_humidity_2m,precipitation,weather_code,wind_speed_10m`
+      // Sentinel: Use sanitized numeric string for URL construction to prevent parameter pollution
+      const url = `${this.baseUrl}?latitude=${lat}&longitude=${lon}&current=temperature_2m,relative_humidity_2m,precipitation,weather_code,wind_speed_10m`
 
       const response = await fetch(url)
       if (!response.ok) {
@@ -95,7 +96,8 @@ export class OpenMeteoAdapter implements WeatherPort {
     }
 
     try {
-      const url = `${this.baseUrl}?latitude=${latitude}&longitude=${longitude}&daily=temperature_2m_max,temperature_2m_min,precipitation_sum,weather_code&timezone=auto`
+      // Sentinel: Use sanitized numeric string for URL construction
+      const url = `${this.baseUrl}?latitude=${lat}&longitude=${lon}&daily=temperature_2m_max,temperature_2m_min,precipitation_sum,weather_code&timezone=auto`
 
       const response = await fetch(url)
       if (!response.ok) {

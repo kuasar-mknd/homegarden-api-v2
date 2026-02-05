@@ -9,3 +9,8 @@
 **Vulnerability:** The rate limiter used `x-forwarded-for` directly without parsing. An attacker could potentially bypass rate limits by appending fake IPs or spoofing the header if not properly sanitized by a proxy.
 **Learning:** Relying on raw `x-forwarded-for` is risky.
 **Prevention:** Prioritize `cf-connecting-ip` or `x-real-ip` when available. When using `x-forwarded-for`, be aware of the trust model (e.g., standard proxy chains) and ideally configure trusted proxies.
+
+## 2025-05-23 - Bypassing Central Configuration
+**Vulnerability:** `TokenService` was accessing `process.env` directly, bypassing the centralized validation in `infrastructure/config/env.ts`.
+**Learning:** Bypassing the central configuration layer undermines the guarantee that all environment variables are validated and typed.
+**Prevention:** Always import the `env` object from the configuration module. Linter rules can potentially enforce this by restricting `process.env` usage to specific files.
