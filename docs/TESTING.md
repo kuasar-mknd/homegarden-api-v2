@@ -436,11 +436,12 @@ Tests run automatically on every push via GitHub Actions:
 
 ```yaml
 # .github/workflows/ci.yml
-- name: Run tests
-  run: pnpm test -- --run
-  
-- name: Run coverage
-  run: pnpm run test:coverage
+- name: Run Tests
+  env:
+    DATABASE_URL: postgres://postgres:password@localhost:5432/homegarden
+    SUPABASE_URL: https://dummy.supabase.co
+    SUPABASE_PUBLISHABLE_KEY: dummy-key
+  run: pnpm test
 ```
 
 ---

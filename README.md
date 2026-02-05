@@ -1,5 +1,8 @@
 # HomeGarden API
 
+[![CI](https://github.com/homegarden/api/actions/workflows/ci.yml/badge.svg)](https://github.com/homegarden/api/actions/workflows/ci.yml)
+[![CodeQL](https://github.com/homegarden/api/actions/workflows/codeql.yml/badge.svg)](https://github.com/homegarden/api/actions/workflows/codeql.yml)
+
 HomeGarden is a robust, Clean Architecture-based REST API for managing gardens and plants, powered by AI for identification and diagnosis. It uses Hono, Prisma, and Supabase to provide a scalable and type-safe backend.
 
 ## 🌟 Features
