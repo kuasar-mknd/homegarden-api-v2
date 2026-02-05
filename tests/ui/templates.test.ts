@@ -39,6 +39,15 @@ describe('UI Templates', () => {
       expect(SHARED_STYLES).toContain('color: #ffcdd2')
     })
 
+    it('should use accessible contrast color for light mode badge', () => {
+      expect(SHARED_STYLES).toContain('color: #1b5e20') // Dark Green 900
+    })
+
+    it('should show help cursor for status dot', () => {
+      expect(SHARED_STYLES).toContain('.status-dot {')
+      expect(SHARED_STYLES).toContain('cursor: help')
+    })
+
     it('should use flexbox for buttons', () => {
       expect(SHARED_STYLES).toContain('display: inline-flex')
       expect(SHARED_STYLES).toContain('align-items: center')
@@ -56,6 +65,11 @@ describe('UI Templates', () => {
       expect(html).toContain('<!DOCTYPE html>')
       expect(html).toContain('<html lang="en" dir="ltr">')
       expect(html).toContain('HomeGarden API')
+    })
+
+    it('should include og:locale meta tag', () => {
+      const html = getLandingPageHtml()
+      expect(html).toContain('<meta property="og:locale" content="en_US">')
     })
 
     it('should include accessibility attributes', () => {
@@ -116,6 +130,14 @@ describe('UI Templates', () => {
     it('should use clear 404 title', () => {
       const html = getNotFoundPageHtml('/foo')
       expect(html).toContain('<title>404: Page Not Found')
+    })
+
+    it('should hide go-back button if history is empty', () => {
+      const html = getNotFoundPageHtml('/foo')
+      expect(html).toContain('if (backBtn) {')
+      // We check for the logic that hides the button if history is short
+      expect(html).toContain('if (history.length <= 1)')
+      expect(html).toContain("backBtn.style.display = 'none'")
     })
   })
 })

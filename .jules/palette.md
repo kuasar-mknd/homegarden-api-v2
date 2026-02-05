@@ -40,6 +40,14 @@
 **Learning:** Feedback text like "Checked!" can be ambiguous.
 **Action:** Use explicit action verbs ("Copied!") paired with a universally recognized icon (Checkmark) for clarity and delight.
 
+## 2026-02-12 - Accessibility & UX Nuances
+
+**Learning:** Automated accessibility checks (WCAG AA) may require tweaking brand colors for specific contexts (e.g., text on light badges).
+**Action:** Manually verify and adjust color hex values (e.g., darkening Green 800 to 900) to ensure sufficient contrast ratios > 4.5:1.
+
+**Learning:** `history.length` can be misleading in testing environments (often initialized to >1), making it tricky to verify "back button" logic reliability via automation alone.
+**Action:** Combine `history.length` checks with `document.referrer` checks where possible, or accept best-effort logic for simple enhancements.
+
 ## Rejected Changes
 
 *(None yet)*
