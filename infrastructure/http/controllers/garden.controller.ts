@@ -92,6 +92,9 @@ export class GardenController {
         )
       }
 
+      // Sentinel: Prevent caching of sensitive user data
+      c.header('Cache-Control', 'no-store')
+
       const result = await this.getUserPlantsUseCase.execute(user.id)
 
       if (!result.success) {

@@ -26,6 +26,7 @@ import type {
   SpeciesSuggestion,
 } from '../../application/ports/ai-identification.port.js'
 import { AppError } from '../../shared/errors/app-error.js'
+import { sanitizePromptInput } from '../../shared/utils/ai-sanitizer.js'
 import { isSafeUrl } from '../../shared/utils/ssrf.validator.js'
 import { env } from '../config/env.js'
 import { logger } from '../config/logger.js'
@@ -194,7 +195,8 @@ export class GeminiPlantAdapter implements AIIdentificationPort, AIDiagnosisPort
       let prompt = IDENTIFICATION_SYSTEM_PROMPT
 
       if (request.organs?.length) {
-        prompt += `\n\nVisible plant parts: ${request.organs.join(', ')}`
+        const safeOrgans = request.organs.map((o) => sanitizePromptInput(o, 50))
+        prompt += `\n\nVisible plant parts: ${safeOrgans.join(', ')}`
       }
 
       if (request.location) {
@@ -303,15 +305,15 @@ export class GeminiPlantAdapter implements AIIdentificationPort, AIDiagnosisPort
       let prompt = DIAGNOSIS_SYSTEM_PROMPT
 
       if (request.plantName) {
-        prompt += `\n\nPlant name: ${request.plantName}`
+        prompt += `\n\nPlant name: ${sanitizePromptInput(request.plantName, 100)}`
       }
 
       if (request.plantSpecies) {
-        prompt += `\nScientific name: ${request.plantSpecies}`
+        prompt += `\nScientific name: ${sanitizePromptInput(request.plantSpecies, 100)}`
       }
 
       if (request.symptomDescription) {
-        prompt += `\n\nUser's symptom description: "${request.symptomDescription}"`
+        prompt += `\n\nUser's symptom description: "${sanitizePromptInput(request.symptomDescription, 1000)}"`
       }
 
       if (request.symptomDuration) {
@@ -321,10 +323,13 @@ export class GeminiPlantAdapter implements AIIdentificationPort, AIDiagnosisPort
       if (request.recentCare) {
         const care = request.recentCare
         const careDetails: string[] = []
-        if (care.watering) careDetails.push(`Watering: ${care.watering}`)
-        if (care.fertilizing) careDetails.push(`Fertilizing: ${care.fertilizing}`)
-        if (care.repotting) careDetails.push(`Repotting: ${care.repotting}`)
-        if (care.pestTreatment) careDetails.push(`Pest treatment: ${care.pestTreatment}`)
+        if (care.watering) careDetails.push(`Watering: ${sanitizePromptInput(care.watering, 200)}`)
+        if (care.fertilizing)
+          careDetails.push(`Fertilizing: ${sanitizePromptInput(care.fertilizing, 200)}`)
+        if (care.repotting)
+          careDetails.push(`Repotting: ${sanitizePromptInput(care.repotting, 200)}`)
+        if (care.pestTreatment)
+          careDetails.push(`Pest treatment: ${sanitizePromptInput(care.pestTreatment, 200)}`)
         if (careDetails.length) {
           prompt += `\n\nRecent care:\n${careDetails.join('\n')}`
         }
