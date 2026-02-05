@@ -9,3 +9,8 @@
 **Vulnerability:** The rate limiter used `x-forwarded-for` directly without parsing. An attacker could potentially bypass rate limits by appending fake IPs or spoofing the header if not properly sanitized by a proxy.
 **Learning:** Relying on raw `x-forwarded-for` is risky.
 **Prevention:** Prioritize `cf-connecting-ip` or `x-real-ip` when available. When using `x-forwarded-for`, be aware of the trust model (e.g., standard proxy chains) and ideally configure trusted proxies.
+
+## 2025-05-23 - WebSocket Missing Authentication
+**Vulnerability:** The WebSocket server initialization lacks any authentication check, allowing anonymous connections and potential IDOR attacks in handlers.
+**Learning:** Assuming authentication is handled by a higher layer (like Nginx) or middleware without verifying it at the protocol level can leave endpoints exposed.
+**Prevention:** Always implement protocol-level authentication (e.g. verifying token in upgrade request or init message) for WebSockets.
