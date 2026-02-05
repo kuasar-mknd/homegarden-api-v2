@@ -468,6 +468,7 @@ export const SHARED_STYLES = `
     .skip-link, .status-dot, .external-icon, .no-print { display: none !important; }
     .grid { display: block; }
     .card { border: 1px solid #000; margin-bottom: 1rem; break-inside: avoid; page-break-inside: avoid; box-shadow: none; }
+    .code-block { break-inside: avoid; page-break-inside: avoid; }
     a { text-decoration: underline; color: black; }
     a[href^="http"]:after { content: " (" attr(href) ")"; }
     header h1 { color: black; }
@@ -648,6 +649,9 @@ export function getNotFoundPageHtml(path: string): string {
         // Handle Go Back
         var backBtn = document.getElementById('go-back-btn');
         if (backBtn) {
+          if (history.length <= 1) {
+            backBtn.style.display = 'none';
+          }
           backBtn.addEventListener('click', function() {
             history.back();
           });
@@ -665,10 +669,31 @@ export function getNotFoundPageHtml(path: string): string {
               if (navigator.clipboard && navigator.clipboard.writeText) {
                  navigator.clipboard.writeText(text).then(function() {
                     var originalHtml = btn.innerHTML;
+                    var originalLabel = btn.getAttribute('aria-label');
                     btn.innerHTML = '${CHECK_ICON} Copied!';
-                    setTimeout(function() { btn.innerHTML = originalHtml; }, 2000);
+                    btn.setAttribute('aria-label', 'Copied successfully');
+                    setTimeout(function() {
+                      btn.innerHTML = originalHtml;
+                      if (originalLabel) {
+                        btn.setAttribute('aria-label', originalLabel);
+                      } else {
+                        btn.removeAttribute('aria-label');
+                      }
+                    }, 2000);
                  }).catch(function(err) {
                     console.error('Failed to copy', err);
+                    var originalHtml = btn.innerHTML;
+                    var originalLabel = btn.getAttribute('aria-label');
+                    btn.innerHTML = '❌ Failed';
+                    btn.setAttribute('aria-label', 'Copy failed');
+                    setTimeout(function() {
+                      btn.innerHTML = originalHtml;
+                      if (originalLabel) {
+                        btn.setAttribute('aria-label', originalLabel);
+                      } else {
+                        btn.removeAttribute('aria-label');
+                      }
+                    }, 2000);
                  });
               } else {
                  // Fallback
