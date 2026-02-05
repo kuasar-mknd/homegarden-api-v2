@@ -40,6 +40,14 @@
 **Learning:** Feedback text like "Checked!" can be ambiguous.
 **Action:** Use explicit action verbs ("Copied!") paired with a universally recognized icon (Checkmark) for clarity and delight.
 
+## 2024-05-24 - 404 Experience & Contrast
+
+**Learning:** "Go Back" buttons relying on `history.back()` can be dead ends if the user landed directly on the 404 page (e.g., from a shared link).
+**Action:** Conditionally hide "Go Back" buttons if `history.length <= 1`, ensuring users aren't frustrated by a non-functional action.
+
+**Learning:** Standard brand green (`#2e7d32`) on light green backgrounds (`#e8f5e9`) may not meet AAA contrast standards for small text, even if it passes AA.
+**Action:** Use a darker variant (e.g., `#1b5e20`) for text-on-light-background components like badges to maximize legibility.
+
 ## Rejected Changes
 
 *(None yet)*
