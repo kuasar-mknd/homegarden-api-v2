@@ -40,6 +40,14 @@
 **Learning:** Feedback text like "Checked!" can be ambiguous.
 **Action:** Use explicit action verbs ("Copied!") paired with a universally recognized icon (Checkmark) for clarity and delight.
 
+## 2024-05-25 - Navigation & Feedback Refinement
+
+**Learning:** "Go Back" buttons can be frustrating when there is no history to go back to (e.g., opened in new tab).
+**Action:** Continuously hide the "Go Back" button by default (`style="display: none"`) and only reveal it via JavaScript if `window.history.length > 1`.
+
+**Learning:** Users may repeatedly click "Copy" buttons if feedback isn't immediate or if the button remains active, leading to race conditions.
+**Action:** Disable the copy button immediately upon click (`btn.disabled = true`) and re-enable it only after the feedback timeout expires.
+
 ## Rejected Changes
 
 *(None yet)*
