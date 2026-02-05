@@ -527,6 +527,7 @@ export function baseLayout({ title, description, content }: LayoutProps): string
   <meta property="og:title" content="${safeTitle}">
   <meta property="og:description" content="${metaDescription}">
   <meta property="og:type" content="website">
+  <meta property="og:locale" content="en_US">
   <meta property="og:image" content="${image}">
   <meta property="og:image:alt" content="HomeGarden API Banner with green branding">
 
@@ -571,7 +572,7 @@ const LANDING_PAGE_HTML = baseLayout({
   title: 'HomeGarden API v2',
   content: `
     <header role="banner">
-      <h1>🌱 HomeGarden API</h1>
+      <h1><span aria-hidden="true">🌱</span> HomeGarden API</h1>
       <div class="badge">v2.0.0 • AI-Powered</div>
     </header>
 
@@ -619,7 +620,7 @@ export function getNotFoundPageHtml(path: string): string {
     description: 'The requested page could not be found.',
     content: `
     <header role="banner">
-      <h1>🌱 404 Not Found</h1>
+      <h1><span aria-hidden="true">🌱</span> 404 Not Found</h1>
       <div class="badge badge-error" role="status">Error</div>
     </header>
 
@@ -638,7 +639,7 @@ export function getNotFoundPageHtml(path: string): string {
       <p>Please check the URL or go back to the homepage.</p>
 
       <div class="btn-group no-print">
-        <button type="button" id="go-back-btn" class="btn btn-secondary">${BACK_ICON}Go Back</button>
+        <button type="button" id="go-back-btn" class="btn btn-secondary" style="display: none">${BACK_ICON}Go Back</button>
         <a href="/" class="btn">${HOME_ICON}Return Home</a>
         <a href="/ui" class="btn btn-secondary">${DOC_ICON}Read Documentation</a>
       </div>
@@ -647,7 +648,8 @@ export function getNotFoundPageHtml(path: string): string {
       (function() {
         // Handle Go Back
         var backBtn = document.getElementById('go-back-btn');
-        if (backBtn) {
+        if (backBtn && window.history.length > 1) {
+          backBtn.style.display = 'inline-flex';
           backBtn.addEventListener('click', function() {
             history.back();
           });
@@ -663,12 +665,17 @@ export function getNotFoundPageHtml(path: string): string {
               var text = target.innerText;
               // Modern API
               if (navigator.clipboard && navigator.clipboard.writeText) {
+                 btn.disabled = true;
                  navigator.clipboard.writeText(text).then(function() {
                     var originalHtml = btn.innerHTML;
                     btn.innerHTML = '${CHECK_ICON} Copied!';
-                    setTimeout(function() { btn.innerHTML = originalHtml; }, 2000);
+                    setTimeout(function() {
+                      btn.innerHTML = originalHtml;
+                      btn.disabled = false;
+                    }, 2000);
                  }).catch(function(err) {
                     console.error('Failed to copy', err);
+                    btn.disabled = false;
                  });
               } else {
                  // Fallback

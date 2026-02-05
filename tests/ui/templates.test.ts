@@ -85,6 +85,16 @@ describe('UI Templates', () => {
       const html = getLandingPageHtml()
       expect(html).toContain('<div class="footer-links no-print">')
     })
+
+    it('should include og:locale meta tag', () => {
+      const html = getLandingPageHtml()
+      expect(html).toContain('<meta property="og:locale" content="en_US">')
+    })
+
+    it('should wrap decorative emojis in h1', () => {
+      const html = getLandingPageHtml()
+      expect(html).toContain('<h1><span aria-hidden="true">🌱</span> HomeGarden API</h1>')
+    })
   })
 
   describe('getNotFoundPageHtml', () => {
@@ -116,6 +126,22 @@ describe('UI Templates', () => {
     it('should use clear 404 title', () => {
       const html = getNotFoundPageHtml('/foo')
       expect(html).toContain('<title>404: Page Not Found')
+    })
+
+    it('should hide go-back button by default', () => {
+      const html = getNotFoundPageHtml('/foo')
+      expect(html).toContain('style="display: none"')
+    })
+
+    it('should check history length in script', () => {
+      const html = getNotFoundPageHtml('/foo')
+      expect(html).toContain('window.history.length > 1')
+    })
+
+    it('should disable copy button on click', () => {
+      const html = getNotFoundPageHtml('/foo')
+      expect(html).toContain('btn.disabled = true')
+      expect(html).toContain('btn.disabled = false')
     })
   })
 })
