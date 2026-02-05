@@ -648,31 +648,49 @@ export function getNotFoundPageHtml(path: string): string {
         // Handle Go Back
         var backBtn = document.getElementById('go-back-btn');
         if (backBtn) {
-          backBtn.addEventListener('click', function() {
-            history.back();
-          });
+          if (window.history.length > 1) {
+            backBtn.addEventListener('click', function() {
+              history.back();
+            });
+          } else {
+            backBtn.style.display = 'none';
+          }
         }
 
         // Handle Copy
         var btns = document.querySelectorAll('.copy-btn');
         Array.prototype.forEach.call(btns, function(btn) {
           btn.addEventListener('click', function() {
+            if (btn.getAttribute('data-copying')) return;
             var targetSelector = btn.getAttribute('data-clipboard-target');
             var target = document.querySelector(targetSelector);
             if (target) {
               var text = target.innerText;
+              btn.setAttribute('data-copying', 'true');
               // Modern API
               if (navigator.clipboard && navigator.clipboard.writeText) {
                  navigator.clipboard.writeText(text).then(function() {
                     var originalHtml = btn.innerHTML;
+                    var originalLabel = btn.getAttribute('aria-label');
                     btn.innerHTML = '${CHECK_ICON} Copied!';
-                    setTimeout(function() { btn.innerHTML = originalHtml; }, 2000);
+                    btn.setAttribute('aria-label', 'Copied successfully');
+                    setTimeout(function() {
+                        btn.innerHTML = originalHtml;
+                        if (originalLabel) {
+                            btn.setAttribute('aria-label', originalLabel);
+                        } else {
+                            btn.removeAttribute('aria-label');
+                        }
+                        btn.removeAttribute('data-copying');
+                    }, 2000);
                  }).catch(function(err) {
                     console.error('Failed to copy', err);
+                    btn.removeAttribute('data-copying');
                  });
               } else {
                  // Fallback
                  console.warn('Clipboard API not available');
+                 btn.removeAttribute('data-copying');
               }
             }
           });
