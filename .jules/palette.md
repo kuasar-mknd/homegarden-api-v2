@@ -32,6 +32,17 @@
 - **List Semantics:** Grid layouts of items use `ul` and `li` with `role="list"`.
 - **Motion:** `prefers-reduced-motion` disables transitions. External link icons animate on hover.
 
+## 2026-01-17 - Async Feedback & Navigation UX
+
+**Learning:** "Go Back" buttons on 404 pages are frustrating when opened in a new tab because `history.back()` does nothing.
+**Action:** Check `window.history.length > 1` before showing a "Go Back" button.
+
+**Learning:** Rapid clicking on async buttons (like Copy) can cause race conditions in UI feedback.
+**Action:** Use a `data-state` or `data-loading` attribute to debounce clicks and prevent overlapping timeouts.
+
+**Learning:** Changing button text for feedback (e.g., "Copied!") requires updating `aria-label` to ensure screen readers announce the success state.
+**Action:** Always pair visual text changes with `aria-label` updates for status messages.
+
 ## 2024-05-24 - Interactive Feedback & Security
 
 **Learning:** Inline event handlers (like `onclick`) should be avoided even in simple templates to support strict Content Security Policy (CSP) and separation of concerns.
