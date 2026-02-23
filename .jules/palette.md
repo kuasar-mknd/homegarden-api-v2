@@ -40,6 +40,14 @@
 **Learning:** Feedback text like "Checked!" can be ambiguous.
 **Action:** Use explicit action verbs ("Copied!") paired with a universally recognized icon (Checkmark) for clarity and delight.
 
+## 2024-05-24 - Accessibility Context & Visual Polish
+
+**Learning:** Screen reader users need explicit context when a link opens in a new window/tab, but adding visible text can clutter a clean design.
+**Action:** Use a `.sr-only` utility class to hide the text "(opens in a new tab)" visually while keeping it exposed to assistive technology.
+
+**Learning:** Visual affordances like "New" or "AI" badges on feature cards draw attention effectively without breaking the layout if they are styled inline.
+**Action:** Use a `.badge-inline` class that aligns vertically with text to add metadata without disrupting the heading flow.
+
 ## Rejected Changes
 
 *(None yet)*
