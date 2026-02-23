@@ -1,5 +1,6 @@
 // import { Prisma } from '@prisma/client'
 import { Garden } from '../../../domain/entities/garden.entity.js'
+import { Plant } from '../../../domain/entities/plant.entity.js'
 import type {
   CreateGardenData,
   GardenRepository,
@@ -47,7 +48,14 @@ export class GardenPrismaRepository implements GardenRepository {
   }
 
   async findByIdWithPlants(id: string): Promise<Garden | null> {
-    return this.findById(id)
+    // Optimization: Include plants in a single query to avoid N+1
+    const garden = await prisma.garden.findUnique({
+      where: { id },
+      include: {
+        plants: true,
+      },
+    })
+    return garden ? this.mapToEntity(garden) : null
   }
 
   async findByUserId(userId: string): Promise<Garden[]> {
@@ -178,6 +186,36 @@ export class GardenPrismaRepository implements GardenRepository {
   }
 
   private mapToEntity(prismaGarden: any): Garden {
+    // Map plants if included in the query result
+    const plants = prismaGarden.plants
+      ? prismaGarden.plants.map((p: any) =>
+          Plant.fromPersistence({
+            id: p.id,
+            gardenId: p.gardenId,
+            nickname: p.nickname ?? null,
+            speciesId: p.speciesId ?? null,
+            commonName: p.commonName ?? null,
+            scientificName: p.scientificName ?? null,
+            family: p.family ?? null,
+            exposure: p.exposure ?? null,
+            watering: p.watering ?? null,
+            soilType: p.soilType ?? null,
+            flowerColor: p.flowerColor ?? null,
+            height: p.height ?? null,
+            plantedDate: p.plantedDate ?? null,
+            acquiredDate: p.acquiredDate ?? null,
+            bloomingSeason: p.bloomingSeason ?? null,
+            plantingSeason: p.plantingSeason ?? null,
+            careNotes: p.careNotes ?? null,
+            imageUrl: p.imageUrl ?? null,
+            thumbnailUrl: p.thumbnailUrl ?? null,
+            use: p.use ?? null,
+            createdAt: p.createdAt,
+            updatedAt: p.updatedAt,
+          }),
+        )
+      : undefined
+
     return Garden.fromPersistence({
       id: prismaGarden.id,
       name: prismaGarden.name,
@@ -189,6 +227,7 @@ export class GardenPrismaRepository implements GardenRepository {
       climate: prismaGarden.climate ?? undefined,
       createdAt: prismaGarden.createdAt,
       updatedAt: prismaGarden.updatedAt,
+      plants,
     })
   }
 }
