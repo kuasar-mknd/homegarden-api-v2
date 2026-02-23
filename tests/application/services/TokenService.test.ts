@@ -2,21 +2,25 @@ import jwt from 'jsonwebtoken'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { type TokenPayload, TokenService } from '../../../application/services/TokenService'
 
+// Mock the environment configuration
+vi.mock('../../../infrastructure/config/env', () => ({
+  env: {
+    JWT_SECRET: 'test-secret',
+    JWT_EXPIRES_IN: '1h',
+    JWT_REFRESH_EXPIRES_IN: '7d',
+  },
+}))
+
 describe('TokenService', () => {
   let tokenService: TokenService
-  const originalEnv = process.env
 
   beforeEach(() => {
-    vi.resetModules() // clears the cache
-    process.env = { ...originalEnv } // reset env vars
-    process.env.JWT_SECRET = 'test-secret'
-    process.env.JWT_EXPIRES_IN = '1h'
-    process.env.JWT_REFRESH_EXPIRES_IN = '7d'
+    vi.clearAllMocks()
     tokenService = new TokenService()
   })
 
   afterEach(() => {
-    process.env = originalEnv
+    vi.resetModules()
   })
 
   const mockPayload: TokenPayload = {
@@ -52,15 +56,23 @@ describe('TokenService', () => {
     expect(decoded.role).toBe(mockPayload.role)
   })
 
-  it('should throw if JWT_SECRET is missing', () => {
-    const originalEnv = { ...process.env }
-    delete process.env.JWT_SECRET
-    delete process.env.JWT_EXPIRES_IN
-    delete process.env.JWT_REFRESH_EXPIRES_IN
+  it('should throw if JWT_SECRET is missing', async () => {
+    // Reset modules to reload the mock with different values
+    vi.resetModules()
 
-    expect(() => new TokenService()).toThrow('JWT_SECRET must be defined')
+    // Mock env with missing secret
+    vi.doMock('../../../infrastructure/config/env', () => ({
+      env: {
+        JWT_SECRET: undefined,
+        JWT_EXPIRES_IN: '1h',
+        JWT_REFRESH_EXPIRES_IN: '7d',
+      },
+    }))
 
-    process.env = originalEnv
+    // Import the class again so it uses the new mock
+    const { TokenService: TokenServiceWithoutSecret } = await import('../../../application/services/TokenService')
+
+    expect(() => new TokenServiceWithoutSecret()).toThrow('JWT_SECRET must be defined')
   })
 
   it('should throw an error for invalid token', () => {
