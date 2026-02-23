@@ -104,7 +104,10 @@ export const authMiddleware = createMiddleware(async (c, next) => {
     }
 
     // 3. Attach user to context
-    c.set('user', localUser)
+    // Sentinel: Remove password before attaching to context to prevent accidental leakage
+    // biome-ignore lint/performance/noDelete: usage of rest destructuring is cleaner here
+    const { password: _password, ...safeUser } = localUser
+    c.set('user', safeUser)
     c.set('userId', localUser.id)
 
     return await next()
