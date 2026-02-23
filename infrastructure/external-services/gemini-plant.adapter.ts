@@ -507,6 +507,7 @@ export class GeminiPlantAdapter implements AIIdentificationPort, AIDiagnosisPort
       // Fetch image from URL and convert to base64
       const response = await fetch(image, {
         redirect: 'error',
+        signal: AbortSignal.timeout(10000), // 10s timeout to prevent hanging
         headers: {
           'User-Agent': 'HomeGarden-API/2.0 (Security-Scan; +https://homegarden.app)',
         },
