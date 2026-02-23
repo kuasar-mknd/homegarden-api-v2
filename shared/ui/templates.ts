@@ -648,9 +648,13 @@ export function getNotFoundPageHtml(path: string): string {
         // Handle Go Back
         var backBtn = document.getElementById('go-back-btn');
         if (backBtn) {
-          backBtn.addEventListener('click', function() {
-            history.back();
-          });
+          if (window.history.length > 1) {
+            backBtn.addEventListener('click', function() {
+              window.history.back();
+            });
+          } else {
+            backBtn.style.display = 'none';
+          }
         }
 
         // Handle Copy
@@ -665,8 +669,13 @@ export function getNotFoundPageHtml(path: string): string {
               if (navigator.clipboard && navigator.clipboard.writeText) {
                  navigator.clipboard.writeText(text).then(function() {
                     var originalHtml = btn.innerHTML;
+                    var originalLabel = btn.getAttribute('aria-label');
                     btn.innerHTML = '${CHECK_ICON} Copied!';
-                    setTimeout(function() { btn.innerHTML = originalHtml; }, 2000);
+                    btn.setAttribute('aria-label', 'Copied successfully');
+                    setTimeout(function() {
+                      btn.innerHTML = originalHtml;
+                      if (originalLabel) btn.setAttribute('aria-label', originalLabel);
+                    }, 2000);
                  }).catch(function(err) {
                     console.error('Failed to copy', err);
                  });

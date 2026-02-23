@@ -40,6 +40,14 @@
 **Learning:** Feedback text like "Checked!" can be ambiguous.
 **Action:** Use explicit action verbs ("Copied!") paired with a universally recognized icon (Checkmark) for clarity and delight.
 
+## 2025-01-15 - Navigation & Accessibility Feedback
+
+**Learning:** "Go Back" buttons that rely on `history.back()` can be dead ends if the user landed directly on the page.
+**Action:** Check `window.history.length > 1` and hide the button if there is no history to return to.
+
+**Learning:** Visual updates (icon swaps) for actions like "Copy" are invisible to screen readers without ARIA updates.
+**Action:** Temporarily update `aria-label` to "Copied successfully" during the success state to provide immediate feedback.
+
 ## Rejected Changes
 
 *(None yet)*
