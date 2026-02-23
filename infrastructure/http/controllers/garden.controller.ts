@@ -213,6 +213,10 @@ export class GardenController {
         )
       }
 
+      // Optimization: Cache nearby results for 5 minutes
+      // Nearby gardens are relatively static
+      c.header('Cache-Control', 'public, max-age=300')
+
       return c.json(
         {
           success: true,
