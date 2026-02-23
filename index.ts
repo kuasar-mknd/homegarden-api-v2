@@ -179,7 +179,7 @@ app.use(
     permissionsPolicy: {
       camera: [],
       microphone: [],
-      geolocation: [],
+      geolocation: ["'self'"], // Allow geolocation for own origin (required for Nearby Gardens)
       payment: [],
       usb: [],
     },

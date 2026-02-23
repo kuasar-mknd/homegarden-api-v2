@@ -94,6 +94,9 @@ export class GardenController {
 
       const result = await this.getUserPlantsUseCase.execute(user.id)
 
+      // Privacy: Do not cache user plant data
+      c.header('Cache-Control', 'no-store')
+
       if (!result.success) {
         return c.json(
           {
