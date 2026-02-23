@@ -26,6 +26,7 @@ import type {
   SpeciesSuggestion,
 } from '../../application/ports/ai-identification.port.js'
 import { AppError } from '../../shared/errors/app-error.js'
+import { sanitizePromptInput } from '../../shared/utils/ai-sanitizer.js'
 import { isSafeUrl } from '../../shared/utils/ssrf.validator.js'
 import { env } from '../config/env.js'
 import { logger } from '../config/logger.js'
@@ -194,11 +195,13 @@ export class GeminiPlantAdapter implements AIIdentificationPort, AIDiagnosisPort
       let prompt = IDENTIFICATION_SYSTEM_PROMPT
 
       if (request.organs?.length) {
-        prompt += `\n\nVisible plant parts: ${request.organs.join(', ')}`
+        const safeOrgans = request.organs.map((o) => sanitizePromptInput(o))
+        prompt += `\n\nVisible plant parts: ${safeOrgans.join(', ')}`
       }
 
       if (request.location) {
-        prompt += `\n\nLocation context: ${request.location.country ?? `${request.location.latitude}, ${request.location.longitude}`}`
+        const country = sanitizePromptInput(request.location.country)
+        prompt += `\n\nLocation context: ${country || `${request.location.latitude}, ${request.location.longitude}`}`
       }
 
       prompt += `\n\nPlease identify this plant and return ${request.maxSuggestions ?? 5} suggestions.`
@@ -303,28 +306,28 @@ export class GeminiPlantAdapter implements AIIdentificationPort, AIDiagnosisPort
       let prompt = DIAGNOSIS_SYSTEM_PROMPT
 
       if (request.plantName) {
-        prompt += `\n\nPlant name: ${request.plantName}`
+        prompt += `\n\nPlant name: ${sanitizePromptInput(request.plantName)}`
       }
 
       if (request.plantSpecies) {
-        prompt += `\nScientific name: ${request.plantSpecies}`
+        prompt += `\nScientific name: ${sanitizePromptInput(request.plantSpecies)}`
       }
 
       if (request.symptomDescription) {
-        prompt += `\n\nUser's symptom description: "${request.symptomDescription}"`
+        prompt += `\n\nUser's symptom description: "${sanitizePromptInput(request.symptomDescription)}"`
       }
 
       if (request.symptomDuration) {
-        prompt += `\nSymptoms present for: ${request.symptomDuration}`
+        prompt += `\nSymptoms present for: ${sanitizePromptInput(request.symptomDuration)}`
       }
 
       if (request.recentCare) {
         const care = request.recentCare
         const careDetails: string[] = []
-        if (care.watering) careDetails.push(`Watering: ${care.watering}`)
-        if (care.fertilizing) careDetails.push(`Fertilizing: ${care.fertilizing}`)
-        if (care.repotting) careDetails.push(`Repotting: ${care.repotting}`)
-        if (care.pestTreatment) careDetails.push(`Pest treatment: ${care.pestTreatment}`)
+        if (care.watering) careDetails.push(`Watering: ${sanitizePromptInput(care.watering)}`)
+        if (care.fertilizing) careDetails.push(`Fertilizing: ${sanitizePromptInput(care.fertilizing)}`)
+        if (care.repotting) careDetails.push(`Repotting: ${sanitizePromptInput(care.repotting)}`)
+        if (care.pestTreatment) careDetails.push(`Pest treatment: ${sanitizePromptInput(care.pestTreatment)}`)
         if (careDetails.length) {
           prompt += `\n\nRecent care:\n${careDetails.join('\n')}`
         }
@@ -332,9 +335,9 @@ export class GeminiPlantAdapter implements AIIdentificationPort, AIDiagnosisPort
 
       if (request.environment) {
         prompt += `\n\nEnvironment: ${request.environment.indoor ? 'Indoor' : 'Outdoor'}`
-        if (request.environment.climate) prompt += `, ${request.environment.climate} climate`
+        if (request.environment.climate) prompt += `, ${sanitizePromptInput(request.environment.climate)} climate`
         if (request.environment.recentWeather)
-          prompt += `, Recent weather: ${request.environment.recentWeather}`
+          prompt += `, Recent weather: ${sanitizePromptInput(request.environment.recentWeather)}`
       }
 
       prompt += '\n\nPlease analyze this plant and provide a diagnosis.'
