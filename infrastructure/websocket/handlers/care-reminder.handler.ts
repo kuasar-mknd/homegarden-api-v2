@@ -1,24 +1,28 @@
 import type { WebSocket } from 'ws'
 import { logger } from '../../config/logger.js'
-import type { WSMessage } from '../types.js'
+import type { AuthenticatedWebSocket, WSMessage } from '../types.js'
 
 export async function handleCareReminderMessage(ws: WebSocket, message: WSMessage) {
   try {
+    const user = (ws as AuthenticatedWebSocket).user
+
+    // We trust the authenticated user, ignore message payload userId
+
     switch (message.type) {
       case 'SUBSCRIBE':
         ws.send(
           JSON.stringify({
             type: 'SUBSCRIBED',
             channel: 'care-reminders',
-            payload: { userId: message.payload?.userId },
+            payload: { userId: user.id },
           }),
         )
         // Check for any pending reminders immediately
-        await checkReminders(ws, message.payload?.userId)
+        await checkReminders(ws)
         break
 
       case 'CHECK_REMINDERS':
-        await checkReminders(ws, message.payload?.userId)
+        await checkReminders(ws)
         break
 
       default:
@@ -36,26 +40,29 @@ export async function handleCareReminderMessage(ws: WebSocket, message: WSMessag
   }
 }
 
-async function checkReminders(ws: WebSocket, userId?: string) {
-  if (!userId) {
+async function checkReminders(ws: WebSocket) {
+  const user = (ws as AuthenticatedWebSocket).user
+  if (!user || !user.id) {
+    // Should not happen if auth middleware works
     ws.send(
       JSON.stringify({
         type: 'ERROR',
         channel: 'care-reminders',
-        payload: { message: 'Missing user ID' },
+        payload: { message: 'Unauthorized' },
       }),
     )
     return
   }
 
   // Mock implementation - in real app, query database for due tasks
-  // For demonstration, we'll send a dummy reminder if userId is provided
+  // For demonstration, we'll send a dummy reminder using the AUTHENTICATED userId
   const dummyReminder = {
     id: 'reminder-123',
     plantId: 'plant-abc',
     plantName: 'Monstera',
     action: 'water',
     dueAt: new Date().toISOString(),
+    userId: user.id, // Confirming we are using the correct user
   }
 
   ws.send(
