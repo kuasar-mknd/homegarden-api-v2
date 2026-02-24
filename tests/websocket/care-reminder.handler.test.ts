@@ -26,6 +26,7 @@ describe('Care Reminder WebSocket Handler', () => {
 
     mockWs = {
       send: vi.fn((msg: string) => sentMessages.push(msg)),
+      userId: 'user-123', // Authenticated user
     } as unknown as WebSocket
   })
 
@@ -34,7 +35,7 @@ describe('Care Reminder WebSocket Handler', () => {
       await handleCareReminderMessage(mockWs, {
         type: 'SUBSCRIBE',
         channel: 'care-reminders',
-        payload: { userId: 'user-123' },
+        payload: { userId: 'user-123' }, // Payload is ignored but kept for compatibility check
       })
 
       expect(mockWs.send).toHaveBeenCalledTimes(2)
@@ -48,26 +49,29 @@ describe('Care Reminder WebSocket Handler', () => {
       expect(reminder.payload.reminders).toBeInstanceOf(Array)
     })
 
-    it('should return error when userId is missing', async () => {
-      await handleCareReminderMessage(mockWs, {
+    it('should return error when ws.userId is missing', async () => {
+      const unauthWs = {
+        send: vi.fn((msg: string) => sentMessages.push(msg)),
+      } as unknown as WebSocket
+
+      await handleCareReminderMessage(unauthWs, {
         type: 'SUBSCRIBE',
         channel: 'care-reminders',
         payload: {},
       })
 
-      expect(mockWs.send).toHaveBeenCalledTimes(2)
-      const error = JSON.parse(sentMessages[1])
+      expect(unauthWs.send).toHaveBeenCalledTimes(1)
+      const error = JSON.parse(sentMessages[0])
       expect(error.type).toBe('ERROR')
-      expect(error.payload.message).toBe('Missing user ID')
+      expect(error.payload.message).toBe('Unauthorized')
     })
   })
 
   describe('CHECK_REMINDERS', () => {
-    it('should return reminders when userId provided', async () => {
+    it('should return reminders when authenticated', async () => {
       await handleCareReminderMessage(mockWs, {
         type: 'CHECK_REMINDERS',
         channel: 'care-reminders',
-        payload: { userId: 'user-456' },
       })
 
       expect(mockWs.send).toHaveBeenCalledTimes(1)
@@ -78,17 +82,20 @@ describe('Care Reminder WebSocket Handler', () => {
       expect(reminder.payload.reminders[0].action).toBe('water')
     })
 
-    it('should return error when userId is missing', async () => {
-      await handleCareReminderMessage(mockWs, {
+    it('should return error when ws.userId is missing', async () => {
+      const unauthWs = {
+        send: vi.fn((msg: string) => sentMessages.push(msg)),
+      } as unknown as WebSocket
+
+      await handleCareReminderMessage(unauthWs, {
         type: 'CHECK_REMINDERS',
         channel: 'care-reminders',
-        payload: {},
       })
 
-      expect(mockWs.send).toHaveBeenCalledTimes(1)
+      expect(unauthWs.send).toHaveBeenCalledTimes(1)
       const error = JSON.parse(sentMessages[0])
       expect(error.type).toBe('ERROR')
-      expect(error.payload.message).toBe('Missing user ID')
+      expect(error.payload.message).toBe('Unauthorized')
     })
   })
 
@@ -112,6 +119,7 @@ describe('Care Reminder WebSocket Handler', () => {
     it('should handle errors gracefully', async () => {
       // Create a ws that throws on send to trigger error path
       const brokenWs = {
+        userId: 'user-123',
         send: vi.fn().mockImplementationOnce(() => {
           throw new Error('Connection closed')
         }),

@@ -20,43 +20,43 @@ describe('SSRF Validator', () => {
   })
 
   it('should return true for public safe URLs', async () => {
-    ;(lookup as any).mockResolvedValue({ address: '93.184.216.34' }) // example.com
+    ;(lookup as any).mockResolvedValue([{ address: '93.184.216.34', family: 4 }]) // example.com
     expect(await isSafeUrl('https://example.com')).toBe(true)
   })
 
   it('should return false for loopback addresses', async () => {
-    ;(lookup as any).mockResolvedValue({ address: '127.0.0.1' })
+    ;(lookup as any).mockResolvedValue([{ address: '127.0.0.1', family: 4 }])
     expect(await isSafeUrl('http://localhost')).toBe(false)
 
-    ;(lookup as any).mockResolvedValue({ address: '127.1' })
+    ;(lookup as any).mockResolvedValue([{ address: '127.1', family: 4 }])
     expect(await isSafeUrl('http://127.1')).toBe(false)
   })
 
   it('should return false for private IPv4 ranges', async () => {
     // 10.0.0.0/8
-    ;(lookup as any).mockResolvedValue({ address: '10.0.0.1' })
+    ;(lookup as any).mockResolvedValue([{ address: '10.0.0.1', family: 4 }])
     expect(await isSafeUrl('http://10.0.0.1')).toBe(false)
 
     // 172.16.0.0/12
-    ;(lookup as any).mockResolvedValue({ address: '172.16.0.1' })
+    ;(lookup as any).mockResolvedValue([{ address: '172.16.0.1', family: 4 }])
     expect(await isSafeUrl('http://172.16.0.1')).toBe(false)
 
     // 192.168.0.0/16
-    ;(lookup as any).mockResolvedValue({ address: '192.168.1.1' })
+    ;(lookup as any).mockResolvedValue([{ address: '192.168.1.1', family: 4 }])
     expect(await isSafeUrl('http://192.168.1.1')).toBe(false)
 
     // 169.254.0.0/16 (Link-local)
-    ;(lookup as any).mockResolvedValue({ address: '169.254.169.254' })
+    ;(lookup as any).mockResolvedValue([{ address: '169.254.169.254', family: 4 }])
     expect(await isSafeUrl('http://169.254.169.254')).toBe(false)
   })
 
   it('should return false for 0.0.0.0', async () => {
-    ;(lookup as any).mockResolvedValue({ address: '0.0.0.0' })
+    ;(lookup as any).mockResolvedValue([{ address: '0.0.0.0', family: 4 }])
     expect(await isSafeUrl('http://0.0.0.0')).toBe(false)
   })
 
   it('should return false for IPv6 loopback', async () => {
-    ;(lookup as any).mockResolvedValue({ address: '::1' })
+    ;(lookup as any).mockResolvedValue([{ address: '::1', family: 6 }])
     expect(await isSafeUrl('http://[::1]')).toBe(false)
   })
 
@@ -66,7 +66,17 @@ describe('SSRF Validator', () => {
   })
 
   it('should return false for unparseable IPs', async () => {
-    ;(lookup as any).mockResolvedValue({ address: 'not.an.ip' })
+    ;(lookup as any).mockResolvedValue([{ address: 'not.an.ip', family: 0 }])
     expect(await isSafeUrl('https://example.com')).toBe(false)
+  })
+
+  it('should return false for IPv6 link-local', async () => {
+    ;(lookup as any).mockResolvedValue([{ address: 'fe80::1', family: 6 }])
+    expect(await isSafeUrl('http://[fe80::1]')).toBe(false)
+  })
+
+  it('should return false for IPv6 Unique Local Address', async () => {
+    ;(lookup as any).mockResolvedValue([{ address: 'fc00::1', family: 6 }])
+    expect(await isSafeUrl('http://[fc00::1]')).toBe(false)
   })
 })
