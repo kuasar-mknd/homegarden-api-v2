@@ -4,21 +4,34 @@ import type { WSMessage } from '../types.js'
 
 export async function handleCareReminderMessage(ws: WebSocket, message: WSMessage) {
   try {
+    const userId = ws.userId
+
+    if (!userId) {
+      ws.send(
+        JSON.stringify({
+          type: 'ERROR',
+          channel: 'care-reminders',
+          payload: { message: 'Unauthorized' },
+        }),
+      )
+      return
+    }
+
     switch (message.type) {
       case 'SUBSCRIBE':
         ws.send(
           JSON.stringify({
             type: 'SUBSCRIBED',
             channel: 'care-reminders',
-            payload: { userId: message.payload?.userId },
+            payload: { userId },
           }),
         )
         // Check for any pending reminders immediately
-        await checkReminders(ws, message.payload?.userId)
+        await checkReminders(ws, userId)
         break
 
       case 'CHECK_REMINDERS':
-        await checkReminders(ws, message.payload?.userId)
+        await checkReminders(ws, userId)
         break
 
       default:
@@ -36,18 +49,7 @@ export async function handleCareReminderMessage(ws: WebSocket, message: WSMessag
   }
 }
 
-async function checkReminders(ws: WebSocket, userId?: string) {
-  if (!userId) {
-    ws.send(
-      JSON.stringify({
-        type: 'ERROR',
-        channel: 'care-reminders',
-        payload: { message: 'Missing user ID' },
-      }),
-    )
-    return
-  }
-
+async function checkReminders(ws: WebSocket, _userId: string) {
   // Mock implementation - in real app, query database for due tasks
   // For demonstration, we'll send a dummy reminder if userId is provided
   const dummyReminder = {
