@@ -206,7 +206,7 @@ describe('AuthMiddleware', () => {
   })
 
   it('should handle non-Error object rejection in auth middleware', async () => {
-     // Re-setup is handled by beforeEach mostly, but we need to ensure the supabase mock behavior
+    // Re-setup is handled by beforeEach mostly, but we need to ensure the supabase mock behavior
     mockSupabase.auth.getUser.mockRejectedValue('String Error')
 
     mockContext.req.header.mockReturnValue('Bearer token')
