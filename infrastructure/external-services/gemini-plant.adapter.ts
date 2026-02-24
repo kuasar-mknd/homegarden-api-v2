@@ -507,6 +507,7 @@ export class GeminiPlantAdapter implements AIIdentificationPort, AIDiagnosisPort
       // Fetch image from URL and convert to base64
       const response = await fetch(image, {
         redirect: 'error',
+        signal: AbortSignal.timeout(10000), // 10s timeout
         headers: {
           'User-Agent': 'HomeGarden-API/2.0 (Security-Scan; +https://homegarden.app)',
         },
@@ -516,12 +517,14 @@ export class GeminiPlantAdapter implements AIIdentificationPort, AIDiagnosisPort
       }
 
       const contentLength = response.headers.get('content-length')
-      if (contentLength && Number.parseInt(contentLength, 10) > 10 * 1024 * 1024) {
+      const MAX_SIZE = 10 * 1024 * 1024 // 10MB
+
+      if (contentLength && Number.parseInt(contentLength, 10) > MAX_SIZE) {
         throw new AppError('Image too large (max 10MB)', 400)
       }
 
-      const buffer = await response.arrayBuffer()
-      const base64 = Buffer.from(buffer).toString('base64')
+      const buffer = await this.readStreamWithLimit(response, MAX_SIZE)
+      const base64 = buffer.toString('base64')
       const contentType = response.headers.get('content-type') ?? 'image/jpeg'
 
       return {
@@ -539,6 +542,52 @@ export class GeminiPlantAdapter implements AIIdentificationPort, AIDiagnosisPort
         mimeType: mimeType ?? 'image/jpeg',
       },
     }
+  }
+
+  /**
+   * Reads a stream and enforces a size limit
+   */
+  private async readStreamWithLimit(response: Response, limit: number): Promise<Buffer> {
+    // Fallback for environments where body stream is unavailable (e.g., some mocks)
+    if (!response.body) {
+      const ab = await response.arrayBuffer()
+      if (ab.byteLength > limit) {
+        throw new AppError(`Image too large (max ${limit / 1024 / 1024}MB)`, 400)
+      }
+      return Buffer.from(ab)
+    }
+
+    const reader = response.body.getReader()
+    const chunks: Uint8Array[] = []
+    let receivedLength = 0
+
+    try {
+      while (true) {
+        const { done, value } = await reader.read()
+
+        if (done) {
+          break
+        }
+
+        if (value) {
+          receivedLength += value.length
+          if (receivedLength > limit) {
+            await reader.cancel('Size limit exceeded')
+            throw new AppError(`Image too large (max ${limit / 1024 / 1024}MB)`, 400)
+          }
+          chunks.push(value)
+        }
+      }
+    } finally {
+      // Ensure reader is released if we break or throw
+      try {
+        reader.releaseLock()
+      } catch {
+        // Ignore errors during release (e.g. if already released)
+      }
+    }
+
+    return Buffer.concat(chunks)
   }
 
   /**

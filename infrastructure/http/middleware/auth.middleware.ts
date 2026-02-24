@@ -4,12 +4,28 @@ import { env } from '../../config/env.js'
 import { logger } from '../../config/logger.js'
 import { prisma } from '../../database/prisma.client.js'
 
-// Initialize Supabase client
+// Optimization: Shared client instance to avoid recreation on every request
+// biome-ignore lint/suspicious/noExplicitAny: Supabase client type
+let supabaseClient: any = null
+
 const getSupabase = () => {
+  if (supabaseClient) return supabaseClient
+
   if (!env.SUPABASE_URL || !env.SUPABASE_PUBLISHABLE_KEY) {
     throw new Error('Supabase URL or Publishable Key not configured')
   }
-  return createClient(env.SUPABASE_URL, env.SUPABASE_PUBLISHABLE_KEY)
+  supabaseClient = createClient(env.SUPABASE_URL, env.SUPABASE_PUBLISHABLE_KEY)
+  return supabaseClient
+}
+
+// Optimization: Select only essential fields for auth context
+const AUTH_USER_SELECT = {
+  id: true,
+  email: true,
+  role: true,
+  firstName: true,
+  lastName: true,
+  avatarUrl: true,
 }
 
 /**
@@ -74,9 +90,11 @@ export const authMiddleware = createMiddleware(async (c, next) => {
     // Check if user exists first to avoid unnecessary write operations
     const existingUser = await prisma.user.findUnique({
       where: { email: user.email },
+      select: AUTH_USER_SELECT,
     })
 
-    let localUser = existingUser
+    // biome-ignore lint/suspicious/noExplicitAny: handling partial user type mismatch in context
+    let localUser: any = existingUser
 
     if (!localUser) {
       // Create new user if not exists

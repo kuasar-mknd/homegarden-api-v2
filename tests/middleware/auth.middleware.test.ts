@@ -1,44 +1,46 @@
-import { createClient } from '@supabase/supabase-js'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
-import { env } from '../../infrastructure/config/env.js'
-import { prisma } from '../../infrastructure/database/prisma.client.js'
-import { authMiddleware } from '../../infrastructure/http/middleware/auth.middleware.js'
 
-// Mock dependencies
-vi.mock('../../infrastructure/config/env.js', () => ({
-  env: {
-    SUPABASE_URL: 'http://supabase.test',
-    SUPABASE_PUBLISHABLE_KEY: 'test-key',
-  },
-}))
-
-vi.mock('../../infrastructure/database/prisma.client.js', () => ({
-  prisma: {
-    user: {
-      findUnique: vi.fn(),
-      create: vi.fn(),
-    },
-  },
-}))
-
-vi.mock('@supabase/supabase-js', () => ({
-  createClient: vi.fn(),
-}))
-
+// Mock dependencies handled in beforeEach with doMock/resetModules
 describe('AuthMiddleware', () => {
   let mockContext: any
   let mockNext: any
   let mockSupabase: any
+  let authMiddleware: any
 
-  beforeEach(() => {
+  beforeEach(async () => {
     vi.clearAllMocks()
+    vi.resetModules()
 
     mockSupabase = {
       auth: {
         getUser: vi.fn(),
       },
     }
-    vi.mocked(createClient).mockReturnValue(mockSupabase as any)
+
+    // Mock dependencies for every test to ensure clean state
+    vi.doMock('@supabase/supabase-js', () => ({
+      createClient: vi.fn(() => mockSupabase),
+    }))
+
+    vi.doMock('../../infrastructure/config/env.js', () => ({
+      env: {
+        SUPABASE_URL: 'http://supabase.test',
+        SUPABASE_PUBLISHABLE_KEY: 'test-key',
+      },
+    }))
+
+    vi.doMock('../../infrastructure/database/prisma.client.js', () => ({
+      prisma: {
+        user: {
+          findUnique: vi.fn(),
+          create: vi.fn(),
+        },
+      },
+    }))
+
+    // Re-import middleware to get fresh singleton state
+    const module = await import('../../infrastructure/http/middleware/auth.middleware.js')
+    authMiddleware = module.authMiddleware
 
     mockContext = {
       req: {
@@ -80,6 +82,8 @@ describe('AuthMiddleware', () => {
     mockSupabase.auth.getUser.mockResolvedValue({ data: { user: mockUser }, error: null })
 
     const dbUser = { id: 'db-id', email: 'test@example.com' }
+    // We need to get the prisma mock from the re-imported module or global mock
+    const { prisma } = await import('../../infrastructure/database/prisma.client.js')
     vi.mocked(prisma.user.findUnique).mockResolvedValue(dbUser as any)
 
     await authMiddleware(mockContext, mockNext)
@@ -98,6 +102,7 @@ describe('AuthMiddleware', () => {
     }
     mockSupabase.auth.getUser.mockResolvedValue({ data: { user: mockUser }, error: null })
 
+    const { prisma } = await import('../../infrastructure/database/prisma.client.js')
     vi.mocked(prisma.user.findUnique).mockResolvedValue(null)
     const createdUser = { id: 'new-db-id', email: 'new@example.com' }
     vi.mocked(prisma.user.create).mockResolvedValue(createdUser as any)
@@ -123,6 +128,7 @@ describe('AuthMiddleware', () => {
       data: { user: { email: 'test@test.com', user_metadata: { first_name: 'OnlyFirst' } } },
       error: null,
     })
+    const { prisma } = await import('../../infrastructure/database/prisma.client.js')
     vi.mocked(prisma.user.findUnique).mockResolvedValue(null)
     vi.mocked(prisma.user.create).mockResolvedValue({ id: 'id' } as any)
 
@@ -139,37 +145,60 @@ describe('AuthMiddleware', () => {
   })
 
   it('should return 500 if environment variables are missing', async () => {
-    mockContext.req.header.mockReturnValue('Bearer token')
-    // Temporarily break env
-    const originalUrl = env.SUPABASE_URL
-    ;(env as any).SUPABASE_URL = null
+    // Reset modules and mock env to be missing
+    vi.resetModules()
+    vi.doMock('../../infrastructure/config/env.js', () => ({
+      env: {
+        SUPABASE_URL: null, // Missing
+        SUPABASE_PUBLISHABLE_KEY: 'test-key',
+      },
+    }))
+    // We also need to mock other dependencies again since resetModules cleared them
+    vi.doMock('@supabase/supabase-js', () => ({ createClient: vi.fn() }))
+    vi.doMock('../../infrastructure/database/prisma.client.js', () => ({
+      prisma: { user: {} },
+    }))
 
-    const result = (await authMiddleware(mockContext, mockNext)) as any
+    // Re-import
+    const { authMiddleware: freshAuthMiddleware } = await import(
+      '../../infrastructure/http/middleware/auth.middleware.js'
+    )
+
+    mockContext.req.header.mockReturnValue('Bearer token')
+    const result = (await freshAuthMiddleware(mockContext, mockNext)) as any
 
     expect(result.status).toBe(500)
     expect(result.data.message).toBe('Authentication service error')
-
-    // Restore
-    ;(env as any).SUPABASE_URL = originalUrl
   })
 
   it('should return 500 if prisma is missing', async () => {
-    mockContext.req.header.mockReturnValue('Bearer token')
+    vi.resetModules()
+    // Re-setup basic mocks
+    vi.doMock('../../infrastructure/config/env.js', () => ({
+      env: {
+        SUPABASE_URL: 'http://supabase.test',
+        SUPABASE_PUBLISHABLE_KEY: 'test-key',
+      },
+    }))
+    vi.doMock('@supabase/supabase-js', () => ({
+      createClient: vi.fn(() => mockSupabase),
+    }))
+    // Mock prisma as undefined
+    vi.doMock('../../infrastructure/database/prisma.client.js', () => ({
+      prisma: undefined,
+    }))
+
+    // Setup supabase mock which is used by createClient
     mockSupabase.auth.getUser.mockResolvedValue({
       data: { user: { email: 't@t.com' } },
       error: null,
     })
 
-    // We can mock it to be null if we re-mock the module.
-    vi.resetModules()
-    vi.doMock('../../infrastructure/database/prisma.client.js', () => ({
-      prisma: undefined,
-    }))
-
-    // Re-import to get the fresh module with mocked prisma
     const { authMiddleware: freshAuthMiddleware } = await import(
       '../../infrastructure/http/middleware/auth.middleware.js'
     )
+
+    mockContext.req.header.mockReturnValue('Bearer token')
 
     const result = (await freshAuthMiddleware(mockContext, mockNext)) as any
     expect(result.status).toBe(500)
@@ -177,18 +206,12 @@ describe('AuthMiddleware', () => {
   })
 
   it('should handle non-Error object rejection in auth middleware', async () => {
-    vi.resetModules()
-
-    // Configure mockSupabase to throw a string
+    // Re-setup is handled by beforeEach mostly, but we need to ensure the supabase mock behavior
     mockSupabase.auth.getUser.mockRejectedValue('String Error')
 
     mockContext.req.header.mockReturnValue('Bearer token')
 
-    // Re-import to ensure clean state (though might not be strictly necessary if createClient mock persists)
-    const { authMiddleware: freshAuthMiddleware } = await import(
-      '../../infrastructure/http/middleware/auth.middleware.js'
-    )
-    const result = (await freshAuthMiddleware(mockContext, mockNext)) as any
+    const result = (await authMiddleware(mockContext, mockNext)) as any
 
     expect(result.status).toBe(500)
     expect(result.data.message).toBe('Authentication service error')
