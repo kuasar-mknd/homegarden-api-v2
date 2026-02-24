@@ -55,7 +55,9 @@ export class OpenMeteoAdapter implements WeatherPort {
     try {
       const url = `${this.baseUrl}?latitude=${latitude}&longitude=${longitude}&current=temperature_2m,relative_humidity_2m,precipitation,weather_code,wind_speed_10m`
 
-      const response = await fetch(url)
+      const response = await fetch(url, {
+        signal: AbortSignal.timeout(5000), // 5s timeout
+      })
       if (!response.ok) {
         throw new Error(`OpenMeteo API error: ${response.statusText}`)
       }
@@ -97,7 +99,9 @@ export class OpenMeteoAdapter implements WeatherPort {
     try {
       const url = `${this.baseUrl}?latitude=${latitude}&longitude=${longitude}&daily=temperature_2m_max,temperature_2m_min,precipitation_sum,weather_code&timezone=auto`
 
-      const response = await fetch(url)
+      const response = await fetch(url, {
+        signal: AbortSignal.timeout(5000), // 5s timeout
+      })
       if (!response.ok) {
         throw new Error(`OpenMeteo API error: ${response.statusText}`)
       }
