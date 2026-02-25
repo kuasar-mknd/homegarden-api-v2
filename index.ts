@@ -111,7 +111,13 @@ const careTrackerRoutes = createCareTrackerRoutes(careTrackerController)
 // CREATE HONO APP
 // ============================================================
 
-const app = new OpenAPIHono()
+type Bindings = {
+  Variables: {
+    cspNonce: string
+  }
+}
+
+const app = new OpenAPIHono<Bindings>()
 
 // OpenAPI Documentation
 app.doc('/doc', {
