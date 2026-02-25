@@ -612,7 +612,7 @@ export function getLandingPageHtml(): string {
   return LANDING_PAGE_HTML
 }
 
-export function getNotFoundPageHtml(path: string): string {
+export function getNotFoundPageHtml(path: string, nonce?: string): string {
   const safePath = escapeHtml(path)
   return baseLayout({
     title: '404: Page Not Found - HomeGarden API',
@@ -643,7 +643,7 @@ export function getNotFoundPageHtml(path: string): string {
         <a href="/ui" class="btn btn-secondary">${DOC_ICON}Read Documentation</a>
       </div>
     </main>
-    <script>
+    <script ${nonce ? `nonce="${nonce}"` : ''}>
       (function() {
         // Handle Go Back
         var backBtn = document.getElementById('go-back-btn');
