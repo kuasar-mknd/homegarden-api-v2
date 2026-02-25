@@ -1,3 +1,4 @@
+import { randomUUID } from 'node:crypto'
 import { fileURLToPath } from 'node:url'
 import { serve } from '@hono/node-server'
 import { swaggerUI } from '@hono/swagger-ui'
@@ -110,7 +111,13 @@ const careTrackerRoutes = createCareTrackerRoutes(careTrackerController)
 // CREATE HONO APP
 // ============================================================
 
-const app = new OpenAPIHono()
+type Bindings = {
+  Variables: {
+    cspNonce: string
+  }
+}
+
+const app = new OpenAPIHono<Bindings>()
 
 // OpenAPI Documentation
 app.doc('/doc', {
@@ -159,12 +166,41 @@ app.get('/ui', swaggerUI({ url: '/doc' }))
 // ============================================================
 
 // Security headers
-app.use(
-  '*',
-  secureHeaders({
+app.use('*', (c, next) => {
+  // Check if it's a documentation route which needs 'unsafe-inline' for Swagger UI
+  const isDocs = c.req.path.startsWith('/ui') || c.req.path.startsWith('/doc')
+
+  if (isDocs) {
+    return secureHeaders({
+      contentSecurityPolicy: {
+        defaultSrc: ["'self'"],
+        scriptSrc: ["'self'", "'unsafe-inline'", 'https://cdn.jsdelivr.net'],
+        styleSrc: ["'self'", "'unsafe-inline'"],
+        imgSrc: ["'self'", 'data:', 'https:', 'blob:'],
+        connectSrc: ["'self'", 'https://api.open-meteo.com'],
+        fontSrc: ["'self'", 'https:', 'data:'],
+      },
+      xFrameOptions: 'DENY',
+      strictTransportSecurity: 'max-age=63072000; includeSubDomains; preload',
+      referrerPolicy: 'strict-origin-when-cross-origin',
+      permissionsPolicy: {
+        camera: [],
+        microphone: [],
+        geolocation: [],
+        payment: [],
+        usb: [],
+      },
+    })(c, next)
+  }
+
+  // Strict CSP with Nonce
+  const nonce = Buffer.from(randomUUID()).toString('base64')
+  c.set('cspNonce', nonce)
+
+  return secureHeaders({
     contentSecurityPolicy: {
       defaultSrc: ["'self'"],
-      scriptSrc: ["'self'", "'unsafe-inline'", 'https://cdn.jsdelivr.net'],
+      scriptSrc: ["'self'", `'nonce-${nonce}'`, 'https://cdn.jsdelivr.net'],
       styleSrc: ["'self'", "'unsafe-inline'"],
       imgSrc: ["'self'", 'data:', 'https:', 'blob:'],
       connectSrc: ["'self'", 'https://api.open-meteo.com'],
@@ -183,8 +219,8 @@ app.use(
       payment: [],
       usb: [],
     },
-  }),
-)
+  })(c, next)
+})
 
 // Compression
 app.use('*', compress())
@@ -299,7 +335,8 @@ app.route('/api/v2/care-tracker', careTrackerRoutes)
 app.notFound((c) => {
   const accept = c.req.header('Accept') || ''
   if (accept.includes('text/html')) {
-    return c.html(getNotFoundPageHtml(c.req.path), 404)
+    const nonce = c.get('cspNonce') as string | undefined
+    return c.html(getNotFoundPageHtml(c.req.path, nonce), 404)
   }
   return c.json(
     {
