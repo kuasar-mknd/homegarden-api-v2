@@ -45,6 +45,19 @@ const PLANT_LIST_SELECT = {
   // careNotes: false, // Excluded
 }
 
+// Optimization: Select only essential fields for "My Plants" list
+// Excludes species details, image URLs (unused in current list view), and other optional fields
+const PLANT_SUMMARY_SELECT = {
+  id: true,
+  gardenId: true,
+  nickname: true,
+  commonName: true,
+  scientificName: true,
+  plantedDate: true,
+  createdAt: true,
+  updatedAt: true,
+}
+
 export class PlantPrismaRepository implements PlantRepository {
   async create(data: CreatePlantData): Promise<Plant> {
     const plant = await prisma.plant.create({
@@ -101,7 +114,7 @@ export class PlantPrismaRepository implements PlantRepository {
         garden: { userId },
       },
       orderBy: { createdAt: 'desc' },
-      select: PLANT_LIST_SELECT,
+      select: PLANT_SUMMARY_SELECT,
     })
     return plants.map((p) => this.mapToEntity(p))
   }

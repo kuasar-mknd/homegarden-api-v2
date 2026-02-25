@@ -74,6 +74,17 @@ export const authMiddleware = createMiddleware(async (c, next) => {
     // Check if user exists first to avoid unnecessary write operations
     const existingUser = await prisma.user.findUnique({
       where: { email: user.email },
+      select: {
+        id: true,
+        email: true,
+        firstName: true,
+        lastName: true,
+        role: true,
+        avatarUrl: true,
+        birthDate: true,
+        createdAt: true,
+        updatedAt: true,
+      },
     })
 
     let localUser = existingUser

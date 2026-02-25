@@ -111,7 +111,7 @@ export class GardenPrismaRepository implements GardenRepository {
         minLon < -180 || maxLon > 180
           ? await prisma.$queryRaw<Garden[]>`
         SELECT
-          id, name, latitude, longitude, description, size, climate,
+          id, name, latitude, longitude, size, climate,
           created_at as "createdAt", updated_at as "updatedAt", user_id as "userId"
         FROM gardens
         WHERE
@@ -127,7 +127,7 @@ export class GardenPrismaRepository implements GardenRepository {
       `
           : await prisma.$queryRaw<Garden[]>`
         SELECT 
-          id, name, latitude, longitude, description, size, climate, 
+          id, name, latitude, longitude, size, climate,
           created_at as "createdAt", updated_at as "updatedAt", user_id as "userId"
         FROM gardens
         WHERE
