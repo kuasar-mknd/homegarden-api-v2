@@ -499,7 +499,7 @@ function escapeHtml(unsafe: string): string {
     .replace(/'/g, '&#039;')
 }
 
-export function baseLayout({ title, description, content, nonce }: LayoutProps): string {
+export function baseLayout({ title, description, content }: LayoutProps): string {
   const safeTitle = escapeHtml(title)
   const safeDescription = escapeHtml(
     description ||

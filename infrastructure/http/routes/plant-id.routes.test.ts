@@ -3,6 +3,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { AppError } from '../../../shared/errors/app-error.js'
 import { fail, ok } from '../../../shared/types/result.type.js'
 import { createPlantIdController } from '../controllers/plant-id.controller.js'
+import * as fileSignatureValidator from '../validators/file-signature.validator.js'
 import { createPlantIdRoutes } from './plant-id.routes.js'
 
 describe('PlantIdRoutes', () => {
@@ -14,6 +15,9 @@ describe('PlantIdRoutes', () => {
     mockUseCase = {
       execute: vi.fn(),
     }
+    // Mock signature validation
+    vi.spyOn(fileSignatureValidator, 'validateImageSignature').mockReturnValue(true)
+
     const controller = createPlantIdController(mockUseCase)
     const routes = createPlantIdRoutes(controller)
     app = new OpenAPIHono()

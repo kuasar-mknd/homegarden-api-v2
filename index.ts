@@ -1,5 +1,5 @@
-import { fileURLToPath } from 'node:url'
 import { randomBytes } from 'node:crypto'
+import { fileURLToPath } from 'node:url'
 import { serve } from '@hono/node-server'
 import { swaggerUI } from '@hono/swagger-ui'
 import { OpenAPIHono } from '@hono/zod-openapi'
@@ -167,7 +167,7 @@ app.use('*', async (c, next) => {
   // Explicitly set CSP with nonce
   c.header(
     'Content-Security-Policy',
-    `default-src 'self'; script-src 'self' 'nonce-${nonce}' https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline'; img-src 'self' data: https: blob:; connect-src 'self' https://api.open-meteo.com; font-src 'self' https: data:;`
+    `default-src 'self'; script-src 'self' 'nonce-${nonce}' https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline'; img-src 'self' data: https: blob:; connect-src 'self' https://api.open-meteo.com; font-src 'self' https: data:;`,
   )
 
   await next()

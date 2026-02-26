@@ -433,9 +433,9 @@ describe('GeminiPlantAdapter', () => {
 
       expect(model.generateContent).toHaveBeenCalledWith(
         expect.arrayContaining([
-          expect.stringContaining('Plant name: Fern'),
-          expect.stringContaining('Scientific name: Nephrolepis exaltata'),
-          expect.stringContaining('User\'s symptom description: "Brown tips"'),
+          expect.stringContaining('Plant name: """Fern"""'),
+          expect.stringContaining('Scientific name: """Nephrolepis exaltata"""'),
+          expect.stringContaining('User\'s symptom description: """Brown tips"""'),
           expect.stringContaining('Symptoms present for: 2 weeks'),
           expect.stringContaining('Watering: Every 3 days'),
           expect.stringContaining('Fertilizing: Monthly'),
