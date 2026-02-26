@@ -1,15 +1,36 @@
-import { createClient } from '@supabase/supabase-js'
+import { createClient, type SupabaseClient } from '@supabase/supabase-js'
 import { createMiddleware } from 'hono/factory'
 import { env } from '../../config/env.js'
 import { logger } from '../../config/logger.js'
 import { prisma } from '../../database/prisma.client.js'
 
 // Initialize Supabase client
+let supabaseClient: SupabaseClient | null = null
+
 const getSupabase = () => {
+  if (supabaseClient) return supabaseClient
+
   if (!env.SUPABASE_URL || !env.SUPABASE_PUBLISHABLE_KEY) {
     throw new Error('Supabase URL or Publishable Key not configured')
   }
-  return createClient(env.SUPABASE_URL, env.SUPABASE_PUBLISHABLE_KEY)
+
+  supabaseClient = createClient(env.SUPABASE_URL, env.SUPABASE_PUBLISHABLE_KEY)
+  return supabaseClient
+}
+
+// Optimized: Select only necessary fields for AuthMiddleware (lightweight user object)
+const AUTH_USER_SELECT = {
+  id: true,
+  email: true,
+  firstName: true,
+  lastName: true,
+  role: true,
+  avatarUrl: true,
+  birthDate: true,
+  createdAt: true,
+  updatedAt: true,
+  // preferences: false, // Exclude heavy JSON blob
+  // password: false,    // Exclude password hash
 }
 
 /**
@@ -72,8 +93,10 @@ export const authMiddleware = createMiddleware(async (c, next) => {
 
     // 2. Sync user to local database
     // Check if user exists first to avoid unnecessary write operations
+    // Optimization: Use select to fetch lightweight object
     const existingUser = await prisma.user.findUnique({
       where: { email: user.email },
+      select: AUTH_USER_SELECT,
     })
 
     let localUser = existingUser
@@ -86,6 +109,9 @@ export const authMiddleware = createMiddleware(async (c, next) => {
       const lastName =
         metadata.full_name?.split(' ').slice(1).join(' ') || metadata.last_name || 'User'
 
+      // Note: We need the full user object return from create usually, but for middleware context
+      // the lightweight version is sufficient. Prisma create returns all fields by default unless select is used.
+      // We'll stick to default return here as creation is rare event compared to reads.
       localUser = await prisma.user.create({
         data: {
           email: user.email,
@@ -99,6 +125,8 @@ export const authMiddleware = createMiddleware(async (c, next) => {
           avatarUrl: metadata.avatar_url,
           role: 'USER',
         },
+        // optimization: return lightweight object on creation too if desired, but less critical
+        select: AUTH_USER_SELECT,
       })
       logger.info({ userId: localUser.id }, 'Synced new user')
     }

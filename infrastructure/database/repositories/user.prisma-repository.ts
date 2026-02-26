@@ -6,6 +6,21 @@ import type {
 } from '../../../domain/repositories/user.repository.js'
 import { prisma } from '../prisma.client.js'
 
+// Optimization: Shared select object to avoid fetching unused fields (preferences, password)
+const USER_SELECT = {
+  id: true,
+  email: true,
+  firstName: true,
+  lastName: true,
+  role: true,
+  avatarUrl: true,
+  birthDate: true,
+  createdAt: true,
+  updatedAt: true,
+  // preferences: false, // Exclude heavy JSON blob
+  // password: false,    // Exclude password hash
+}
+
 export class UserPrismaRepository implements UserRepository {
   async create(data: CreateUserData): Promise<User> {
     const user = await prisma.user.create({
@@ -16,6 +31,11 @@ export class UserPrismaRepository implements UserRepository {
         lastName: data.lastName,
         role: data.role ?? 'USER',
       },
+      // Note: create returns all fields by default, including password.
+      // We can use select here too, but we might want the full object for consistency or tests.
+      // Given create is infrequent, we can leave it or optimize.
+      // Optimizing for consistency with mapToUserProps which doesn't need password/prefs.
+      select: USER_SELECT,
     })
     return this.mapToEntity(user)
   }
@@ -23,6 +43,7 @@ export class UserPrismaRepository implements UserRepository {
   async findByEmail(email: string): Promise<User | null> {
     const user = await prisma.user.findUnique({
       where: { email },
+      select: USER_SELECT,
     })
     return user ? this.mapToEntity(user) : null
   }
@@ -30,6 +51,7 @@ export class UserPrismaRepository implements UserRepository {
   async findById(id: string): Promise<User | null> {
     const user = await prisma.user.findUnique({
       where: { id },
+      select: USER_SELECT,
     })
     return user ? this.mapToEntity(user) : null
   }
@@ -40,6 +62,7 @@ export class UserPrismaRepository implements UserRepository {
       data: {
         ...data,
       } as any, // Simple cast for now
+      select: USER_SELECT,
     })
     return this.mapToEntity(user)
   }
@@ -62,18 +85,7 @@ export class UserPrismaRepository implements UserRepository {
         skip,
         take: limit,
         // Optimization: Select only fields required for UserProps to avoid fetching large JSON blobs (preferences)
-        select: {
-          id: true,
-          email: true,
-          firstName: true,
-          lastName: true,
-          role: true,
-          avatarUrl: true,
-          birthDate: true,
-          createdAt: true,
-          updatedAt: true,
-          // preferences is explicitly excluded as it's not used in mapToUserProps/Entity
-        },
+        select: USER_SELECT,
       }),
       prisma.user.count({ where }),
     ])
@@ -85,7 +97,10 @@ export class UserPrismaRepository implements UserRepository {
   }
 
   async findByIdWithPassword(id: string): Promise<(UserProps & { password: string }) | null> {
-    const user = await prisma.user.findUnique({ where: { id } })
+    // Explicitly fetch password for this specific method
+    const user = await prisma.user.findUnique({
+      where: { id },
+    })
     if (!user) return null
     return {
       ...this.mapToUserProps(user),
@@ -94,7 +109,10 @@ export class UserPrismaRepository implements UserRepository {
   }
 
   async findByEmailWithPassword(email: string): Promise<(UserProps & { password: string }) | null> {
-    const user = await prisma.user.findUnique({ where: { email } })
+    // Explicitly fetch password for this specific method
+    const user = await prisma.user.findUnique({
+      where: { email },
+    })
     if (!user) return null
     return {
       ...this.mapToUserProps(user),
