@@ -486,6 +486,7 @@ interface LayoutProps {
   title: string
   description?: string
   content: string
+  nonce?: string
 }
 
 // Simple HTML escape function to prevent XSS
@@ -498,7 +499,7 @@ function escapeHtml(unsafe: string): string {
     .replace(/'/g, '&#039;')
 }
 
-export function baseLayout({ title, description, content }: LayoutProps): string {
+export function baseLayout({ title, description, content, nonce }: LayoutProps): string {
   const safeTitle = escapeHtml(title)
   const safeDescription = escapeHtml(
     description ||
@@ -510,6 +511,10 @@ export function baseLayout({ title, description, content }: LayoutProps): string
   const icon =
     'data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🌱</text></svg>'
   const year = new Date().getFullYear()
+
+  // Ensure nonce is provided for script injection if needed, though this baseLayout doesn't inject inline scripts itself.
+  // The nonce passed here can be used by child templates or future additions to baseLayout.
+  // For now, we propagate it if we add scripts here.
 
   return `
 <!DOCTYPE html>
@@ -565,11 +570,11 @@ export function baseLayout({ title, description, content }: LayoutProps): string
   `
 }
 
-// Memoize the landing page HTML to avoid string concatenation on every request
-// Optimization: "Static Response Caching"
-const LANDING_PAGE_HTML = baseLayout({
-  title: 'HomeGarden API v2',
-  content: `
+export function getLandingPageHtml(nonce?: string): string {
+  return baseLayout({
+    title: 'HomeGarden API v2',
+    nonce,
+    content: `
     <header role="banner">
       <h1>🌱 HomeGarden API</h1>
       <div class="badge">v2.0.0 • AI-Powered</div>
@@ -606,17 +611,15 @@ const LANDING_PAGE_HTML = baseLayout({
       </ul>
     </main>
     `,
-})
-
-export function getLandingPageHtml(): string {
-  return LANDING_PAGE_HTML
+  })
 }
 
-export function getNotFoundPageHtml(path: string): string {
+export function getNotFoundPageHtml(path: string, nonce?: string): string {
   const safePath = escapeHtml(path)
   return baseLayout({
     title: '404: Page Not Found - HomeGarden API',
     description: 'The requested page could not be found.',
+    nonce,
     content: `
     <header role="banner">
       <h1>🌱 404 Not Found</h1>
@@ -643,13 +646,18 @@ export function getNotFoundPageHtml(path: string): string {
         <a href="/ui" class="btn btn-secondary">${DOC_ICON}Read Documentation</a>
       </div>
     </main>
-    <script>
+    <script nonce="${nonce || ''}">
       (function() {
         // Handle Go Back
         var backBtn = document.getElementById('go-back-btn');
         if (backBtn) {
           backBtn.addEventListener('click', function() {
-            history.back();
+            if (history.length > 1) {
+              history.back();
+            } else {
+              // Fallback if no history
+              window.location.href = '/';
+            }
           });
         }
 
@@ -666,7 +674,12 @@ export function getNotFoundPageHtml(path: string): string {
                  navigator.clipboard.writeText(text).then(function() {
                     var originalHtml = btn.innerHTML;
                     btn.innerHTML = '${CHECK_ICON} Copied!';
-                    setTimeout(function() { btn.innerHTML = originalHtml; }, 2000);
+                    btn.setAttribute('aria-label', 'Copied successfully');
+
+                    setTimeout(function() {
+                      btn.innerHTML = originalHtml;
+                      btn.setAttribute('aria-label', 'Copy URL to clipboard');
+                    }, 2000);
                  }).catch(function(err) {
                     console.error('Failed to copy', err);
                  });
