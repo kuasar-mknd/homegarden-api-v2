@@ -517,7 +517,7 @@ export function baseLayout({ title, description, content, nonce }: LayoutProps):
   // For now, we propagate it if we add scripts here.
 
   // Only inject nonce meta tag if provided, to ensure usage
-  const nonceMeta = nonce ? `<meta name="csp-nonce" content="${nonce}">` : '';
+  const nonceMeta = nonce ? `<meta name="csp-nonce" content="${nonce}">` : ''
 
   return `
 <!DOCTYPE html>
