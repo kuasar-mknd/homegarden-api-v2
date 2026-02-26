@@ -126,6 +126,7 @@ export const authMiddleware = createMiddleware(async (c, next) => {
           role: 'USER',
         },
         // optimization: return lightweight object on creation too if desired, but less critical
+        select: AUTH_USER_SELECT,
       })
       logger.info({ userId: localUser.id }, 'Synced new user')
     }
