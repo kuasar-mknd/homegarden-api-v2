@@ -29,46 +29,64 @@ The best way to explore the API is via the built-in Swagger UI, which provides i
 
 ### Auth
 
-*Endpoints are currently placeholders (501 Not Implemented). Client-side authentication via Supabase SDK is recommended.*
+*Endpoints are placeholders. Authentication is primarily handled via Supabase Client SDK.*
 
-- `POST /auth/register` - Register a new user.
-- `POST /auth/login` - Authenticate user.
+- `POST /auth/register` (501 Not Implemented)
+- `POST /auth/login` (501 Not Implemented)
 
 ### Gardens
 
-- `GET /gardens/plants` - Retrieves all plants in the authenticated user's garden.
-- `POST /gardens/plants` - Adds a new plant to a specific garden (requires `gardenId` in body).
-- `GET /gardens/nearby` - Finds public gardens within a specific radius (geo-query).
-- `GET /gardens/:gardenId/weather` - Fetches current weather for a garden's location.
+The primary way to manage plants is through the Garden endpoints.
+
+- `GET /gardens/plants`
+  - **Description**: Retrieves all plants for the authenticated user across all their gardens.
+  - **Status**: Implemented.
+- `POST /gardens/plants`
+  - **Description**: Adds a new plant to a specific garden.
+  - **Status**: Implemented.
+  - **Body**: `{ "gardenId": "uuid", "name": "Rose", "species": "Rosa", "imageUrl": "..." }`
+- `GET /gardens/nearby`
+  - **Description**: Finds public gardens within a specific radius.
+  - **Query**: `?lat=...&lng=...&radius=...`
+  - **Status**: Implemented.
+- `GET /gardens/:gardenId/weather`
+  - **Description**: Fetches current weather for a garden's location.
+  - **Status**: Implemented.
 
 ### Plants
 
-*Direct plant management endpoints are partially implemented; use Garden endpoints for main flows.*
+*Global plant management endpoints are currently under development. Use `/gardens/plants` for listing plants.*
 
-- `GET /plants` - List all plants for the user (501 Not Implemented).
-- `POST /plants` - Create a new plant (501 Not Implemented).
-- `GET /plants/:id` - Get plant details (501 Not Implemented).
-- `PATCH /plants/:id` - Update plant details (501 Not Implemented).
-- `DELETE /plants/:id` - Delete a plant (501 Not Implemented).
+- `GET /plants` (501 Not Implemented)
+- `POST /plants` (501 Not Implemented)
+- `GET /plants/:id` (501 Not Implemented)
+- `PATCH /plants/:id` (501 Not Implemented)
+- `DELETE /plants/:id` (501 Not Implemented)
 
 ### AI Identification
 
-- `GET /plant-id/status` - Check Plant ID service availability.
-- `POST /plant-id/identify` - Identifies a plant from an image URL or Base64 data (JSON Body).
-- `POST /dr-plant/diagnose` - Diagnoses plant health issues from an image (Multipart/Form-Data).
+- `GET /plant-id/status`
+  - **Description**: Check service availability.
+- `POST /plant-id/identify`
+  - **Description**: Identifies a plant from an image.
+  - **Body**: `{ "imageUrl": "..." }` or `{ "imageBase64": "..." }`
+- `POST /dr-plant/diagnose`
+  - **Description**: Diagnoses plant health issues.
+  - **Body**: `{ "imageUrl": "..." }` or `{ "imageBase64": "..." }`
 
 ### Users
 
-- `GET /users/:id` - Get public profile information for a user.
+- `GET /users/:id`
+  - **Description**: Get public profile information for a user.
 
 ### Care Tracker (Coming Soon)
 
 *These endpoints currently return `501 Not Implemented`.*
 
-- `GET /care-tracker/upcoming` - Get upcoming tasks.
-- `POST /care-tracker/schedules` - Create a care schedule.
-- `POST /care-tracker/schedules/:id/complete` - Mark task as complete.
-- `POST /care-tracker/generate` - Generate smart schedule.
+- `GET /care-tracker/upcoming`
+- `POST /care-tracker/schedules`
+- `POST /care-tracker/schedules/:id/complete`
+- `POST /care-tracker/generate`
 
 ---
 
