@@ -15,6 +15,7 @@ import type {
 import { isOk } from '../../../shared/types/result.type.js'
 import { logger } from '../../config/logger.js'
 import type { IdentifySpeciesInputSchema } from '../schemas/plant-id.schema.js'
+import { validateImageSignature } from '../validators/file-signature.validator.js'
 
 // ============================================================
 // CONTROLLER
@@ -41,7 +42,23 @@ export class PlantIdController {
 
       // Build use case input
       const input: IdentifySpeciesInput = {}
-      if (validatedData.imageBase64) input.imageBase64 = validatedData.imageBase64
+      if (validatedData.imageBase64) {
+        input.imageBase64 = validatedData.imageBase64
+
+        // Validate File Signature
+        const buffer = Buffer.from(validatedData.imageBase64, 'base64')
+        const mimeType = validatedData.mimeType || 'image/jpeg'
+        if (!validateImageSignature(buffer, mimeType)) {
+          return c.json(
+            {
+              success: false,
+              error: 'VALIDATION_ERROR',
+              message: 'Invalid file signature',
+            },
+            400,
+          )
+        }
+      }
       if (validatedData.imageUrl) input.imageUrl = validatedData.imageUrl
       if (validatedData.mimeType) input.mimeType = validatedData.mimeType
       if (validatedData.organs) input.organs = validatedData.organs as PlantOrgan[]

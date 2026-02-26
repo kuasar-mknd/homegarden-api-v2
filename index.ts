@@ -1,3 +1,4 @@
+import { randomBytes } from 'node:crypto'
 import { fileURLToPath } from 'node:url'
 import { serve } from '@hono/node-server'
 import { swaggerUI } from '@hono/swagger-ui'
@@ -110,7 +111,11 @@ const careTrackerRoutes = createCareTrackerRoutes(careTrackerController)
 // CREATE HONO APP
 // ============================================================
 
-const app = new OpenAPIHono()
+type Variables = {
+  nonce: string
+}
+
+const app = new OpenAPIHono<{ Variables: Variables }>()
 
 // OpenAPI Documentation
 app.doc('/doc', {
@@ -158,24 +163,27 @@ app.get('/ui', swaggerUI({ url: '/doc' }))
 // GLOBAL MIDDLEWARE
 // ============================================================
 
-// Security headers
+// 1. Generate Nonce & Set CSP
+app.use('*', async (c, next) => {
+  const nonce = randomBytes(16).toString('base64')
+  c.set('nonce', nonce)
+
+  // Explicitly set CSP with nonce
+  c.header(
+    'Content-Security-Policy',
+    `default-src 'self'; script-src 'self' 'nonce-${nonce}' https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline'; img-src 'self' data: https: blob:; connect-src 'self' https://api.open-meteo.com; font-src 'self' https: data:;`,
+  )
+
+  await next()
+})
+
+// 2. Other Security headers (excluding CSP to avoid overwrite)
 app.use(
   '*',
   secureHeaders({
-    contentSecurityPolicy: {
-      defaultSrc: ["'self'"],
-      scriptSrc: ["'self'", "'unsafe-inline'", 'https://cdn.jsdelivr.net'],
-      styleSrc: ["'self'", "'unsafe-inline'"],
-      imgSrc: ["'self'", 'data:', 'https:', 'blob:'],
-      connectSrc: ["'self'", 'https://api.open-meteo.com'],
-      fontSrc: ["'self'", 'https:', 'data:'],
-    },
     xFrameOptions: 'DENY',
-    // xXssProtection is deprecated and can introduce XS-Leaks, so we remove it.
-    // Modern browsers use CSP for XSS protection.
     strictTransportSecurity: 'max-age=63072000; includeSubDomains; preload',
     referrerPolicy: 'strict-origin-when-cross-origin',
-    // Permissions Policy to restrict powerful features
     permissionsPolicy: {
       camera: [],
       microphone: [],
@@ -241,10 +249,10 @@ app.use('*', (c, next) => {
 // ============================================================
 
 // Landing Page
-const landingPageHtml = getLandingPageHtml()
 app.get('/', (c) => {
   c.header('Cache-Control', 'public, max-age=3600') // Cache for 1 hour
-  return c.html(landingPageHtml)
+  const nonce = c.get('nonce')
+  return c.html(getLandingPageHtml(nonce))
 })
 
 // API version prefix
@@ -298,8 +306,9 @@ app.route('/api/v2/care-tracker', careTrackerRoutes)
 // 404 handler
 app.notFound((c) => {
   const accept = c.req.header('Accept') || ''
+  const nonce = c.get('nonce')
   if (accept.includes('text/html')) {
-    return c.html(getNotFoundPageHtml(c.req.path), 404)
+    return c.html(getNotFoundPageHtml(c.req.path, nonce), 404)
   }
   return c.json(
     {

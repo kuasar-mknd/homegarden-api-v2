@@ -4,6 +4,7 @@ import {
   createPlantIdController,
   PlantIdController,
 } from '../../infrastructure/http/controllers/plant-id.controller.js'
+import * as fileSignatureValidator from '../../infrastructure/http/validators/file-signature.validator.js'
 import { AppError } from '../../shared/errors/app-error.js'
 import { fail, ok } from '../../shared/types/result.type.js'
 
@@ -31,6 +32,9 @@ describe('PlantIdController', () => {
           }) as any,
       ),
     }
+
+    // Mock validateImageSignature to return true by default
+    vi.spyOn(fileSignatureValidator, 'validateImageSignature').mockReturnValue(true)
   })
 
   describe('identify', () => {
