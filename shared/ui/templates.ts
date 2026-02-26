@@ -486,7 +486,7 @@ interface LayoutProps {
   title: string
   description?: string
   content: string
-  nonce?: string
+  nonce: string | undefined
 }
 
 // Simple HTML escape function to prevent XSS
@@ -499,7 +499,7 @@ function escapeHtml(unsafe: string): string {
     .replace(/'/g, '&#039;')
 }
 
-export function baseLayout({ title, description, content }: LayoutProps): string {
+export function baseLayout({ title, description, content, nonce }: LayoutProps): string {
   const safeTitle = escapeHtml(title)
   const safeDescription = escapeHtml(
     description ||
@@ -516,10 +516,14 @@ export function baseLayout({ title, description, content }: LayoutProps): string
   // The nonce passed here can be used by child templates or future additions to baseLayout.
   // For now, we propagate it if we add scripts here.
 
+  // Only inject nonce meta tag if provided, to ensure usage
+  const nonceMeta = nonce ? `<meta name="csp-nonce" content="${nonce}">` : '';
+
   return `
 <!DOCTYPE html>
 <html lang="en" dir="ltr">
 <head>
+  ${nonceMeta}
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <meta name="format-detection" content="telephone=no">
@@ -573,7 +577,7 @@ export function baseLayout({ title, description, content }: LayoutProps): string
 export function getLandingPageHtml(nonce?: string): string {
   return baseLayout({
     title: 'HomeGarden API v2',
-    nonce,
+    nonce: nonce,
     content: `
     <header role="banner">
       <h1>🌱 HomeGarden API</h1>
@@ -619,7 +623,7 @@ export function getNotFoundPageHtml(path: string, nonce?: string): string {
   return baseLayout({
     title: '404: Page Not Found - HomeGarden API',
     description: 'The requested page could not be found.',
-    nonce,
+    nonce: nonce,
     content: `
     <header role="banner">
       <h1>🌱 404 Not Found</h1>

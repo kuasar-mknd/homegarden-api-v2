@@ -111,7 +111,11 @@ const careTrackerRoutes = createCareTrackerRoutes(careTrackerController)
 // CREATE HONO APP
 // ============================================================
 
-const app = new OpenAPIHono()
+type Variables = {
+  nonce: string
+}
+
+const app = new OpenAPIHono<{ Variables: Variables }>()
 
 // OpenAPI Documentation
 app.doc('/doc', {
