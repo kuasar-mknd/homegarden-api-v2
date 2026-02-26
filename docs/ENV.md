@@ -8,7 +8,7 @@ This document lists all environment variables used by the application, matching 
 |---|---|---|
 | `NODE_ENV` | Environment mode (`development`, `production`, `test`) | `development` |
 | `PORT` | Port for the HTTP server | `3000` |
-| `CORS_ORIGINS` | Comma-separated list of allowed origins | `*` |
+| `CORS_ORIGINS` | Comma-separated list of allowed origins (e.g. `http://localhost:3000,https://myapp.com`) | `*` |
 
 ## Database
 
@@ -22,9 +22,11 @@ This document lists all environment variables used by the application, matching 
 |---|---|---|
 | `SUPABASE_URL` | URL of your Supabase project | **Yes** |
 | `SUPABASE_PUBLISHABLE_KEY` | Public API key for Supabase | **Yes** |
-| `SUPABASE_SECRET_KEY` | Service role key (optional, for admin tasks) | No |
+| `SUPABASE_SECRET_KEY` | Service role key (optional, used for admin tasks/seeding) | No |
 
 ## JWT (Fallback/Legacy)
+
+*Note: Primary authentication is handled via Supabase. These variables are for legacy or fallback mechanisms.*
 
 | Variable | Description | Default |
 |---|---|---|

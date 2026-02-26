@@ -21,7 +21,7 @@ GOOGLE_AI_API_KEY=your_api_key_here
 
 ## 📋 JSON Schemas
 
-The application instructs the AI to return structured JSON data.
+The application instructs the AI to return structured JSON data. The adapter also handles stripping Markdown code blocks if the model includes them.
 
 ### Identification Schema
 ```json
@@ -82,3 +82,4 @@ To manage costs and latency:
 1.  **Strict Rate Limiting**: The API enforces rate limits per user/IP (configured via `RATE_LIMIT_WINDOW_MS` and `RATE_LIMIT_MAX`).
 2.  **Stateless**: The AI service is stateless; no conversation history is maintained to minimize token usage.
 3.  **JSON Mode**: We strictly request JSON output to avoid verbose, unstructured text responses.
+4.  **Token Limits**: Max output tokens are capped (2048 for ID, 4096 for Diagnosis) to prevent runaway generation.

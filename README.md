@@ -5,7 +5,7 @@ HomeGarden is a robust, Clean Architecture-based REST API for managing gardens a
 ## 🌟 Features
 
 *   **Clean Architecture**: Separation of concerns into Domain, Application, and Infrastructure layers.
-*   **Plant Management**: CRUD operations for Gardens and Plants.
+*   **Garden Management**: Manage your gardens and track plants within them.
 *   **AI Integration**:
     *   **Identification**: Identify plants from images using Google Gemini Vision (`gemini-2.0-flash`).
     *   **Diagnosis**: Diagnose plant health issues using Google Gemini Vision (`gemini-2.5-pro-preview-06-05`).
@@ -57,12 +57,13 @@ HomeGarden is a robust, Clean Architecture-based REST API for managing gardens a
 
     Or manually:
     ```bash
-    docker run --name homegarden-db -e POSTGRES_PASSWORD=password -e POSTGRES_DB=homegarden -p 5432:5432 -d postgis/postgis:15-3.3
+    docker run --name homegarden-db -e POSTGRES_PASSWORD=password -e POSTGRES_DB=homegarden -p 5432:5432 -d postgis/postgis:15-3.4
     ```
 
-    Push the schema to the database:
+    Push the schema to the database and generate the client:
     ```bash
     pnpm db:push
+    pnpm db:generate
     ```
     (Optional) Seed the database:
     ```bash
@@ -98,6 +99,12 @@ The API is documented using Swagger. Once the server is running, visit:
 ### Example: Check API Status
 ```bash
 curl http://localhost:3000/api/v2
+```
+
+### Example: List My Plants
+```bash
+curl http://localhost:3000/api/v2/gardens/plants \
+  -H "Authorization: Bearer <YOUR_SUPABASE_TOKEN>"
 ```
 
 ### Example: Identify a Plant (requires Auth)
