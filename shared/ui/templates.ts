@@ -390,6 +390,18 @@ export const SHARED_STYLES = `
     margin-top: 0.5rem;
     opacity: 0.8;
   }
+  @keyframes slideIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .grid > li {
+    opacity: 0;
+    animation: slideIn 0.4s ease-out forwards;
+  }
+  .grid > li:nth-child(1) { animation-delay: 0.1s; }
+  .grid > li:nth-child(2) { animation-delay: 0.2s; }
+  .grid > li:nth-child(3) { animation-delay: 0.3s; }
+  .grid > li:nth-child(4) { animation-delay: 0.4s; }
   @keyframes pulse {
     0% { opacity: 1; transform: scale(1); }
     50% { opacity: 0.7; transform: scale(0.9); }
@@ -448,6 +460,10 @@ export const SHARED_STYLES = `
     }
   }
   @media (prefers-reduced-motion: reduce) {
+    .grid > li {
+      animation: none;
+      opacity: 1;
+    }
     .card, .skip-link, .btn, .card h2, footer a, .card-arrow {
       transition: none;
     }
@@ -526,6 +542,7 @@ export function baseLayout({ title, description, content }: LayoutProps): string
   <meta property="og:site_name" content="HomeGarden API">
   <meta property="og:title" content="${safeTitle}">
   <meta property="og:description" content="${metaDescription}">
+  <meta property="og:locale" content="en_US">
   <meta property="og:type" content="website">
   <meta property="og:image" content="${image}">
   <meta property="og:image:alt" content="HomeGarden API Banner with green branding">
@@ -648,9 +665,13 @@ export function getNotFoundPageHtml(path: string): string {
         // Handle Go Back
         var backBtn = document.getElementById('go-back-btn');
         if (backBtn) {
-          backBtn.addEventListener('click', function() {
-            history.back();
-          });
+          if (window.history.length <= 1) {
+            backBtn.style.display = 'none';
+          } else {
+            backBtn.addEventListener('click', function() {
+              history.back();
+            });
+          }
         }
 
         // Handle Copy
@@ -665,8 +686,19 @@ export function getNotFoundPageHtml(path: string): string {
               if (navigator.clipboard && navigator.clipboard.writeText) {
                  navigator.clipboard.writeText(text).then(function() {
                     var originalHtml = btn.innerHTML;
+                    var originalAriaLabel = btn.getAttribute('aria-label');
                     btn.innerHTML = '${CHECK_ICON} Copied!';
-                    setTimeout(function() { btn.innerHTML = originalHtml; }, 2000);
+                    btn.setAttribute('aria-label', 'Copied to clipboard');
+                    btn.setAttribute('aria-live', 'polite');
+                    setTimeout(function() {
+                      btn.innerHTML = originalHtml;
+                      if (originalAriaLabel) {
+                        btn.setAttribute('aria-label', originalAriaLabel);
+                      } else {
+                        btn.removeAttribute('aria-label');
+                      }
+                      btn.removeAttribute('aria-live');
+                    }, 2000);
                  }).catch(function(err) {
                     console.error('Failed to copy', err);
                  });
