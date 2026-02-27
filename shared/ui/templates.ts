@@ -194,6 +194,19 @@ export const SHARED_STYLES = `
     list-style: none;
     padding: 0;
   }
+  @keyframes slide-in {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .grid > li {
+    opacity: 0;
+    animation: slide-in 0.4s ease-out forwards;
+  }
+  .grid > li:nth-child(1) { animation-delay: 0.1s; }
+  .grid > li:nth-child(2) { animation-delay: 0.2s; }
+  .grid > li:nth-child(3) { animation-delay: 0.3s; }
+  .grid > li:nth-child(4) { animation-delay: 0.4s; }
+
   @media (max-width: 600px) {
     .grid {
       grid-template-columns: 1fr;
@@ -461,12 +474,17 @@ export const SHARED_STYLES = `
     .status-dot {
       animation: none;
     }
+    .grid > li {
+      animation: none;
+      opacity: 1;
+    }
   }
   @media print {
     body { background: white; color: black; display: block; }
     .container { box-shadow: none; border: none; max-width: 100%; width: 100%; padding: 0; }
     .skip-link, .status-dot, .external-icon, .no-print { display: none !important; }
     .grid { display: block; }
+    .grid > li { opacity: 1; animation: none; }
     .card { border: 1px solid #000; margin-bottom: 1rem; break-inside: avoid; page-break-inside: avoid; box-shadow: none; }
     a { text-decoration: underline; color: black; }
     a[href^="http"]:after { content: " (" attr(href) ")"; }
@@ -648,9 +666,14 @@ export function getNotFoundPageHtml(path: string): string {
         // Handle Go Back
         var backBtn = document.getElementById('go-back-btn');
         if (backBtn) {
-          backBtn.addEventListener('click', function() {
-            history.back();
-          });
+          // Hide button if there is no history to go back to
+          if (window.history.length <= 1) {
+            backBtn.style.display = 'none';
+          } else {
+            backBtn.addEventListener('click', function() {
+              history.back();
+            });
+          }
         }
 
         // Handle Copy
@@ -665,8 +688,21 @@ export function getNotFoundPageHtml(path: string): string {
               if (navigator.clipboard && navigator.clipboard.writeText) {
                  navigator.clipboard.writeText(text).then(function() {
                     var originalHtml = btn.innerHTML;
+                    var originalLabel = btn.getAttribute('aria-label');
+
                     btn.innerHTML = '${CHECK_ICON} Copied!';
-                    setTimeout(function() { btn.innerHTML = originalHtml; }, 2000);
+                    btn.setAttribute('aria-label', 'Copied successfully');
+                    btn.disabled = true;
+
+                    setTimeout(function() {
+                      btn.innerHTML = originalHtml;
+                      if (originalLabel) {
+                        btn.setAttribute('aria-label', originalLabel);
+                      } else {
+                        btn.removeAttribute('aria-label');
+                      }
+                      btn.disabled = false;
+                    }, 2000);
                  }).catch(function(err) {
                     console.error('Failed to copy', err);
                  });
