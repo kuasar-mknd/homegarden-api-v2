@@ -12,6 +12,20 @@ const getSupabase = () => {
   return createClient(env.SUPABASE_URL, env.SUPABASE_PUBLISHABLE_KEY)
 }
 
+// Optimization: Select only necessary fields for the user context
+// Excludes heavy fields like password and potentially large preferences JSON
+const AUTH_USER_SELECT = {
+  id: true,
+  email: true,
+  firstName: true,
+  lastName: true,
+  role: true,
+  avatarUrl: true,
+  birthDate: true,
+  createdAt: true,
+  updatedAt: true,
+}
+
 /**
  * Authentication Middleware
  *
@@ -74,6 +88,7 @@ export const authMiddleware = createMiddleware(async (c, next) => {
     // Check if user exists first to avoid unnecessary write operations
     const existingUser = await prisma.user.findUnique({
       where: { email: user.email },
+      select: AUTH_USER_SELECT,
     })
 
     let localUser = existingUser
@@ -99,6 +114,7 @@ export const authMiddleware = createMiddleware(async (c, next) => {
           avatarUrl: metadata.avatar_url,
           role: 'USER',
         },
+        select: AUTH_USER_SELECT,
       })
       logger.info({ userId: localUser.id }, 'Synced new user')
     }
