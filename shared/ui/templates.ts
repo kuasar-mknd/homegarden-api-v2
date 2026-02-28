@@ -648,14 +648,22 @@ export function getNotFoundPageHtml(path: string): string {
         // Handle Go Back
         var backBtn = document.getElementById('go-back-btn');
         if (backBtn) {
-          backBtn.addEventListener('click', function() {
-            history.back();
-          });
+          if (history.length <= 1) {
+            backBtn.style.display = 'none';
+          } else {
+            backBtn.addEventListener('click', function() {
+              history.back();
+            });
+          }
         }
 
         // Handle Copy
         var btns = document.querySelectorAll('.copy-btn');
         Array.prototype.forEach.call(btns, function(btn) {
+          var originalHtml = btn.innerHTML;
+          var originalAria = btn.getAttribute('aria-label');
+          var timeoutId = null;
+
           btn.addEventListener('click', function() {
             var targetSelector = btn.getAttribute('data-clipboard-target');
             var target = document.querySelector(targetSelector);
@@ -664,9 +672,19 @@ export function getNotFoundPageHtml(path: string): string {
               // Modern API
               if (navigator.clipboard && navigator.clipboard.writeText) {
                  navigator.clipboard.writeText(text).then(function() {
-                    var originalHtml = btn.innerHTML;
                     btn.innerHTML = '${CHECK_ICON} Copied!';
-                    setTimeout(function() { btn.innerHTML = originalHtml; }, 2000);
+                    btn.setAttribute('aria-label', 'Copied to clipboard');
+
+                    if (timeoutId) clearTimeout(timeoutId);
+                    timeoutId = setTimeout(function() {
+                      btn.innerHTML = originalHtml;
+                      if (originalAria) {
+                        btn.setAttribute('aria-label', originalAria);
+                      } else {
+                        btn.removeAttribute('aria-label');
+                      }
+                      timeoutId = null;
+                    }, 2000);
                  }).catch(function(err) {
                     console.error('Failed to copy', err);
                  });

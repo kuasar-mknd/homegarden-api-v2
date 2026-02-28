@@ -43,3 +43,7 @@
 ## Rejected Changes
 
 *(None yet)*
+
+## 2024-05-14 - Improve UX for the 404 page copy path button
+**Learning:** The copy path button on the 404 page didn't provide good visual or screen reader feedback, and it wasn't clear what was being copied. It also lacked keyboard accessibility for its updated state.
+**Action:** Added visual change, updated `aria-label` temporarily so screen readers get feedback, and made sure it's accessible. Disabled 'Go Back' if `history.length <= 1`.
