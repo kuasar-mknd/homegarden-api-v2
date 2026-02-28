@@ -9,3 +9,8 @@
 **Vulnerability:** The rate limiter used `x-forwarded-for` directly without parsing. An attacker could potentially bypass rate limits by appending fake IPs or spoofing the header if not properly sanitized by a proxy.
 **Learning:** Relying on raw `x-forwarded-for` is risky.
 **Prevention:** Prioritize `cf-connecting-ip` or `x-real-ip` when available. When using `x-forwarded-for`, be aware of the trust model (e.g., standard proxy chains) and ideally configure trusted proxies.
+
+## 2025-05-23 - Authorization Header Scheme Bypass
+**Vulnerability:** The `authMiddleware` extracted the JWT by using `authHeader.replace('Bearer ', '')`. If the header did not start with `Bearer ` but contained it elsewhere, or was entirely missing the scheme, it would still attempt to parse the string as a token. This could lead to passing malformed data to the upstream identity provider (Supabase).
+**Learning:** Relying on simple string replacement for header parsing is insufficient and violates RFC 6750.
+**Prevention:** Always strictly validate the `Authorization` header scheme (e.g., using `startsWith('Bearer ')`) before extracting and processing the token.

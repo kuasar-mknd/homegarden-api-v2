@@ -61,6 +61,17 @@ describe('AuthMiddleware', () => {
     expect(mockNext).not.toHaveBeenCalled()
   })
 
+  it('should return 401 if Authorization scheme is not Bearer', async () => {
+    mockContext.req.header.mockReturnValue('invalid-token')
+
+    const result = (await authMiddleware(mockContext, mockNext)) as any
+
+    expect(result.status).toBe(401)
+    expect(result.data.error).toBe('UNAUTHORIZED')
+    expect(result.data.message).toBe('Invalid Authorization schema. Expected Bearer.')
+    expect(mockNext).not.toHaveBeenCalled()
+  })
+
   it('should return 401 if token is invalid or Supabase returns error', async () => {
     mockContext.req.header.mockReturnValue('Bearer invalid-token')
     mockSupabase.auth.getUser.mockResolvedValue({
