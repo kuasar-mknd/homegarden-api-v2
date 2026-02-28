@@ -31,6 +31,18 @@ export const authMiddleware = createMiddleware(async (c, next) => {
     )
   }
 
+  // Strictly enforce Bearer schema
+  if (!authHeader.startsWith('Bearer ')) {
+    return c.json(
+      {
+        success: false,
+        error: 'UNAUTHORIZED',
+        message: 'Invalid Authorization schema. Expected Bearer.',
+      },
+      401,
+    )
+  }
+
   // Prevent DoS via extremely long headers (limit to 8KB which is generous for JWT)
   if (authHeader.length > 8192) {
     return c.json(
@@ -43,7 +55,7 @@ export const authMiddleware = createMiddleware(async (c, next) => {
     )
   }
 
-  const token = authHeader.replace('Bearer ', '')
+  const token = authHeader.substring(7) // length of 'Bearer '
 
   try {
     const supabase = getSupabase()
