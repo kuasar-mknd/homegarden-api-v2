@@ -43,3 +43,11 @@
 ## Rejected Changes
 
 *(None yet)*
+
+## 2024-05-25 - Dynamic ARIA & State-Aware Navigation
+
+**Learning:** When interactive elements (like a copy button) provide visual feedback (e.g., changing text to "Copied!"), screen readers may not automatically announce this state change if the `aria-label` remains static.
+**Action:** Dynamically update `aria-label` alongside visual text changes, and ensure they are reset together.
+
+**Learning:** Buttons that rely on browser history (like "Go Back") can lead to confusing "dead clicks" if no history exists (e.g., landing directly on a 404 page).
+**Action:** Use `window.history.length` to conditionally hide or disable history-dependent navigation controls to prevent dead ends.
