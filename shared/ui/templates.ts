@@ -202,6 +202,16 @@ export const SHARED_STYLES = `
       font-size: 1.75rem;
     }
   }
+  @keyframes slideIn {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
   .card {
     border: 1px solid var(--card-border);
     padding: 1.5rem;
@@ -213,7 +223,13 @@ export const SHARED_STYLES = `
     height: 100%;
     box-sizing: border-box;
     position: relative; /* Ensure z-index works on focus */
+    opacity: 0;
+    animation: slideIn 0.4s ease-out forwards;
   }
+  .grid li:nth-child(1) .card { animation-delay: 0.1s; }
+  .grid li:nth-child(2) .card { animation-delay: 0.2s; }
+  .grid li:nth-child(3) .card { animation-delay: 0.3s; }
+  .grid li:nth-child(4) .card { animation-delay: 0.4s; }
   .card:hover {
     transform: translateY(-2px) scale(1.01);
     box-shadow: 0 4px 12px rgba(0,0,0,0.05);
@@ -451,6 +467,10 @@ export const SHARED_STYLES = `
     .card, .skip-link, .btn, .card h2, footer a, .card-arrow {
       transition: none;
     }
+    .card {
+      animation: none;
+      opacity: 1;
+    }
     .card:hover {
       transform: none;
     }
@@ -523,6 +543,7 @@ export function baseLayout({ title, description, content }: LayoutProps): string
   <meta name="theme-color" content="#121212" media="(prefers-color-scheme: dark)">
   <meta name="apple-mobile-web-app-title" content="HomeGarden">
 
+  <meta property="og:locale" content="en_US">
   <meta property="og:site_name" content="HomeGarden API">
   <meta property="og:title" content="${safeTitle}">
   <meta property="og:description" content="${metaDescription}">
@@ -648,9 +669,13 @@ export function getNotFoundPageHtml(path: string): string {
         // Handle Go Back
         var backBtn = document.getElementById('go-back-btn');
         if (backBtn) {
-          backBtn.addEventListener('click', function() {
-            history.back();
-          });
+          if (window.history.length <= 1) {
+            backBtn.style.display = 'none';
+          } else {
+            backBtn.addEventListener('click', function() {
+              history.back();
+            });
+          }
         }
 
         // Handle Copy
@@ -666,7 +691,11 @@ export function getNotFoundPageHtml(path: string): string {
                  navigator.clipboard.writeText(text).then(function() {
                     var originalHtml = btn.innerHTML;
                     btn.innerHTML = '${CHECK_ICON} Copied!';
-                    setTimeout(function() { btn.innerHTML = originalHtml; }, 2000);
+                    btn.setAttribute('aria-label', 'Path copied to clipboard');
+                    setTimeout(function() {
+                      btn.innerHTML = originalHtml;
+                      btn.setAttribute('aria-label', 'Copy URL to clipboard');
+                    }, 2000);
                  }).catch(function(err) {
                     console.error('Failed to copy', err);
                  });
