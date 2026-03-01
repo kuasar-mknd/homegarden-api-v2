@@ -1,8 +1,6 @@
-import { createClient } from '@supabase/supabase-js'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { env } from '../../infrastructure/config/env.js'
 import { prisma } from '../../infrastructure/database/prisma.client.js'
-import { authMiddleware } from '../../infrastructure/http/middleware/auth.middleware.js'
 
 // Mock dependencies
 vi.mock('../../infrastructure/config/env.js', () => ({

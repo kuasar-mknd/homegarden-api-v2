@@ -96,6 +96,7 @@ export const authMiddleware = createMiddleware(async (c, next) => {
       select: AUTH_USER_SELECT,
     })
 
+    // biome-ignore lint/suspicious/noExplicitAny: bypassed to prevent complex type inference for now
     let localUser: any = existingUser
 
     if (!localUser) {
