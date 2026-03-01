@@ -29,16 +29,24 @@ describe('AuthMiddleware', () => {
   let mockContext: any
   let mockNext: any
   let mockSupabase: any
+  let authMiddleware: any
 
-  beforeEach(() => {
+  beforeEach(async () => {
     vi.clearAllMocks()
+    vi.resetModules() // Reset modules to clear cached supabase instance
 
     mockSupabase = {
       auth: {
         getUser: vi.fn(),
       },
     }
-    vi.mocked(createClient).mockReturnValue(mockSupabase as any)
+    vi.doMock('@supabase/supabase-js', () => ({
+      createClient: vi.fn().mockReturnValue(mockSupabase),
+    }))
+
+    // Re-import after mock
+    const mod = await import('../../infrastructure/http/middleware/auth.middleware.js')
+    authMiddleware = mod.authMiddleware
 
     mockContext = {
       req: {
@@ -177,18 +185,12 @@ describe('AuthMiddleware', () => {
   })
 
   it('should handle non-Error object rejection in auth middleware', async () => {
-    vi.resetModules()
-
     // Configure mockSupabase to throw a string
     mockSupabase.auth.getUser.mockRejectedValue('String Error')
 
     mockContext.req.header.mockReturnValue('Bearer token')
 
-    // Re-import to ensure clean state (though might not be strictly necessary if createClient mock persists)
-    const { authMiddleware: freshAuthMiddleware } = await import(
-      '../../infrastructure/http/middleware/auth.middleware.js'
-    )
-    const result = (await freshAuthMiddleware(mockContext, mockNext)) as any
+    const result = (await authMiddleware(mockContext, mockNext)) as any
 
     expect(result.status).toBe(500)
     expect(result.data.message).toBe('Authentication service error')

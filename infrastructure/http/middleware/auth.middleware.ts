@@ -1,15 +1,34 @@
-import { createClient } from '@supabase/supabase-js'
+import { createClient, type SupabaseClient } from '@supabase/supabase-js'
 import { createMiddleware } from 'hono/factory'
 import { env } from '../../config/env.js'
 import { logger } from '../../config/logger.js'
 import { prisma } from '../../database/prisma.client.js'
 
+// Optimization: Cache Supabase client to prevent re-initialization overhead on every authenticated request
+let supabaseClientInstance: SupabaseClient | null = null
+
 // Initialize Supabase client
 const getSupabase = () => {
+  if (supabaseClientInstance) return supabaseClientInstance
+
   if (!env.SUPABASE_URL || !env.SUPABASE_PUBLISHABLE_KEY) {
     throw new Error('Supabase URL or Publishable Key not configured')
   }
-  return createClient(env.SUPABASE_URL, env.SUPABASE_PUBLISHABLE_KEY)
+  supabaseClientInstance = createClient(env.SUPABASE_URL, env.SUPABASE_PUBLISHABLE_KEY)
+  return supabaseClientInstance
+}
+
+// Optimization: Exclude heavy and unused fields from the user lookup to optimize the query payload
+const AUTH_USER_SELECT = {
+  id: true,
+  email: true,
+  firstName: true,
+  lastName: true,
+  role: true,
+  avatarUrl: true,
+  birthDate: true,
+  createdAt: true,
+  updatedAt: true,
 }
 
 /**
@@ -74,9 +93,10 @@ export const authMiddleware = createMiddleware(async (c, next) => {
     // Check if user exists first to avoid unnecessary write operations
     const existingUser = await prisma.user.findUnique({
       where: { email: user.email },
+      select: AUTH_USER_SELECT,
     })
 
-    let localUser = existingUser
+    let localUser: any = existingUser
 
     if (!localUser) {
       // Create new user if not exists
@@ -99,6 +119,7 @@ export const authMiddleware = createMiddleware(async (c, next) => {
           avatarUrl: metadata.avatar_url,
           role: 'USER',
         },
+        select: AUTH_USER_SELECT,
       })
       logger.info({ userId: localUser.id }, 'Synced new user')
     }
