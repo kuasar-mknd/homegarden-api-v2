@@ -63,6 +63,7 @@ HomeGarden is a robust, Clean Architecture-based REST API for managing gardens a
     Push the schema to the database:
     ```bash
     pnpm db:push
+    pnpm db:generate
     ```
     (Optional) Seed the database:
     ```bash
