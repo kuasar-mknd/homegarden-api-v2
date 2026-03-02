@@ -31,8 +31,8 @@ The best way to explore the API is via the built-in Swagger UI, which provides i
 
 *Endpoints are currently placeholders (501 Not Implemented). Client-side authentication via Supabase SDK is recommended.*
 
-- `POST /auth/register` - Register a new user.
-- `POST /auth/login` - Authenticate user.
+- `POST /auth/register` - Register a new user **(501 Not Implemented)**.
+- `POST /auth/login` - Authenticate user **(501 Not Implemented)**.
 
 ### Gardens
 
@@ -45,11 +45,11 @@ The best way to explore the API is via the built-in Swagger UI, which provides i
 
 *Direct plant management endpoints are partially implemented; use Garden endpoints for main flows.*
 
-- `GET /plants` - List all plants for the user (501 Not Implemented).
-- `POST /plants` - Create a new plant (501 Not Implemented).
-- `GET /plants/:id` - Get plant details (501 Not Implemented).
-- `PATCH /plants/:id` - Update plant details (501 Not Implemented).
-- `DELETE /plants/:id` - Delete a plant (501 Not Implemented).
+- `GET /plants` - List all plants for the user **(501 Not Implemented)**.
+- `POST /plants` - Create a new plant **(501 Not Implemented)**.
+- `GET /plants/:id` - Get plant details **(501 Not Implemented)**.
+- `PATCH /plants/:id` - Update plant details **(501 Not Implemented)**.
+- `DELETE /plants/:id` - Delete a plant **(501 Not Implemented)**.
 
 ### AI Identification
 
