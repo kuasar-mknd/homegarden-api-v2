@@ -43,3 +43,7 @@
 ## Rejected Changes
 
 *(None yet)*
+
+## 2025-02-20 - Copy Feedback and Screen Readers
+**Learning:** Visual-only feedback (like changing a button icon to a checkmark) is insufficient for actions like copying to the clipboard. Screen reader users need explicit auditory confirmation.
+**Action:** When implementing copy-to-clipboard functionality, always include a visually hidden `aria-live="polite"` region and update its `textContent` synchronously with the visual success indicator.

@@ -632,6 +632,7 @@ export function getNotFoundPageHtml(path: string): string {
             <button type="button" class="btn btn-secondary copy-btn" data-clipboard-target="#error-path" aria-label="Copy URL to clipboard">
             ${COPY_ICON} Copy Path
             </button>
+            <div id="copy-status" aria-live="polite" style="position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border-width: 0;"></div>
         </div>
       </div>
 
@@ -648,9 +649,13 @@ export function getNotFoundPageHtml(path: string): string {
         // Handle Go Back
         var backBtn = document.getElementById('go-back-btn');
         if (backBtn) {
-          backBtn.addEventListener('click', function() {
-            history.back();
-          });
+          if (history.length <= 1) {
+            backBtn.style.display = 'none';
+          } else {
+            backBtn.addEventListener('click', function() {
+              history.back();
+            });
+          }
         }
 
         // Handle Copy
@@ -666,7 +671,12 @@ export function getNotFoundPageHtml(path: string): string {
                  navigator.clipboard.writeText(text).then(function() {
                     var originalHtml = btn.innerHTML;
                     btn.innerHTML = '${CHECK_ICON} Copied!';
-                    setTimeout(function() { btn.innerHTML = originalHtml; }, 2000);
+                    var statusEl = document.getElementById('copy-status');
+                    if (statusEl) statusEl.textContent = 'Path copied to clipboard';
+                    setTimeout(function() {
+                      btn.innerHTML = originalHtml;
+                      if (statusEl) statusEl.textContent = '';
+                    }, 2000);
                  }).catch(function(err) {
                     console.error('Failed to copy', err);
                  });
