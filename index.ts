@@ -158,14 +158,21 @@ app.get('/ui', swaggerUI({ url: '/doc' }))
 // GLOBAL MIDDLEWARE
 // ============================================================
 
+// Generate CSP Nonce
+app.use('*', async (c, next) => {
+  const nonce = crypto.randomUUID().replace(/-/g, '').substring(0, 16)
+  c.set('secureHeadersNonce', nonce)
+  await next()
+})
+
 // Security headers
-app.use(
-  '*',
-  secureHeaders({
+app.use('*', (c, next) => {
+  const nonce = c.get('secureHeadersNonce') as string
+  return secureHeaders({
     contentSecurityPolicy: {
       defaultSrc: ["'self'"],
-      scriptSrc: ["'self'", "'unsafe-inline'", 'https://cdn.jsdelivr.net'],
-      styleSrc: ["'self'", "'unsafe-inline'"],
+      scriptSrc: ["'self'", `'nonce-${nonce}'`, 'https://cdn.jsdelivr.net'],
+      styleSrc: ["'self'", `'nonce-${nonce}'`],
       imgSrc: ["'self'", 'data:', 'https:', 'blob:'],
       connectSrc: ["'self'", 'https://api.open-meteo.com'],
       fontSrc: ["'self'", 'https:', 'data:'],
@@ -183,8 +190,8 @@ app.use(
       payment: [],
       usb: [],
     },
-  }),
-)
+  })(c, next)
+})
 
 // Compression
 app.use('*', compress())
@@ -241,9 +248,11 @@ app.use('*', (c, next) => {
 // ============================================================
 
 // Landing Page
-const landingPageHtml = getLandingPageHtml()
 app.get('/', (c) => {
-  c.header('Cache-Control', 'public, max-age=3600') // Cache for 1 hour
+  const nonce = c.get('secureHeadersNonce') as string
+  const landingPageHtml = getLandingPageHtml(nonce)
+  // Disable caching because the page contains a per-request security nonce
+  c.header('Cache-Control', 'no-store, no-cache, must-revalidate')
   return c.html(landingPageHtml)
 })
 
@@ -299,7 +308,8 @@ app.route('/api/v2/care-tracker', careTrackerRoutes)
 app.notFound((c) => {
   const accept = c.req.header('Accept') || ''
   if (accept.includes('text/html')) {
-    return c.html(getNotFoundPageHtml(c.req.path), 404)
+    const nonce = c.get('secureHeadersNonce') as string
+    return c.html(getNotFoundPageHtml(c.req.path, nonce), 404)
   }
   return c.json(
     {
