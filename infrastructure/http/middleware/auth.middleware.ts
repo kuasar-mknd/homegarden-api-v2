@@ -4,6 +4,21 @@ import { env } from '../../config/env.js'
 import { logger } from '../../config/logger.js'
 import { prisma } from '../../database/prisma.client.js'
 
+// Optimization: Select only required fields for auth context to minimize
+// payload size and JSON parsing overhead on every request
+const AUTH_USER_SELECT = {
+  id: true,
+  email: true,
+  firstName: true,
+  lastName: true,
+  role: true,
+  avatarUrl: true,
+  birthDate: true,
+  createdAt: true,
+  updatedAt: true,
+  // Exclude preferences (JSON) and password
+}
+
 // Initialize Supabase client
 const getSupabase = () => {
   if (!env.SUPABASE_URL || !env.SUPABASE_PUBLISHABLE_KEY) {
@@ -74,6 +89,7 @@ export const authMiddleware = createMiddleware(async (c, next) => {
     // Check if user exists first to avoid unnecessary write operations
     const existingUser = await prisma.user.findUnique({
       where: { email: user.email },
+      select: AUTH_USER_SELECT,
     })
 
     let localUser = existingUser
@@ -99,6 +115,7 @@ export const authMiddleware = createMiddleware(async (c, next) => {
           avatarUrl: metadata.avatar_url,
           role: 'USER',
         },
+        select: AUTH_USER_SELECT,
       })
       logger.info({ userId: localUser.id }, 'Synced new user')
     }
