@@ -486,6 +486,7 @@ interface LayoutProps {
   title: string
   description?: string
   content: string
+  nonce?: string | undefined
 }
 
 // Simple HTML escape function to prevent XSS
@@ -498,7 +499,7 @@ function escapeHtml(unsafe: string): string {
     .replace(/'/g, '&#039;')
 }
 
-export function baseLayout({ title, description, content }: LayoutProps): string {
+export function baseLayout({ title, description, content, nonce }: LayoutProps): string {
   const safeTitle = escapeHtml(title)
   const safeDescription = escapeHtml(
     description ||
@@ -540,7 +541,7 @@ export function baseLayout({ title, description, content }: LayoutProps): string
   <link rel="icon" href="${icon}">
   <link rel="apple-touch-icon" href="${icon}">
   <link rel="preconnect" href="https://placehold.co">
-  <style>
+  <style${nonce ? ` nonce="${nonce}"` : ''}>
     ${SHARED_STYLES}
   </style>
 </head>
@@ -565,11 +566,11 @@ export function baseLayout({ title, description, content }: LayoutProps): string
   `
 }
 
-// Memoize the landing page HTML to avoid string concatenation on every request
-// Optimization: "Static Response Caching"
-const LANDING_PAGE_HTML = baseLayout({
-  title: 'HomeGarden API v2',
-  content: `
+export function getLandingPageHtml(nonce?: string): string {
+  return baseLayout({
+    title: 'HomeGarden API v2',
+    nonce,
+    content: `
     <header role="banner">
       <h1>🌱 HomeGarden API</h1>
       <div class="badge">v2.0.0 • AI-Powered</div>
@@ -606,17 +607,15 @@ const LANDING_PAGE_HTML = baseLayout({
       </ul>
     </main>
     `,
-})
-
-export function getLandingPageHtml(): string {
-  return LANDING_PAGE_HTML
+  })
 }
 
-export function getNotFoundPageHtml(path: string): string {
+export function getNotFoundPageHtml(path: string, nonce?: string): string {
   const safePath = escapeHtml(path)
   return baseLayout({
     title: '404: Page Not Found - HomeGarden API',
     description: 'The requested page could not be found.',
+    nonce,
     content: `
     <header role="banner">
       <h1>🌱 404 Not Found</h1>
@@ -643,7 +642,7 @@ export function getNotFoundPageHtml(path: string): string {
         <a href="/ui" class="btn btn-secondary">${DOC_ICON}Read Documentation</a>
       </div>
     </main>
-    <script>
+    <script${nonce ? ` nonce="${nonce}"` : ''}>
       (function() {
         // Handle Go Back
         var backBtn = document.getElementById('go-back-btn');
