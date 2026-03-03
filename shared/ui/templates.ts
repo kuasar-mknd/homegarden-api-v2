@@ -442,6 +442,17 @@ export const SHARED_STYLES = `
     display: flex;
     justify-content: center;
   }
+  .sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border-width: 0;
+  }
   @media (prefers-color-scheme: dark) {
     .code-block {
       background: #2d2d2d;
@@ -632,6 +643,7 @@ export function getNotFoundPageHtml(path: string): string {
             <button type="button" class="btn btn-secondary copy-btn" data-clipboard-target="#error-path" aria-label="Copy URL to clipboard">
             ${COPY_ICON} Copy Path
             </button>
+            <div id="copy-live-region" class="sr-only" aria-live="polite"></div>
         </div>
       </div>
 
@@ -655,6 +667,7 @@ export function getNotFoundPageHtml(path: string): string {
 
         // Handle Copy
         var btns = document.querySelectorAll('.copy-btn');
+        var liveRegion = document.getElementById('copy-live-region');
         Array.prototype.forEach.call(btns, function(btn) {
           btn.addEventListener('click', function() {
             var targetSelector = btn.getAttribute('data-clipboard-target');
@@ -666,9 +679,20 @@ export function getNotFoundPageHtml(path: string): string {
                  navigator.clipboard.writeText(text).then(function() {
                     var originalHtml = btn.innerHTML;
                     btn.innerHTML = '${CHECK_ICON} Copied!';
-                    setTimeout(function() { btn.innerHTML = originalHtml; }, 2000);
+                    if (liveRegion) {
+                      liveRegion.textContent = 'URL copied to clipboard';
+                    }
+                    setTimeout(function() {
+                      btn.innerHTML = originalHtml;
+                      if (liveRegion) {
+                        liveRegion.textContent = '';
+                      }
+                    }, 2000);
                  }).catch(function(err) {
                     console.error('Failed to copy', err);
+                    if (liveRegion) {
+                      liveRegion.textContent = 'Failed to copy URL';
+                    }
                  });
               } else {
                  // Fallback
