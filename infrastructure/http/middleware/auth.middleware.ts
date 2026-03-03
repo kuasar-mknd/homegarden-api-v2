@@ -4,7 +4,6 @@ import { env } from '../../config/env.js'
 import { logger } from '../../config/logger.js'
 import { prisma } from '../../database/prisma.client.js'
 
-
 // Optimization: Exclude heavy JSON blob (preferences) and unused fields (password) for every request
 const AUTH_USER_SELECT = {
   id: true,
@@ -102,7 +101,7 @@ export const authMiddleware = createMiddleware(async (c, next) => {
         metadata.full_name?.split(' ').slice(1).join(' ') || metadata.last_name || 'User'
 
       localUser = await prisma.user.create({
-      data: {
+        data: {
           email: user.email,
           // We don't store the actual password since auth is handled by Supabase
           // We use a random UUID as a placeholder to satisfy the NOT NULL constraint
@@ -114,7 +113,7 @@ export const authMiddleware = createMiddleware(async (c, next) => {
           avatarUrl: metadata.avatar_url,
           role: 'USER',
         },
-      select: AUTH_USER_SELECT,
+        select: AUTH_USER_SELECT,
       })
       logger.info({ userId: localUser.id }, 'Synced new user')
     }
