@@ -68,7 +68,6 @@ export function initializeWebSocketServer(server: Server) {
 
   logger.info('WebSocket Server initialized')
 
-  // @ts-expect-error - overriding connection typings
   wss.on('connection', async (ws: AuthenticatedWebSocket, request: any) => {
     logger.info('New WebSocket connection')
     ws.userId = request.userId
