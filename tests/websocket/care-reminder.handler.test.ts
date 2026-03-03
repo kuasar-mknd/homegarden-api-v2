@@ -31,10 +31,13 @@ describe('Care Reminder WebSocket Handler', () => {
 
   describe('SUBSCRIBE', () => {
     it('should acknowledge subscription and send reminders', async () => {
+      // @ts-expect-error - overriding connection typings
+      mockWs.userId = 'user-123'
+
       await handleCareReminderMessage(mockWs, {
         type: 'SUBSCRIBE',
         channel: 'care-reminders',
-        payload: { userId: 'user-123' },
+        payload: {},
       })
 
       expect(mockWs.send).toHaveBeenCalledTimes(2)
@@ -49,6 +52,9 @@ describe('Care Reminder WebSocket Handler', () => {
     })
 
     it('should return error when userId is missing', async () => {
+      // @ts-expect-error - overriding connection typings
+      mockWs.userId = undefined
+
       await handleCareReminderMessage(mockWs, {
         type: 'SUBSCRIBE',
         channel: 'care-reminders',
@@ -64,10 +70,13 @@ describe('Care Reminder WebSocket Handler', () => {
 
   describe('CHECK_REMINDERS', () => {
     it('should return reminders when userId provided', async () => {
+      // @ts-expect-error - overriding connection typings
+      mockWs.userId = 'user-456'
+
       await handleCareReminderMessage(mockWs, {
         type: 'CHECK_REMINDERS',
         channel: 'care-reminders',
-        payload: { userId: 'user-456' },
+        payload: {},
       })
 
       expect(mockWs.send).toHaveBeenCalledTimes(1)
@@ -79,6 +88,9 @@ describe('Care Reminder WebSocket Handler', () => {
     })
 
     it('should return error when userId is missing', async () => {
+      // @ts-expect-error - overriding connection typings
+      mockWs.userId = undefined
+
       await handleCareReminderMessage(mockWs, {
         type: 'CHECK_REMINDERS',
         channel: 'care-reminders',
@@ -115,13 +127,14 @@ describe('Care Reminder WebSocket Handler', () => {
         send: vi.fn().mockImplementationOnce(() => {
           throw new Error('Connection closed')
         }),
+        userId: 'user-123',
       } as unknown as WebSocket
 
       // This should catch the error and try to send an error message
       await handleCareReminderMessage(brokenWs, {
         type: 'SUBSCRIBE',
         channel: 'care-reminders',
-        payload: { userId: 'user-123' },
+        payload: {},
       })
 
       // The error handler should have tried to send an error message
