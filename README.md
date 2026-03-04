@@ -100,6 +100,15 @@ The API is documented using Swagger. Once the server is running, visit:
 curl http://localhost:3000/api/v2
 ```
 
+### Example: Get Gardens and Plants (requires Auth)
+
+Retrieves all plants in the authenticated user's garden.
+
+```bash
+curl -X GET http://localhost:3000/api/v2/gardens/plants \
+  -H "Authorization: Bearer <YOUR_SUPABASE_TOKEN>"
+```
+
 ### Example: Identify a Plant (requires Auth)
 
 You can send either an `imageUrl` or `imageBase64`.
