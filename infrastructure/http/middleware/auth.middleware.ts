@@ -4,12 +4,29 @@ import { env } from '../../config/env.js'
 import { logger } from '../../config/logger.js'
 import { prisma } from '../../database/prisma.client.js'
 
-// Initialize Supabase client
+// Initialize Supabase client singleton
+let supabaseClient: ReturnType<typeof createClient> | null = null
 const getSupabase = () => {
+  if (supabaseClient) return supabaseClient
   if (!env.SUPABASE_URL || !env.SUPABASE_PUBLISHABLE_KEY) {
     throw new Error('Supabase URL or Publishable Key not configured')
   }
-  return createClient(env.SUPABASE_URL, env.SUPABASE_PUBLISHABLE_KEY)
+  supabaseClient = createClient(env.SUPABASE_URL, env.SUPABASE_PUBLISHABLE_KEY)
+  return supabaseClient
+}
+
+// Optimization: Select only essential fields for middleware context
+const AUTH_USER_SELECT = {
+  id: true,
+  email: true,
+  firstName: true,
+  lastName: true,
+  role: true,
+  avatarUrl: true,
+  birthDate: true,
+  createdAt: true,
+  updatedAt: true,
+  // Exclude password and preferences
 }
 
 /**
@@ -74,6 +91,7 @@ export const authMiddleware = createMiddleware(async (c, next) => {
     // Check if user exists first to avoid unnecessary write operations
     const existingUser = await prisma.user.findUnique({
       where: { email: user.email },
+      select: AUTH_USER_SELECT,
     })
 
     let localUser = existingUser
@@ -86,7 +104,7 @@ export const authMiddleware = createMiddleware(async (c, next) => {
       const lastName =
         metadata.full_name?.split(' ').slice(1).join(' ') || metadata.last_name || 'User'
 
-      localUser = await prisma.user.create({
+      localUser = (await prisma.user.create({
         data: {
           email: user.email,
           // We don't store the actual password since auth is handled by Supabase
@@ -99,7 +117,8 @@ export const authMiddleware = createMiddleware(async (c, next) => {
           avatarUrl: metadata.avatar_url,
           role: 'USER',
         },
-      })
+        select: AUTH_USER_SELECT,
+      }))
       logger.info({ userId: localUser.id }, 'Synced new user')
     }
 

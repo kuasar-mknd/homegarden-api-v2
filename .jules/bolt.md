@@ -29,3 +29,7 @@
 ## 2024-05-23 - [Static Layout Anti-Pattern]
 **Learning:** Pre-computing HTML layouts (header/footer) to save string concatenation is a micro-optimization that creates security risks (e.g., static CSP nonces) and prevents dynamic content (Auth state).
 **Action:** Avoid caching layout templates unless they are strictly static and have no dependencies on request context.
+
+## 2025-03-04 - [Optimize Auth Middleware]
+**Learning:** Instantiating the Supabase client (`createClient()`) on every request in the `authMiddleware` is a significant performance anti-pattern due to the overhead of setting up the client, validating env vars, and parsing URLs. Caching it in a singleton is safe here because `supabase.auth.getUser(token)` is stateless and takes the token directly. Also, Prisma's default behavior is `SELECT *`; dropping large JSON blobs (`preferences`) and sensitive fields (`password`) from middleware lookups via `select: AUTH_USER_SELECT` reduces payload and memory footprint.
+**Action:** Always check middleware functions that run on every request for redundant initializations or heavy DB queries. Use singletons for stateless clients and explicitly limit `SELECT` fields on frequent DB queries.
