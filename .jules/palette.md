@@ -43,3 +43,8 @@
 ## Rejected Changes
 
 *(None yet)*
+
+## 2025-02-12 - Copy-to-Clipboard Auditory Feedback
+
+**Learning:** Visual feedback alone ("Copied!") on clipboard operations is insufficient for screen readers since the button contents updating dynamically might not be reliably announced. Providing explicit, robust auditory confirmation requires a dedicated visually-hidden area.
+**Action:** When implementing copy-to-clipboard functionality, always include a visually hidden `aria-live="polite"` region and update its `textContent` synchronously with the visual success indicator to provide explicit auditory confirmation for screen readers.
