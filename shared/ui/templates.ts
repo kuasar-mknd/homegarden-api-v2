@@ -462,6 +462,19 @@ export const SHARED_STYLES = `
       animation: none;
     }
   }
+  /* Screen Reader Only */
+  .sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+  }
+
   @media print {
     body { background: white; color: black; display: block; }
     .container { box-shadow: none; border: none; max-width: 100%; width: 100%; padding: 0; }
@@ -626,6 +639,8 @@ export function getNotFoundPageHtml(path: string): string {
     <main id="main" tabindex="-1">
       <p>Oops! The page you are looking for does not exist.</p>
 
+      <div id="clipboard-announcer" class="sr-only" aria-live="polite"></div>
+
       <div class="code-wrapper">
         <code id="error-path" aria-label="Requested URL" class="code-block" title="Requested URL" tabindex="0">${safePath}</code>
         <div class="copy-btn-wrapper no-print">
@@ -655,6 +670,7 @@ export function getNotFoundPageHtml(path: string): string {
 
         // Handle Copy
         var btns = document.querySelectorAll('.copy-btn');
+        var announcer = document.getElementById('clipboard-announcer');
         Array.prototype.forEach.call(btns, function(btn) {
           btn.addEventListener('click', function() {
             var targetSelector = btn.getAttribute('data-clipboard-target');
@@ -666,9 +682,20 @@ export function getNotFoundPageHtml(path: string): string {
                  navigator.clipboard.writeText(text).then(function() {
                     var originalHtml = btn.innerHTML;
                     btn.innerHTML = '${CHECK_ICON} Copied!';
-                    setTimeout(function() { btn.innerHTML = originalHtml; }, 2000);
+                    if (announcer) {
+                      announcer.textContent = 'Copied to clipboard';
+                    }
+                    setTimeout(function() {
+                      btn.innerHTML = originalHtml;
+                      if (announcer) {
+                        announcer.textContent = '';
+                      }
+                    }, 2000);
                  }).catch(function(err) {
                     console.error('Failed to copy', err);
+                    if (announcer) {
+                      announcer.textContent = 'Failed to copy';
+                    }
                  });
               } else {
                  // Fallback
