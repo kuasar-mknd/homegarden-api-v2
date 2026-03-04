@@ -2,7 +2,10 @@ import { createClient } from '@supabase/supabase-js'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { env } from '../../infrastructure/config/env.js'
 import { prisma } from '../../infrastructure/database/prisma.client.js'
-import { authMiddleware } from '../../infrastructure/http/middleware/auth.middleware.js'
+import {
+  __resetSupabaseClientForTesting,
+  authMiddleware,
+} from '../../infrastructure/http/middleware/auth.middleware.js'
 
 // Mock dependencies
 vi.mock('../../infrastructure/config/env.js', () => ({
@@ -32,6 +35,7 @@ describe('AuthMiddleware', () => {
 
   beforeEach(() => {
     vi.clearAllMocks()
+    __resetSupabaseClientForTesting()
 
     mockSupabase = {
       auth: {
@@ -160,35 +164,27 @@ describe('AuthMiddleware', () => {
       error: null,
     })
 
-    // We can mock it to be null if we re-mock the module.
-    vi.resetModules()
-    vi.doMock('../../infrastructure/database/prisma.client.js', () => ({
-      prisma: undefined,
-    }))
+    // Temporarily break prisma
+    const originalFindUnique = prisma.user.findUnique
+    ;(prisma.user.findUnique as any) = () => {
+      throw new Error('DB Error')
+    }
 
-    // Re-import to get the fresh module with mocked prisma
-    const { authMiddleware: freshAuthMiddleware } = await import(
-      '../../infrastructure/http/middleware/auth.middleware.js'
-    )
-
-    const result = (await freshAuthMiddleware(mockContext, mockNext)) as any
+    const result = (await authMiddleware(mockContext, mockNext)) as any
     expect(result.status).toBe(500)
     expect(result.data.message).toContain('Authentication service error')
+
+    // Restore
+    prisma.user.findUnique = originalFindUnique
   })
 
   it('should handle non-Error object rejection in auth middleware', async () => {
-    vi.resetModules()
-
     // Configure mockSupabase to throw a string
     mockSupabase.auth.getUser.mockRejectedValue('String Error')
 
     mockContext.req.header.mockReturnValue('Bearer token')
 
-    // Re-import to ensure clean state (though might not be strictly necessary if createClient mock persists)
-    const { authMiddleware: freshAuthMiddleware } = await import(
-      '../../infrastructure/http/middleware/auth.middleware.js'
-    )
-    const result = (await freshAuthMiddleware(mockContext, mockNext)) as any
+    const result = (await authMiddleware(mockContext, mockNext)) as any
 
     expect(result.status).toBe(500)
     expect(result.data.message).toBe('Authentication service error')
