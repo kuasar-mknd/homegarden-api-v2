@@ -6,6 +6,9 @@ import { prisma } from '../../database/prisma.client.js'
 
 // Initialize Supabase client singleton
 let supabaseClient: ReturnType<typeof createClient> | null = null
+export const __resetSupabaseClientForTesting = () => {
+  supabaseClient = null
+}
 const getSupabase = () => {
   if (supabaseClient) return supabaseClient
   if (!env.SUPABASE_URL || !env.SUPABASE_PUBLISHABLE_KEY) {
@@ -13,20 +16,6 @@ const getSupabase = () => {
   }
   supabaseClient = createClient(env.SUPABASE_URL, env.SUPABASE_PUBLISHABLE_KEY)
   return supabaseClient
-}
-
-// Optimization: Select only essential fields for middleware context
-const AUTH_USER_SELECT = {
-  id: true,
-  email: true,
-  firstName: true,
-  lastName: true,
-  role: true,
-  avatarUrl: true,
-  birthDate: true,
-  createdAt: true,
-  updatedAt: true,
-  // Exclude password and preferences
 }
 
 /**
@@ -91,7 +80,6 @@ export const authMiddleware = createMiddleware(async (c, next) => {
     // Check if user exists first to avoid unnecessary write operations
     const existingUser = await prisma.user.findUnique({
       where: { email: user.email },
-      select: AUTH_USER_SELECT,
     })
 
     let localUser = existingUser
@@ -104,7 +92,7 @@ export const authMiddleware = createMiddleware(async (c, next) => {
       const lastName =
         metadata.full_name?.split(' ').slice(1).join(' ') || metadata.last_name || 'User'
 
-      localUser = (await prisma.user.create({
+      localUser = await prisma.user.create({
         data: {
           email: user.email,
           // We don't store the actual password since auth is handled by Supabase
@@ -117,8 +105,7 @@ export const authMiddleware = createMiddleware(async (c, next) => {
           avatarUrl: metadata.avatar_url,
           role: 'USER',
         },
-        select: AUTH_USER_SELECT,
-      }))
+      })
       logger.info({ userId: localUser.id }, 'Synced new user')
     }
 

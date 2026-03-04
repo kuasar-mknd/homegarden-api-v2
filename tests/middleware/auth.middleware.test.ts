@@ -1,5 +1,11 @@
 import { createClient } from '@supabase/supabase-js'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
+import { env } from '../../infrastructure/config/env.js'
+import { prisma } from '../../infrastructure/database/prisma.client.js'
+import {
+  __resetSupabaseClientForTesting,
+  authMiddleware,
+} from '../../infrastructure/http/middleware/auth.middleware.js'
 
 // Mock dependencies
 vi.mock('../../infrastructure/config/env.js', () => ({
@@ -26,13 +32,10 @@ describe('AuthMiddleware', () => {
   let mockContext: any
   let mockNext: any
   let mockSupabase: any
-  let authMiddleware: any
-  let prisma: any
-  let env: any
 
-  beforeEach(async () => {
+  beforeEach(() => {
     vi.clearAllMocks()
-    vi.resetModules()
+    __resetSupabaseClientForTesting()
 
     mockSupabase = {
       auth: {
@@ -50,17 +53,6 @@ describe('AuthMiddleware', () => {
     }
 
     mockNext = vi.fn()
-
-    const envModule = await import('../../infrastructure/config/env.js')
-    env = envModule.env
-
-    const prismaModule = await import('../../infrastructure/database/prisma.client.js')
-    prisma = prismaModule.prisma
-
-    const authMiddlewareModule = await import(
-      '../../infrastructure/http/middleware/auth.middleware.js'
-    )
-    authMiddleware = authMiddlewareModule.authMiddleware
   })
 
   it('should return 401 if Authorization header is missing', async () => {
@@ -123,7 +115,6 @@ describe('AuthMiddleware', () => {
           firstName: 'New',
           lastName: 'User',
         }),
-        select: expect.any(Object),
       }),
     )
     expect(mockContext.set).toHaveBeenCalledWith('user', createdUser)
@@ -157,13 +148,7 @@ describe('AuthMiddleware', () => {
     const originalUrl = env.SUPABASE_URL
     ;(env as any).SUPABASE_URL = null
 
-    // Force re-import of auth middleware to catch the env validation in singleton init
-    vi.resetModules()
-    const { authMiddleware: freshAuthMiddleware } = await import(
-      '../../infrastructure/http/middleware/auth.middleware.js'
-    )
-
-    const result = (await freshAuthMiddleware(mockContext, mockNext)) as any
+    const result = (await authMiddleware(mockContext, mockNext)) as any
 
     expect(result.status).toBe(500)
     expect(result.data.message).toBe('Authentication service error')
@@ -179,41 +164,27 @@ describe('AuthMiddleware', () => {
       error: null,
     })
 
-    // We can mock it to be null if we re-mock the module.
-    vi.resetModules()
-    vi.doMock('../../infrastructure/database/prisma.client.js', () => ({
-      prisma: undefined,
-    }))
+    // Temporarily break prisma
+    const originalFindUnique = prisma.user.findUnique
+    ;(prisma.user.findUnique as any) = () => {
+      throw new Error('DB Error')
+    }
 
-    // Re-import to get the fresh module with mocked prisma
-    const { authMiddleware: freshAuthMiddleware } = await import(
-      '../../infrastructure/http/middleware/auth.middleware.js'
-    )
-
-    const result = (await freshAuthMiddleware(mockContext, mockNext)) as any
+    const result = (await authMiddleware(mockContext, mockNext)) as any
     expect(result.status).toBe(500)
     expect(result.data.message).toContain('Authentication service error')
+
+    // Restore
+    prisma.user.findUnique = originalFindUnique
   })
 
   it('should handle non-Error object rejection in auth middleware', async () => {
-    vi.resetModules()
+    // Configure mockSupabase to throw a string
+    mockSupabase.auth.getUser.mockRejectedValue('String Error')
 
     mockContext.req.header.mockReturnValue('Bearer token')
 
-    // Re-import to ensure clean state
-    const { authMiddleware: freshAuthMiddleware } = await import(
-      '../../infrastructure/http/middleware/auth.middleware.js'
-    )
-
-    // We need to overwrite the createClient mock *after* resetModules
-    const { createClient } = await import('@supabase/supabase-js')
-    vi.mocked(createClient).mockReturnValue({
-      auth: {
-        getUser: vi.fn().mockRejectedValue('String Error'),
-      },
-    } as any)
-
-    const result = (await freshAuthMiddleware(mockContext, mockNext)) as any
+    const result = (await authMiddleware(mockContext, mockNext)) as any
 
     expect(result.status).toBe(500)
     expect(result.data.message).toBe('Authentication service error')
