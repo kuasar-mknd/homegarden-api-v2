@@ -17,8 +17,8 @@ importers:
         specifier: ^0.24.1
         version: 0.24.1
       '@hono/node-server':
-        specifier: ^1.19.8
-        version: 1.19.8(hono@4.11.7)
+        specifier: ^1.19.10
+        version: 1.19.10(hono@4.11.7)
       '@hono/swagger-ui':
         specifier: ^0.5.3
         version: 0.5.3(hono@4.11.7)
@@ -441,8 +441,8 @@ packages:
     resolution: {integrity: sha512-MqO+MLfM6kjxcKoy0p1wRzG3b4ZZXtPI+z2IE26UogS2Cm/XHO+7gGRBh6gcJsOiIVoH93UwKvW4HdgiOZCy9Q==}
     engines: {node: '>=18.0.0'}
 
-  '@hono/node-server@1.19.8':
-    resolution: {integrity: sha512-0/g2lIOPzX8f3vzW1ggQgvG5mjtFBDBHFAzI5SFAi2DzSqS9luJwqg9T6O/gKYLi+inS7eNxBeIFkkghIPvrMA==}
+  '@hono/node-server@1.19.10':
+    resolution: {integrity: sha512-hZ7nOssGqRgyV3FVVQdfi+U4q02uB23bpnYpdvNXkYTRRyWx84b7yf1ans+dnJ/7h41sGL3CeQTfO+ZGxuO+Iw==}
     engines: {node: '>=18.14.1'}
     peerDependencies:
       hono: ^4.11.7
@@ -2125,7 +2125,7 @@ snapshots:
 
   '@google/generative-ai@0.24.1': {}
 
-  '@hono/node-server@1.19.8(hono@4.11.7)':
+  '@hono/node-server@1.19.10(hono@4.11.7)':
     dependencies:
       hono: 4.11.7
 
@@ -2139,7 +2139,7 @@ snapshots:
 
   '@hono/vite-dev-server@0.24.0(hono@4.11.7)':
     dependencies:
-      '@hono/node-server': 1.19.8(hono@4.11.7)
+      '@hono/node-server': 1.19.10(hono@4.11.7)
       hono: 4.11.7
       minimatch: 9.0.5
 
