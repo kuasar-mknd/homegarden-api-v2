@@ -35,8 +35,7 @@ The application instructs the AI to return structured JSON data.
       "family": "Araliaceae",
       "genus": "Hedera",
       "description": "Evergreen climbing or ground-creeping vine",
-      "origin": "Europe and Western Asia",
-      "imageUrl": "https://..."
+      "origin": "Europe and Western Asia"
     }
   ]
 }

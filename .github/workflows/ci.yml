@@ -41,15 +41,15 @@ jobs:
       - name: Install dependencies
         run: pnpm install
 
-      - name: Lint
-        run: pnpm run ci:check
-
       - name: Setup Database (and Generate Client)
         env:
           DATABASE_URL: postgres://postgres:password@localhost:5432/homegarden
         run: |
           pnpm db:push
           pnpm db:generate
+
+      - name: Lint
+        run: pnpm run ci:check
 
       - name: Typecheck
         run: pnpm build
@@ -60,3 +60,10 @@ jobs:
           SUPABASE_URL: https://dummy.supabase.co
           SUPABASE_PUBLISHABLE_KEY: dummy-key
         run: pnpm test
+
+      - name: Run E2E Tests
+        env:
+          DATABASE_URL: postgres://postgres:password@localhost:5432/homegarden
+          SUPABASE_URL: https://dummy.supabase.co
+          SUPABASE_PUBLISHABLE_KEY: dummy-key
+        run: pnpm run test:e2e

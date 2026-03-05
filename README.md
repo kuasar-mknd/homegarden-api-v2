@@ -5,12 +5,13 @@ HomeGarden is a robust, Clean Architecture-based REST API for managing gardens a
 ## 🌟 Features
 
 *   **Clean Architecture**: Separation of concerns into Domain, Application, and Infrastructure layers.
-*   **Plant Management**: CRUD operations for Gardens and Plants.
+*   **Plant Management**: CRUD operations for Gardens and Plants. *(Note: Direct Plant endpoints are currently 501 Not Implemented; use Garden endpoints for main flows).*
+*   **Authentication**: Secure authentication using Supabase Auth (JWT). *(Note: Native auth endpoints return 501 Not Implemented, client-side Supabase SDK is recommended).*
+*   **Care Tracker**: Schedule and track plant care tasks. *(Currently 501 Not Implemented).*
 *   **AI Integration**:
     *   **Identification**: Identify plants from images using Google Gemini Vision (`gemini-2.0-flash`).
     *   **Diagnosis**: Diagnose plant health issues using Google Gemini Vision (`gemini-2.5-pro-preview-06-05`).
 *   **Weather Integration**: Fetch weather data for garden locations via Open-Meteo.
-*   **Authentication**: Secure authentication using Supabase Auth (JWT).
 *   **Type Safety**: End-to-end type safety with TypeScript, Zod, and Prisma.
 *   **Interactive Docs**: OpenAPI (Swagger) documentation available at `/ui`.
 
@@ -95,11 +96,6 @@ The API is documented using Swagger. Once the server is running, visit:
 *   **Swagger UI**: [http://localhost:3000/ui](http://localhost:3000/ui)
 *   **OpenAPI Spec**: [http://localhost:3000/doc](http://localhost:3000/doc)
 
-### Example: Check API Status
-```bash
-curl http://localhost:3000/api/v2
-```
-
 ### Example: Identify a Plant (requires Auth)
 
 You can send either an `imageUrl` or `imageBase64`.
@@ -109,6 +105,15 @@ curl -X POST http://localhost:3000/api/v2/plant-id/identify \
   -H "Authorization: Bearer <YOUR_SUPABASE_TOKEN>" \
   -H "Content-Type: application/json" \
   -d '{"imageUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/3/3a/Monstera_deliciosa5.jpg/640px-Monstera_deliciosa5.jpg"}'
+```
+
+### Example: Get User Plants
+
+Retrieves all plants in the authenticated user's gardens.
+
+```bash
+curl -X GET http://localhost:3000/api/v2/gardens/plants \
+  -H "Authorization: Bearer <YOUR_SUPABASE_TOKEN>"
 ```
 
 ## 🔧 Troubleshooting
