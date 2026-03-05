@@ -43,3 +43,8 @@
 ## Rejected Changes
 
 *(None yet)*
+
+## 2024-05-25 - Accessible Clipboard Feedback
+
+**Learning:** Visual text updates ("Copied!") are not naturally announced by screen readers when implemented with vanilla DOM updates, leading to a disconnected experience for assistive technology users.
+**Action:** Always pair visual copy confirmation states with a visually hidden `aria-live="polite"` region, and update its `textContent` synchronously to provide explicit auditory confirmation.
