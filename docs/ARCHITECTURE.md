@@ -39,7 +39,26 @@ To add a new feature (e.g., "Watering Schedule"), follow this flow:
     *   Define the route in `infrastructure/http/routes/`.
 4.  **Tests**: Add unit tests for the domain and application logic, and integration tests for the infrastructure.
 
+## 🧪 Testing Structure
+
+Our testing philosophy aligns with Clean Architecture, ensuring tests are isolated and target appropriate layers. The `tests/` directory is organized into:
+
+*   **`tests/unit/`**: Tests core domain logic (entities, value objects) and application use cases. These tests run fast and mock all external dependencies.
+*   **`tests/integration/`**: Tests how our infrastructure layer (repositories, adapters) interacts with external systems like the database or third-party APIs.
+*   **`tests/e2e/`**: Tests full application flows, from HTTP request to database and back, ensuring the entire system works together as expected.
+
 ## 🔄 Dependency Rule
+
 Dependencies only point **inwards**.
 *   `Infrastructure` -> `Application` -> `Domain`
 *   The `Domain` layer knows nothing about the outer layers.
+
+```mermaid
+graph TD
+    A[Infrastructure Layer<br>Hono, Prisma, External APIs] --> B[Application Layer<br>Use Cases, DTOs]
+    B --> C[Domain Layer<br>Entities, Value Objects, Interfaces]
+
+    style A fill:#f9f,stroke:#333,stroke-width:2px
+    style B fill:#bbf,stroke:#333,stroke-width:2px
+    style C fill:#bfb,stroke:#333,stroke-width:2px
+```

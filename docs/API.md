@@ -29,10 +29,10 @@ The best way to explore the API is via the built-in Swagger UI, which provides i
 
 ### Auth
 
-*Endpoints are currently placeholders (501 Not Implemented). Client-side authentication via Supabase SDK is recommended.*
+*Endpoints are currently placeholders and will return `501 Not Implemented`. Client-side authentication via Supabase SDK is recommended.*
 
-- `POST /auth/register` - Register a new user.
-- `POST /auth/login` - Authenticate user.
+- `POST /auth/register` (501 Not Implemented) - Register a new user.
+- `POST /auth/login` (501 Not Implemented) - Authenticate user.
 
 ### Gardens
 
@@ -43,13 +43,13 @@ The best way to explore the API is via the built-in Swagger UI, which provides i
 
 ### Plants
 
-*Direct plant management endpoints are partially implemented; use Garden endpoints for main flows.*
+*Direct plant management endpoints are partially implemented and will return `501 Not Implemented`; use Garden endpoints for main flows.*
 
-- `GET /plants` - List all plants for the user (501 Not Implemented).
-- `POST /plants` - Create a new plant (501 Not Implemented).
-- `GET /plants/:id` - Get plant details (501 Not Implemented).
-- `PATCH /plants/:id` - Update plant details (501 Not Implemented).
-- `DELETE /plants/:id` - Delete a plant (501 Not Implemented).
+- `GET /plants` (501 Not Implemented) - List all plants for the user.
+- `POST /plants` (501 Not Implemented) - Create a new plant.
+- `GET /plants/:id` (501 Not Implemented) - Get plant details.
+- `PATCH /plants/:id` (501 Not Implemented) - Update plant details.
+- `DELETE /plants/:id` (501 Not Implemented) - Delete a plant.
 
 ### AI Identification
 
@@ -65,10 +65,10 @@ The best way to explore the API is via the built-in Swagger UI, which provides i
 
 *These endpoints currently return `501 Not Implemented`.*
 
-- `GET /care-tracker/upcoming` - Get upcoming tasks.
-- `POST /care-tracker/schedules` - Create a care schedule.
-- `POST /care-tracker/schedules/:id/complete` - Mark task as complete.
-- `POST /care-tracker/generate` - Generate smart schedule.
+- `GET /care-tracker/upcoming` (501 Not Implemented) - Get upcoming tasks.
+- `POST /care-tracker/schedules` (501 Not Implemented) - Create a care schedule.
+- `POST /care-tracker/schedules/:id/complete` (501 Not Implemented) - Mark task as complete.
+- `POST /care-tracker/generate` (501 Not Implemented) - Generate smart schedule.
 
 ---
 
