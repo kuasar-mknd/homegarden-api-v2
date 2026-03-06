@@ -1,6 +1,7 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { env } from '../../infrastructure/config/env.js'
 import { prisma } from '../../infrastructure/database/prisma.client.js'
+
 // Mock dependencies
 vi.mock('../../infrastructure/config/env.js', () => ({
   env: {
