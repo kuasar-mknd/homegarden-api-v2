@@ -43,3 +43,8 @@
 ## Rejected Changes
 
 *(None yet)*
+
+## 2025-03-06 - Accessible Copy-to-Clipboard
+
+**Learning:** When using visual feedback alone (like changing button text to "Copied!"), screen reader users may not be aware of the successful action.
+**Action:** Use an `aria-live="polite"` region and synchronously update its text content to provide explicit auditory confirmation for screen readers when implementing copy-to-clipboard functionality. Ensure `.sr-only` is available in the design system to hide this region visually.
