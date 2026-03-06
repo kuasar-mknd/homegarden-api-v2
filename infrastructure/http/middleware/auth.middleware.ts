@@ -5,11 +5,15 @@ import { logger } from '../../config/logger.js'
 import { prisma } from '../../database/prisma.client.js'
 
 // Initialize Supabase client
+let supabaseClient: ReturnType<typeof createClient> | null = null
 const getSupabase = () => {
   if (!env.SUPABASE_URL || !env.SUPABASE_PUBLISHABLE_KEY) {
     throw new Error('Supabase URL or Publishable Key not configured')
   }
-  return createClient(env.SUPABASE_URL, env.SUPABASE_PUBLISHABLE_KEY)
+  if (!supabaseClient) {
+    supabaseClient = createClient(env.SUPABASE_URL, env.SUPABASE_PUBLISHABLE_KEY)
+  }
+  return supabaseClient
 }
 
 /**
@@ -17,6 +21,19 @@ const getSupabase = () => {
  *
  * Verifies the Supabase JWT token and syncs the user to the local database.
  */
+// Optimization: Exclude large unused fields when fetching user in middleware
+const AUTH_USER_SELECT = {
+  id: true,
+  email: true,
+  firstName: true,
+  lastName: true,
+  role: true,
+  avatarUrl: true,
+  birthDate: true,
+  createdAt: true,
+  updatedAt: true,
+}
+
 export const authMiddleware = createMiddleware(async (c, next) => {
   const authHeader = c.req.header('Authorization')
 
@@ -74,6 +91,7 @@ export const authMiddleware = createMiddleware(async (c, next) => {
     // Check if user exists first to avoid unnecessary write operations
     const existingUser = await prisma.user.findUnique({
       where: { email: user.email },
+      select: AUTH_USER_SELECT,
     })
 
     let localUser = existingUser
@@ -99,6 +117,7 @@ export const authMiddleware = createMiddleware(async (c, next) => {
           avatarUrl: metadata.avatar_url,
           role: 'USER',
         },
+        select: AUTH_USER_SELECT,
       })
       logger.info({ userId: localUser.id }, 'Synced new user')
     }

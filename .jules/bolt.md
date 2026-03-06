@@ -29,3 +29,11 @@
 ## 2024-05-23 - [Static Layout Anti-Pattern]
 **Learning:** Pre-computing HTML layouts (header/footer) to save string concatenation is a micro-optimization that creates security risks (e.g., static CSP nonces) and prevents dynamic content (Auth state).
 **Action:** Avoid caching layout templates unless they are strictly static and have no dependencies on request context.
+
+## 2024-05-23 - [External Client Instantiation]
+**Learning:** Re-instantiating external service clients (like Supabase, AWS, etc) on every incoming request in middleware adds significant latency and memory overhead, exhausting connection limits.
+**Action:** Always wrap external client initialization in a singleton pattern (lazy-loaded if necessary to prevent startup crashes when env vars are missing), especially in high-frequency middleware.
+
+## 2024-05-23 - [Entity Hydration via Partial Query]
+**Learning:** Returning entire database objects natively via Prisma fetching logic includes massive unneeded JSON blobs (like user preferences) or sensitive data (passwords) which can severely impact node's garbage collection and response serialization time.
+**Action:** Explicitly define and utilize Prisma `select` clauses in Repository implementations when mapping domain models that don't need or expose large columns, avoiding hidden object bloat.

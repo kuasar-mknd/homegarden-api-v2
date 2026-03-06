@@ -1,8 +1,6 @@
-import { createClient } from '@supabase/supabase-js'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { env } from '../../infrastructure/config/env.js'
 import { prisma } from '../../infrastructure/database/prisma.client.js'
-import { authMiddleware } from '../../infrastructure/http/middleware/auth.middleware.js'
 
 // Mock dependencies
 vi.mock('../../infrastructure/config/env.js', () => ({
@@ -29,16 +27,26 @@ describe('AuthMiddleware', () => {
   let mockContext: any
   let mockNext: any
   let mockSupabase: any
+  let authMiddleware: any
 
-  beforeEach(() => {
+  beforeEach(async () => {
     vi.clearAllMocks()
+    vi.resetModules()
 
     mockSupabase = {
       auth: {
         getUser: vi.fn(),
       },
     }
-    vi.mocked(createClient).mockReturnValue(mockSupabase as any)
+
+    // Set up the mocked version of supabase-js that returns our mockSupabase
+    vi.doMock('@supabase/supabase-js', () => ({
+      createClient: vi.fn().mockReturnValue(mockSupabase),
+    }))
+
+    // Now re-import the middleware so it picks up the fresh singleton state and mocks
+    const module = await import('../../infrastructure/http/middleware/auth.middleware.js')
+    authMiddleware = module.authMiddleware
 
     mockContext = {
       req: {
@@ -166,6 +174,11 @@ describe('AuthMiddleware', () => {
       prisma: undefined,
     }))
 
+    // We also need to preserve the createClient mock for this new module load
+    vi.doMock('@supabase/supabase-js', () => ({
+      createClient: vi.fn().mockReturnValue(mockSupabase),
+    }))
+
     // Re-import to get the fresh module with mocked prisma
     const { authMiddleware: freshAuthMiddleware } = await import(
       '../../infrastructure/http/middleware/auth.middleware.js'
@@ -177,18 +190,12 @@ describe('AuthMiddleware', () => {
   })
 
   it('should handle non-Error object rejection in auth middleware', async () => {
-    vi.resetModules()
-
     // Configure mockSupabase to throw a string
     mockSupabase.auth.getUser.mockRejectedValue('String Error')
 
     mockContext.req.header.mockReturnValue('Bearer token')
 
-    // Re-import to ensure clean state (though might not be strictly necessary if createClient mock persists)
-    const { authMiddleware: freshAuthMiddleware } = await import(
-      '../../infrastructure/http/middleware/auth.middleware.js'
-    )
-    const result = (await freshAuthMiddleware(mockContext, mockNext)) as any
+    const result = (await authMiddleware(mockContext, mockNext)) as any
 
     expect(result.status).toBe(500)
     expect(result.data.message).toBe('Authentication service error')
