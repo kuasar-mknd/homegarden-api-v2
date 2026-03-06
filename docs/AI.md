@@ -35,11 +35,12 @@ The application instructs the AI to return structured JSON data.
       "family": "Araliaceae",
       "genus": "Hedera",
       "description": "Evergreen climbing or ground-creeping vine",
-      "origin": "Europe and Western Asia",
-      "imageUrl": "https://..."
+      "origin": "Europe and Western Asia"
     }
   ]
 }
+
+*(Note: The `imageUrl` field is typically handled and appended by the application adapter, not generated directly by the Gemini model)*
 ```
 
 ### Diagnosis Schema
