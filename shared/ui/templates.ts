@@ -442,6 +442,17 @@ export const SHARED_STYLES = `
     display: flex;
     justify-content: center;
   }
+  .sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+  }
   @media (prefers-color-scheme: dark) {
     .code-block {
       background: #2d2d2d;
@@ -634,6 +645,7 @@ export function getNotFoundPageHtml(path: string): string {
             </button>
         </div>
       </div>
+      <div id="copy-announcer" aria-live="polite" class="sr-only"></div>
 
       <p>Please check the URL or go back to the homepage.</p>
 
@@ -655,6 +667,7 @@ export function getNotFoundPageHtml(path: string): string {
 
         // Handle Copy
         var btns = document.querySelectorAll('.copy-btn');
+        var announcer = document.getElementById('copy-announcer');
         Array.prototype.forEach.call(btns, function(btn) {
           btn.addEventListener('click', function() {
             var targetSelector = btn.getAttribute('data-clipboard-target');
@@ -666,7 +679,15 @@ export function getNotFoundPageHtml(path: string): string {
                  navigator.clipboard.writeText(text).then(function() {
                     var originalHtml = btn.innerHTML;
                     btn.innerHTML = '${CHECK_ICON} Copied!';
-                    setTimeout(function() { btn.innerHTML = originalHtml; }, 2000);
+                    if (announcer) {
+                      announcer.textContent = 'URL copied to clipboard';
+                    }
+                    setTimeout(function() {
+                      btn.innerHTML = originalHtml;
+                      if (announcer) {
+                        announcer.textContent = '';
+                      }
+                    }, 2000);
                  }).catch(function(err) {
                     console.error('Failed to copy', err);
                  });
