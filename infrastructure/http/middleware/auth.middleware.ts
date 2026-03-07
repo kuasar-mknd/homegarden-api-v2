@@ -43,6 +43,18 @@ export const authMiddleware = createMiddleware(async (c, next) => {
     )
   }
 
+  // Strictly enforce the "Bearer " prefix
+  if (!authHeader.startsWith('Bearer ')) {
+    return c.json(
+      {
+        success: false,
+        error: 'UNAUTHORIZED',
+        message: 'Invalid Authorization header format. Expected Bearer token.',
+      },
+      401,
+    )
+  }
+
   const token = authHeader.replace('Bearer ', '')
 
   try {
