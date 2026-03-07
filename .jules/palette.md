@@ -43,3 +43,8 @@
 ## Rejected Changes
 
 *(None yet)*
+
+## 2026-03-07 - Screen Reader Feedback for Asynchronous Actions
+
+**Learning:** Visual-only success states (like changing a button's icon and text temporarily to "Copied!") are invisible to screen readers unless focus is forced (which is disruptive) or an `aria-live` region is used.
+**Action:** When implementing interactions that change state dynamically without page reloads (like copying to clipboard), always include a globally available `aria-live="polite"` region (e.g., `<div id="a11y-announcer" class="sr-only"></div>`) and update its text content synchronously with the visual change to provide explicit auditory confirmation.
