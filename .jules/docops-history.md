@@ -15,3 +15,4 @@
 | 2026-01-15 | DocOps | .github/dependabot.yml, README.md, docs/API.md | Created Dependabot config, added docker-compose docs, updated API endpoints. |
 | 2026-01-20 | DocOps | .github/workflows/*, docs/*, README.md | Fixed workflow versions, refined API docs (501 status), updated README |
 | 2026-05-18 | CI pipeline fix | .github/workflows/ci.yml | Reordered CI steps to run db:generate before linting |
+| 2026-05-18 | Security Audit | package.json, pnpm-lock.yaml | Updated hono and @hono/node-server to fix vulnerabilities |
