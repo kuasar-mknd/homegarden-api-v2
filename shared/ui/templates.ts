@@ -442,6 +442,17 @@ export const SHARED_STYLES = `
     display: flex;
     justify-content: center;
   }
+  .sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+  }
   @media (prefers-color-scheme: dark) {
     .code-block {
       background: #2d2d2d;
@@ -546,6 +557,7 @@ export function baseLayout({ title, description, content }: LayoutProps): string
 </head>
 <body>
   <a href="#main" class="skip-link" title="Jump to the main content area">Skip to main content</a>
+  <div id="a11y-announcer" class="sr-only" aria-live="polite"></div>
   <div class="container">
     ${content}
     <footer class="status" role="contentinfo">
@@ -666,7 +678,16 @@ export function getNotFoundPageHtml(path: string): string {
                  navigator.clipboard.writeText(text).then(function() {
                     var originalHtml = btn.innerHTML;
                     btn.innerHTML = '${CHECK_ICON} Copied!';
-                    setTimeout(function() { btn.innerHTML = originalHtml; }, 2000);
+                    var announcer = document.getElementById('a11y-announcer');
+                    if (announcer) {
+                      announcer.textContent = 'Path copied to clipboard';
+                    }
+                    setTimeout(function() {
+                      btn.innerHTML = originalHtml;
+                      if (announcer) {
+                        announcer.textContent = '';
+                      }
+                    }, 2000);
                  }).catch(function(err) {
                     console.error('Failed to copy', err);
                  });
