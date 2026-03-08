@@ -171,8 +171,8 @@ app.use(
       fontSrc: ["'self'", 'https:', 'data:'],
     },
     xFrameOptions: 'DENY',
-    // xXssProtection is deprecated and can introduce XS-Leaks, so we remove it.
-    // Modern browsers use CSP for XSS protection.
+    xContentTypeOptions: 'nosniff',
+    xXssProtection: '0', // Explicitly disable to prevent XS-Leaks, relying on CSP
     strictTransportSecurity: 'max-age=63072000; includeSubDomains; preload',
     referrerPolicy: 'strict-origin-when-cross-origin',
     // Permissions Policy to restrict powerful features
