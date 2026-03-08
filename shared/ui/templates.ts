@@ -442,12 +442,39 @@ export const SHARED_STYLES = `
     display: flex;
     justify-content: center;
   }
+  .sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border-width: 0;
+  }
+  @keyframes slide-in {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .slide-in {
+    animation: slide-in 0.4s ease-out forwards;
+    opacity: 0;
+  }
+  .slide-in:nth-child(1) { animation-delay: 0.1s; }
+  .slide-in:nth-child(2) { animation-delay: 0.2s; }
+  .slide-in:nth-child(3) { animation-delay: 0.3s; }
+  .slide-in:nth-child(4) { animation-delay: 0.4s; }
   @media (prefers-color-scheme: dark) {
     .code-block {
       background: #2d2d2d;
     }
   }
   @media (prefers-reduced-motion: reduce) {
+    .slide-in {
+      animation: none;
+      opacity: 1;
+    }
     .card, .skip-link, .btn, .card h2, footer a, .card-arrow {
       transition: none;
     }
@@ -465,7 +492,8 @@ export const SHARED_STYLES = `
   @media print {
     body { background: white; color: black; display: block; }
     .container { box-shadow: none; border: none; max-width: 100%; width: 100%; padding: 0; }
-    .skip-link, .status-dot, .external-icon, .no-print { display: none !important; }
+    .skip-link, .status-dot, .external-icon, .no-print, .sr-only { display: none !important; }
+    .slide-in { animation: none; opacity: 1; }
     .grid { display: block; }
     .card { border: 1px solid #000; margin-bottom: 1rem; break-inside: avoid; page-break-inside: avoid; box-shadow: none; }
     a { text-decoration: underline; color: black; }
@@ -524,6 +552,7 @@ export function baseLayout({ title, description, content }: LayoutProps): string
   <meta name="apple-mobile-web-app-title" content="HomeGarden">
 
   <meta property="og:site_name" content="HomeGarden API">
+  <meta property="og:locale" content="en_US">
   <meta property="og:title" content="${safeTitle}">
   <meta property="og:description" content="${metaDescription}">
   <meta property="og:type" content="website">
@@ -546,6 +575,7 @@ export function baseLayout({ title, description, content }: LayoutProps): string
 </head>
 <body>
   <a href="#main" class="skip-link" title="Jump to the main content area">Skip to main content</a>
+  <div id="a11y-announcer" class="sr-only" aria-live="polite"></div>
   <div class="container">
     ${content}
     <footer class="status" role="contentinfo">
@@ -579,25 +609,25 @@ const LANDING_PAGE_HTML = baseLayout({
       <p>Welcome to the HomeGarden API. Connect your applications to smart plant management services.</p>
 
       <ul class="grid" role="list">
-        <li>
+        <li class="slide-in">
           <a href="/ui" class="card" aria-describedby="desc-ui">
             <h2>📚 Documentation<span class="card-arrow" aria-hidden="true">→</span></h2>
             <p id="desc-ui">Interactive Swagger UI for API exploration.</p>
           </a>
         </li>
-        <li>
+        <li class="slide-in">
           <a href="/doc" class="card" aria-describedby="desc-doc">
             <h2>🔍 OpenAPI Spec<span class="card-arrow" aria-hidden="true">→</span></h2>
             <p id="desc-doc">Raw JSON specification for integration.</p>
           </a>
         </li>
-        <li>
+        <li class="slide-in">
           <a href="/ui#/PlantID" class="card" aria-describedby="desc-plantid">
             <h2>🌿 Plant ID<span class="card-arrow" aria-hidden="true">→</span></h2>
             <p id="desc-plantid">Identify species using AI vision (Docs).</p>
           </a>
         </li>
-        <li>
+        <li class="slide-in">
           <a href="/ui#/DrPlant" class="card" aria-describedby="desc-drplant">
             <h2>🩺 Dr. Plant<span class="card-arrow" aria-hidden="true">→</span></h2>
             <p id="desc-drplant">Diagnose diseases and pests (Docs).</p>
@@ -612,7 +642,7 @@ export function getLandingPageHtml(): string {
   return LANDING_PAGE_HTML
 }
 
-export function getNotFoundPageHtml(path: string): string {
+export function getNotFoundPageHtml(path: string, nonce?: string): string {
   const safePath = escapeHtml(path)
   return baseLayout({
     title: '404: Page Not Found - HomeGarden API',
@@ -643,18 +673,23 @@ export function getNotFoundPageHtml(path: string): string {
         <a href="/ui" class="btn btn-secondary">${DOC_ICON}Read Documentation</a>
       </div>
     </main>
-    <script>
+    <script${nonce ? ` nonce="${nonce}"` : ''}>
       (function() {
         // Handle Go Back
         var backBtn = document.getElementById('go-back-btn');
         if (backBtn) {
-          backBtn.addEventListener('click', function() {
-            history.back();
-          });
+          if (history.length <= 1) {
+            backBtn.style.display = 'none';
+          } else {
+            backBtn.addEventListener('click', function() {
+              history.back();
+            });
+          }
         }
 
         // Handle Copy
         var btns = document.querySelectorAll('.copy-btn');
+        var announcer = document.getElementById('a11y-announcer');
         Array.prototype.forEach.call(btns, function(btn) {
           btn.addEventListener('click', function() {
             var targetSelector = btn.getAttribute('data-clipboard-target');
@@ -666,7 +701,13 @@ export function getNotFoundPageHtml(path: string): string {
                  navigator.clipboard.writeText(text).then(function() {
                     var originalHtml = btn.innerHTML;
                     btn.innerHTML = '${CHECK_ICON} Copied!';
-                    setTimeout(function() { btn.innerHTML = originalHtml; }, 2000);
+                    if (announcer) {
+                      announcer.textContent = 'Path copied to clipboard';
+                    }
+                    setTimeout(function() {
+                      btn.innerHTML = originalHtml;
+                      if (announcer) announcer.textContent = '';
+                    }, 2000);
                  }).catch(function(err) {
                     console.error('Failed to copy', err);
                  });
