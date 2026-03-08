@@ -43,3 +43,8 @@
 ## Rejected Changes
 
 *(None yet)*
+
+## 2024-05-24 - Audio Feedback for Visual State Changes
+
+**Learning:** When performing actions like "Copy to Clipboard", visually changing a button's icon and text provides good feedback for sighted users, but screen readers are left completely unaware unless focus is explicitly managed or live regions are used. Without an `aria-live` announcer, clipboard actions are a "silent failure/success" for visually impaired users.
+**Action:** Always include a visually hidden `aria-live="polite"` region (`#a11y-announcer` with `.sr-only` class) and update its `textContent` synchronously with the visual success indicator to provide explicit auditory confirmation for screen readers. Ensure the announcer is initialized in the base layout to be available globally.
