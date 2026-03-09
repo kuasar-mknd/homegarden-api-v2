@@ -39,10 +39,7 @@ jobs:
           cache: "pnpm"
 
       - name: Install dependencies
-        run: pnpm install
-
-      - name: Lint
-        run: pnpm run ci:check
+        run: pnpm install --frozen-lockfile
 
       - name: Setup Database (and Generate Client)
         env:
@@ -51,10 +48,13 @@ jobs:
           pnpm db:push
           pnpm db:generate
 
-      - name: Typecheck
+      - name: Lint Code
+        run: pnpm run ci:check
+
+      - name: Typecheck and Build
         run: pnpm build
 
-      - name: Run Tests
+      - name: Run Unit and Integration Tests
         env:
           DATABASE_URL: postgres://postgres:password@localhost:5432/homegarden
           SUPABASE_URL: https://dummy.supabase.co
