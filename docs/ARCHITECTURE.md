@@ -32,11 +32,11 @@ Contains shared utilities, types, and constants used across multiple layers (e.g
 To add a new feature (e.g., "Watering Schedule"), follow this flow:
 
 1.  **Domain**: Define the `WateringSchedule` entity and its repository interface in `domain/`.
-2.  **Application**: Create a service/use-case (e.g., `CreateWateringScheduleService`) in `application/`.
+2.  **Application**: Create a service/use-case (e.g., `CreateWateringScheduleService`) in `application/`. All new use-cases containing business logic must be placed here.
 3.  **Infrastructure**:
     *   Implement the repository in `infrastructure/repositories/`.
     *   Create a controller in `infrastructure/http/controllers/`.
-    *   Define the route in `infrastructure/http/routes/`.
+    *   Define the route in `infrastructure/http/routes/` and hook it up to the appropriate router (or create a new router and register it in `infrastructure/http/server.ts` or `index.ts`). Ensure OpenAPI metadata (Zod validation schemas and tags) are provided for each new route.
 4.  **Tests**: Add unit tests for the domain and application logic, and integration tests for the infrastructure.
 
 ## 🔄 Dependency Rule

@@ -111,6 +111,26 @@ curl -X POST http://localhost:3000/api/v2/plant-id/identify \
   -d '{"imageUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/3/3a/Monstera_deliciosa5.jpg/640px-Monstera_deliciosa5.jpg"}'
 ```
 
+### Example: Get User Plants (requires Auth)
+
+Retrieve all plants belonging to the authenticated user across all their gardens.
+
+```bash
+curl -X GET http://localhost:3000/api/v2/gardens/plants \
+  -H "Authorization: Bearer <YOUR_SUPABASE_TOKEN>" \
+  -H "Content-Type: application/json"
+```
+
+### Example: Find Nearby Gardens (requires Auth)
+
+Search for gardens within a specific radius (in meters) of a geolocation.
+
+```bash
+curl -X GET "http://localhost:3000/api/v2/gardens/nearby?lat=37.7749&lon=-122.4194&radiusInMeters=5000" \
+  -H "Authorization: Bearer <YOUR_SUPABASE_TOKEN>" \
+  -H "Content-Type: application/json"
+```
+
 ## 🔧 Troubleshooting
 
 *   **`Supabase URL or Publishable Key not configured`**: Ensure `SUPABASE_URL` and `SUPABASE_PUBLISHABLE_KEY` are set in `.env`.
