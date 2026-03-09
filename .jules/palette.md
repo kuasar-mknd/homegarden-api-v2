@@ -43,3 +43,13 @@
 ## Rejected Changes
 
 *(None yet)*
+
+## 2024-05-24 - Screen Reader State Changes
+
+**Learning:** Visual-only indicators (like updating button text from "Copy" to "Copied") fail to notify screen reader users.
+**Action:** Use a visually hidden, global `aria-live="polite"` div to announce dynamic status changes synchronously with visual updates.
+
+## 2024-05-24 - Empty State UX
+
+**Learning:** Leaving "Go Back" buttons visible when the user has no history (`window.history.length <= 1`) causes confusion and dead clicks.
+**Action:** Always conditionally render or hide history navigation based on available state.
