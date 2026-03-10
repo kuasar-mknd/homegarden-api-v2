@@ -43,3 +43,8 @@
 ## Rejected Changes
 
 *(None yet)*
+
+## 2024-05-25 - Copy to Clipboard Accessibility
+
+**Learning:** Visual feedback like "Copied!" button text changes are not inherently announced by screen readers if they are not in an `aria-live` region. Adding `aria-live="polite"` directly to the button can cause confusing repetitive announcements of the button's name alongside the state change.
+**Action:** Use a dedicated, visually hidden `aria-live="polite"` region (e.g., `#a11y-announcer` with `.sr-only` class) at the top level of the layout. Update its `textContent` synchronously with the visual success indicator to provide explicit auditory confirmation for asynchronous actions.
