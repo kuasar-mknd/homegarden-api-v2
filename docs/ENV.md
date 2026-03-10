@@ -1,6 +1,6 @@
 # Environment Variables
 
-This document lists all environment variables used by the application, matching the source of truth in `infrastructure/config/env.ts`.
+This document lists all environment variables used by the application, matching the source of truth in `infrastructure/config/env.ts`. An example configuration is provided in `.env.example` which must be copied to `.env` for local development.
 
 ## Application
 

@@ -27,12 +27,12 @@ The best way to explore the API is via the built-in Swagger UI, which provides i
 
 ## 🌿 Core Resources
 
-### Auth
+### Auth (501 Not Implemented)
 
 *Endpoints are currently placeholders (501 Not Implemented). Client-side authentication via Supabase SDK is recommended.*
 
-- `POST /auth/register` - Register a new user.
-- `POST /auth/login` - Authenticate user.
+- `POST /auth/register` - Register a new user (501 Not Implemented).
+- `POST /auth/login` - Authenticate user (501 Not Implemented).
 
 ### Gardens
 
@@ -61,14 +61,14 @@ The best way to explore the API is via the built-in Swagger UI, which provides i
 
 - `GET /users/:id` - Get public profile information for a user.
 
-### Care Tracker (Coming Soon)
+### Care Tracker (501 Not Implemented)
 
 *These endpoints currently return `501 Not Implemented`.*
 
-- `GET /care-tracker/upcoming` - Get upcoming tasks.
-- `POST /care-tracker/schedules` - Create a care schedule.
-- `POST /care-tracker/schedules/:id/complete` - Mark task as complete.
-- `POST /care-tracker/generate` - Generate smart schedule.
+- `GET /care-tracker/upcoming` - Get upcoming tasks (501 Not Implemented).
+- `POST /care-tracker/schedules` - Create a care schedule (501 Not Implemented).
+- `POST /care-tracker/schedules/:id/complete` - Mark task as complete (501 Not Implemented).
+- `POST /care-tracker/generate` - Generate smart schedule (501 Not Implemented).
 
 ---
 
