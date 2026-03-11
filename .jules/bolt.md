@@ -29,3 +29,7 @@
 ## 2024-05-23 - [Static Layout Anti-Pattern]
 **Learning:** Pre-computing HTML layouts (header/footer) to save string concatenation is a micro-optimization that creates security risks (e.g., static CSP nonces) and prevents dynamic content (Auth state).
 **Action:** Avoid caching layout templates unless they are strictly static and have no dependencies on request context.
+
+## 2024-05-23 - [Lazy Loading AI Models]
+**Learning:** Eagerly initializing heavyweight third-party SDK clients (like GoogleGenerativeAI) and specific models in the constructor blocks initialization or consumes memory prematurely, especially for endpoints that may not even require them or are not immediately hit.
+**Action:** Use a lazy initialization pattern (e.g., `getInstance()` methods) for heavy SDK clients and models, creating them only upon first use to reduce startup overhead and memory footprint.

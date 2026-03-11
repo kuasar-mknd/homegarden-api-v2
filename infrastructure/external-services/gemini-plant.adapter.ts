@@ -133,9 +133,9 @@ Rules:
  * using Google's Gemini Vision models.
  */
 export class GeminiPlantAdapter implements AIIdentificationPort, AIDiagnosisPort {
-  private readonly genAI: GoogleGenerativeAI
-  private readonly identificationModel: GenerativeModel
-  private readonly diagnosisModel: GenerativeModel
+  private genAIInstance: GoogleGenerativeAI | null = null
+  private identificationModelInstance: GenerativeModel | null = null
+  private diagnosisModelInstance: GenerativeModel | null = null
   private readonly apiKey: string
 
   constructor(apiKey?: string) {
@@ -144,26 +144,41 @@ export class GeminiPlantAdapter implements AIIdentificationPort, AIDiagnosisPort
     if (!this.apiKey) {
       logger.warn('⚠️ GOOGLE_AI_API_KEY not configured - AI features will be unavailable')
     }
+  }
 
-    this.genAI = new GoogleGenerativeAI(this.apiKey)
+  private getGenAI(): GoogleGenerativeAI {
+    if (!this.genAIInstance) {
+      this.genAIInstance = new GoogleGenerativeAI(this.apiKey)
+    }
+    return this.genAIInstance
+  }
 
-    this.identificationModel = this.genAI.getGenerativeModel({
-      model: getIdentificationModel(),
-      generationConfig: {
-        temperature: 0.2, // Low temperature for consistent identification
-        topP: 0.8,
-        maxOutputTokens: 2048,
-      },
-    })
+  private getIdentificationModelInstance(): GenerativeModel {
+    if (!this.identificationModelInstance) {
+      this.identificationModelInstance = this.getGenAI().getGenerativeModel({
+        model: getIdentificationModel(),
+        generationConfig: {
+          temperature: 0.2, // Low temperature for consistent identification
+          topP: 0.8,
+          maxOutputTokens: 2048,
+        },
+      })
+    }
+    return this.identificationModelInstance
+  }
 
-    this.diagnosisModel = this.genAI.getGenerativeModel({
-      model: getDiagnosisModel(),
-      generationConfig: {
-        temperature: 0.4, // Slightly higher for nuanced diagnosis
-        topP: 0.9,
-        maxOutputTokens: 4096,
-      },
-    })
+  private getDiagnosisModelInstance(): GenerativeModel {
+    if (!this.diagnosisModelInstance) {
+      this.diagnosisModelInstance = this.getGenAI().getGenerativeModel({
+        model: getDiagnosisModel(),
+        generationConfig: {
+          temperature: 0.4, // Slightly higher for nuanced diagnosis
+          topP: 0.9,
+          maxOutputTokens: 4096,
+        },
+      })
+    }
+    return this.diagnosisModelInstance
   }
 
   // ============================================================
@@ -204,7 +219,8 @@ export class GeminiPlantAdapter implements AIIdentificationPort, AIDiagnosisPort
       prompt += `\n\nPlease identify this plant and return ${request.maxSuggestions ?? 5} suggestions.`
 
       // Call Gemini
-      const result = await this.identificationModel.generateContent([prompt, imagePart])
+      const model = this.getIdentificationModelInstance()
+      const result = await model.generateContent([prompt, imagePart])
       const response = result.response
       const text = response.text()
 
@@ -340,7 +356,8 @@ export class GeminiPlantAdapter implements AIIdentificationPort, AIDiagnosisPort
       prompt += '\n\nPlease analyze this plant and provide a diagnosis.'
 
       // Call Gemini
-      const apiResult = await this.diagnosisModel.generateContent([prompt, imagePart])
+      const model = this.getDiagnosisModelInstance()
+      const apiResult = await model.generateContent([prompt, imagePart])
       const response = apiResult.response
       const text = response.text()
 
@@ -472,7 +489,7 @@ export class GeminiPlantAdapter implements AIIdentificationPort, AIDiagnosisPort
 
     try {
       // Simple API test
-      const model = this.genAI.getGenerativeModel({ model: getIdentificationModel() })
+      const model = this.getIdentificationModelInstance()
       const result = await model.generateContent('Say "ok" if you can read this.')
       return result.response.text().toLowerCase().includes('ok')
     } catch {
