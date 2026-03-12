@@ -29,3 +29,7 @@
 ## 2024-05-23 - [Static Layout Anti-Pattern]
 **Learning:** Pre-computing HTML layouts (header/footer) to save string concatenation is a micro-optimization that creates security risks (e.g., static CSP nonces) and prevents dynamic content (Auth state).
 **Action:** Avoid caching layout templates unless they are strictly static and have no dependencies on request context.
+
+## 2025-03-09 - [Hono Context Integrity]
+**Learning:** Optimizing database queries by excluding fields (like `preferences`) in middleware that populates a global request context (like `c.set('user', user)`) is dangerous if downstream routes or types expect the full entity.
+**Action:** When optimizing global or shared queries, ensure that all potential downstream consumers of the resulting object do not depend on the excluded fields, or update the shared context type definitions to reflect the partial object.

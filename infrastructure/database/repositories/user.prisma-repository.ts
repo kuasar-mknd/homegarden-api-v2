@@ -6,9 +6,24 @@ import type {
 } from '../../../domain/repositories/user.repository.js'
 import { prisma } from '../prisma.client.js'
 
+// Optimization: Select only fields required for UserProps to avoid fetching large JSON blobs (preferences)
+const USER_SELECT = {
+  id: true,
+  email: true,
+  firstName: true,
+  lastName: true,
+  role: true,
+  avatarUrl: true,
+  birthDate: true,
+  createdAt: true,
+  updatedAt: true,
+  // preferences and password are explicitly excluded as they're not always used
+}
+
 export class UserPrismaRepository implements UserRepository {
   async create(data: CreateUserData): Promise<User> {
     const user = await prisma.user.create({
+      select: USER_SELECT,
       data: {
         email: data.email,
         password: data.password,
@@ -23,6 +38,7 @@ export class UserPrismaRepository implements UserRepository {
   async findByEmail(email: string): Promise<User | null> {
     const user = await prisma.user.findUnique({
       where: { email },
+      select: USER_SELECT,
     })
     return user ? this.mapToEntity(user) : null
   }
@@ -30,6 +46,7 @@ export class UserPrismaRepository implements UserRepository {
   async findById(id: string): Promise<User | null> {
     const user = await prisma.user.findUnique({
       where: { id },
+      select: USER_SELECT,
     })
     return user ? this.mapToEntity(user) : null
   }
@@ -37,6 +54,7 @@ export class UserPrismaRepository implements UserRepository {
   async update(id: string, data: UpdateUserData): Promise<User> {
     const user = await prisma.user.update({
       where: { id },
+      select: USER_SELECT,
       data: {
         ...data,
       } as any, // Simple cast for now
@@ -61,19 +79,7 @@ export class UserPrismaRepository implements UserRepository {
         where,
         skip,
         take: limit,
-        // Optimization: Select only fields required for UserProps to avoid fetching large JSON blobs (preferences)
-        select: {
-          id: true,
-          email: true,
-          firstName: true,
-          lastName: true,
-          role: true,
-          avatarUrl: true,
-          birthDate: true,
-          createdAt: true,
-          updatedAt: true,
-          // preferences is explicitly excluded as it's not used in mapToUserProps/Entity
-        },
+        select: USER_SELECT,
       }),
       prisma.user.count({ where }),
     ])
