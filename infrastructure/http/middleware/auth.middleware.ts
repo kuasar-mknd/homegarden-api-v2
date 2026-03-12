@@ -17,6 +17,21 @@ const getSupabase = () => {
  *
  * Verifies the Supabase JWT token and syncs the user to the local database.
  */
+
+// Optimization: Exclude heavy JSON fields (preferences) and sensitive fields (password)
+// from the hot path where user is fetched on every request
+const AUTH_USER_SELECT = {
+  id: true,
+  email: true,
+  firstName: true,
+  lastName: true,
+  role: true,
+  avatarUrl: true,
+  birthDate: true,
+  createdAt: true,
+  updatedAt: true,
+}
+
 export const authMiddleware = createMiddleware(async (c, next) => {
   const authHeader = c.req.header('Authorization')
 
@@ -74,6 +89,7 @@ export const authMiddleware = createMiddleware(async (c, next) => {
     // Check if user exists first to avoid unnecessary write operations
     const existingUser = await prisma.user.findUnique({
       where: { email: user.email },
+      select: AUTH_USER_SELECT,
     })
 
     let localUser = existingUser
@@ -87,6 +103,7 @@ export const authMiddleware = createMiddleware(async (c, next) => {
         metadata.full_name?.split(' ').slice(1).join(' ') || metadata.last_name || 'User'
 
       localUser = await prisma.user.create({
+        select: AUTH_USER_SELECT,
         data: {
           email: user.email,
           // We don't store the actual password since auth is handled by Supabase
