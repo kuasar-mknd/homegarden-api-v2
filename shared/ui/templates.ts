@@ -126,6 +126,30 @@ export const SHARED_STYLES = `
   ::-webkit-scrollbar-thumb:hover {
     background: var(--secondary);
   }
+
+  @keyframes slideIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .grid li {
+    animation: slideIn 0.4s ease-out backwards;
+  }
+  .grid li:nth-child(1) { animation-delay: 0.05s; }
+  .grid li:nth-child(2) { animation-delay: 0.1s; }
+  .grid li:nth-child(3) { animation-delay: 0.15s; }
+  .grid li:nth-child(4) { animation-delay: 0.2s; }
+
+  .sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+  }
   .skip-link {
     position: absolute;
     top: -100px;
@@ -448,6 +472,7 @@ export const SHARED_STYLES = `
     }
   }
   @media (prefers-reduced-motion: reduce) {
+    .grid li { animation: none; }
     .card, .skip-link, .btn, .card h2, footer a, .card-arrow {
       transition: none;
     }
@@ -523,6 +548,7 @@ export function baseLayout({ title, description, content }: LayoutProps): string
   <meta name="theme-color" content="#121212" media="(prefers-color-scheme: dark)">
   <meta name="apple-mobile-web-app-title" content="HomeGarden">
 
+  <meta property="og:locale" content="en_US">
   <meta property="og:site_name" content="HomeGarden API">
   <meta property="og:title" content="${safeTitle}">
   <meta property="og:description" content="${metaDescription}">
@@ -545,6 +571,7 @@ export function baseLayout({ title, description, content }: LayoutProps): string
   </style>
 </head>
 <body>
+  <div id="a11y-announcer" class="sr-only" aria-live="polite"></div>
   <a href="#main" class="skip-link" title="Jump to the main content area">Skip to main content</a>
   <div class="container">
     ${content}
@@ -648,9 +675,13 @@ export function getNotFoundPageHtml(path: string): string {
         // Handle Go Back
         var backBtn = document.getElementById('go-back-btn');
         if (backBtn) {
-          backBtn.addEventListener('click', function() {
-            history.back();
-          });
+          if (window.history.length <= 1) {
+            backBtn.style.display = 'none';
+          } else {
+            backBtn.addEventListener('click', function() {
+              history.back();
+            });
+          }
         }
 
         // Handle Copy
@@ -666,7 +697,12 @@ export function getNotFoundPageHtml(path: string): string {
                  navigator.clipboard.writeText(text).then(function() {
                     var originalHtml = btn.innerHTML;
                     btn.innerHTML = '${CHECK_ICON} Copied!';
-                    setTimeout(function() { btn.innerHTML = originalHtml; }, 2000);
+                    var announcer = document.getElementById('a11y-announcer');
+                    if (announcer) { announcer.textContent = 'Path copied to clipboard'; }
+                    setTimeout(function() {
+                      btn.innerHTML = originalHtml;
+                      if (announcer) { announcer.textContent = ''; }
+                    }, 2000);
                  }).catch(function(err) {
                     console.error('Failed to copy', err);
                  });

@@ -43,3 +43,7 @@
 ## Rejected Changes
 
 *(None yet)*
+
+## 2026-05-20 - Global Accessibility Announcer & Go Back Navigation
+**Learning:** `window.history.length` starts at 1 for a new tab, but Playwright headless navigations sometimes increment it to 2 immediately upon the first `.goto()`. Regardless, hiding the "Go Back" button if `window.history.length <= 1` correctly prevents dead-clicks for users landing directly on a 404. Furthermore, adding an `aria-live` region (`#a11y-announcer`) inside the layout body allows declarative, async auditory feedback (like "Path copied to clipboard") to support users lacking visual context.
+**Action:** Use an off-screen `aria-live="polite"` region updated via JS textContent for critical micro-interactions instead of just relying on visual DOM changes.
