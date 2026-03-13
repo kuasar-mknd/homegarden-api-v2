@@ -1,3 +1,4 @@
+import type { Prisma } from '@prisma/client'
 import { User, type UserProps } from '../../../domain/entities/user.entity.js'
 import type {
   CreateUserData,
@@ -17,7 +18,7 @@ const USER_SELECT = {
   birthDate: true,
   createdAt: true,
   updatedAt: true,
-}
+} satisfies Prisma.UserSelect
 
 export class UserPrismaRepository implements UserRepository {
   async create(data: CreateUserData): Promise<User> {
