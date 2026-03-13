@@ -1,4 +1,4 @@
-import type { Prisma } from '@prisma/client'
+import { Prisma } from '@prisma/client'
 import { User, type UserProps } from '../../../domain/entities/user.entity.js'
 import type {
   CreateUserData,
@@ -8,7 +8,7 @@ import type {
 import { prisma } from '../prisma.client.js'
 
 // Optimization: Select only necessary fields required for UserProps to avoid fetching large JSON blobs (like preferences or passwords).
-const USER_SELECT = {
+const USER_SELECT = Prisma.validator<Prisma.UserSelect>()({
   id: true,
   email: true,
   firstName: true,
@@ -18,7 +18,7 @@ const USER_SELECT = {
   birthDate: true,
   createdAt: true,
   updatedAt: true,
-} satisfies Prisma.UserSelect
+})
 
 export class UserPrismaRepository implements UserRepository {
   async create(data: CreateUserData): Promise<User> {
