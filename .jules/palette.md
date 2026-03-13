@@ -43,3 +43,7 @@
 ## Rejected Changes
 
 *(None yet)*
+
+## 2025-02-13 - [Add auditory feedback for clipboard copy]
+**Learning:** Purely visual "Copied!" feedback is invisible to screen readers, making copy actions feel unresponsive. Including a standard `aria-live="polite"` visually hidden announcer div that receives synchronous text updates is a highly effective, minimal-overhead pattern to resolve this.
+**Action:** Whenever a button action triggers purely visual success feedback (e.g., copying text or async UI state changes without full page reloads), immediately pair it with a `.sr-only` aria-live region update, and remember to clear it afterward to ensure subsequent identical actions are announced.
