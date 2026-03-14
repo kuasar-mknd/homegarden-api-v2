@@ -12,11 +12,11 @@ export const rateLimitMiddleware = rateLimiter({
   limit: env.RATE_LIMIT_MAX,
   standardHeaders: 'draft-6',
   keyGenerator: (c) => {
-    // Prioritize Cloudflare / Real IP headers
+    // Prioritize Cloudflare / Real IP headers (take last IP - nearest trusted proxy)
     const ip =
       c.req.header('cf-connecting-ip') ||
       c.req.header('x-real-ip') ||
-      c.req.header('x-forwarded-for')?.split(',')[0]?.trim() ||
+      c.req.header('x-forwarded-for')?.split(',').pop()?.trim() ||
       'unknown'
     return ip
   },
