@@ -111,6 +111,17 @@ curl -X POST http://localhost:3000/api/v2/plant-id/identify \
   -d '{"imageUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/3/3a/Monstera_deliciosa5.jpg/640px-Monstera_deliciosa5.jpg"}'
 ```
 
+### Example: Diagnose a Plant (requires Auth)
+
+Upload an image and optional symptoms to get an AI diagnosis.
+
+```bash
+curl -X POST http://localhost:3000/api/v2/dr-plant/diagnose \
+  -H "Authorization: Bearer <YOUR_SUPABASE_TOKEN>" \
+  -F "image=@path/to/your/plant-image.jpg" \
+  -F "symptoms=Leaves are turning yellow"
+```
+
 ## 🔧 Troubleshooting
 
 *   **`Supabase URL or Publishable Key not configured`**: Ensure `SUPABASE_URL` and `SUPABASE_PUBLISHABLE_KEY` are set in `.env`.

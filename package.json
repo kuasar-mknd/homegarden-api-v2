@@ -38,7 +38,7 @@
   "license": "ISC",
   "dependencies": {
     "@google/generative-ai": "^0.24.1",
-    "@hono/node-server": "^1.19.8",
+    "@hono/node-server": "^1.19.10",
     "@hono/swagger-ui": "^0.5.3",
     "@hono/zod-openapi": "^1.2.0",
     "@hono/zod-validator": "^0.7.6",
@@ -48,7 +48,7 @@
     "@types/pg": "^8.16.0",
     "bcrypt": "^6.0.0",
     "dotenv": "^17.2.3",
-    "hono": "^4.11.7",
+    "hono": "^4.12.7",
     "hono-rate-limiter": "^0.5.3",
     "jsonwebtoken": "^9.0.3",
     "pg": "^8.16.3",
@@ -58,10 +58,17 @@
     "zod": "^4.3.5"
   },
   "pnpm": {
+    "onlyBuiltDependencies": [
+      "@prisma/engines",
+      "bcrypt",
+      "esbuild",
+      "prisma"
+    ],
     "overrides": {
       "h3": ">=1.15.5",
       "lodash": ">=4.17.23",
-      "hono": "^4.11.7"
+      "hono": "^4.12.7",
+      "@hono/node-server": "^1.19.10"
     }
   },
   "devDependencies": {
