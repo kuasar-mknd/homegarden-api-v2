@@ -43,3 +43,6 @@
 ## Rejected Changes
 
 *(None yet)*
+## 2026-03-14 - a11y Announcer & Smart Go Back Button
+**Learning:** Asynchronous actions like copying to clipboard need an `aria-live` region to inform screen reader users. The `textContent` must be cleared after so subsequent actions are announced.
+**Action:** Always include a globally hidden `aria-live="polite"` region in the base layout for such announcements. Ensure history navigation buttons are conditionally rendered or hidden based on `window.history.length <= 1` to prevent dead clicks.

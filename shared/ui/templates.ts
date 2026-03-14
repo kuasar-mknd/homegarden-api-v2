@@ -395,6 +395,25 @@ export const SHARED_STYLES = `
     50% { opacity: 0.7; transform: scale(0.9); }
     100% { opacity: 1; transform: scale(1); }
   }
+  @keyframes slideIn {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  .card {
+    animation: slideIn 0.4s cubic-bezier(0.16, 1, 0.3, 1) both;
+  }
+  .grid li:nth-child(1) .card { animation-delay: 0.05s; }
+  .grid li:nth-child(2) .card { animation-delay: 0.1s; }
+  .grid li:nth-child(3) .card { animation-delay: 0.15s; }
+  .grid li:nth-child(4) .card { animation-delay: 0.2s; }
+  .grid li:nth-child(5) .card { animation-delay: 0.25s; }
+  .grid li:nth-child(6) .card { animation-delay: 0.3s; }
   .status-dot {
     display: inline-block;
     width: 8px;
@@ -442,6 +461,19 @@ export const SHARED_STYLES = `
     display: flex;
     justify-content: center;
   }
+
+  /* Accessibility utility: visually hide elements but keep them accessible to screen readers */
+  .sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border-width: 0;
+  }
   @media (prefers-color-scheme: dark) {
     .code-block {
       background: #2d2d2d;
@@ -450,6 +482,7 @@ export const SHARED_STYLES = `
   @media (prefers-reduced-motion: reduce) {
     .card, .skip-link, .btn, .card h2, footer a, .card-arrow {
       transition: none;
+      animation: none;
     }
     .card:hover {
       transform: none;
@@ -467,7 +500,7 @@ export const SHARED_STYLES = `
     .container { box-shadow: none; border: none; max-width: 100%; width: 100%; padding: 0; }
     .skip-link, .status-dot, .external-icon, .no-print { display: none !important; }
     .grid { display: block; }
-    .card { border: 1px solid #000; margin-bottom: 1rem; break-inside: avoid; page-break-inside: avoid; box-shadow: none; }
+    .card { border: 1px solid #000; margin-bottom: 1rem; break-inside: avoid; page-break-inside: avoid; box-shadow: none; animation: none; }
     a { text-decoration: underline; color: black; }
     a[href^="http"]:after { content: " (" attr(href) ")"; }
     header h1 { color: black; }
@@ -524,6 +557,7 @@ export function baseLayout({ title, description, content }: LayoutProps): string
   <meta name="apple-mobile-web-app-title" content="HomeGarden">
 
   <meta property="og:site_name" content="HomeGarden API">
+  <meta property="og:locale" content="en_US">
   <meta property="og:title" content="${safeTitle}">
   <meta property="og:description" content="${metaDescription}">
   <meta property="og:type" content="website">
@@ -545,6 +579,7 @@ export function baseLayout({ title, description, content }: LayoutProps): string
   </style>
 </head>
 <body>
+  <div id="a11y-announcer" class="sr-only" aria-live="polite" aria-atomic="true"></div>
   <a href="#main" class="skip-link" title="Jump to the main content area">Skip to main content</a>
   <div class="container">
     ${content}
@@ -648,9 +683,13 @@ export function getNotFoundPageHtml(path: string): string {
         // Handle Go Back
         var backBtn = document.getElementById('go-back-btn');
         if (backBtn) {
-          backBtn.addEventListener('click', function() {
-            history.back();
-          });
+          if (window.history.length <= 1) {
+            backBtn.style.display = 'none';
+          } else {
+            backBtn.addEventListener('click', function() {
+              history.back();
+            });
+          }
         }
 
         // Handle Copy
@@ -666,7 +705,16 @@ export function getNotFoundPageHtml(path: string): string {
                  navigator.clipboard.writeText(text).then(function() {
                     var originalHtml = btn.innerHTML;
                     btn.innerHTML = '${CHECK_ICON} Copied!';
-                    setTimeout(function() { btn.innerHTML = originalHtml; }, 2000);
+                    var announcer = document.getElementById('a11y-announcer');
+                    if (announcer) {
+                      announcer.textContent = 'Path copied to clipboard';
+                    }
+                    setTimeout(function() {
+                      btn.innerHTML = originalHtml;
+                      if (announcer) {
+                        announcer.textContent = '';
+                      }
+                    }, 2000);
                  }).catch(function(err) {
                     console.error('Failed to copy', err);
                  });
