@@ -14,3 +14,5 @@
 | 2026-01-11 | DocOps | docs/AI.md, docs/API.md, .env.example, .github/dependabot.yml, tests/middleware/auth-rate-limit.middleware.test.ts | Synced docs with code (AI Schema, API endpoints, ENV), created Dependabot config, fixed linting in tests. |
 | 2026-01-15 | DocOps | .github/dependabot.yml, README.md, docs/API.md | Created Dependabot config, added docker-compose docs, updated API endpoints. |
 | 2026-01-20 | DocOps | .github/workflows/*, docs/*, README.md | Fixed workflow versions, refined API docs (501 status), updated README |
+| 2024-05-24 | Security Updates | package.json, pnpm-lock.yaml | Updated hono to 4.12.8 and @hono/node-server to 1.19.11 to fix high/moderate security vulnerabilities discovered by pnpm audit. |
+| 2026-02-14 | Unimplemented APIs | README.md, docs/AI.md, package.json, .github/workflows/* | Refined docs for API endpoints, added cache/rate-limit details to AI docs, updated workflows for node24 and workflow ordering, updated README sections. |
