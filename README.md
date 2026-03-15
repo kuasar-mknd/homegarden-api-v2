@@ -5,12 +5,12 @@ HomeGarden is a robust, Clean Architecture-based REST API for managing gardens a
 ## 🌟 Features
 
 *   **Clean Architecture**: Separation of concerns into Domain, Application, and Infrastructure layers.
-*   **Plant Management**: CRUD operations for Gardens and Plants.
+*   **Garden Management**: Manage user gardens and view related plants. *(Direct Plant CRUD endpoints are placeholders - 501 Not Implemented).*
 *   **AI Integration**:
     *   **Identification**: Identify plants from images using Google Gemini Vision (`gemini-2.0-flash`).
     *   **Diagnosis**: Diagnose plant health issues using Google Gemini Vision (`gemini-2.5-pro-preview-06-05`).
 *   **Weather Integration**: Fetch weather data for garden locations via Open-Meteo.
-*   **Authentication**: Secure authentication using Supabase Auth (JWT).
+*   **Authentication**: Secure authentication using Supabase Auth (JWT). *(Native auth endpoints are placeholders - 501 Not Implemented. Use client-side Supabase SDK).*
 *   **Type Safety**: End-to-end type safety with TypeScript, Zod, and Prisma.
 *   **Interactive Docs**: OpenAPI (Swagger) documentation available at `/ui`.
 
@@ -64,6 +64,12 @@ HomeGarden is a robust, Clean Architecture-based REST API for managing gardens a
     ```bash
     pnpm db:push
     ```
+
+    Generate the Prisma client (required before starting the server or running tests locally):
+    ```bash
+    pnpm db:generate
+    ```
+
     (Optional) Seed the database:
     ```bash
     pnpm db:seed
@@ -79,9 +85,14 @@ HomeGarden is a robust, Clean Architecture-based REST API for managing gardens a
 
 For detailed testing instructions, see [docs/TESTING.md](docs/TESTING.md).
 
-Run unit and integration tests:
+Run all tests (unit, integration, and E2E):
 ```bash
 pnpm test
+```
+
+Run tests once (for CI environments):
+```bash
+pnpm test -- --run
 ```
 
 Run tests with coverage:

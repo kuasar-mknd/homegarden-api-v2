@@ -79,6 +79,8 @@ The application instructs the AI to return structured JSON data.
 
 To manage costs and latency:
 
-1.  **Strict Rate Limiting**: The API enforces rate limits per user/IP (configured via `RATE_LIMIT_WINDOW_MS` and `RATE_LIMIT_MAX`).
-2.  **Stateless**: The AI service is stateless; no conversation history is maintained to minimize token usage.
-3.  **JSON Mode**: We strictly request JSON output to avoid verbose, unstructured text responses.
+1.  **Strict Rate Limiting**: The API enforces global rate limits per user/IP (configured via `RATE_LIMIT_WINDOW_MS` and `RATE_LIMIT_MAX`).
+2.  **AI-Specific Rate Limiting**: We use a dedicated `aiRateLimitMiddleware` (10 requests per minute per IP) to mitigate abuse on Gemini models.
+3.  **Stateless**: The AI service is stateless; no conversation history is maintained to minimize token usage.
+4.  **JSON Mode**: We strictly request JSON output to avoid verbose, unstructured text responses.
+5.  **Caching (Planned)**: Caching strategies should be employed on the client side to prevent re-identification of identical images within a short timeframe.
