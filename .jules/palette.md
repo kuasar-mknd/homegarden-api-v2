@@ -43,3 +43,8 @@
 ## Rejected Changes
 
 *(None yet)*
+
+## 2024-05-24 - Asynchronous Visual and Auditory Feedback
+
+**Learning:** Visual-only success feedback (like replacing an icon with "Copied!") is completely invisible to users relying on screen readers because the update happens asynchronously without context.
+**Action:** When implementing copy-to-clipboard or purely visual asynchronous success feedback, always include a visually hidden `aria-live="polite"` region and update its `textContent` synchronously. Ensure the `textContent` is cleared afterward (e.g., via `setTimeout`) so subsequent identical actions are correctly announced by screen readers.
