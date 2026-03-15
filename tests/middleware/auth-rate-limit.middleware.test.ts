@@ -17,7 +17,7 @@ describe('Auth Rate Limit Middleware', () => {
     vi.resetModules()
   })
 
-  it('should use first IP from x-forwarded-for header as key', async () => {
+  it('should use last IP from x-forwarded-for header as key to prevent spoofing', async () => {
     const { authRateLimitMiddleware } = await import(
       '../../infrastructure/http/middleware/auth-rate-limit.middleware.js'
     )
@@ -33,7 +33,7 @@ describe('Auth Rate Limit Middleware', () => {
     }
 
     const key = config.keyGenerator(mockContext)
-    expect(key).toBe('10.0.0.1')
+    expect(key).toBe('10.0.0.2')
   })
 
   it('should fallback to unknown when no IP header', async () => {
