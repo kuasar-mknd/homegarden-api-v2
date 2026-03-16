@@ -1,6 +1,5 @@
 import { createClient } from '@supabase/supabase-js'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
-import { prisma } from '../../infrastructure/database/prisma.client.js'
 
 // Mock dependencies
 vi.mock('../../infrastructure/config/env.js', () => ({
@@ -93,7 +92,15 @@ describe('AuthMiddleware', () => {
     mockSupabase.auth.getUser.mockResolvedValue({ data: { user: mockUser }, error: null })
 
     const dbUser = { id: 'db-id', email: 'test@example.com' }
-    vi.mocked(prisma.user.findUnique).mockResolvedValue(dbUser as any)
+
+    vi.doMock('../../infrastructure/database/prisma.client.js', () => ({
+      prisma: {
+        user: {
+          findUnique: vi.fn().mockResolvedValue(dbUser as any),
+          create: vi.fn(),
+        },
+      },
+    }))
 
     const { authMiddleware: freshAuthMiddleware } = await import(
       '../../infrastructure/http/middleware/auth.middleware.js'
@@ -114,16 +121,24 @@ describe('AuthMiddleware', () => {
     }
     mockSupabase.auth.getUser.mockResolvedValue({ data: { user: mockUser }, error: null })
 
-    vi.mocked(prisma.user.findUnique).mockResolvedValue(null)
     const createdUser = { id: 'new-db-id', email: 'new@example.com' }
-    vi.mocked(prisma.user.create).mockResolvedValue(createdUser as any)
+
+    const mockCreate = vi.fn().mockResolvedValue(createdUser as any)
+    vi.doMock('../../infrastructure/database/prisma.client.js', () => ({
+      prisma: {
+        user: {
+          findUnique: vi.fn().mockResolvedValue(null),
+          create: mockCreate,
+        },
+      },
+    }))
 
     const { authMiddleware: freshAuthMiddleware } = await import(
       '../../infrastructure/http/middleware/auth.middleware.js'
     )
     await freshAuthMiddleware(mockContext, mockNext)
 
-    expect(prisma.user.create).toHaveBeenCalledWith(
+    expect(mockCreate).toHaveBeenCalledWith(
       expect.objectContaining({
         data: expect.objectContaining({
           email: 'new@example.com',
@@ -142,15 +157,23 @@ describe('AuthMiddleware', () => {
       data: { user: { email: 'test@test.com', user_metadata: { first_name: 'OnlyFirst' } } },
       error: null,
     })
-    vi.mocked(prisma.user.findUnique).mockResolvedValue(null)
-    vi.mocked(prisma.user.create).mockResolvedValue({ id: 'id' } as any)
+
+    const mockCreate = vi.fn().mockResolvedValue({ id: 'id' } as any)
+    vi.doMock('../../infrastructure/database/prisma.client.js', () => ({
+      prisma: {
+        user: {
+          findUnique: vi.fn().mockResolvedValue(null),
+          create: mockCreate,
+        },
+      },
+    }))
 
     const { authMiddleware: freshAuthMiddleware } = await import(
       '../../infrastructure/http/middleware/auth.middleware.js'
     )
     await freshAuthMiddleware(mockContext, mockNext)
 
-    expect(prisma.user.create).toHaveBeenCalledWith(
+    expect(mockCreate).toHaveBeenCalledWith(
       expect.objectContaining({
         data: expect.objectContaining({
           firstName: 'OnlyFirst',
