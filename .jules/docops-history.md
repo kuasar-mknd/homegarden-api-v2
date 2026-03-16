@@ -14,3 +14,4 @@
 | 2026-01-11 | DocOps | docs/AI.md, docs/API.md, .env.example, .github/dependabot.yml, tests/middleware/auth-rate-limit.middleware.test.ts | Synced docs with code (AI Schema, API endpoints, ENV), created Dependabot config, fixed linting in tests. |
 | 2026-01-15 | DocOps | .github/dependabot.yml, README.md, docs/API.md | Created Dependabot config, added docker-compose docs, updated API endpoints. |
 | 2026-01-20 | DocOps | .github/workflows/*, docs/*, README.md | Fixed workflow versions, refined API docs (501 status), updated README |
+| 2026-02-14 | DocOps / GitHub Actions Update | .github/workflows/*.yml, docs/*, README.md, package.json | Updated GitHub Actions to support Node.js 24, fixed Vitest CI hang, documented 501 endpoints and AI rate limits, configured pnpm built dependencies |
