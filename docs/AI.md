@@ -79,6 +79,6 @@ The application instructs the AI to return structured JSON data.
 
 To manage costs and latency:
 
-1.  **Strict Rate Limiting**: The API enforces rate limits per user/IP (configured via `RATE_LIMIT_WINDOW_MS` and `RATE_LIMIT_MAX`).
+1.  **Strict Rate Limiting**: The AI API enforces strict rate limits per user/IP using a dedicated `aiRateLimitMiddleware` (e.g., 10 requests per minute per IP) to mitigate abuse and control costs. This augments the global rate limit (`RATE_LIMIT_WINDOW_MS` and `RATE_LIMIT_MAX`).
 2.  **Stateless**: The AI service is stateless; no conversation history is maintained to minimize token usage.
 3.  **JSON Mode**: We strictly request JSON output to avoid verbose, unstructured text responses.
