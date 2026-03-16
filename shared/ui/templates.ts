@@ -104,6 +104,19 @@ export const SHARED_STYLES = `
     -moz-osx-font-smoothing: grayscale;
   }
 
+  /* Screen Reader Only */
+  .sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border-width: 0;
+  }
+
   /* List Polish */
   ul, ol {
     padding-inline-start: 1.5rem;
@@ -560,6 +573,7 @@ export function baseLayout({ title, description, content }: LayoutProps): string
       </div>
     </footer>
   </div>
+  <div id="a11y-announcer" class="sr-only" aria-live="polite" aria-atomic="true"></div>
 </body>
 </html>
   `
@@ -653,6 +667,17 @@ export function getNotFoundPageHtml(path: string): string {
           });
         }
 
+        // Screen reader announcer helper
+        function announce(message) {
+          var announcer = document.getElementById('a11y-announcer');
+          if (announcer) {
+            announcer.textContent = message;
+            setTimeout(function() {
+              announcer.textContent = '';
+            }, 3000);
+          }
+        }
+
         // Handle Copy
         var btns = document.querySelectorAll('.copy-btn');
         Array.prototype.forEach.call(btns, function(btn) {
@@ -666,6 +691,7 @@ export function getNotFoundPageHtml(path: string): string {
                  navigator.clipboard.writeText(text).then(function() {
                     var originalHtml = btn.innerHTML;
                     btn.innerHTML = '${CHECK_ICON} Copied!';
+                    announce('URL copied to clipboard');
                     setTimeout(function() { btn.innerHTML = originalHtml; }, 2000);
                  }).catch(function(err) {
                     console.error('Failed to copy', err);
