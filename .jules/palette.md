@@ -43,3 +43,8 @@
 ## Rejected Changes
 
 *(None yet)*
+
+## 2024-05-25 - Async Visual Feedback Accessibility
+
+**Learning:** Purely visual feedback (like changing a "Copy" button's text to "Copied!" and reverting it) is not announced to screen readers, leaving visually impaired users unaware if their action succeeded.
+**Action:** Use an `aria-live="polite"` visually hidden announcer region (`.sr-only`) to synchronously broadcast the success message ("URL copied to clipboard"), and clear it afterwards so subsequent actions are also announced.
