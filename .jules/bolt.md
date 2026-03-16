@@ -29,3 +29,6 @@
 ## 2024-05-23 - [Static Layout Anti-Pattern]
 **Learning:** Pre-computing HTML layouts (header/footer) to save string concatenation is a micro-optimization that creates security risks (e.g., static CSP nonces) and prevents dynamic content (Auth state).
 **Action:** Avoid caching layout templates unless they are strictly static and have no dependencies on request context.
+## 2024-05-24 - [Supabase Client Instantiation Overhead]
+**Learning:** Re-instantiating the Supabase client on every authenticated request within `authMiddleware` creates unnecessary initialization overhead and memory pressure, slowing down response times.
+**Action:** Leverage a singleton pattern by caching the Supabase client instance locally and re-using it across requests to avoid expensive re-creation in middlewares, while appropriately using `vi.doMock` and `vi.resetModules()` in tests to prevent singleton bleed across isolated tests.
