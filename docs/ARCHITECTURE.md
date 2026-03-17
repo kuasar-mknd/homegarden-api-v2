@@ -32,11 +32,11 @@ Contains shared utilities, types, and constants used across multiple layers (e.g
 To add a new feature (e.g., "Watering Schedule"), follow this flow:
 
 1.  **Domain**: Define the `WateringSchedule` entity and its repository interface in `domain/`.
-2.  **Application**: Create a service/use-case (e.g., `CreateWateringScheduleService`) in `application/`.
+2.  **Application**: Create a service/use-case (e.g., `CreateWateringScheduleService`) in `application/`. All new use-cases containing business logic MUST be placed here.
 3.  **Infrastructure**:
-    *   Implement the repository in `infrastructure/repositories/`.
-    *   Create a controller in `infrastructure/http/controllers/`.
-    *   Define the route in `infrastructure/http/routes/`.
+    *   Implement the repository in `infrastructure/database/repositories/` (or `infrastructure/repositories/`).
+    *   Create a controller in `infrastructure/http/controllers/`. All new endpoints (controllers and routes) MUST be placed in `infrastructure/http/`.
+    *   Define the route in `infrastructure/http/routes/` and export it properly to be registered in `infrastructure/http/routes/index.ts` and `index.ts`.
 4.  **Tests**: Add unit tests for the domain and application logic, and integration tests for the infrastructure.
 
 ## 🔄 Dependency Rule
