@@ -43,3 +43,6 @@
 ## Rejected Changes
 
 *(None yet)*
+## 2026-03-17 - [Hide 'Go Back' on 404 for Fresh Tabs]
+**Learning:** When testing history length conditionally using headless Playwright browsers, `window.history.length` may start at 2 instead of 1 due to the initial `about:blank` page.
+**Action:** Use `Object.defineProperty(window.history, 'length', {value: 1});` in tests to simulate empty history correctly.
