@@ -79,6 +79,8 @@ The application instructs the AI to return structured JSON data.
 
 To manage costs and latency:
 
-1.  **Strict Rate Limiting**: The API enforces rate limits per user/IP (configured via `RATE_LIMIT_WINDOW_MS` and `RATE_LIMIT_MAX`).
+1.  **Strict Rate Limiting**: The API enforces rate limits per user/IP using a dedicated `aiRateLimitMiddleware` configured to control costs (e.g., 10 requests per minute per IP), augmenting the global `rateLimitMiddleware`.
 2.  **Stateless**: The AI service is stateless; no conversation history is maintained to minimize token usage.
 3.  **JSON Mode**: We strictly request JSON output to avoid verbose, unstructured text responses.
+4.  **Caching**: Caching is encouraged at the client or edge layer to prevent redundant AI identification/diagnosis requests for identical images.
+5.  **Timeouts and Size Limits**: The `GeminiPlantAdapter` enforces a strict 10-second timeout on requests and the application enforces a 10MB limit on image uploads to prevent memory exhaustion and hanging requests.

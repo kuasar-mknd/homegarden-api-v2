@@ -5,7 +5,7 @@ HomeGarden is a robust, Clean Architecture-based REST API for managing gardens a
 ## 🌟 Features
 
 *   **Clean Architecture**: Separation of concerns into Domain, Application, and Infrastructure layers.
-*   **Plant Management**: CRUD operations for Gardens and Plants.
+*   **Plant Management**: CRUD operations for Gardens. (Note: Direct plant management endpoints are partially implemented and return 501 Not Implemented. Use Garden endpoints for main flows.)
 *   **AI Integration**:
     *   **Identification**: Identify plants from images using Google Gemini Vision (`gemini-2.0-flash`).
     *   **Diagnosis**: Diagnose plant health issues using Google Gemini Vision (`gemini-2.5-pro-preview-06-05`).
@@ -110,6 +110,13 @@ curl -X POST http://localhost:3000/api/v2/plant-id/identify \
   -H "Content-Type: application/json" \
   -d '{"imageUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/3/3a/Monstera_deliciosa5.jpg/640px-Monstera_deliciosa5.jpg"}'
 ```
+
+### Note on Unimplemented Endpoints
+
+Several endpoints currently act as placeholders and will return a `501 Not Implemented` status code. These include:
+- Direct plant management (`/api/v2/plants/*`)
+- Auth endpoints (`/api/v2/auth/*` - client-side authentication via Supabase SDK is recommended)
+- Care Tracker endpoints (`/api/v2/care-tracker/*`)
 
 ## 🔧 Troubleshooting
 
