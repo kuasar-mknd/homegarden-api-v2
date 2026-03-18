@@ -43,3 +43,6 @@
 ## Rejected Changes
 
 *(None yet)*
+## 2024-03-18 - Asynchronous Visual Feedback and Conditional Navigation
+**Learning:** Purely visual asynchronous feedback (like a changing icon after copying to clipboard) is missed by screen readers. Furthermore, a "Go Back" button that points to an empty history state (`window.history.length <= 1`) results in a dead click, degrading the experience.
+**Action:** Always conditionally render history navigation based on state, and accompany visual success indicators with visually hidden `aria-live="polite"` regions that receive text updates (and subsequent clearance) to guarantee auditory feedback for all users.
