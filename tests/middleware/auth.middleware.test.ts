@@ -2,7 +2,6 @@ import { createClient } from '@supabase/supabase-js'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { env } from '../../infrastructure/config/env.js'
 import { prisma } from '../../infrastructure/database/prisma.client.js'
-import { authMiddleware } from '../../infrastructure/http/middleware/auth.middleware.js'
 
 // Mock dependencies
 vi.mock('../../infrastructure/config/env.js', () => ({
@@ -30,8 +29,9 @@ describe('AuthMiddleware', () => {
   let mockNext: any
   let mockSupabase: any
 
-  beforeEach(() => {
+  beforeEach(async () => {
     vi.clearAllMocks()
+    vi.resetModules()
 
     mockSupabase = {
       auth: {
@@ -52,9 +52,12 @@ describe('AuthMiddleware', () => {
   })
 
   it('should return 401 if Authorization header is missing', async () => {
+    const { authMiddleware: freshAuthMiddleware } = await import(
+      '../../infrastructure/http/middleware/auth.middleware.js'
+    )
     mockContext.req.header.mockReturnValue(null)
 
-    const result = (await authMiddleware(mockContext, mockNext)) as any
+    const result = (await freshAuthMiddleware(mockContext, mockNext)) as any
 
     expect(result.status).toBe(401)
     expect(result.data.error).toBe('UNAUTHORIZED')
@@ -62,19 +65,25 @@ describe('AuthMiddleware', () => {
   })
 
   it('should return 401 if token is invalid or Supabase returns error', async () => {
+    const { authMiddleware: freshAuthMiddleware } = await import(
+      '../../infrastructure/http/middleware/auth.middleware.js'
+    )
     mockContext.req.header.mockReturnValue('Bearer invalid-token')
     mockSupabase.auth.getUser.mockResolvedValue({
       data: { user: null },
       error: { message: 'Invalid token' },
     })
 
-    const result = (await authMiddleware(mockContext, mockNext)) as any
+    const result = (await freshAuthMiddleware(mockContext, mockNext)) as any
 
     expect(result.status).toBe(401)
     expect(result.data.message).toBe('Invalid or expired Supabase token')
   })
 
   it('should sync existing user and call next()', async () => {
+    const { authMiddleware: freshAuthMiddleware } = await import(
+      '../../infrastructure/http/middleware/auth.middleware.js'
+    )
     mockContext.req.header.mockReturnValue('Bearer valid-token')
     const mockUser = { id: 'auth-id', email: 'test@example.com' }
     mockSupabase.auth.getUser.mockResolvedValue({ data: { user: mockUser }, error: null })
@@ -82,7 +91,7 @@ describe('AuthMiddleware', () => {
     const dbUser = { id: 'db-id', email: 'test@example.com' }
     vi.mocked(prisma.user.findUnique).mockResolvedValue(dbUser as any)
 
-    await authMiddleware(mockContext, mockNext)
+    await freshAuthMiddleware(mockContext, mockNext)
 
     expect(mockContext.set).toHaveBeenCalledWith('user', dbUser)
     expect(mockContext.set).toHaveBeenCalledWith('userId', dbUser.id)
@@ -90,6 +99,9 @@ describe('AuthMiddleware', () => {
   })
 
   it('should create and sync new user if not in database', async () => {
+    const { authMiddleware: freshAuthMiddleware } = await import(
+      '../../infrastructure/http/middleware/auth.middleware.js'
+    )
     mockContext.req.header.mockReturnValue('Bearer valid-token')
     const mockUser = {
       id: 'auth-id',
@@ -102,7 +114,7 @@ describe('AuthMiddleware', () => {
     const createdUser = { id: 'new-db-id', email: 'new@example.com' }
     vi.mocked(prisma.user.create).mockResolvedValue(createdUser as any)
 
-    await authMiddleware(mockContext, mockNext)
+    await freshAuthMiddleware(mockContext, mockNext)
 
     expect(prisma.user.create).toHaveBeenCalledWith(
       expect.objectContaining({
@@ -118,6 +130,9 @@ describe('AuthMiddleware', () => {
   })
 
   it('should handle metadata without full_name', async () => {
+    const { authMiddleware: freshAuthMiddleware } = await import(
+      '../../infrastructure/http/middleware/auth.middleware.js'
+    )
     mockContext.req.header.mockReturnValue('Bearer token')
     mockSupabase.auth.getUser.mockResolvedValue({
       data: { user: { email: 'test@test.com', user_metadata: { first_name: 'OnlyFirst' } } },
@@ -126,7 +141,7 @@ describe('AuthMiddleware', () => {
     vi.mocked(prisma.user.findUnique).mockResolvedValue(null)
     vi.mocked(prisma.user.create).mockResolvedValue({ id: 'id' } as any)
 
-    await authMiddleware(mockContext, mockNext)
+    await freshAuthMiddleware(mockContext, mockNext)
 
     expect(prisma.user.create).toHaveBeenCalledWith(
       expect.objectContaining({
@@ -139,12 +154,15 @@ describe('AuthMiddleware', () => {
   })
 
   it('should return 500 if environment variables are missing', async () => {
+    const { authMiddleware: freshAuthMiddleware } = await import(
+      '../../infrastructure/http/middleware/auth.middleware.js'
+    )
     mockContext.req.header.mockReturnValue('Bearer token')
     // Temporarily break env
     const originalUrl = env.SUPABASE_URL
     ;(env as any).SUPABASE_URL = null
 
-    const result = (await authMiddleware(mockContext, mockNext)) as any
+    const result = (await freshAuthMiddleware(mockContext, mockNext)) as any
 
     expect(result.status).toBe(500)
     expect(result.data.message).toBe('Authentication service error')
