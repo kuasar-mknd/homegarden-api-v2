@@ -95,6 +95,8 @@ The API is documented using Swagger. Once the server is running, visit:
 *   **Swagger UI**: [http://localhost:3000/ui](http://localhost:3000/ui)
 *   **OpenAPI Spec**: [http://localhost:3000/doc](http://localhost:3000/doc)
 
+> **Note**: Authentication endpoints, direct Plant management endpoints, and Care Tracker endpoints are currently placeholders and will return `501 Not Implemented`. Please use the `Gardens` endpoints for main flows.
+
 ### Example: Check API Status
 ```bash
 curl http://localhost:3000/api/v2
