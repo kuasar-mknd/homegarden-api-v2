@@ -9,6 +9,8 @@ on:
 jobs:
   build-and-test:
     runs-on: ubuntu-latest
+    env:
+      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
     services:
       postgres:
@@ -41,15 +43,15 @@ jobs:
       - name: Install dependencies
         run: pnpm install
 
-      - name: Lint
-        run: pnpm run ci:check
-
       - name: Setup Database (and Generate Client)
         env:
           DATABASE_URL: postgres://postgres:password@localhost:5432/homegarden
         run: |
           pnpm db:push
           pnpm db:generate
+
+      - name: Lint
+        run: pnpm run ci:check
 
       - name: Typecheck
         run: pnpm build
