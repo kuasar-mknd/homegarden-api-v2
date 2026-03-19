@@ -40,6 +40,14 @@
 **Learning:** Feedback text like "Checked!" can be ambiguous.
 **Action:** Use explicit action verbs ("Copied!") paired with a universally recognized icon (Checkmark) for clarity and delight.
 
+## 2024-05-25 - Smart 404 Controls & A11y Feedback
+
+**Learning:** Purely visual feedback for asynchronous actions (like changing a button label to "Copied!") is completely invisible to screen readers unless specifically announced.
+**Action:** Always include a visually hidden `aria-live="polite"` region and update its `textContent` synchronously with the visual change. Ensure it is cleared afterward so subsequent identical actions are announced.
+
+**Learning:** "Go Back" buttons that rely on `history.back()` cause dead clicks when a user lands on the page directly (e.g., via a bookmark or link sharing) because there is no history to go back to.
+**Action:** Conditionally render or hide history navigation based on `window.history.length > 1` to prevent frustrating user dead-ends.
+
 ## Rejected Changes
 
 *(None yet)*

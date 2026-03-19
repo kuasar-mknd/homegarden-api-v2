@@ -202,6 +202,10 @@ export const SHARED_STYLES = `
       font-size: 1.75rem;
     }
   }
+  @keyframes slideIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
   .card {
     border: 1px solid var(--card-border);
     padding: 1.5rem;
@@ -213,7 +217,12 @@ export const SHARED_STYLES = `
     height: 100%;
     box-sizing: border-box;
     position: relative; /* Ensure z-index works on focus */
+    animation: slideIn 0.4s cubic-bezier(0.16, 1, 0.3, 1) both;
   }
+  .grid li:nth-child(1) .card { animation-delay: 0.05s; }
+  .grid li:nth-child(2) .card { animation-delay: 0.1s; }
+  .grid li:nth-child(3) .card { animation-delay: 0.15s; }
+  .grid li:nth-child(4) .card { animation-delay: 0.2s; }
   .card:hover {
     transform: translateY(-2px) scale(1.01);
     box-shadow: 0 4px 12px rgba(0,0,0,0.05);
@@ -442,6 +451,17 @@ export const SHARED_STYLES = `
     display: flex;
     justify-content: center;
   }
+  .sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border-width: 0;
+  }
   @media (prefers-color-scheme: dark) {
     .code-block {
       background: #2d2d2d;
@@ -450,6 +470,7 @@ export const SHARED_STYLES = `
   @media (prefers-reduced-motion: reduce) {
     .card, .skip-link, .btn, .card h2, footer a, .card-arrow {
       transition: none;
+      animation: none !important;
     }
     .card:hover {
       transform: none;
@@ -467,7 +488,7 @@ export const SHARED_STYLES = `
     .container { box-shadow: none; border: none; max-width: 100%; width: 100%; padding: 0; }
     .skip-link, .status-dot, .external-icon, .no-print { display: none !important; }
     .grid { display: block; }
-    .card { border: 1px solid #000; margin-bottom: 1rem; break-inside: avoid; page-break-inside: avoid; box-shadow: none; }
+    .card { border: 1px solid #000; margin-bottom: 1rem; break-inside: avoid; page-break-inside: avoid; box-shadow: none; animation: none !important; }
     a { text-decoration: underline; color: black; }
     a[href^="http"]:after { content: " (" attr(href) ")"; }
     header h1 { color: black; }
@@ -524,6 +545,7 @@ export function baseLayout({ title, description, content }: LayoutProps): string
   <meta name="apple-mobile-web-app-title" content="HomeGarden">
 
   <meta property="og:site_name" content="HomeGarden API">
+  <meta property="og:locale" content="en_US">
   <meta property="og:title" content="${safeTitle}">
   <meta property="og:description" content="${metaDescription}">
   <meta property="og:type" content="website">
@@ -546,6 +568,7 @@ export function baseLayout({ title, description, content }: LayoutProps): string
 </head>
 <body>
   <a href="#main" class="skip-link" title="Jump to the main content area">Skip to main content</a>
+  <div id="a11y-announcer" class="sr-only" aria-live="polite" aria-atomic="true"></div>
   <div class="container">
     ${content}
     <footer class="status" role="contentinfo">
@@ -638,7 +661,7 @@ export function getNotFoundPageHtml(path: string): string {
       <p>Please check the URL or go back to the homepage.</p>
 
       <div class="btn-group no-print">
-        <button type="button" id="go-back-btn" class="btn btn-secondary">${BACK_ICON}Go Back</button>
+        <button type="button" id="go-back-btn" class="btn btn-secondary" style="display: none;">${BACK_ICON}Go Back</button>
         <a href="/" class="btn">${HOME_ICON}Return Home</a>
         <a href="/ui" class="btn btn-secondary">${DOC_ICON}Read Documentation</a>
       </div>
@@ -647,7 +670,8 @@ export function getNotFoundPageHtml(path: string): string {
       (function() {
         // Handle Go Back
         var backBtn = document.getElementById('go-back-btn');
-        if (backBtn) {
+        if (backBtn && window.history.length > 1) {
+          backBtn.style.display = 'inline-flex';
           backBtn.addEventListener('click', function() {
             history.back();
           });
@@ -666,6 +690,11 @@ export function getNotFoundPageHtml(path: string): string {
                  navigator.clipboard.writeText(text).then(function() {
                     var originalHtml = btn.innerHTML;
                     btn.innerHTML = '${CHECK_ICON} Copied!';
+                    var announcer = document.getElementById('a11y-announcer');
+                    if (announcer) {
+                      announcer.textContent = 'Copied to clipboard';
+                      setTimeout(function() { announcer.textContent = ''; }, 2000);
+                    }
                     setTimeout(function() { btn.innerHTML = originalHtml; }, 2000);
                  }).catch(function(err) {
                     console.error('Failed to copy', err);
