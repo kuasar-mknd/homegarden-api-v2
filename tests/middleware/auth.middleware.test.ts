@@ -1,7 +1,5 @@
 import { createClient } from '@supabase/supabase-js'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
-import { env } from '../../infrastructure/config/env.js'
-import { prisma } from '../../infrastructure/database/prisma.client.js'
 import { authMiddleware } from '../../infrastructure/http/middleware/auth.middleware.js'
 
 // Mock dependencies
@@ -30,8 +28,9 @@ describe('AuthMiddleware', () => {
   let mockNext: any
   let mockSupabase: any
 
-  beforeEach(() => {
+  beforeEach(async () => {
     vi.clearAllMocks()
+    vi.resetModules()
 
     mockSupabase = {
       auth: {
@@ -39,6 +38,27 @@ describe('AuthMiddleware', () => {
       },
     }
     vi.mocked(createClient).mockReturnValue(mockSupabase as any)
+
+    // We need to re-mock env for each test since we are using vi.resetModules()
+    vi.doMock('../../infrastructure/config/env.js', () => ({
+      env: {
+        SUPABASE_URL: 'http://supabase.test',
+        SUPABASE_PUBLISHABLE_KEY: 'test-key',
+      },
+    }))
+
+    vi.doMock('../../infrastructure/database/prisma.client.js', () => ({
+      prisma: {
+        user: {
+          findUnique: vi.fn(),
+          create: vi.fn(),
+        },
+      },
+    }))
+
+    vi.doMock('@supabase/supabase-js', () => ({
+      createClient: vi.fn().mockReturnValue(mockSupabase),
+    }))
 
     mockContext = {
       req: {
@@ -80,9 +100,23 @@ describe('AuthMiddleware', () => {
     mockSupabase.auth.getUser.mockResolvedValue({ data: { user: mockUser }, error: null })
 
     const dbUser = { id: 'db-id', email: 'test@example.com' }
-    vi.mocked(prisma.user.findUnique).mockResolvedValue(dbUser as any)
 
-    await authMiddleware(mockContext, mockNext)
+    // Because we re-import authMiddleware when tests run (due to vi.resetModules in BeforeEach if we did it right,
+    // or just generally because of the mock setup), we need to ensure we mock the module that's actually used.
+    // However, vitest module mocking applies globally if configured right.
+    // The issue is likely that the singleton `supabaseInstance` is persisting across tests,
+    // or the `prisma` imported in the test is a different reference than the one in the middleware.
+
+    // We will dynamically import the fresh middleware
+    const { authMiddleware: freshAuthMiddleware } = await import(
+      '../../infrastructure/http/middleware/auth.middleware.js'
+    )
+
+    // Get the mocked prisma
+    const { prisma: mockedPrisma } = await import('../../infrastructure/database/prisma.client.js')
+    vi.mocked(mockedPrisma.user.findUnique).mockResolvedValue(dbUser as any)
+
+    await freshAuthMiddleware(mockContext, mockNext)
 
     expect(mockContext.set).toHaveBeenCalledWith('user', dbUser)
     expect(mockContext.set).toHaveBeenCalledWith('userId', dbUser.id)
@@ -98,13 +132,18 @@ describe('AuthMiddleware', () => {
     }
     mockSupabase.auth.getUser.mockResolvedValue({ data: { user: mockUser }, error: null })
 
-    vi.mocked(prisma.user.findUnique).mockResolvedValue(null)
+    const { authMiddleware: freshAuthMiddleware } = await import(
+      '../../infrastructure/http/middleware/auth.middleware.js'
+    )
+    const { prisma: mockedPrisma } = await import('../../infrastructure/database/prisma.client.js')
+
+    vi.mocked(mockedPrisma.user.findUnique).mockResolvedValue(null)
     const createdUser = { id: 'new-db-id', email: 'new@example.com' }
-    vi.mocked(prisma.user.create).mockResolvedValue(createdUser as any)
+    vi.mocked(mockedPrisma.user.create).mockResolvedValue(createdUser as any)
 
-    await authMiddleware(mockContext, mockNext)
+    await freshAuthMiddleware(mockContext, mockNext)
 
-    expect(prisma.user.create).toHaveBeenCalledWith(
+    expect(mockedPrisma.user.create).toHaveBeenCalledWith(
       expect.objectContaining({
         data: expect.objectContaining({
           email: 'new@example.com',
@@ -123,12 +162,18 @@ describe('AuthMiddleware', () => {
       data: { user: { email: 'test@test.com', user_metadata: { first_name: 'OnlyFirst' } } },
       error: null,
     })
-    vi.mocked(prisma.user.findUnique).mockResolvedValue(null)
-    vi.mocked(prisma.user.create).mockResolvedValue({ id: 'id' } as any)
 
-    await authMiddleware(mockContext, mockNext)
+    const { authMiddleware: freshAuthMiddleware } = await import(
+      '../../infrastructure/http/middleware/auth.middleware.js'
+    )
+    const { prisma: mockedPrisma } = await import('../../infrastructure/database/prisma.client.js')
 
-    expect(prisma.user.create).toHaveBeenCalledWith(
+    vi.mocked(mockedPrisma.user.findUnique).mockResolvedValue(null)
+    vi.mocked(mockedPrisma.user.create).mockResolvedValue({ id: 'id' } as any)
+
+    await freshAuthMiddleware(mockContext, mockNext)
+
+    expect(mockedPrisma.user.create).toHaveBeenCalledWith(
       expect.objectContaining({
         data: expect.objectContaining({
           firstName: 'OnlyFirst',
@@ -141,16 +186,21 @@ describe('AuthMiddleware', () => {
   it('should return 500 if environment variables are missing', async () => {
     mockContext.req.header.mockReturnValue('Bearer token')
     // Temporarily break env
-    const originalUrl = env.SUPABASE_URL
-    ;(env as any).SUPABASE_URL = null
+    const { env: mockedEnv } = await import('../../infrastructure/config/env.js')
+    const originalUrl = mockedEnv.SUPABASE_URL
+    ;(mockedEnv as any).SUPABASE_URL = null
 
-    const result = (await authMiddleware(mockContext, mockNext)) as any
+    const { authMiddleware: freshAuthMiddleware } = await import(
+      '../../infrastructure/http/middleware/auth.middleware.js'
+    )
+
+    const result = (await freshAuthMiddleware(mockContext, mockNext)) as any
 
     expect(result.status).toBe(500)
     expect(result.data.message).toBe('Authentication service error')
 
     // Restore
-    ;(env as any).SUPABASE_URL = originalUrl
+    ;(mockedEnv as any).SUPABASE_URL = originalUrl
   })
 
   it('should return 500 if prisma is missing', async () => {
