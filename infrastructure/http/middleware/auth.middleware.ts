@@ -4,12 +4,21 @@ import { env } from '../../config/env.js'
 import { logger } from '../../config/logger.js'
 import { prisma } from '../../database/prisma.client.js'
 
-// Initialize Supabase client
+// Initialize Supabase client as a lazy singleton
+let supabaseInstance: ReturnType<typeof createClient> | null = null
+
 const getSupabase = () => {
+  if (supabaseInstance) return supabaseInstance
+
   if (!env.SUPABASE_URL || !env.SUPABASE_PUBLISHABLE_KEY) {
     throw new Error('Supabase URL or Publishable Key not configured')
   }
-  return createClient(env.SUPABASE_URL, env.SUPABASE_PUBLISHABLE_KEY)
+  supabaseInstance = createClient(env.SUPABASE_URL, env.SUPABASE_PUBLISHABLE_KEY, {
+    auth: {
+      persistSession: false,
+    },
+  })
+  return supabaseInstance
 }
 
 /**
