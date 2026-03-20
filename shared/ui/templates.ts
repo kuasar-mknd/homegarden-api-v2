@@ -35,6 +35,18 @@ export const SHARED_STYLES = `
 
     accent-color: var(--primary);
   }
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}
   @media (prefers-color-scheme: dark) {
     :root {
       --primary: #81c784;
@@ -186,6 +198,11 @@ export const SHARED_STYLES = `
       color: #ffcdd2;
     }
   }
+  @keyframes slide-in {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
   .grid {
     display: grid;
     grid-template-columns: 1fr 1fr;
@@ -194,6 +211,13 @@ export const SHARED_STYLES = `
     list-style: none;
     padding: 0;
   }
+  .grid li {
+    animation: slide-in 0.4s ease-out backwards;
+  }
+  .grid li:nth-child(1) { animation-delay: 0.1s; }
+  .grid li:nth-child(2) { animation-delay: 0.2s; }
+  .grid li:nth-child(3) { animation-delay: 0.3s; }
+  .grid li:nth-child(4) { animation-delay: 0.4s; }
   @media (max-width: 600px) {
     .grid {
       grid-template-columns: 1fr;
@@ -461,6 +485,9 @@ export const SHARED_STYLES = `
     .status-dot {
       animation: none;
     }
+    .grid li {
+      animation: none;
+    }
   }
   @media print {
     body { background: white; color: black; display: block; }
@@ -524,6 +551,7 @@ export function baseLayout({ title, description, content }: LayoutProps): string
   <meta name="apple-mobile-web-app-title" content="HomeGarden">
 
   <meta property="og:site_name" content="HomeGarden API">
+  <meta property="og:locale" content="en_US">
   <meta property="og:title" content="${safeTitle}">
   <meta property="og:description" content="${metaDescription}">
   <meta property="og:type" content="website">
@@ -545,6 +573,7 @@ export function baseLayout({ title, description, content }: LayoutProps): string
   </style>
 </head>
 <body>
+  <div id="a11y-announcer" class="sr-only" aria-live="polite"></div>
   <a href="#main" class="skip-link" title="Jump to the main content area">Skip to main content</a>
   <div class="container">
     ${content}
@@ -648,9 +677,13 @@ export function getNotFoundPageHtml(path: string): string {
         // Handle Go Back
         var backBtn = document.getElementById('go-back-btn');
         if (backBtn) {
-          backBtn.addEventListener('click', function() {
-            history.back();
-          });
+          if (window.history.length <= 1) {
+            backBtn.style.display = 'none';
+          } else {
+            backBtn.addEventListener('click', function() {
+              history.back();
+            });
+          }
         }
 
         // Handle Copy
@@ -666,6 +699,11 @@ export function getNotFoundPageHtml(path: string): string {
                  navigator.clipboard.writeText(text).then(function() {
                     var originalHtml = btn.innerHTML;
                     btn.innerHTML = '${CHECK_ICON} Copied!';
+                    var announcer = document.getElementById('a11y-announcer');
+                    if (announcer) {
+                      announcer.textContent = 'Copied to clipboard';
+                      setTimeout(function() { announcer.textContent = ''; }, 2000);
+                    }
                     setTimeout(function() { btn.innerHTML = originalHtml; }, 2000);
                  }).catch(function(err) {
                     console.error('Failed to copy', err);

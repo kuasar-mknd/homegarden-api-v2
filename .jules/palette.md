@@ -43,3 +43,8 @@
 ## Rejected Changes
 
 *(None yet)*
+
+## 2024-05-25 - Async Feedback & Navigation Context
+
+**Learning:** Purely visual async success states (like a button changing text to "Copied!") are inaccessible to screen reader users because the focus might not be on the element anymore, or they might not hear the change. Additionally, "Go Back" buttons cause confusion or dead clicks when users land directly on a page via a link, since the history stack is empty.
+**Action:** Always include a visually hidden `aria-live="polite"` region and update its `textContent` synchronously with visual async success feedback. Ensure the `textContent` is cleared afterward so subsequent identical actions are re-announced. Furthermore, conditionally hide or render 'Go Back' history navigation buttons by checking `window.history.length <= 1` to prevent dead clicks.
