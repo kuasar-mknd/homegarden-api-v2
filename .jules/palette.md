@@ -40,6 +40,10 @@
 **Learning:** Feedback text like "Checked!" can be ambiguous.
 **Action:** Use explicit action verbs ("Copied!") paired with a universally recognized icon (Checkmark) for clarity and delight.
 
+## 2024-05-24 - Async Feedback & Dead Clicks
+**Learning:** Visual feedback for async actions (like copying) is missed by screen readers, and buttons that rely on history state can cause confusing dead clicks if no history exists.
+**Action:** Always include a visually hidden `aria-live="polite"` announcer for async success states, and conditionally render history-dependent buttons like 'Go Back' using `window.history.length`.
+
 ## Rejected Changes
 
 *(None yet)*
