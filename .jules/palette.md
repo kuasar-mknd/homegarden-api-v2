@@ -40,6 +40,10 @@
 **Learning:** Feedback text like "Checked!" can be ambiguous.
 **Action:** Use explicit action verbs ("Copied!") paired with a universally recognized icon (Checkmark) for clarity and delight.
 
+## 2026-03-22 - Global Asynchronous Feedback & Conditional History Navigation
+**Learning:** Purely visual feedback (like a changing button label on copy) is not conveyed to screen readers, causing accessibility gaps. Additionally, showing a "Go Back" button when there is no history leads to dead clicks and user confusion.
+**Action:** Implement a global, visually hidden `aria-live="polite"` element in the base layout to safely announce asynchronous actions synchronously without altering DOM structure. Always conditionally hide history navigation buttons based on `window.history.length > 1`.
+
 ## Rejected Changes
 
 *(None yet)*
