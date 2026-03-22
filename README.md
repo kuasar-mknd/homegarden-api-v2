@@ -64,6 +64,10 @@ HomeGarden is a robust, Clean Architecture-based REST API for managing gardens a
     ```bash
     pnpm db:push
     ```
+    Generate the Prisma client (required before running tests/builds):
+    ```bash
+    pnpm db:generate
+    ```
     (Optional) Seed the database:
     ```bash
     pnpm db:seed
@@ -78,6 +82,11 @@ HomeGarden is a robust, Clean Architecture-based REST API for managing gardens a
 ## 🧪 Testing
 
 For detailed testing instructions, see [docs/TESTING.md](docs/TESTING.md).
+
+Ensure the Prisma client is generated before running tests:
+```bash
+pnpm db:generate
+```
 
 Run unit and integration tests:
 ```bash
