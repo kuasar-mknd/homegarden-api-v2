@@ -9,6 +9,7 @@ overrides:
   lodash: '>=4.17.23'
   hono: '>=4.12.7'
   effect: '>=3.20.0'
+  '@hono/node-server': '>=1.19.10'
 
 importers:
 
@@ -18,7 +19,7 @@ importers:
         specifier: ^0.24.1
         version: 0.24.1
       '@hono/node-server':
-        specifier: ^1.19.10
+        specifier: '>=1.19.10'
         version: 1.19.11(hono@4.12.8)
       '@hono/swagger-ui':
         specifier: ^0.5.3
@@ -448,12 +449,6 @@ packages:
 
   '@hono/node-server@1.19.11':
     resolution: {integrity: sha512-dr8/3zEaB+p0D2n/IUrlPF1HZm586qgJNXK1a9fhg/PzdtkK7Ksd5l312tJX2yBuALqDYBlG20QEbayqPyxn+g==}
-    engines: {node: '>=18.14.1'}
-    peerDependencies:
-      hono: '>=4.12.7'
-
-  '@hono/node-server@1.19.9':
-    resolution: {integrity: sha512-vHL6w3ecZsky+8P5MD+eFfaGTyCeOHUIFYMGpQGbrBTSmNNoxv0if69rEZ5giu36weC5saFuznL411gRX7bJDw==}
     engines: {node: '>=18.14.1'}
     peerDependencies:
       hono: '>=4.12.7'
@@ -2147,10 +2142,6 @@ snapshots:
     dependencies:
       hono: 4.12.8
 
-  '@hono/node-server@1.19.9(hono@4.12.8)':
-    dependencies:
-      hono: 4.12.8
-
   '@hono/swagger-ui@0.5.3(hono@4.12.8)':
     dependencies:
       hono: 4.12.8
@@ -2243,7 +2234,7 @@ snapshots:
       '@electric-sql/pglite': 0.3.15
       '@electric-sql/pglite-socket': 0.0.20(@electric-sql/pglite@0.3.15)
       '@electric-sql/pglite-tools': 0.2.20(@electric-sql/pglite@0.3.15)
-      '@hono/node-server': 1.19.9(hono@4.12.8)
+      '@hono/node-server': 1.19.11(hono@4.12.8)
       '@mrleebo/prisma-ast': 0.13.1
       '@prisma/get-platform': 7.2.0
       '@prisma/query-plan-executor': 7.2.0
