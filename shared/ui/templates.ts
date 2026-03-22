@@ -126,6 +126,32 @@ export const SHARED_STYLES = `
   ::-webkit-scrollbar-thumb:hover {
     background: var(--secondary);
   }
+  .sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border-width: 0;
+  }
+  @keyframes slideIn {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  .slide-in {
+    animation: slideIn 0.5s ease-out forwards;
+    opacity: 0; /* Starts hidden, animation makes it visible */
+  }
+
   .skip-link {
     position: absolute;
     top: -100px;
@@ -451,6 +477,10 @@ export const SHARED_STYLES = `
     .card, .skip-link, .btn, .card h2, footer a, .card-arrow {
       transition: none;
     }
+    .slide-in {
+      animation: none;
+      opacity: 1;
+    }
     .card:hover {
       transform: none;
     }
@@ -463,6 +493,7 @@ export const SHARED_STYLES = `
     }
   }
   @media print {
+    .slide-in { animation: none; opacity: 1; }
     body { background: white; color: black; display: block; }
     .container { box-shadow: none; border: none; max-width: 100%; width: 100%; padding: 0; }
     .skip-link, .status-dot, .external-icon, .no-print { display: none !important; }
@@ -523,6 +554,7 @@ export function baseLayout({ title, description, content }: LayoutProps): string
   <meta name="theme-color" content="#121212" media="(prefers-color-scheme: dark)">
   <meta name="apple-mobile-web-app-title" content="HomeGarden">
 
+  <meta property="og:locale" content="en_US">
   <meta property="og:site_name" content="HomeGarden API">
   <meta property="og:title" content="${safeTitle}">
   <meta property="og:description" content="${metaDescription}">
@@ -545,6 +577,7 @@ export function baseLayout({ title, description, content }: LayoutProps): string
   </style>
 </head>
 <body>
+  <div id="a11y-announcer" class="sr-only" aria-live="polite"></div>
   <a href="#main" class="skip-link" title="Jump to the main content area">Skip to main content</a>
   <div class="container">
     ${content}
@@ -579,25 +612,25 @@ const LANDING_PAGE_HTML = baseLayout({
       <p>Welcome to the HomeGarden API. Connect your applications to smart plant management services.</p>
 
       <ul class="grid" role="list">
-        <li>
+        <li class="slide-in" style="animation-delay: 0ms">
           <a href="/ui" class="card" aria-describedby="desc-ui">
             <h2>📚 Documentation<span class="card-arrow" aria-hidden="true">→</span></h2>
             <p id="desc-ui">Interactive Swagger UI for API exploration.</p>
           </a>
         </li>
-        <li>
+        <li class="slide-in" style="animation-delay: 100ms">
           <a href="/doc" class="card" aria-describedby="desc-doc">
             <h2>🔍 OpenAPI Spec<span class="card-arrow" aria-hidden="true">→</span></h2>
             <p id="desc-doc">Raw JSON specification for integration.</p>
           </a>
         </li>
-        <li>
+        <li class="slide-in" style="animation-delay: 200ms">
           <a href="/ui#/PlantID" class="card" aria-describedby="desc-plantid">
             <h2>🌿 Plant ID<span class="card-arrow" aria-hidden="true">→</span></h2>
             <p id="desc-plantid">Identify species using AI vision (Docs).</p>
           </a>
         </li>
-        <li>
+        <li class="slide-in" style="animation-delay: 300ms">
           <a href="/ui#/DrPlant" class="card" aria-describedby="desc-drplant">
             <h2>🩺 Dr. Plant<span class="card-arrow" aria-hidden="true">→</span></h2>
             <p id="desc-drplant">Diagnose diseases and pests (Docs).</p>
@@ -648,9 +681,13 @@ export function getNotFoundPageHtml(path: string): string {
         // Handle Go Back
         var backBtn = document.getElementById('go-back-btn');
         if (backBtn) {
-          backBtn.addEventListener('click', function() {
-            history.back();
-          });
+          if (window.history.length <= 1) {
+            backBtn.style.display = 'none';
+          } else {
+            backBtn.addEventListener('click', function() {
+              history.back();
+            });
+          }
         }
 
         // Handle Copy
@@ -666,7 +703,16 @@ export function getNotFoundPageHtml(path: string): string {
                  navigator.clipboard.writeText(text).then(function() {
                     var originalHtml = btn.innerHTML;
                     btn.innerHTML = '${CHECK_ICON} Copied!';
-                    setTimeout(function() { btn.innerHTML = originalHtml; }, 2000);
+                    var announcer = document.getElementById('a11y-announcer');
+                    if (announcer) {
+                      announcer.textContent = 'Copied!';
+                    }
+                    setTimeout(function() {
+                      btn.innerHTML = originalHtml;
+                      if (announcer) {
+                        announcer.textContent = '';
+                      }
+                    }, 2000);
                  }).catch(function(err) {
                     console.error('Failed to copy', err);
                  });
