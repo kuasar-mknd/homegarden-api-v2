@@ -1,44 +1,39 @@
-import { createClient } from '@supabase/supabase-js'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
-import { env } from '../../infrastructure/config/env.js'
-import { prisma } from '../../infrastructure/database/prisma.client.js'
-import { authMiddleware } from '../../infrastructure/http/middleware/auth.middleware.js'
-
-// Mock dependencies
-vi.mock('../../infrastructure/config/env.js', () => ({
-  env: {
-    SUPABASE_URL: 'http://supabase.test',
-    SUPABASE_PUBLISHABLE_KEY: 'test-key',
-  },
-}))
-
-vi.mock('../../infrastructure/database/prisma.client.js', () => ({
-  prisma: {
-    user: {
-      findUnique: vi.fn(),
-      create: vi.fn(),
-    },
-  },
-}))
-
-vi.mock('@supabase/supabase-js', () => ({
-  createClient: vi.fn(),
-}))
 
 describe('AuthMiddleware', () => {
   let mockContext: any
   let mockNext: any
   let mockSupabase: any
 
-  beforeEach(() => {
+  beforeEach(async () => {
     vi.clearAllMocks()
+    vi.resetModules() // Reset module cache to re-evaluate lazy singleton
 
     mockSupabase = {
       auth: {
         getUser: vi.fn(),
       },
     }
-    vi.mocked(createClient).mockReturnValue(mockSupabase as any)
+
+    vi.doMock('../../infrastructure/config/env.js', () => ({
+      env: {
+        SUPABASE_URL: 'http://supabase.test',
+        SUPABASE_PUBLISHABLE_KEY: 'test-key',
+      },
+    }))
+
+    vi.doMock('../../infrastructure/database/prisma.client.js', () => ({
+      prisma: {
+        user: {
+          findUnique: vi.fn(),
+          create: vi.fn(),
+        },
+      },
+    }))
+
+    vi.doMock('@supabase/supabase-js', () => ({
+      createClient: vi.fn().mockReturnValue(mockSupabase as any),
+    }))
 
     mockContext = {
       req: {
@@ -54,6 +49,9 @@ describe('AuthMiddleware', () => {
   it('should return 401 if Authorization header is missing', async () => {
     mockContext.req.header.mockReturnValue(null)
 
+    const { authMiddleware } = await import(
+      '../../infrastructure/http/middleware/auth.middleware.js'
+    )
     const result = (await authMiddleware(mockContext, mockNext)) as any
 
     expect(result.status).toBe(401)
@@ -68,6 +66,9 @@ describe('AuthMiddleware', () => {
       error: { message: 'Invalid token' },
     })
 
+    const { authMiddleware } = await import(
+      '../../infrastructure/http/middleware/auth.middleware.js'
+    )
     const result = (await authMiddleware(mockContext, mockNext)) as any
 
     expect(result.status).toBe(401)
@@ -80,8 +81,12 @@ describe('AuthMiddleware', () => {
     mockSupabase.auth.getUser.mockResolvedValue({ data: { user: mockUser }, error: null })
 
     const dbUser = { id: 'db-id', email: 'test@example.com' }
+    const { prisma } = await import('../../infrastructure/database/prisma.client.js')
     vi.mocked(prisma.user.findUnique).mockResolvedValue(dbUser as any)
 
+    const { authMiddleware } = await import(
+      '../../infrastructure/http/middleware/auth.middleware.js'
+    )
     await authMiddleware(mockContext, mockNext)
 
     expect(mockContext.set).toHaveBeenCalledWith('user', dbUser)
@@ -98,10 +103,14 @@ describe('AuthMiddleware', () => {
     }
     mockSupabase.auth.getUser.mockResolvedValue({ data: { user: mockUser }, error: null })
 
+    const { prisma } = await import('../../infrastructure/database/prisma.client.js')
     vi.mocked(prisma.user.findUnique).mockResolvedValue(null)
     const createdUser = { id: 'new-db-id', email: 'new@example.com' }
     vi.mocked(prisma.user.create).mockResolvedValue(createdUser as any)
 
+    const { authMiddleware } = await import(
+      '../../infrastructure/http/middleware/auth.middleware.js'
+    )
     await authMiddleware(mockContext, mockNext)
 
     expect(prisma.user.create).toHaveBeenCalledWith(
@@ -123,9 +132,14 @@ describe('AuthMiddleware', () => {
       data: { user: { email: 'test@test.com', user_metadata: { first_name: 'OnlyFirst' } } },
       error: null,
     })
+
+    const { prisma } = await import('../../infrastructure/database/prisma.client.js')
     vi.mocked(prisma.user.findUnique).mockResolvedValue(null)
     vi.mocked(prisma.user.create).mockResolvedValue({ id: 'id' } as any)
 
+    const { authMiddleware } = await import(
+      '../../infrastructure/http/middleware/auth.middleware.js'
+    )
     await authMiddleware(mockContext, mockNext)
 
     expect(prisma.user.create).toHaveBeenCalledWith(
@@ -140,16 +154,19 @@ describe('AuthMiddleware', () => {
 
   it('should return 500 if environment variables are missing', async () => {
     mockContext.req.header.mockReturnValue('Bearer token')
-    // Temporarily break env
+
+    const { env } = await import('../../infrastructure/config/env.js')
     const originalUrl = env.SUPABASE_URL
     ;(env as any).SUPABASE_URL = null
 
+    const { authMiddleware } = await import(
+      '../../infrastructure/http/middleware/auth.middleware.js'
+    )
     const result = (await authMiddleware(mockContext, mockNext)) as any
 
     expect(result.status).toBe(500)
     expect(result.data.message).toBe('Authentication service error')
 
-    // Restore
     ;(env as any).SUPABASE_URL = originalUrl
   })
 

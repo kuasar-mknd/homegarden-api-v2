@@ -29,3 +29,7 @@
 ## 2024-05-23 - [Static Layout Anti-Pattern]
 **Learning:** Pre-computing HTML layouts (header/footer) to save string concatenation is a micro-optimization that creates security risks (e.g., static CSP nonces) and prevents dynamic content (Auth state).
 **Action:** Avoid caching layout templates unless they are strictly static and have no dependencies on request context.
+
+## 2024-05-24 - [Test Bleed with Lazy Singletons]
+**Learning:** Implementing lazy singletons in middleware (e.g., caching the Supabase client) causes test bleed in Vitest, as the singleton state persists across isolated test runs, leading to incorrect mock evaluations or unexpected null reference errors.
+**Action:** Always call `vi.resetModules()` inside `beforeEach` block to clear the module cache, and use dynamic `await import()` or `vi.doMock()` for the module under test, ensuring a fresh singleton instance is created for every test.
