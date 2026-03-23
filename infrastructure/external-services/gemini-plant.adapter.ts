@@ -488,7 +488,9 @@ export class GeminiPlantAdapter implements AIIdentificationPort, AIDiagnosisPort
 
     try {
       // Simple API test
-      const result = await this.getIdentificationModel().generateContent('Say "ok" if you can read this.')
+      const result = await this.getIdentificationModel().generateContent(
+        'Say "ok" if you can read this.',
+      )
       return result.response.text().toLowerCase().includes('ok')
     } catch {
       return false
