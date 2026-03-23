@@ -43,3 +43,14 @@
 ## Rejected Changes
 
 *(None yet)*
+
+## 2024-05-25 - Async Visual Feedback & Motion Constraints
+
+**Learning:** Purely visual asynchronous feedback (like a "Copied!" button state) is inaccessible to screen reader users unless explicitly announced.
+**Action:** Use an `aria-live="polite"` utility element (like `#a11y-announcer`) to provide synchronous, temporary text updates alongside visual changes. Clear the text shortly after to ensure identical subsequent actions are re-announced.
+
+**Learning:** "Go Back" functionality reliant on `window.history.length` leads to dead clicks when opened in a new tab or direct link.
+**Action:** Conditionally hide history-dependent navigation elements when `window.history.length <= 1`.
+
+**Learning:** Adding CSS entry animations (`@keyframes`) can cause elements to remain invisible (opacity: 0) if users print the page or have `prefers-reduced-motion` enabled, breaking accessibility and utility.
+**Action:** Always include explicitly scoped resets (`animation: none !important; opacity: 1 !important;`) within `@media print` and `@media (prefers-reduced-motion: reduce)` queries for animated components.
