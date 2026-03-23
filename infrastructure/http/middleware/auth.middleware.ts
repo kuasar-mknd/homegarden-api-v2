@@ -118,12 +118,12 @@ export const authMiddleware = createMiddleware(async (c, next) => {
         select: AUTH_USER_SELECT,
       })
       localUser = newUser as unknown as typeof localUser
-      logger.info({ userId: localUser.id }, 'Synced new user')
+      logger.info({ userId: localUser!.id }, 'Synced new user')
     }
 
     // 3. Attach user to context
-    c.set('user', localUser)
-    c.set('userId', localUser.id)
+    c.set('user', localUser!)
+    c.set('userId', localUser!.id)
 
     return await next()
   } catch (error) {
