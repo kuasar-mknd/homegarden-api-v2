@@ -1,15 +1,33 @@
-import { createClient } from '@supabase/supabase-js'
+import { createClient, type SupabaseClient } from '@supabase/supabase-js'
 import { createMiddleware } from 'hono/factory'
 import { env } from '../../config/env.js'
 import { logger } from '../../config/logger.js'
 import { prisma } from '../../database/prisma.client.js'
 
-// Initialize Supabase client
+// Optimization: Shared selection object to reduce payload size and memory footprint
+const AUTH_USER_SELECT = {
+  id: true,
+  email: true,
+  firstName: true,
+  lastName: true,
+  role: true,
+  avatarUrl: true,
+  birthDate: true,
+  createdAt: true,
+  updatedAt: true,
+}
+
+// Optimization: Lazy singleton instantiation to avoid re-initialization overhead
+let supabaseInstance: SupabaseClient | null = null
+
 const getSupabase = () => {
-  if (!env.SUPABASE_URL || !env.SUPABASE_PUBLISHABLE_KEY) {
-    throw new Error('Supabase URL or Publishable Key not configured')
+  if (!supabaseInstance) {
+    if (!env.SUPABASE_URL || !env.SUPABASE_PUBLISHABLE_KEY) {
+      throw new Error('Supabase URL or Publishable Key not configured')
+    }
+    supabaseInstance = createClient(env.SUPABASE_URL, env.SUPABASE_PUBLISHABLE_KEY)
   }
-  return createClient(env.SUPABASE_URL, env.SUPABASE_PUBLISHABLE_KEY)
+  return supabaseInstance
 }
 
 /**
@@ -74,6 +92,7 @@ export const authMiddleware = createMiddleware(async (c, next) => {
     // Check if user exists first to avoid unnecessary write operations
     const existingUser = await prisma.user.findUnique({
       where: { email: user.email },
+      select: AUTH_USER_SELECT,
     })
 
     let localUser = existingUser
@@ -86,20 +105,19 @@ export const authMiddleware = createMiddleware(async (c, next) => {
       const lastName =
         metadata.full_name?.split(' ').slice(1).join(' ') || metadata.last_name || 'User'
 
-      localUser = await prisma.user.create({
+      // Ensure we treat the resulting select correctly in TypeScript
+      const newUser = await prisma.user.create({
         data: {
           email: user.email,
-          // We don't store the actual password since auth is handled by Supabase
-          // We use a random UUID as a placeholder to satisfy the NOT NULL constraint
-          // and ensure it's unguessable and not a static string.
-          // Using globalThis.crypto for Node.js 19+ / Web Crypto compatibility
           password: globalThis.crypto.randomUUID(),
           firstName,
           lastName,
           avatarUrl: metadata.avatar_url,
           role: 'USER',
         },
+        select: AUTH_USER_SELECT,
       })
+      localUser = newUser as unknown as typeof localUser
       logger.info({ userId: localUser.id }, 'Synced new user')
     }
 
