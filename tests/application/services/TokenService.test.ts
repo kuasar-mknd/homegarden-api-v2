@@ -29,7 +29,7 @@ describe('TokenService', () => {
     const token = tokenService.generateAccessToken(mockPayload)
     expect(token).toBeDefined()
 
-    const decoded = jwt.verify(token, 'test-secret') as TokenPayload
+    const decoded = jwt.verify(token, 'test-secret', { algorithms: ['HS256'] }) as TokenPayload
     expect(decoded.id).toBe(mockPayload.id)
     expect(decoded.email).toBe(mockPayload.email)
     expect(decoded.role).toBe(mockPayload.role)
@@ -39,7 +39,7 @@ describe('TokenService', () => {
     const token = tokenService.generateRefreshToken(mockPayload)
     expect(token).toBeDefined()
 
-    const decoded = jwt.verify(token, 'test-secret') as TokenPayload
+    const decoded = jwt.verify(token, 'test-secret', { algorithms: ['HS256'] }) as TokenPayload
     expect(decoded.id).toBe(mockPayload.id)
   })
 
