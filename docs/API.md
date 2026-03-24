@@ -27,48 +27,161 @@ The best way to explore the API is via the built-in Swagger UI, which provides i
 
 ## 🌿 Core Resources
 
+### Base & Info Routes
+
+- `GET /api/v2` - API version info and root endpoints overview.
+- `GET /ui` - Swagger UI.
+- `GET /doc` - OpenAPI JSON Spec.
+
 ### Auth
 
 *Endpoints are currently placeholders (501 Not Implemented). Client-side authentication via Supabase SDK is recommended.*
 
-- `POST /auth/register` - Register a new user.
-- `POST /auth/login` - Authenticate user.
+- `POST /api/v2/auth/register` - Register a new user (501 Not Implemented).
+- `POST /api/v2/auth/login` - Authenticate user (501 Not Implemented).
 
 ### Gardens
 
-- `GET /gardens/plants` - Retrieves all plants in the authenticated user's garden.
-- `POST /gardens/plants` - Adds a new plant to a specific garden (requires `gardenId` in body).
-- `GET /gardens/nearby` - Finds public gardens within a specific radius (geo-query).
-- `GET /gardens/:gardenId/weather` - Fetches current weather for a garden's location.
+- **`GET /api/v2/gardens/plants`** - Retrieves all plants in the authenticated user's garden.
+  *Response Example:*
+  ```json
+  {
+    "success": true,
+    "data": [
+      {
+        "id": "plant-123",
+        "gardenId": "garden-456",
+        "name": "Ficus",
+        "species": "Ficus elastica"
+      }
+    ]
+  }
+  ```
+
+- **`POST /api/v2/gardens/plants`** - Adds a new plant to a specific garden.
+  *Request Example:*
+  ```json
+  {
+    "gardenId": "garden-456",
+    "name": "My Ficus",
+    "species": "Ficus elastica",
+    "notes": "Loves bright indirect light"
+  }
+  ```
+  *Response Example:*
+  ```json
+  {
+    "success": true,
+    "data": { "id": "plant-123", "name": "My Ficus" }
+  }
+  ```
+
+- **`GET /api/v2/gardens/nearby`** - Finds public gardens within a specific radius.
+  *Request Example:* `/api/v2/gardens/nearby?lat=40.7128&lng=-74.0060&radius=5`
+  *Response Example:*
+  ```json
+  {
+    "success": true,
+    "data": [
+      {
+        "id": "garden-456",
+        "name": "Community Garden",
+        "distance": 2.5
+      }
+    ]
+  }
+  ```
+
+- **`GET /api/v2/gardens/{gardenId}/weather`** - Fetches current weather for a garden's location.
+  *Response Example:*
+  ```json
+  {
+    "success": true,
+    "data": {
+      "temperature": 22.5,
+      "humidity": 60,
+      "conditions": "Partly Cloudy"
+    }
+  }
+  ```
 
 ### Plants
 
 *Direct plant management endpoints are partially implemented; use Garden endpoints for main flows.*
 
-- `GET /plants` - List all plants for the user (501 Not Implemented).
-- `POST /plants` - Create a new plant (501 Not Implemented).
-- `GET /plants/:id` - Get plant details (501 Not Implemented).
-- `PATCH /plants/:id` - Update plant details (501 Not Implemented).
-- `DELETE /plants/:id` - Delete a plant (501 Not Implemented).
+- `GET /api/v2/plants` - List all plants for the user (501 Not Implemented).
+- `POST /api/v2/plants` - Create a new plant (501 Not Implemented).
+- `GET /api/v2/plants/{id}` - Get plant details (501 Not Implemented).
+- `PATCH /api/v2/plants/{id}` - Update plant details (501 Not Implemented).
 
-### AI Identification
+### AI Services
 
-- `GET /plant-id/status` - Check Plant ID service availability.
-- `POST /plant-id/identify` - Identifies a plant from an image URL or Base64 data (JSON Body).
-- `POST /dr-plant/diagnose` - Diagnoses plant health issues from an image (Multipart/Form-Data).
+- **`GET /api/v2/plant-id/status`** - Check Plant ID service availability.
+  *Response Example:*
+  ```json
+  {
+    "success": true,
+    "status": "online"
+  }
+  ```
+
+- **`POST /api/v2/plant-id/identify`** - Identifies a plant from an image URL or Base64 data (JSON Body).
+  *Request Example:*
+  ```json
+  {
+    "imageUrl": "https://example.com/monstera.jpg"
+  }
+  ```
+  *Response Example:*
+  ```json
+  {
+    "success": true,
+    "data": {
+      "suggestions": [
+        {
+          "commonName": "Monstera",
+          "scientificName": "Monstera deliciosa",
+          "confidence": 0.95
+        }
+      ]
+    }
+  }
+  ```
+
+- **`POST /api/v2/dr-plant/diagnose`** - Diagnoses plant health issues from an image (Multipart/Form-Data).
+  *Request Example:* `form-data` with `image` file and `plantId` (optional).
+  *Response Example:*
+  ```json
+  {
+    "success": true,
+    "data": {
+      "isHealthy": false,
+      "condition": {
+        "name": "Powdery Mildew",
+        "type": "DISEASE",
+        "severity": "MODERATE"
+      },
+      "treatments": [
+        {
+          "action": "Apply fungicide",
+          "instructions": "Spray leaves thoroughly"
+        }
+      ]
+    }
+  }
+  ```
 
 ### Users
 
-- `GET /users/:id` - Get public profile information for a user.
+- `GET /api/v2/users/{id}` - Get public profile information for a user.
 
 ### Care Tracker (Coming Soon)
 
 *These endpoints currently return `501 Not Implemented`.*
 
-- `GET /care-tracker/upcoming` - Get upcoming tasks.
-- `POST /care-tracker/schedules` - Create a care schedule.
-- `POST /care-tracker/schedules/:id/complete` - Mark task as complete.
-- `POST /care-tracker/generate` - Generate smart schedule.
+- `GET /api/v2/care-tracker/upcoming` - Get upcoming tasks (501 Not Implemented).
+- `POST /api/v2/care-tracker/schedules` - Create a care schedule (501 Not Implemented).
+- `POST /api/v2/care-tracker/schedules/{id}/complete` - Mark task as complete (501 Not Implemented).
 
 ---
 
