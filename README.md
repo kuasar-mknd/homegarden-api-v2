@@ -100,6 +100,11 @@ The API is documented using Swagger. Once the server is running, visit:
 curl http://localhost:3000/api/v2
 ```
 
+### Example: Check Plant ID Service Status
+```bash
+curl http://localhost:3000/api/v2/plant-id/status
+```
+
 ### Example: Identify a Plant (requires Auth)
 
 You can send either an `imageUrl` or `imageBase64`.
@@ -113,6 +118,8 @@ curl -X POST http://localhost:3000/api/v2/plant-id/identify \
 
 ## 🔧 Troubleshooting
 
+*   **Missing Supabase Keys**: Ensure `SUPABASE_URL`, `SUPABASE_PUBLISHABLE_KEY`, and `SUPABASE_SECRET_KEY` (if needed) are set in your `.env`.
+*   **Missing AI Key**: The `GOOGLE_AI_API_KEY` is required for plant identification and diagnosis. Make sure it's valid and configured in `.env`.
 *   **`Supabase URL or Publishable Key not configured`**: Ensure `SUPABASE_URL` and `SUPABASE_PUBLISHABLE_KEY` are set in `.env`.
 *   **Database Connection Errors**: Check if your Postgres container is running and accessible. Verify `DATABASE_URL` matches your container settings.
     *   Check logs: `docker-compose logs db` or `docker logs homegarden-db`
