@@ -111,6 +111,13 @@ curl -X POST http://localhost:3000/api/v2/plant-id/identify \
   -d '{"imageUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/3/3a/Monstera_deliciosa5.jpg/640px-Monstera_deliciosa5.jpg"}'
 ```
 
+### Example: Get User Plants (requires Auth)
+
+```bash
+curl http://localhost:3000/api/v2/gardens/plants \
+  -H "Authorization: Bearer <YOUR_SUPABASE_TOKEN>"
+```
+
 ## 🔧 Troubleshooting
 
 *   **`Supabase URL or Publishable Key not configured`**: Ensure `SUPABASE_URL` and `SUPABASE_PUBLISHABLE_KEY` are set in `.env`.
