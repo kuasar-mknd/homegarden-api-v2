@@ -60,6 +60,11 @@ export function initializeWebSocketServer(server: Server) {
 
     ws.on('message', async (data: string) => {
       if (!isAuthenticated) {
+        if (messageBuffer.length > 50) {
+          logger.warn('WebSocket message buffer overflow. Closing connection.')
+          ws.close(1008, 'Buffer overflow')
+          return
+        }
         messageBuffer.push(data)
         return
       }
@@ -140,6 +145,15 @@ export function initializeWebSocketServer(server: Server) {
     }
 
     authenticate()
+
+    // To prevent unauthenticated DoS via unbounded message buffering,
+    // we set a hard limit or close the socket if authentication isn't quick.
+    setTimeout(() => {
+      if (!isAuthenticated) {
+        logger.warn('WebSocket connection closed due to authentication timeout')
+        ws.close(1008, 'Authentication timeout')
+      }
+    }, 5000)
 
     ws.on('close', () => {
       logger.info('WebSocket connection closed')
