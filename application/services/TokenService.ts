@@ -37,7 +37,7 @@ export class TokenService {
 
   verifyToken(token: string): TokenPayload {
     try {
-      return jwt.verify(token, this.secret) as TokenPayload
+      return jwt.verify(token, this.secret, { algorithms: ['HS256'] }) as TokenPayload
     } catch (_error) {
       throw new Error('Invalid token')
     }

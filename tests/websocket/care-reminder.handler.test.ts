@@ -26,6 +26,7 @@ describe('Care Reminder WebSocket Handler', () => {
 
     mockWs = {
       send: vi.fn((msg: string) => sentMessages.push(msg)),
+      userId: 'user-123',
     } as unknown as WebSocket
   })
 
@@ -34,7 +35,7 @@ describe('Care Reminder WebSocket Handler', () => {
       await handleCareReminderMessage(mockWs, {
         type: 'SUBSCRIBE',
         channel: 'care-reminders',
-        payload: { userId: 'user-123' },
+        payload: {}, // No longer trusts payload userId
       })
 
       expect(mockWs.send).toHaveBeenCalledTimes(2)
@@ -49,13 +50,14 @@ describe('Care Reminder WebSocket Handler', () => {
     })
 
     it('should return error when userId is missing', async () => {
-      await handleCareReminderMessage(mockWs, {
+      const unauthWs = { ...mockWs, userId: undefined } as unknown as WebSocket
+      await handleCareReminderMessage(unauthWs, {
         type: 'SUBSCRIBE',
         channel: 'care-reminders',
         payload: {},
       })
 
-      expect(mockWs.send).toHaveBeenCalledTimes(2)
+      expect(unauthWs.send).toHaveBeenCalledTimes(2)
       const error = JSON.parse(sentMessages[1])
       expect(error.type).toBe('ERROR')
       expect(error.payload.message).toBe('Missing user ID')
@@ -67,7 +69,7 @@ describe('Care Reminder WebSocket Handler', () => {
       await handleCareReminderMessage(mockWs, {
         type: 'CHECK_REMINDERS',
         channel: 'care-reminders',
-        payload: { userId: 'user-456' },
+        payload: {},
       })
 
       expect(mockWs.send).toHaveBeenCalledTimes(1)
@@ -79,13 +81,14 @@ describe('Care Reminder WebSocket Handler', () => {
     })
 
     it('should return error when userId is missing', async () => {
-      await handleCareReminderMessage(mockWs, {
+      const unauthWs = { ...mockWs, userId: undefined } as unknown as WebSocket
+      await handleCareReminderMessage(unauthWs, {
         type: 'CHECK_REMINDERS',
         channel: 'care-reminders',
         payload: {},
       })
 
-      expect(mockWs.send).toHaveBeenCalledTimes(1)
+      expect(unauthWs.send).toHaveBeenCalledTimes(1)
       const error = JSON.parse(sentMessages[0])
       expect(error.type).toBe('ERROR')
       expect(error.payload.message).toBe('Missing user ID')

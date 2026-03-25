@@ -4,21 +4,23 @@ import type { WSMessage } from '../types.js'
 
 export async function handleCareReminderMessage(ws: WebSocket, message: WSMessage) {
   try {
+    const userId = (ws as any).userId
+
     switch (message.type) {
       case 'SUBSCRIBE':
         ws.send(
           JSON.stringify({
             type: 'SUBSCRIBED',
             channel: 'care-reminders',
-            payload: { userId: message.payload?.userId },
+            payload: { userId },
           }),
         )
         // Check for any pending reminders immediately
-        await checkReminders(ws, message.payload?.userId)
+        await checkReminders(ws, userId)
         break
 
       case 'CHECK_REMINDERS':
-        await checkReminders(ws, message.payload?.userId)
+        await checkReminders(ws, userId)
         break
 
       default:
