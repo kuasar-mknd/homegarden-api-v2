@@ -40,6 +40,11 @@
 **Learning:** Feedback text like "Checked!" can be ambiguous.
 **Action:** Use explicit action verbs ("Copied!") paired with a universally recognized icon (Checkmark) for clarity and delight.
 
+## 2024-05-24 - Screen Reader Feedback & Contextual Navigation
+
+**Learning:** Purely visual asynchronous feedback (like a button changing to "Copied!") is invisible to screen reader users, and 'Go Back' buttons that rely on `history.back()` cause dead clicks when pages are opened in a new tab.
+**Action:** Always include a global, visually hidden `aria-live="polite"` announcer region to broadcast asynchronous success messages, and conditionally render history-dependent navigation based on `window.history.length > 1`.
+
 ## Rejected Changes
 
 *(None yet)*
