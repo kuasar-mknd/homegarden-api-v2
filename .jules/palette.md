@@ -43,3 +43,7 @@
 ## Rejected Changes
 
 *(None yet)*
+
+## 2024-12-04 - Screen Reader Announcements & History States
+**Learning:** Visual-only feedback like replacing button text ("Copied!") doesn't automatically announce to screen readers. Relying on `window.history.length` in headless environments (like Playwright tests) requires mocking via `add_init_script` because `about:blank` counts as an initial history entry.
+**Action:** Use a global `.sr-only` `aria-live="polite"` announcer region for transient success states, and safely conditionally render history navigation like "Go Back" to prevent dead clicks.
