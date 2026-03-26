@@ -145,6 +145,17 @@ export const SHARED_STYLES = `
     outline: var(--focus-ring-width) solid var(--focus-ring-color);
     outline-offset: var(--focus-offset);
   }
+  .sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+  }
   .container {
     background: var(--card-bg);
     padding: 3rem;
@@ -545,6 +556,7 @@ export function baseLayout({ title, description, content }: LayoutProps): string
   </style>
 </head>
 <body>
+  <div id="a11y-announcer" class="sr-only" aria-live="polite"></div>
   <a href="#main" class="skip-link" title="Jump to the main content area">Skip to main content</a>
   <div class="container">
     ${content}
@@ -648,9 +660,13 @@ export function getNotFoundPageHtml(path: string): string {
         // Handle Go Back
         var backBtn = document.getElementById('go-back-btn');
         if (backBtn) {
-          backBtn.addEventListener('click', function() {
-            history.back();
-          });
+          if (window.history.length <= 1) {
+            backBtn.style.display = 'none';
+          } else {
+            backBtn.addEventListener('click', function() {
+              history.back();
+            });
+          }
         }
 
         // Handle Copy
@@ -666,6 +682,11 @@ export function getNotFoundPageHtml(path: string): string {
                  navigator.clipboard.writeText(text).then(function() {
                     var originalHtml = btn.innerHTML;
                     btn.innerHTML = '${CHECK_ICON} Copied!';
+                    var announcer = document.getElementById('a11y-announcer');
+                    if (announcer) {
+                      announcer.textContent = 'Copied!';
+                      setTimeout(function() { announcer.textContent = ''; }, 2000);
+                    }
                     setTimeout(function() { btn.innerHTML = originalHtml; }, 2000);
                  }).catch(function(err) {
                     console.error('Failed to copy', err);
