@@ -1,6 +1,7 @@
 # Environment Variables
 
 This document lists all environment variables used by the application, matching the source of truth in `infrastructure/config/env.ts`.
+Note: All variables are validated at startup using Zod.
 
 ## Application
 
