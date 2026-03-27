@@ -19,7 +19,9 @@ const getSupabase = () => {
     throw new Error('Supabase URL or Publishable Key not configured')
   }
 
-  supabaseInstance = createClient(env.SUPABASE_URL, env.SUPABASE_PUBLISHABLE_KEY)
+  supabaseInstance = createClient(env.SUPABASE_URL, env.SUPABASE_PUBLISHABLE_KEY, {
+    auth: { persistSession: false },
+  })
   return supabaseInstance
 }
 
