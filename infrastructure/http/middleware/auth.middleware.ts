@@ -1,15 +1,28 @@
-import { createClient } from '@supabase/supabase-js'
+import { createClient, type SupabaseClient } from '@supabase/supabase-js'
 import { createMiddleware } from 'hono/factory'
 import { env } from '../../config/env.js'
 import { logger } from '../../config/logger.js'
 import { prisma } from '../../database/prisma.client.js'
 
+// ⚡ Bolt: Cache the Supabase client instance to prevent expensive initialization on every request
+let supabaseInstance: SupabaseClient | null = null
+
+export const _resetSupabaseInstance = () => {
+  supabaseInstance = null
+}
+
 // Initialize Supabase client
 const getSupabase = () => {
+  if (supabaseInstance) return supabaseInstance
+
   if (!env.SUPABASE_URL || !env.SUPABASE_PUBLISHABLE_KEY) {
     throw new Error('Supabase URL or Publishable Key not configured')
   }
-  return createClient(env.SUPABASE_URL, env.SUPABASE_PUBLISHABLE_KEY)
+
+  supabaseInstance = createClient(env.SUPABASE_URL, env.SUPABASE_PUBLISHABLE_KEY, {
+    auth: { persistSession: false },
+  })
+  return supabaseInstance
 }
 
 /**
