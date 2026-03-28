@@ -33,6 +33,7 @@ The best way to explore the API is via the built-in Swagger UI, which provides i
 
 - `POST /auth/register` - Register a new user.
 - `POST /auth/login` - Authenticate user.
+- `POST /auth/refresh-token` - Refresh authentication token.
 
 ### Gardens
 
