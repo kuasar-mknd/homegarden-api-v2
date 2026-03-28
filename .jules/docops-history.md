@@ -15,3 +15,4 @@
 | 2026-01-15 | DocOps | .github/dependabot.yml, README.md, docs/API.md | Created Dependabot config, added docker-compose docs, updated API endpoints. |
 | 2026-01-20 | DocOps | .github/workflows/*, docs/*, README.md | Fixed workflow versions, refined API docs (501 status), updated README |
 | 2026-02-04 | Workflows & API Docs Sync | docs/API.md, .github/workflows/* | Synced API 501s, fixed Node 24 warnings |
+| 2026-03-28 | CI Workflow Depend | package.json, pnpm-lock.yaml | Fixed CI audit by updating hono, picomatch, h3, yaml, effect |
