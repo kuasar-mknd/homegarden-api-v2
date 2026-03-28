@@ -9,3 +9,8 @@
 **Vulnerability:** The rate limiter used `x-forwarded-for` directly without parsing. An attacker could potentially bypass rate limits by appending fake IPs or spoofing the header if not properly sanitized by a proxy.
 **Learning:** Relying on raw `x-forwarded-for` is risky.
 **Prevention:** Prioritize `cf-connecting-ip` or `x-real-ip` when available. When using `x-forwarded-for`, be aware of the trust model (e.g., standard proxy chains) and ideally configure trusted proxies.
+
+## 2025-05-23 - Authorization Header Bypass
+**Vulnerability:** The authorization middleware used loose string replacement (`.replace('Bearer ', '')`) which could allow malformed headers to bypass strict type validation in down-stream libraries.
+**Learning:** String replacement is not a reliable method for validating and extracting tokens.
+**Prevention:** Always validate header prefix with `.startsWith('Bearer ')` and extract securely using `.substring(7)`.
