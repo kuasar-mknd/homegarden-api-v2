@@ -20,9 +20,23 @@ export class UserPrismaRepository implements UserRepository {
     return this.mapToEntity(user)
   }
 
+  // Optimization: Select only fields required for UserProps to avoid fetching large JSON blobs (preferences) and password
+  static readonly USER_SELECT = {
+    id: true,
+    email: true,
+    firstName: true,
+    lastName: true,
+    role: true,
+    avatarUrl: true,
+    birthDate: true,
+    createdAt: true,
+    updatedAt: true,
+  }
+
   async findByEmail(email: string): Promise<User | null> {
     const user = await prisma.user.findUnique({
       where: { email },
+      select: UserPrismaRepository.USER_SELECT,
     })
     return user ? this.mapToEntity(user) : null
   }
@@ -30,6 +44,7 @@ export class UserPrismaRepository implements UserRepository {
   async findById(id: string): Promise<User | null> {
     const user = await prisma.user.findUnique({
       where: { id },
+      select: UserPrismaRepository.USER_SELECT,
     })
     return user ? this.mapToEntity(user) : null
   }
@@ -40,6 +55,7 @@ export class UserPrismaRepository implements UserRepository {
       data: {
         ...data,
       } as any, // Simple cast for now
+      select: UserPrismaRepository.USER_SELECT,
     })
     return this.mapToEntity(user)
   }
@@ -61,19 +77,7 @@ export class UserPrismaRepository implements UserRepository {
         where,
         skip,
         take: limit,
-        // Optimization: Select only fields required for UserProps to avoid fetching large JSON blobs (preferences)
-        select: {
-          id: true,
-          email: true,
-          firstName: true,
-          lastName: true,
-          role: true,
-          avatarUrl: true,
-          birthDate: true,
-          createdAt: true,
-          updatedAt: true,
-          // preferences is explicitly excluded as it's not used in mapToUserProps/Entity
-        },
+        select: UserPrismaRepository.USER_SELECT,
       }),
       prisma.user.count({ where }),
     ])

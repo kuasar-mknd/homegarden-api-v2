@@ -8,7 +8,7 @@ import { logger } from '../../config/logger.js'
  * Adds a unique Request ID to correlation.
  */
 export const loggerMiddleware = createMiddleware(async (c, next) => {
-  const start = Date.now()
+  const start = performance.now()
   const requestId = crypto.randomUUID()
 
   // Attach request ID to context and headers
@@ -22,7 +22,7 @@ export const loggerMiddleware = createMiddleware(async (c, next) => {
 
   await next()
 
-  const durationMs = Date.now() - start
+  const durationMs = Math.round(performance.now() - start)
   const status = c.res.status
 
   // Log Response with correct level based on status

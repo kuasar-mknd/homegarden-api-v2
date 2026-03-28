@@ -3,6 +3,7 @@ import { createMiddleware } from 'hono/factory'
 import { env } from '../../config/env.js'
 import { logger } from '../../config/logger.js'
 import { prisma } from '../../database/prisma.client.js'
+import { UserPrismaRepository } from '../../database/repositories/user.prisma-repository.js'
 
 // Initialize Supabase client
 const getSupabase = () => {
@@ -71,12 +72,11 @@ export const authMiddleware = createMiddleware(async (c, next) => {
     }
 
     // 2. Sync user to local database
-    // Check if user exists first to avoid unnecessary write operations
-    const existingUser = await prisma.user.findUnique({
+    // Optimization: explicitly select only required fields (excludes heavy preferences/password)
+    let localUser = await prisma.user.findUnique({
       where: { email: user.email },
+      select: UserPrismaRepository.USER_SELECT,
     })
-
-    let localUser = existingUser
 
     if (!localUser) {
       // Create new user if not exists
@@ -99,6 +99,7 @@ export const authMiddleware = createMiddleware(async (c, next) => {
           avatarUrl: metadata.avatar_url,
           role: 'USER',
         },
+        select: UserPrismaRepository.USER_SELECT,
       })
       logger.info({ userId: localUser.id }, 'Synced new user')
     }

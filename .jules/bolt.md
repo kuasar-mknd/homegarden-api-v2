@@ -29,3 +29,11 @@
 ## 2024-05-23 - [Static Layout Anti-Pattern]
 **Learning:** Pre-computing HTML layouts (header/footer) to save string concatenation is a micro-optimization that creates security risks (e.g., static CSP nonces) and prevents dynamic content (Auth state).
 **Action:** Avoid caching layout templates unless they are strictly static and have no dependencies on request context.
+
+## 2024-05-24 - [Auth Middleware Cache Trap]
+**Learning:** Attempting to cache the entire database `User` object within the authentication middleware using a simple in-memory Map is a critical anti-pattern. Not only does it create an O(N) blocking iteration during cache eviction, but it also causes severe downstream bugs by serving stale data (e.g., permissions, profile updates) for the duration of the TTL.
+**Action:** Do not implement local stateful caching for rapidly changing or security-critical entity data (like `User`) in middleware. Instead, optimize the database fetch itself.
+
+## 2024-05-24 - [Edge-Compatible Timing]
+**Learning:** While `node:perf_hooks` provides `performance`, importing it in Hono middleware (`logger.middleware.ts`) can break compatibility with Edge environments (like Cloudflare Workers).
+**Action:** Use the globally available `performance.now()` API without imports to measure request durations safely across all deployment targets.
