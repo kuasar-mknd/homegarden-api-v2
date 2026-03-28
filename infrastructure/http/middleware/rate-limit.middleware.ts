@@ -24,10 +24,7 @@ export const rateLimitMiddleware = rateLimiter({
       lastForwardedIp = parts[parts.length - 1]?.trim()
     }
     const ip =
-      c.req.header('cf-connecting-ip') ||
-      c.req.header('x-real-ip') ||
-      lastForwardedIp ||
-      'unknown'
+      c.req.header('cf-connecting-ip') || c.req.header('x-real-ip') || lastForwardedIp || 'unknown'
     return ip
   },
 })
