@@ -43,3 +43,7 @@
 ## Rejected Changes
 
 *(None yet)*
+
+## 2024-05-25 - Accessible Asynchronous Feedback
+**Learning:** Purely visual feedback (like changing a button's text to "Copied!" and back) is completely invisible to screen readers, causing confusion after interaction.
+**Action:** Always include a visually hidden `aria-live="polite"` region and update its text content synchronously with visual feedback. Ensure the text content is cleared afterward (e.g., via setTimeout) so subsequent identical actions are correctly announced.
