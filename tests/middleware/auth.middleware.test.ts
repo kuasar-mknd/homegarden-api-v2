@@ -117,6 +117,16 @@ describe('AuthMiddleware', () => {
     expect(mockNext).toHaveBeenCalled()
   })
 
+  it('should return 401 if Authorization header format is invalid', async () => {
+    mockContext.req.header.mockReturnValue('Invalid token')
+
+    const result = (await authMiddleware(mockContext, mockNext)) as any
+
+    expect(result.status).toBe(401)
+    expect(result.data.message).toBe('Invalid Authorization header format')
+    expect(mockNext).not.toHaveBeenCalled()
+  })
+
   it('should handle metadata without full_name', async () => {
     mockContext.req.header.mockReturnValue('Bearer token')
     mockSupabase.auth.getUser.mockResolvedValue({

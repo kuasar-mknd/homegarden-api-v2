@@ -12,12 +12,15 @@ export const authRateLimitMiddleware: MiddlewareHandler = rateLimiter({
   limit: 5, // 5 requests per minute
   keyGenerator: (c) => {
     // Prioritize Cloudflare / Proxy headers, fall back to IP
-    // Fix: Parse x-forwarded-for to prevent spoofing (take first IP)
+    // Fix: Extract the last IP to prevent spoofing of the first IP.
+    const forwardedFor = c.req.header('x-forwarded-for')
+    let lastForwardedIp: string | undefined
+    if (forwardedFor) {
+      const parts = forwardedFor.split(',')
+      lastForwardedIp = parts[parts.length - 1]?.trim()
+    }
     const ip =
-      c.req.header('cf-connecting-ip') ||
-      c.req.header('x-real-ip') ||
-      c.req.header('x-forwarded-for')?.split(',')[0]?.trim() ||
-      'unknown'
+      c.req.header('cf-connecting-ip') || c.req.header('x-real-ip') || lastForwardedIp || 'unknown'
     return ip
   },
   message: {

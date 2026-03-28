@@ -38,7 +38,7 @@ describe('Rate Limit Middleware', () => {
     })
   })
 
-  it('should use x-forwarded-for header as key', async () => {
+  it('should use cf-connecting-ip or x-real-ip header as key over unknown', async () => {
     const { rateLimitMiddleware } = await import(
       '../../infrastructure/http/middleware/rate-limit.middleware.js'
     )
@@ -46,7 +46,10 @@ describe('Rate Limit Middleware', () => {
     const config = (rateLimitMiddleware as any).config
     const mockContext = {
       req: {
-        header: vi.fn().mockReturnValue('192.168.1.1'),
+        header: vi.fn((name) => {
+          if (name === 'cf-connecting-ip') return '192.168.1.1'
+          return null
+        }),
       },
     }
 
@@ -54,7 +57,26 @@ describe('Rate Limit Middleware', () => {
     expect(key).toBe('192.168.1.1')
   })
 
-  it('should fallback to unknown when no x-forwarded-for header', async () => {
+  it('should use last IP from x-forwarded-for header as key', async () => {
+    const { rateLimitMiddleware } = await import(
+      '../../infrastructure/http/middleware/rate-limit.middleware.js'
+    )
+
+    const config = (rateLimitMiddleware as any).config
+    const mockContext = {
+      req: {
+        header: vi.fn((name) => {
+          if (name === 'x-forwarded-for') return '10.0.0.1, 10.0.0.2'
+          return null
+        }),
+      },
+    }
+
+    const key = config.keyGenerator(mockContext)
+    expect(key).toBe('10.0.0.2')
+  })
+
+  it('should fallback to unknown when no valid proxy header', async () => {
     const { rateLimitMiddleware } = await import(
       '../../infrastructure/http/middleware/rate-limit.middleware.js'
     )
