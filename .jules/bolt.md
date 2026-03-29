@@ -29,3 +29,7 @@
 ## 2024-05-23 - [Static Layout Anti-Pattern]
 **Learning:** Pre-computing HTML layouts (header/footer) to save string concatenation is a micro-optimization that creates security risks (e.g., static CSP nonces) and prevents dynamic content (Auth state).
 **Action:** Avoid caching layout templates unless they are strictly static and have no dependencies on request context.
+
+## 2025-03-29 - [Data Fetching Granularity]
+**Learning:** Returning all fields from a user entity including heavily nested JSON or large text blobs slows down list rendering and wastes memory.
+**Action:** Exclude large data columns by defining explicit selection schemas when pulling user data during standard lookups, leaving heavy data queries strictly for detailed views.
