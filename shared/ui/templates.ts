@@ -462,6 +462,17 @@ export const SHARED_STYLES = `
       animation: none;
     }
   }
+  .sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border-width: 0;
+  }
   @media print {
     body { background: white; color: black; display: block; }
     .container { box-shadow: none; border: none; max-width: 100%; width: 100%; padding: 0; }
@@ -545,6 +556,7 @@ export function baseLayout({ title, description, content }: LayoutProps): string
   </style>
 </head>
 <body>
+  <div id="a11y-announcer" class="sr-only" aria-live="polite"></div>
   <a href="#main" class="skip-link" title="Jump to the main content area">Skip to main content</a>
   <div class="container">
     ${content}
@@ -645,16 +657,21 @@ export function getNotFoundPageHtml(path: string): string {
     </main>
     <script>
       (function() {
-        // Handle Go Back
+        // Handle Go Back conditionally
         var backBtn = document.getElementById('go-back-btn');
         if (backBtn) {
-          backBtn.addEventListener('click', function() {
-            history.back();
-          });
+          if (window.history.length <= 1) {
+            backBtn.style.display = 'none';
+          } else {
+            backBtn.addEventListener('click', function() {
+              history.back();
+            });
+          }
         }
 
         // Handle Copy
         var btns = document.querySelectorAll('.copy-btn');
+        var announcer = document.getElementById('a11y-announcer');
         Array.prototype.forEach.call(btns, function(btn) {
           btn.addEventListener('click', function() {
             var targetSelector = btn.getAttribute('data-clipboard-target');
@@ -666,9 +683,17 @@ export function getNotFoundPageHtml(path: string): string {
                  navigator.clipboard.writeText(text).then(function() {
                     var originalHtml = btn.innerHTML;
                     btn.innerHTML = '${CHECK_ICON} Copied!';
+                    if (announcer) {
+                      announcer.textContent = 'Copied to clipboard';
+                      setTimeout(function() { announcer.textContent = ''; }, 2000);
+                    }
                     setTimeout(function() { btn.innerHTML = originalHtml; }, 2000);
                  }).catch(function(err) {
                     console.error('Failed to copy', err);
+                    if (announcer) {
+                      announcer.textContent = 'Failed to copy';
+                      setTimeout(function() { announcer.textContent = ''; }, 2000);
+                    }
                  });
               } else {
                  // Fallback
