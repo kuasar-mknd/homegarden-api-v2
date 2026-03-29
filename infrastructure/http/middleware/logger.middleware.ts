@@ -33,7 +33,7 @@ export const loggerMiddleware = createMiddleware(async (c, next) => {
     status,
     durationMs,
     requestId,
-    ip: c.req.header('x-forwarded-for') || c.req.header('cf-connecting-ip'),
+    ip: c.req.header('cf-connecting-ip') || c.req.header('x-real-ip') || c.req.header('x-forwarded-for')?.split(',').pop()?.trim(),
   }
 
   if (status >= 500) {

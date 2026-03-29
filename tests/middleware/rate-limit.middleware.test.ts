@@ -38,7 +38,7 @@ describe('Rate Limit Middleware', () => {
     })
   })
 
-  it('should use x-forwarded-for header as key', async () => {
+  it('should use last IP from x-forwarded-for header as key', async () => {
     const { rateLimitMiddleware } = await import(
       '../../infrastructure/http/middleware/rate-limit.middleware.js'
     )

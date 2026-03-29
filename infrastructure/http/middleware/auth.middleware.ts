@@ -43,7 +43,18 @@ export const authMiddleware = createMiddleware(async (c, next) => {
     )
   }
 
-  const token = authHeader.replace('Bearer ', '')
+  if (!authHeader.startsWith('Bearer ')) {
+    return c.json(
+      {
+        success: false,
+        error: 'UNAUTHORIZED',
+        message: 'Invalid Authorization header format',
+      },
+      401,
+    )
+  }
+
+  const token = authHeader.substring(7).trim()
 
   try {
     const supabase = getSupabase()
