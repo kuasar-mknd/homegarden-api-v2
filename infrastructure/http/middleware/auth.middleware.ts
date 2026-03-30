@@ -4,12 +4,28 @@ import { env } from '../../config/env.js'
 import { logger } from '../../config/logger.js'
 import { prisma } from '../../database/prisma.client.js'
 
+// Optimization: Lazy singleton instantiation to avoid overhead on every request
+let supabaseInstance: ReturnType<typeof createClient> | null = null
+
 // Initialize Supabase client
 const getSupabase = () => {
+  if (supabaseInstance) return supabaseInstance
+
   if (!env.SUPABASE_URL || !env.SUPABASE_PUBLISHABLE_KEY) {
     throw new Error('Supabase URL or Publishable Key not configured')
   }
-  return createClient(env.SUPABASE_URL, env.SUPABASE_PUBLISHABLE_KEY)
+
+  // Set persistSession to false to prevent session leakage across requests
+  supabaseInstance = createClient(env.SUPABASE_URL, env.SUPABASE_PUBLISHABLE_KEY, {
+    auth: { persistSession: false },
+  })
+
+  return supabaseInstance
+}
+
+// Export for testing
+export const _resetSupabaseInstance = () => {
+  supabaseInstance = null
 }
 
 /**
