@@ -43,3 +43,11 @@
 ## Rejected Changes
 
 *(None yet)*
+
+## 2024-05-25 - Motion & Screen Reader Announcements
+
+**Learning:** CSS rules inside `@media (prefers-reduced-motion: reduce)` can be overridden by more specific hover/focus state rules.
+**Action:** Always append `!important` to `transition`, `transform`, and `animation` overrides in reduced motion media queries to guarantee user preferences are respected.
+
+**Learning:** When using the Clipboard API to copy text, visually replacing button content (e.g., changing "Copy" to "Copied!") is not automatically announced by screen readers.
+**Action:** Ensure dynamic text updates are paired with a visually hidden `<div aria-live="polite">` region whose `textContent` is updated synchronously and then cleared.

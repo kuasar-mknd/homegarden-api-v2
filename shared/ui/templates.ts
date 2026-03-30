@@ -442,6 +442,17 @@ export const SHARED_STYLES = `
     display: flex;
     justify-content: center;
   }
+  .sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border-width: 0;
+  }
   @media (prefers-color-scheme: dark) {
     .code-block {
       background: #2d2d2d;
@@ -449,17 +460,17 @@ export const SHARED_STYLES = `
   }
   @media (prefers-reduced-motion: reduce) {
     .card, .skip-link, .btn, .card h2, footer a, .card-arrow {
-      transition: none;
+      transition: none !important;
     }
     .card:hover {
-      transform: none;
+      transform: none !important;
     }
     .card-arrow {
-      opacity: 1;
-      transform: none;
+      opacity: 1 !important;
+      transform: none !important;
     }
     .status-dot {
-      animation: none;
+      animation: none !important;
     }
   }
   @media print {
@@ -467,7 +478,8 @@ export const SHARED_STYLES = `
     .container { box-shadow: none; border: none; max-width: 100%; width: 100%; padding: 0; }
     .skip-link, .status-dot, .external-icon, .no-print { display: none !important; }
     .grid { display: block; }
-    .card { border: 1px solid #000; margin-bottom: 1rem; break-inside: avoid; page-break-inside: avoid; box-shadow: none; }
+    .card { border: 1px solid #000; margin-bottom: 1rem; break-inside: avoid; page-break-inside: avoid; box-shadow: none; transition: none !important; }
+    .card-arrow { opacity: 1 !important; transition: none !important; transform: none !important; }
     a { text-decoration: underline; color: black; }
     a[href^="http"]:after { content: " (" attr(href) ")"; }
     header h1 { color: black; }
@@ -632,6 +644,7 @@ export function getNotFoundPageHtml(path: string): string {
             <button type="button" class="btn btn-secondary copy-btn" data-clipboard-target="#error-path" aria-label="Copy URL to clipboard">
             ${COPY_ICON} Copy Path
             </button>
+            <div aria-live="polite" class="sr-only" id="copy-announcer"></div>
         </div>
       </div>
 
@@ -648,9 +661,13 @@ export function getNotFoundPageHtml(path: string): string {
         // Handle Go Back
         var backBtn = document.getElementById('go-back-btn');
         if (backBtn) {
-          backBtn.addEventListener('click', function() {
-            history.back();
-          });
+          if (window.history.length <= 1) {
+            backBtn.style.display = 'none';
+          } else {
+            backBtn.addEventListener('click', function() {
+              history.back();
+            });
+          }
         }
 
         // Handle Copy
@@ -666,6 +683,11 @@ export function getNotFoundPageHtml(path: string): string {
                  navigator.clipboard.writeText(text).then(function() {
                     var originalHtml = btn.innerHTML;
                     btn.innerHTML = '${CHECK_ICON} Copied!';
+                    var announcer = document.getElementById('copy-announcer');
+                    if (announcer) {
+                      announcer.textContent = 'Copied to clipboard';
+                      setTimeout(function() { announcer.textContent = ''; }, 2000);
+                    }
                     setTimeout(function() { btn.innerHTML = originalHtml; }, 2000);
                  }).catch(function(err) {
                     console.error('Failed to copy', err);
