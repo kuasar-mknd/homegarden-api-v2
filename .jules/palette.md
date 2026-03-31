@@ -43,3 +43,7 @@
 ## Rejected Changes
 
 *(None yet)*
+
+## 2026-03-31 - aria-live regions for purely visual asynchronous success feedback
+**Learning:** Purely visual asynchronous success feedback (like copy-to-clipboard text changes) is not automatically announced to screen readers. This leaves visually impaired users unaware of the successful action.
+**Action:** Always include a visually hidden `aria-live="polite"` region and update its `textContent` synchronously. Ensure the `textContent` is cleared afterward (e.g., via `setTimeout`) so subsequent identical actions are correctly announced.
