@@ -1,15 +1,28 @@
-import { createClient } from '@supabase/supabase-js'
+import { createClient, type SupabaseClient } from '@supabase/supabase-js'
 import { createMiddleware } from 'hono/factory'
 import { env } from '../../config/env.js'
 import { logger } from '../../config/logger.js'
 import { prisma } from '../../database/prisma.client.js'
 
 // Initialize Supabase client
+let supabaseInstance: SupabaseClient | null = null
+
 const getSupabase = () => {
   if (!env.SUPABASE_URL || !env.SUPABASE_PUBLISHABLE_KEY) {
     throw new Error('Supabase URL or Publishable Key not configured')
   }
-  return createClient(env.SUPABASE_URL, env.SUPABASE_PUBLISHABLE_KEY)
+  if (!supabaseInstance) {
+    supabaseInstance = createClient(env.SUPABASE_URL, env.SUPABASE_PUBLISHABLE_KEY, {
+      auth: {
+        persistSession: false,
+      },
+    })
+  }
+  return supabaseInstance
+}
+
+export const _resetSupabaseInstance = () => {
+  supabaseInstance = null
 }
 
 /**

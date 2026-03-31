@@ -29,3 +29,7 @@
 ## 2024-05-23 - [Static Layout Anti-Pattern]
 **Learning:** Pre-computing HTML layouts (header/footer) to save string concatenation is a micro-optimization that creates security risks (e.g., static CSP nonces) and prevents dynamic content (Auth state).
 **Action:** Avoid caching layout templates unless they are strictly static and have no dependencies on request context.
+
+## 2024-05-23 - [External Service Client Instantiation]
+**Learning:** Initializing external service clients (e.g., Supabase) on every request using \`createClient()\` creates excessive memory allocation and performance overhead on high-throughput routes like authentication middleware.
+**Action:** Lazily instantiate a singleton instance of the client and reuse it. When doing this for auth-related clients in a backend server, explicitly set \`auth: { persistSession: false }\` to prevent cross-request session leakage.
