@@ -43,7 +43,7 @@ The best way to explore the API is via the built-in Swagger UI, which provides i
 
 ### Plants
 
-*Direct plant management endpoints are partially implemented; use Garden endpoints for main flows.*
+*Direct plant management endpoints are intentionally implemented as `501 Not Implemented` stubs. For main flows, clients must use the Garden endpoints (e.g., `/gardens/plants`).*
 
 - `GET /plants` - List all plants for the user (501 Not Implemented).
 - `POST /plants` - Create a new plant (501 Not Implemented).
@@ -65,10 +65,10 @@ The best way to explore the API is via the built-in Swagger UI, which provides i
 
 *These endpoints currently return `501 Not Implemented`.*
 
-- `GET /care-tracker/upcoming` - Get upcoming tasks.
-- `POST /care-tracker/schedules` - Create a care schedule.
-- `POST /care-tracker/schedules/:id/complete` - Mark task as complete.
-- `POST /care-tracker/generate` - Generate smart schedule.
+- `GET /care-tracker/upcoming` - Get upcoming tasks (501 Not Implemented).
+- `POST /care-tracker/schedules` - Create a care schedule (501 Not Implemented).
+- `POST /care-tracker/schedules/:id/complete` - Mark task as complete (501 Not Implemented).
+- `POST /care-tracker/generate` - Generate smart schedule (501 Not Implemented).
 
 ---
 
