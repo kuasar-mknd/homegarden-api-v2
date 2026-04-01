@@ -19,7 +19,7 @@ This layer orchestrates the flow of data to and from the domain entities. It imp
 
 ### 3. `infrastructure/` (Frameworks & Drivers)
 This layer contains implementations of interfaces defined in the domain and application layers. It deals with external details like databases, web frameworks, and third-party APIs.
-*   **Http**: Hono server setup, controllers, middleware, and routes.
+*   **Http**: Hono server setup, controllers, middleware, and routes. API routes are added in `infrastructure/http/routes/` and explicitly prefixed with `/api/v2` in `index.ts`.
 *   **Database**: Prisma client and repository implementations.
 *   **Config**: Environment variables, logger configuration.
 *   **Adapters**: External service integrations (e.g., `GeminiAdapter`, `OpenMeteoAdapter`).
