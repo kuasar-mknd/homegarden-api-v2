@@ -29,10 +29,11 @@ The best way to explore the API is via the built-in Swagger UI, which provides i
 
 ### Auth
 
-*Endpoints are currently placeholders (501 Not Implemented). Client-side authentication via Supabase SDK is recommended.*
+*Endpoints are intentionally implemented as 501 Not Implemented stubs. Client-side authentication via Supabase SDK is the recommended pattern.*
 
-- `POST /auth/register` - Register a new user.
-- `POST /auth/login` - Authenticate user.
+- `POST /auth/register` - 501 Not Implemented.
+- `POST /auth/login` - 501 Not Implemented.
+- `POST /auth/refresh-token` - 501 Not Implemented.
 
 ### Gardens
 
